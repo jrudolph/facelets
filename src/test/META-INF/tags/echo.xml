@@ -1,0 +1,3 @@
+<composition xmlns="http://java.sun.com/jsf/facelet">
+#{msg} 
+</composition>
