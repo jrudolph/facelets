@@ -48,7 +48,7 @@ import com.sun.facelets.tag.TagLibrary;
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.1 2005/05/21 17:55:00 jhook Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.2 2005/05/21 19:48:06 jhook Exp $
  */
 public class FaceletViewHandler extends ViewHandlerWrapper {
 
@@ -221,6 +221,7 @@ public class FaceletViewHandler extends ViewHandlerWrapper {
             ServletRequest request = (ServletRequest) extContext.getRequest();
             ServletResponse response = (ServletResponse) extContext
                     .getResponse();
+            response.setBufferSize(8192);
             writer = renderKit.createResponseWriter(response.getWriter(),
                     "text/html", request.getCharacterEncoding());
             context.setResponseWriter(writer);
