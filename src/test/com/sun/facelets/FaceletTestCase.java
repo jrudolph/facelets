@@ -107,13 +107,17 @@ public abstract class FaceletTestCase extends TestCase {
 
         // Set up Servlet API Objects
         this.servletContext = new MockServletContext();
+        this.servletContext.addInitParameter("appParamName", "appParamValue");
         this.servletContext.addInitParameter(
                 StateManager.STATE_SAVING_METHOD_PARAM_NAME, "client");
         this.servletContext.addInitParameter(
                 ViewHandler.DEFAULT_SUFFIX_PARAM_NAME, ".xhtml");
+        this.servletContext.setAttribute("appScopeName", "appScopeValue");
         this.config = new MockServletConfig(this.servletContext);
         this.session = new MockHttpSession();
+        this.session.setAttribute("sesScopeName", "sesScopeValue");
         this.request = new MockHttpServletRequest(this.session);
+        this.request.setAttribute("reqScopeName", "reqScopeValue");
         this.response = new MockHttpServletResponse();
 
         ConfigureListener listener = new ConfigureListener();
