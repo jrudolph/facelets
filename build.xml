@@ -1,0 +1,149 @@
+<project name="EL RI Classes" default="compile" basedir=".">
+                                                                                
+  <!-- =================== Environmental Properties ======================= -->
+                                                                                
+  <!-- Load user property definition overrides -->
+  <property environment="env"/>
+  <property file="build.properties"/>
+  <property file="${user.home}/build.properties"/>
+                                                                                
+  <!-- Establish property definition defaults -->
+  <property name="compile.debug"       value="true"/>
+  <property name="compile.deprecation" value="false"/>
+  <property name="compile.optimize"    value="true"/>
+  <property name="build"               value="build"/>
+  <property name="dist"                value="dist"/>
+  <property name="jar"           	value="jsf-facelet.jar"/>
+
+
+  <path id="compile.classpath">
+    <pathelement location="${build.home}/classes"/>
+    <fileset dir="lib" includes="*.jar"/>
+  </path>
+
+  <!-- ===================== Prepare Directories ========================= -->
+  <target name="prepare">
+                                                                                
+    <!-- "Build" Hierarchy -->
+    <mkdir dir="${build}"/>
+    <mkdir dir="${build}/classes"/>
+    <mkdir dir="${build}/docs"/>
+    <mkdir dir="${build}/docs/api"/>
+
+    <!-- "Dist" Hierarchy -->
+    <mkdir dir="${dist}"/>
+    <mkdir dir="${dist}/docs"/>
+    <mkdir dir="${dist}/docs/api"/>
+    <mkdir dir="${dist}/lib"/>
+    <mkdir dir="${dist}/src"/>
+
+    <uptodate property="docs.uptodate" targetfile="${build}/docs/api/index.html">
+      <srcfiles dir="src" includes="**/*.java" />
+    </uptodate>
+  </target>
+
+  <!-- ======================= Static Files ============================== -->
+  <target name="static" depends="prepare">
+                                                                                
+    <!-- "Dist" Hierarchy -->
+    <copy todir="${dist}">
+      <fileset dir="." includes="BUILDING.txt"/>
+      <fileset dir="." includes="LICENSE"/>
+      <fileset dir="." includes="README.txt"/>
+    </copy>
+  </target>
+
+  <!-- ======================== Compile Classes ========================== -->
+  <target name="compile" depends="static"
+   description="Compile API classes (Default)">
+                                                                                
+    <!-- Java classes -->
+    <javac srcdir="src/java"
+          destdir="${build}/classes"
+            debug="${compile.debug}"
+      deprecation="${compile.deprecation}"
+         optimize="${compile.optimize}"
+    >
+      <classpath refid="compile.classpath"/>
+    </javac>
+
+    <copy todir="${build}/classes">
+      <fileset dir="src/etc">
+        <include name="**/*.properties"/>
+        <include name="**/*.xml"/>
+        <include name="**/*.dtd"/>
+	<include name="**/*.ent"/>
+      </fileset>
+    </copy>
+
+  </target>
+
+  <!-- ======================== Build JavaDoc =========================== -->
+  <target name="javadoc" depends="prepare" unless="docs.uptodate">
+   
+    <javadoc packagenames="com.sun.facelets.*"
+             sourcepath="src/java"
+             destdir="${build}/docs/api"
+             use="true"
+             windowtitle="JavaServer Faces Facelets"
+             doctitle="Facelets API Documentation"
+             bottom="Copyright &amp;copy; 2005 All Rights Reserved.">
+       <link href="http://java.sun.com/j2se/1.4.2/docs/api/"/>
+       <link href="http://java.sun.com/j2ee/javaserverfaces/1.1_01/docs/api/"/>
+       <classpath refid="compile.classpath"/>
+    </javadoc>
+
+  </target>
+
+  <!-- ===================== Distribution Files ========================= -->
+  <target name="jar" depends="compile"
+          description="Create jar">
+                                                                                
+    <!-- Prepare Manifest
+    <copy tofile="${build}/manifest"
+            file="src/etc/manifest" overwrite="yes">
+      <filterset>
+        <filter token="implementation.revision"
+                value="${implementation.revision}"/>
+      </filterset>
+    </copy> -->
+                                                                                
+    <!-- Create JAR file -->
+    <jar jarfile="${jar}"
+         basedir="${build}/classes">
+
+    </jar>
+  </target>
+ 
+  <target name="dist" depends="compile,javadoc,jar"
+   description="Create binary distribution">
+                                                                                
+    <!-- Copy Javadocs -->
+    <copy todir="${dist}/docs/api">
+        <fileset dir="${build}/docs/api"/>
+    </copy>
+                                                                                
+    <!-- Copy API source files -->
+    <copy todir="${dist}/src">
+        <fileset dir="src"/>
+    </copy>
+         
+  </target>
+
+  <!-- ====================== Clean Generated Files ===================== -->
+  <target name="clean"
+   description="Clean previous build results">
+                                                                                
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
+	<delete file="${jar}"/>
+  </target>
+ 
+  <!-- ========================= All In One Build ======================= -->
+  <target name="all" depends="clean,dist"
+   description="Clean, compile, and dist"/>
+ 
+</project>
+
+
+ 
