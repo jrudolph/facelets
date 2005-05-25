@@ -19,7 +19,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -48,7 +50,7 @@ import com.sun.facelets.tag.TagLibrary;
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.3 2005/05/25 03:09:08 jhook Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.4 2005/05/25 03:16:30 jhook Exp $
  */
 public class FaceletViewHandler extends ViewHandlerWrapper {
 
@@ -70,12 +72,11 @@ public class FaceletViewHandler extends ViewHandlerWrapper {
     private String defaultSuffix;
 
     protected static void removeTransient(UIComponent c) {
-        UIComponent d;
+        UIComponent d, e;
         if (c.getChildCount() > 0) {
             for (Iterator itr = c.getChildren().iterator(); itr.hasNext();) {
                 d = (UIComponent) itr.next();
-                if (d.getFacets().size() > 0) {
-                    UIComponent e;
+                if (d.getFacets().size() > 0) {                  
                     for (Iterator jtr = d.getFacets().values().iterator(); jtr
                             .hasNext();) {
                         e = (UIComponent) jtr.next();
