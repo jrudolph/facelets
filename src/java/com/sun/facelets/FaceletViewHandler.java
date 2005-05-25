@@ -48,11 +48,12 @@ import com.sun.facelets.tag.TagLibrary;
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.2 2005/05/21 19:48:06 jhook Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.3 2005/05/25 03:09:08 jhook Exp $
  */
 public class FaceletViewHandler extends ViewHandlerWrapper {
 
-    protected final static Logger log = Logger.getLogger("facelets.viewHandler");
+    protected final static Logger log = Logger
+            .getLogger("facelets.viewHandler");
 
     public final static long DEFAULT_REFRESH_PERIOD = 2;
 
@@ -70,24 +71,37 @@ public class FaceletViewHandler extends ViewHandlerWrapper {
 
     protected static void removeTransient(UIComponent c) {
         UIComponent d;
-        for (Iterator itr = c.getChildren().iterator(); itr.hasNext();) {
-            d = (UIComponent) itr.next();
-            if (d.getFacets().size() > 0) {
-                UIComponent e;
-                for (Iterator jtr = d.getFacets().values().iterator(); jtr
-                        .hasNext();) {
-                    e = (UIComponent) jtr.next();
-                    if (e.isTransient()) {
-                        jtr.remove();
-                    } else {
-                        removeTransient(e);
+        if (c.getChildCount() > 0) {
+            for (Iterator itr = c.getChildren().iterator(); itr.hasNext();) {
+                d = (UIComponent) itr.next();
+                if (d.getFacets().size() > 0) {
+                    UIComponent e;
+                    for (Iterator jtr = d.getFacets().values().iterator(); jtr
+                            .hasNext();) {
+                        e = (UIComponent) jtr.next();
+                        if (e.isTransient()) {
+                            jtr.remove();
+                        } else {
+                            removeTransient(e);
+                        }
                     }
                 }
+                if (d.isTransient()) {
+                    itr.remove();
+                } else {
+                    removeTransient(d);
+                }
             }
-            if (d.isTransient()) {
-                itr.remove();
-            } else {
-                removeTransient(d);
+        }
+        if (c.getFacets().size() > 0) {
+            for (Iterator itr = c.getFacets().values().iterator(); itr
+                    .hasNext();) {
+                d = (UIComponent) itr.next();
+                if (d.isTransient()) {
+                    itr.remove();
+                } else {
+                    removeTransient(d);
+                }
             }
         }
     }
@@ -153,7 +167,8 @@ public class FaceletViewHandler extends ViewHandlerWrapper {
                     c.addTagLibrary(libObj);
                     log.fine("Successfully Loaded Library: " + libs[i]);
                 } catch (IOException e) {
-                    log.log(Level.SEVERE, "Error Loading Library: " + libs[i], e);
+                    log.log(Level.SEVERE, "Error Loading Library: " + libs[i],
+                            e);
                 }
             }
         }
