@@ -22,14 +22,13 @@ import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 
 import com.sun.facelets.FaceletContext;
-import com.sun.facelets.el.LiteralValueExpression;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.TagHandler;
 
 /**
  * @author Jacob Hookom
- * @version $Id: IfHandler.java,v 1.1 2005/05/21 17:54:47 jhook Exp $
+ * @version $Id: IfHandler.java,v 1.2 2005/06/07 02:15:34 jhook Exp $
  */
 public final class IfHandler extends TagHandler {
 
@@ -50,8 +49,7 @@ public final class IfHandler extends TagHandler {
             throws IOException, FacesException, ELException {
         boolean b = this.test.getBoolean(ctx);
         if (this.var != null) {
-            ctx.getVariableMapper().setVariable(var.getValue(ctx),
-                    new LiteralValueExpression(new Boolean(b)));
+            ctx.setAttribute(var.getValue(ctx), new Boolean(b));
         }
         if (b) {
             this.nextHandler.apply(ctx, parent);

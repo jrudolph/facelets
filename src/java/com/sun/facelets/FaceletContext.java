@@ -32,18 +32,9 @@ import javax.faces.context.FacesContext;
  * Context representative of a single request from a Facelet
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletContext.java,v 1.1 2005/05/21 17:54:59 jhook Exp $
+ * @version $Id: FaceletContext.java,v 1.2 2005/06/07 02:15:35 jhook Exp $
  */
 public abstract class FaceletContext extends ELContext {
-
-    /**
-     * Default Constructor as specified by the ELContext
-     * 
-     * @param resolver
-     */
-    public FaceletContext(ELResolver resolver) {
-        super(resolver);
-    }
 
     /**
      * The current FacesContext bound to this "request"

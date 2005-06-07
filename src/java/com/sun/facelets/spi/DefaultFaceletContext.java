@@ -22,6 +22,7 @@ import java.util.Map;
 
 import javax.el.ELContext;
 import javax.el.ELException;
+import javax.el.ELResolver;
 import javax.el.ExpressionFactory;
 import javax.el.FunctionMapper;
 import javax.el.ValueExpression;
@@ -33,7 +34,6 @@ import javax.faces.context.FacesContext;
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
 import com.sun.facelets.el.DefaultVariableMapper;
-import com.sun.facelets.el.LiteralValueExpression;
 
 /**
  * Default FaceletContext implementation.
@@ -44,7 +44,7 @@ import com.sun.facelets.el.LiteralValueExpression;
  * directive.
  * 
  * @author Jacob Hookom
- * @version $Id: DefaultFaceletContext.java,v 1.1 2005/05/21 17:54:58 jhook Exp $
+ * @version $Id: DefaultFaceletContext.java,v 1.2 2005/06/07 02:15:35 jhook Exp $
  */
 public final class DefaultFaceletContext extends FaceletContext {
 
@@ -61,7 +61,6 @@ public final class DefaultFaceletContext extends FaceletContext {
     protected final Map ids;
 
     public DefaultFaceletContext(FacesContext ctx, DefaultFacelet facelet) {
-        super(ctx.getELContext().getELResolver());
         this.ctx = ctx.getELContext();
         this.ids = new HashMap();
         this.faces = ctx;
@@ -73,21 +72,27 @@ public final class DefaultFaceletContext extends FaceletContext {
         this.fnMapper = this.ctx.getFunctionMapper();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see com.sun.facelets.FaceletContext#getFacesContext()
      */
     public FacesContext getFacesContext() {
         return this.faces;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see com.sun.facelets.FaceletContext#getExpressionFactory()
      */
     public ExpressionFactory getExpressionFactory() {
         return this.facelet.getExpressionFactory();
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see com.sun.facelets.FaceletContext#setVariableMapper(javax.el.VariableMapper)
      */
     public void setVariableMapper(VariableMapper varMapper) {
@@ -95,7 +100,9 @@ public final class DefaultFaceletContext extends FaceletContext {
         this.varMapper = varMapper;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see com.sun.facelets.FaceletContext#setFunctionMapper(javax.el.FunctionMapper)
      */
     public void setFunctionMapper(FunctionMapper fnMapper) {
@@ -103,43 +110,56 @@ public final class DefaultFaceletContext extends FaceletContext {
         this.fnMapper = fnMapper;
     }
 
-    /* (non-Javadoc)
-     * @see com.sun.facelets.FaceletContext#includeFacelet(javax.faces.component.UIComponent, java.lang.String)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sun.facelets.FaceletContext#includeFacelet(javax.faces.component.UIComponent,
+     *      java.lang.String)
      */
     public void includeFacelet(UIComponent parent, String relativePath)
             throws IOException, FaceletException, FacesException, ELException {
         this.facelet.include(this, parent, relativePath);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see javax.el.ELContext#getFunctionMapper()
      */
     public FunctionMapper getFunctionMapper() {
         return this.fnMapper;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see javax.el.ELContext#getVariableMapper()
      */
     public VariableMapper getVariableMapper() {
         return this.varMapper;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see javax.el.ELContext#getContext(java.lang.Class)
      */
     public Object getContext(Class key) {
         return this.ctx.getContext(key);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see javax.el.ELContext#putContext(java.lang.Class, java.lang.Object)
      */
     public void putContext(Class key, Object contextObject) {
         this.ctx.putContext(key, contextObject);
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see com.sun.facelets.FaceletContext#generateUniqueId(java.lang.String)
      */
     public String generateUniqueId(String base) {
@@ -154,7 +174,9 @@ public final class DefaultFaceletContext extends FaceletContext {
         }
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see com.sun.facelets.FaceletContext#getAttribute(java.lang.String)
      */
     public Object getAttribute(String name) {
@@ -167,25 +189,36 @@ public final class DefaultFaceletContext extends FaceletContext {
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see com.sun.facelets.FaceletContext#setAttribute(java.lang.String, java.lang.Object)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sun.facelets.FaceletContext#setAttribute(java.lang.String,
+     *      java.lang.Object)
      */
     public void setAttribute(String name, Object value) {
         if (this.varMapper != null) {
             if (value == null) {
                 this.varMapper.setVariable(name, null);
             } else {
-                this.varMapper.setVariable(name, new LiteralValueExpression(
-                        value));
+                this.varMapper.setVariable(name, this.facelet
+                        .getExpressionFactory().createValueExpression(value,
+                                Object.class));
             }
         }
     }
 
-    /* (non-Javadoc)
-     * @see com.sun.facelets.FaceletContext#includeFacelet(javax.faces.component.UIComponent, java.net.URL)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.sun.facelets.FaceletContext#includeFacelet(javax.faces.component.UIComponent,
+     *      java.net.URL)
      */
     public void includeFacelet(UIComponent parent, URL absolutePath)
             throws IOException, FaceletException, FacesException, ELException {
         this.facelet.include(this, parent, absolutePath);
+    }
+
+    public ELResolver getELResolver() {
+        return this.ctx.getELResolver();
     }
 }

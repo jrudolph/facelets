@@ -23,14 +23,13 @@ import javax.faces.component.UIComponent;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
-import com.sun.facelets.el.LiteralValueExpression;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.TagHandler;
 
 /**
  * @author Jacob Hookom
- * @version $Id: CatchHandler.java,v 1.1 2005/05/21 17:54:47 jhook Exp $
+ * @version $Id: CatchHandler.java,v 1.2 2005/06/07 02:15:34 jhook Exp $
  */
 public final class CatchHandler extends TagHandler {
 
@@ -50,8 +49,7 @@ public final class CatchHandler extends TagHandler {
             this.nextHandler.apply(ctx, parent);
         } catch (Exception e) {
             if (this.var != null) {
-                ctx.getVariableMapper().setVariable(this.var.getValue(ctx),
-                        new LiteralValueExpression(e));
+                ctx.setAttribute(this.var.getValue(ctx), e);
             }
         }
     }

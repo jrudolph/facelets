@@ -21,6 +21,7 @@ import javax.el.ArrayELResolver;
 import javax.el.BeanELResolver;
 import javax.el.CompositeELResolver;
 import javax.el.ELContext;
+import javax.el.ELResolver;
 import javax.el.FunctionMapper;
 import javax.el.ListELResolver;
 import javax.el.MapELResolver;
@@ -37,7 +38,7 @@ import com.sun.facelets.tag.TagLibrary;
  * @see com.sun.facelets.tag.TagLibrary
  * 
  * @author Jacob Hookom
- * @version $Id: CompilationContext.java,v 1.1 2005/05/21 17:54:49 jhook Exp $
+ * @version $Id: CompilationContext.java,v 1.2 2005/06/07 02:15:35 jhook Exp $
  */
 final class CompilationContext extends ELContext {
 
@@ -77,7 +78,6 @@ final class CompilationContext extends ELContext {
     protected final TagLibrary library;
 
     public CompilationContext(NamespaceManager nsMngr, TagLibrary library) {
-        super(ELRESOLVER);
         this.nsMngr = nsMngr;
         this.library = library;
     }
@@ -92,6 +92,10 @@ final class CompilationContext extends ELContext {
 
     public FunctionMapper createFunctionMapper() {
         return null;
+    }
+
+    public ELResolver getELResolver() {
+        return ELRESOLVER;
     }
 
 }
