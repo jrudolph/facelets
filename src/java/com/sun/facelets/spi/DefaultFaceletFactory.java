@@ -37,7 +37,7 @@ import com.sun.facelets.util.Assert;
  * Default FaceletFactory implementation.
  * 
  * @author Jacob Hookom
- * @version $Id: DefaultFaceletFactory.java,v 1.1 2005/05/21 17:54:58 jhook Exp $
+ * @version $Id: DefaultFaceletFactory.java,v 1.2 2005/06/20 01:42:24 jhook Exp $
  */
 public class DefaultFaceletFactory extends FaceletFactory {
 
@@ -71,7 +71,11 @@ public class DefaultFaceletFactory extends FaceletFactory {
         URL url = (URL) this.relativeLocations.get(uri);
         if (url == null) {
             url = this.resolveURL(this.location, uri);
+            if (url != null) {
             this.relativeLocations.put(uri, url);
+            } else {
+                throw new IOException("'"+uri+"' not found.");
+            }
         }
         return this.getFacelet(url);
     }
@@ -114,6 +118,7 @@ public class DefaultFaceletFactory extends FaceletFactory {
      */
     public Facelet getFacelet(URL url) throws IOException, FaceletException,
             FacesException, ELException {
+        Assert.param("url", url);
         DefaultFacelet f = (DefaultFacelet) this.facelets.get(url);
         if (f == null || this.needsToBeRefreshed(f)) {
             f = this.createFacelet(url);
