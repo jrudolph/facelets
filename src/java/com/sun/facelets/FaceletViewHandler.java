@@ -50,7 +50,7 @@ import com.sun.facelets.tag.TagLibrary;
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.5 2005/06/20 11:43:58 jhook Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.6 2005/06/20 11:44:38 jhook Exp $
  */
 public class FaceletViewHandler extends ViewHandlerWrapper {
 
@@ -286,12 +286,10 @@ public class FaceletViewHandler extends ViewHandlerWrapper {
 
     public void writeState(FacesContext context) throws IOException {
         StateManager stateMgr = context.getApplication().getStateManager();
-        //if (stateMgr.isSavingStateInClient(context)) {
-            Object state = context.getExternalContext().getRequestMap().get(
-                    STATE_KEY);
-            if (state != null) {
-                stateMgr.writeState(context, state);
-            }
-        //}
+        Object state = context.getExternalContext().getRequestMap().get(
+                STATE_KEY);
+        if (state != null) {
+            stateMgr.writeState(context, state);
+        }
     }
 }
