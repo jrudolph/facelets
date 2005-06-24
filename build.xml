@@ -1,4 +1,4 @@
-<project name="EL RI Classes" default="compile" basedir=".">
+<project name="Facelets" default="all" basedir=".">
                                                                                 
   <!-- =================== Environmental Properties ======================= -->
                                                                                 
@@ -13,7 +13,9 @@
   <property name="compile.optimize"    value="true"/>
   <property name="build"               value="build"/>
   <property name="dist"                value="dist"/>
-  <property name="jar"           	value="jsf-facelet.jar"/>
+  <property name="lib"                 value="lib"/>
+  <property name="dependencies"        value="dependencies"/>
+  <property name="jar"           	   value="jsf-facelet.jar"/>
 
 
   <path id="compile.classpath">
@@ -36,6 +38,10 @@
     <mkdir dir="${dist}/docs/api"/>
     <mkdir dir="${dist}/lib"/>
     <mkdir dir="${dist}/src"/>
+	
+	<!-- CVS Dependencies -->
+	<mkdir dir="${dependencies}"/>
+	<mkdir dir="${lib}"/>
 
     <uptodate property="docs.uptodate" targetfile="${build}/docs/api/index.html">
       <srcfiles dir="src" includes="**/*.java" />
@@ -62,8 +68,7 @@
           destdir="${build}/classes"
             debug="${compile.debug}"
       deprecation="${compile.deprecation}"
-         optimize="${compile.optimize}"
-    >
+         optimize="${compile.optimize}">
       <classpath refid="compile.classpath"/>
     </javac>
 
@@ -72,7 +77,7 @@
         <include name="**/*.properties"/>
         <include name="**/*.xml"/>
         <include name="**/*.dtd"/>
-	<include name="**/*.ent"/>
+	    <include name="**/*.ent"/>
       </fileset>
     </copy>
 
@@ -99,17 +104,8 @@
   <target name="jar" depends="compile"
           description="Create jar">
                                                                                 
-    <!-- Prepare Manifest
-    <copy tofile="${build}/manifest"
-            file="src/etc/manifest" overwrite="yes">
-      <filterset>
-        <filter token="implementation.revision"
-                value="${implementation.revision}"/>
-      </filterset>
-    </copy> -->
-                                                                                
     <!-- Create JAR file -->
-    <jar jarfile="${jar}"
+    <jar jarfile="${dist}/${jar}"
          basedir="${build}/classes">
 
     </jar>
@@ -133,7 +129,7 @@
   <!-- ====================== Clean Generated Files ===================== -->
   <target name="clean"
    description="Clean previous build results">
-                                                                                
+    <delete dir="${dependencies}"/>                                                                   
     <delete dir="${build}"/>
     <delete dir="${dist}"/>
 	<delete file="${jar}"/>
@@ -142,6 +138,61 @@
   <!-- ========================= All In One Build ======================= -->
   <target name="all" depends="clean,dist"
    description="Clean, compile, and dist"/>
+   
+   
+  <!-- =========================== Dependencies ========================= -->
+  <target name="dependencies">
+  	<ant target="depend-el-api" />
+	<ant target="depend-el-ri" />
+  </target>
+  
+  <target name="depend-el-api">
+  	<cvs cvsRoot=":pserver:${java.net.cvs.user}@cvs.dev.java.net:/cvs"
+	     package="glassfish/servlet-api/src/jsr245/src/share/javax/el"
+         dest="${dependencies}" />
+    <mkdir dir="${build}/dependencies/el-api" />
+	<javac srcdir="${dependencies}/glassfish/servlet-api/src/jsr245/src/share"
+          destdir="${build}/dependencies/el-api"
+            debug="${compile.debug}"
+      deprecation="${compile.deprecation}"
+         optimize="${compile.optimize}">
+      <classpath refid="compile.classpath"/>
+    </javac>
+	<copy todir="${build}/dependencies/el-api">
+      <fileset dir="${dependencies}/glassfish/servlet-api/src/jsr245/src/share">
+        <include name="**/*.properties"/>
+        <include name="**/*.xml"/>
+        <include name="**/*.dtd"/>
+	    <include name="**/*.ent"/>
+      </fileset>
+    </copy>
+	<jar jarfile="${lib}/el-api.jar"
+         basedir="${build}/dependencies/el-api" />
+  </target>
+  
+  <target name="depend-el-ri">
+  	<cvs cvsRoot=":pserver:${java.net.cvs.user}@cvs.dev.java.net:/cvs"
+	     package="glassfish/appserv-webtier/src/java/com/sun/el"
+         dest="${dependencies}" />
+	<mkdir dir="${build}/dependencies/el-ri" />
+	<javac srcdir="${dependencies}/glassfish/appserv-webtier/src"
+          destdir="${build}/dependencies/el-ri"
+            debug="${compile.debug}"
+      deprecation="${compile.deprecation}"
+         optimize="${compile.optimize}">
+      <classpath refid="compile.classpath"/>
+    </javac>
+	<copy todir="${build}/dependencies/el-ri">
+      <fileset dir="${dependencies}/glassfish/appserv-webtier/src">
+        <include name="**/*.properties"/>
+        <include name="**/*.xml"/>
+        <include name="**/*.dtd"/>
+	    <include name="**/*.ent"/>
+      </fileset>
+    </copy>
+	<jar jarfile="${lib}/el-ri.jar"
+         basedir="${build}/dependencies/el-ri" />
+  </target>
  
 </project>
 
