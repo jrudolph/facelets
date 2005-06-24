@@ -136,8 +136,8 @@
   </target>
  
   <!-- ========================= All In One Build ======================= -->
-  <target name="all" depends="clean,dist"
-   description="Clean, compile, and dist"/>
+  <target name="all" depends="clean,dependencies,dist"
+   description="Clean, dependencies, compile, and dist"/>
    
    
   <!-- =========================== Dependencies ========================= -->
