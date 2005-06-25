@@ -4,6 +4,7 @@
                                                                                 
   <!-- Load user property definition overrides -->
   <property environment="env"/>
+  <property file="user.properties" />
   <property file="build.properties"/>
   <property file="${user.home}/build.properties"/>
                                                                                 
