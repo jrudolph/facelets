@@ -198,7 +198,7 @@
 	     package="glassfish/appserv-webtier/src/java/com/sun/el"
          dest="${dependencies}" />
 	<mkdir dir="${build}/dependencies/el-ri" />
-	<javac srcdir="${dependencies}/glassfish/appserv-webtier/src"
+	<javac srcdir="${dependencies}/glassfish/appserv-webtier/src/java"
           destdir="${build}/dependencies/el-ri"
             debug="${compile.debug}"
       deprecation="${compile.deprecation}"
@@ -206,7 +206,7 @@
       <classpath refid="compile.classpath"/>
     </javac>
 	<copy todir="${build}/dependencies/el-ri">
-      <fileset dir="${dependencies}/glassfish/appserv-webtier/src">
+      <fileset dir="${dependencies}/glassfish/appserv-webtier/src/java">
         <include name="**/*.properties"/>
         <include name="**/*.xml"/>
         <include name="**/*.dtd"/>
