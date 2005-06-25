@@ -14,14 +14,16 @@
   <property name="build"               value="build"/>
   <property name="dist"                value="dist"/>
   <property name="lib"                 value="lib"/>
+  <property name="release"             value="release"/>
   <property name="dependencies"        value="dependencies"/>
-  <property name="jar"           	   value="jsf-facelet.jar"/>
+  <property name="jar"                 value="jsf-facelet.jar"/>
 
 
   <path id="compile.classpath">
     <pathelement location="${build.home}/classes"/>
     <fileset dir="lib" includes="*.jar"/>
   </path>
+
 
   <!-- ===================== Prepare Directories ========================= -->
   <target name="prepare">
@@ -36,17 +38,17 @@
     <mkdir dir="${dist}"/>
     <mkdir dir="${dist}/docs"/>
     <mkdir dir="${dist}/docs/api"/>
-    <mkdir dir="${dist}/lib"/>
     <mkdir dir="${dist}/src"/>
 	
-	<!-- CVS Dependencies -->
-	<mkdir dir="${dependencies}"/>
-	<mkdir dir="${lib}"/>
+    <!-- CVS Dependencies -->
+    <mkdir dir="${dependencies}"/>
+    <mkdir dir="${lib}"/>
 
     <uptodate property="docs.uptodate" targetfile="${build}/docs/api/index.html">
       <srcfiles dir="src" includes="**/*.java" />
     </uptodate>
   </target>
+
 
   <!-- ======================= Static Files ============================== -->
   <target name="static" depends="prepare">
@@ -58,6 +60,7 @@
       <fileset dir="." includes="README.txt"/>
     </copy>
   </target>
+
 
   <!-- ======================== Compile Classes ========================== -->
   <target name="compile" depends="static"
@@ -83,6 +86,7 @@
 
   </target>
 
+
   <!-- ======================== Build JavaDoc =========================== -->
   <target name="javadoc" depends="prepare" unless="docs.uptodate">
    
@@ -100,6 +104,7 @@
 
   </target>
 
+
   <!-- ===================== Distribution Files ========================= -->
   <target name="jar" depends="compile"
           description="Create jar">
@@ -111,7 +116,7 @@
     </jar>
   </target>
  
-  <target name="dist" depends="compile,javadoc,jar"
+  <target name="dist" depends="dependencies,compile,javadoc,jar"
    description="Create binary distribution">
                                                                                 
     <!-- Copy Javadocs -->
@@ -126,17 +131,33 @@
          
   </target>
 
+
+  <!-- ========================= Create Release ========================= -->
+  <target name="release" depends="clean, dependencies, dist">
+    <mkdir dir="${release}"/>
+    <copy todir="${release}">
+       <fileset dir="${dist}"/>
+    </copy>
+    <mkdir dir="${release}/lib"/>
+    <copy file="README.TXT" todir="${release}"/>
+    <copy file="build.properties" todir="${release}"/>
+    <copy file="build.xml" todir="${release}"/>
+    <zip destfile="facelets-${release.version}.zip" basedir="${release}" />
+  </target>
+
+
   <!-- ====================== Clean Generated Files ===================== -->
   <target name="clean"
    description="Clean previous build results">
     <delete dir="${dependencies}"/>                                                                   
     <delete dir="${build}"/>
     <delete dir="${dist}"/>
-	<delete file="${jar}"/>
+    <delete file="${jar}"/>
   </target>
  
+
   <!-- ========================= All In One Build ======================= -->
-  <target name="all" depends="clean,dependencies,dist"
+  <target name="all" depends="dist"
    description="Clean, dependencies, compile, and dist"/>
    
    
