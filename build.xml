@@ -134,14 +134,14 @@
 
   <!-- ========================= Create Release ========================= -->
   <target name="release" depends="clean, dependencies, dist">
-    <mkdir dir="${release}"/>
-    <copy todir="${release}">
+    <mkdir dir="${release}/facelets-${release.version}"/>
+    <copy todir="${release}/facelets-${release.version}">
        <fileset dir="${dist}"/>
     </copy>
-    <mkdir dir="${release}/lib"/>
-    <copy file="README.TXT" todir="${release}"/>
-    <copy file="build.properties" todir="${release}"/>
-    <copy file="build.xml" todir="${release}"/>
+    <mkdir dir="${release}/facelets-${release.version}/lib"/>
+    <copy file="README.TXT" todir="${release}/facelets-${release.version}"/>
+    <copy file="build.properties" todir="${release}/facelets-${release.version}"/>
+    <copy file="build.xml" todir="${release}/facelets-${release.version}"/>
     <zip destfile="facelets-${release.version}.zip" basedir="${release}" />
   </target>
 
@@ -152,6 +152,7 @@
     <delete dir="${dependencies}"/>                                                                   
     <delete dir="${build}"/>
     <delete dir="${dist}"/>
+    <delete dir="${release}"/>
     <delete file="${jar}"/>
   </target>
  
