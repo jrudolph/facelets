@@ -121,7 +121,7 @@
     </jar>
   </target>
  
-  <target name="dist" depends="dependencies,compile,javadoc,jar"
+  <target name="dist" depends="prepare,dependencies,compile,javadoc,jar"
    description="Create binary distribution">
                                                                                 
     <!-- Copy Javadocs -->
