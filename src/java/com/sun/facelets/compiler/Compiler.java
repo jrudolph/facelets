@@ -36,12 +36,13 @@ import com.sun.facelets.tag.CompositeTagLibrary;
 import com.sun.facelets.tag.TagDecorator;
 import com.sun.facelets.tag.TagLibrary;
 import com.sun.facelets.util.Assert;
+import com.sun.facelets.util.FacesAPI;
 
 /**
  * A Compiler instance may handle compiling multiple sources
  * 
  * @author Jacob Hookom
- * @version $Id: Compiler.java,v 1.1 2005/05/21 17:54:50 jhook Exp $
+ * @version $Id: Compiler.java,v 1.2 2005/07/07 03:08:34 jhook Exp $
  */
 public abstract class Compiler {
 
@@ -119,11 +120,13 @@ public abstract class Compiler {
 
     public ExpressionFactory createExpressionFactory() {
         ExpressionFactory el = null;
-        try {
-            el = FacesContext.getCurrentInstance().getApplication()
-                    .getExpressionFactory();
-        } catch (Exception e) {
-            // do nothing
+        if (FacesAPI.getVersion() >= 12) {
+            try {
+                el = FacesContext.getCurrentInstance().getApplication()
+                        .getExpressionFactory();
+            } catch (Exception e) {
+                // do nothing
+            }
         }
         if (el == null) {
             log

@@ -22,6 +22,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -45,14 +46,15 @@ import com.sun.facelets.compiler.SAXCompiler;
 import com.sun.facelets.compiler.TagLibraryConfig;
 import com.sun.facelets.spi.RefreshableFaceletFactory;
 import com.sun.facelets.tag.TagLibrary;
+import com.sun.facelets.util.FacesAPI;
 
 /**
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.6 2005/06/20 11:44:38 jhook Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.7 2005/07/07 03:08:47 jhook Exp $
  */
-public class FaceletViewHandler extends ViewHandlerWrapper {
+public class FaceletViewHandler extends  ViewHandler {
 
     protected final static Logger log = Logger
             .getLogger("facelets.viewHandler");
@@ -178,7 +180,7 @@ public class FaceletViewHandler extends ViewHandlerWrapper {
     public UIViewRoot restoreView(FacesContext context, String viewId) {
         UIViewRoot root = null;
         try {
-            root = super.restoreView(context, viewId);
+            root = this.parent.restoreView(context, viewId);
         } catch (Exception e) {
             log.log(Level.WARNING, "Error Restoring View: " + viewId, e);
         }
@@ -245,17 +247,40 @@ public class FaceletViewHandler extends ViewHandlerWrapper {
 
         // save the state
         StateManager stateMgr = context.getApplication().getStateManager();
-        Object state = stateMgr.saveView(context);
+        Object state = stateMgr.saveSerializedView(context);
         extContext.getRequestMap().put(STATE_KEY, state);
 
         // write the state
         writer.startDocument();
-        viewToRender.encodeAll(context);
+        
+        if (FacesAPI.getVersion() >= 12) {
+            viewToRender.encodeAll(context);
+        } else {
+            encodeRecursive(context, viewToRender);
+        }
+        
         writer.endDocument();
 
         // finally clean up transients if viewState = true
         if (extContext.getRequestMap().containsKey(STATE_KEY)) {
             removeTransient(viewToRender);
+        }
+    }
+    
+    protected final static void encodeRecursive(FacesContext context, UIComponent viewToRender) throws IOException, FacesException {
+        if (viewToRender.isRendered()) {
+            viewToRender.encodeBegin(context);
+            if (viewToRender.getRendersChildren()) {
+                viewToRender.encodeChildren(context);
+            }
+            else if (viewToRender.getChildCount() > 0) {
+                Iterator kids = viewToRender.getChildren().iterator();
+                while (kids.hasNext()) {
+                    UIComponent kid = (UIComponent) kids.next();
+                    encodeRecursive(context, kid);
+                }
+            }
+            viewToRender.encodeEnd(context);
         }
     }
 
@@ -289,7 +314,27 @@ public class FaceletViewHandler extends ViewHandlerWrapper {
         Object state = context.getExternalContext().getRequestMap().get(
                 STATE_KEY);
         if (state != null) {
-            stateMgr.writeState(context, state);
+            stateMgr.writeState(context, (StateManager.SerializedView) state);
         }
+    }
+
+    public Locale calculateLocale(FacesContext context) {
+        return this.parent.calculateLocale(context);
+    }
+
+    public String calculateRenderKitId(FacesContext context) {
+        return this.parent.calculateRenderKitId(context);
+    }
+
+    public UIViewRoot createView(FacesContext context, String viewId) {
+        return this.parent.createView(context, viewId);
+    }
+
+    public String getActionURL(FacesContext context, String viewId) {
+        return this.parent.getActionURL(context, viewId);
+    }
+
+    public String getResourceURL(FacesContext context, String path) {
+        return this.parent.getResourceURL(context, path);
     }
 }

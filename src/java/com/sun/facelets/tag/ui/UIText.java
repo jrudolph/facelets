@@ -21,11 +21,12 @@ import javax.faces.component.UIComponentBase;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
+import com.sun.facelets.el.ELAdaptor;
 import com.sun.facelets.el.ELText;
 
 /**
  * @author Jacob Hookom
- * @version $Id: UIText.java,v 1.1 2005/05/21 17:54:57 jhook Exp $
+ * @version $Id: UIText.java,v 1.2 2005/07/07 03:08:36 jhook Exp $
  */
 public final class UIText extends UIComponentBase {
 
@@ -41,7 +42,7 @@ public final class UIText extends UIComponentBase {
 
     public void encodeBegin(FacesContext context) throws IOException {
         ResponseWriter out = context.getResponseWriter();
-        txt.write(out, context.getELContext());
+        txt.write(out, ELAdaptor.getELContext(context));
     }
 
     public String getRendererType() {

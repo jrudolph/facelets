@@ -34,6 +34,7 @@ import javax.faces.context.FacesContext;
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
 import com.sun.facelets.el.DefaultVariableMapper;
+import com.sun.facelets.el.ELAdaptor;
 
 /**
  * Default FaceletContext implementation.
@@ -44,7 +45,7 @@ import com.sun.facelets.el.DefaultVariableMapper;
  * directive.
  * 
  * @author Jacob Hookom
- * @version $Id: DefaultFaceletContext.java,v 1.2 2005/06/07 02:15:35 jhook Exp $
+ * @version $Id: DefaultFaceletContext.java,v 1.3 2005/07/07 03:08:35 jhook Exp $
  */
 public final class DefaultFaceletContext extends FaceletContext {
 
@@ -60,10 +61,10 @@ public final class DefaultFaceletContext extends FaceletContext {
 
     protected final Map ids;
 
-    public DefaultFaceletContext(FacesContext ctx, DefaultFacelet facelet) {
-        this.ctx = ctx.getELContext();
+    public DefaultFaceletContext(FacesContext faces, DefaultFacelet facelet) {
+        this.ctx = ELAdaptor.getELContext(faces);
         this.ids = new HashMap();
-        this.faces = ctx;
+        this.faces = faces;
         this.facelet = facelet;
         this.varMapper = this.ctx.getVariableMapper();
         if (this.varMapper == null) {

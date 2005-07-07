@@ -15,9 +15,8 @@
 
 package com.sun.facelets.tag;
 
-import java.io.Serializable;
-
 import javax.el.MethodExpression;
+import javax.el.ValueExpression;
 import javax.faces.component.ActionSource;
 import javax.faces.component.ActionSource2;
 import javax.faces.component.EditableValueHolder;
@@ -25,9 +24,6 @@ import javax.faces.component.UIComponent;
 import javax.faces.component.ValueHolder;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
-import javax.faces.el.EvaluationException;
-import javax.faces.el.MethodBinding;
-import javax.faces.el.MethodNotFoundException;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.MethodExpressionActionListener;
 import javax.faces.event.MethodExpressionValueChangeListener;
@@ -35,55 +31,18 @@ import javax.faces.event.ValueChangeEvent;
 import javax.faces.validator.MethodExpressionValidator;
 
 import com.sun.facelets.FaceletContext;
+import com.sun.facelets.el.ELAdaptor;
+import com.sun.facelets.el.LegacyMethodBinding;
+import com.sun.facelets.util.FacesAPI;
 
 /**
  * Implementation of the tag logic used in the JSF specification. This is your
  * golden hammer for wiring UIComponents to Facelets.
  * 
  * @author Jacob Hookom
- * @version $Id: ComponentHandler.java,v 1.1 2005/05/21 17:54:37 jhook Exp $
+ * @version $Id: ComponentHandler.java,v 1.2 2005/07/07 03:08:35 jhook Exp $
  */
 public class ComponentHandler extends AbstractComponentHandler {
-
-    /**
-     * For legacy ActionSources
-     * 
-     * @see ActionSource
-     * @author Jacob Hookom
-     * @deprecated
-     */
-    public static class MethodExpressionAsBinding extends
-            MethodBinding implements Serializable {
-
-        private static final long serialVersionUID = 1L;
-
-        protected final MethodExpression m;
-
-        public MethodExpressionAsBinding(MethodExpression m) {
-            this.m = m;
-        }
-
-        /*
-         * (non-Javadoc)
-         * 
-         * @see javax.faces.el.MethodBinding#getType(javax.faces.context.FacesContext)
-         */
-        public Class getType(FacesContext context)
-                throws MethodNotFoundException {
-            return m.getMethodInfo(context.getELContext()).getReturnType();
-        }
-
-        /*
-         * (non-Javadoc)
-         * 
-         * @see javax.faces.el.MethodBinding#invoke(javax.faces.context.FacesContext,
-         *      java.lang.Object[])
-         */
-        public Object invoke(FacesContext context, Object[] params)
-                throws EvaluationException, MethodNotFoundException {
-            return m.invoke(context.getELContext(), params);
-        }
-    }
 
     private final static Class[] ACTION_LISTENER_SIG = new Class[] { ActionEvent.class };
 
@@ -175,14 +134,25 @@ public class ComponentHandler extends AbstractComponentHandler {
                 evh.addValidator(ctx.getFacesContext().getApplication()
                         .createValidator(this.validator.getValue()));
             } else {
-                evh.addValidator(new MethodExpressionValidator(this.validator
-                        .getMethodExpression(ctx, null, VALIDATOR_SIG)));
+                MethodExpression me = this.validator.getMethodExpression(ctx,
+                        null, VALIDATOR_SIG);
+                if (FacesAPI.getVersion((UIComponent) evh) >= 12) {
+                    evh.addValidator(new MethodExpressionValidator(me));
+                } else {
+                    evh.setValidator(new LegacyMethodBinding(me));
+                }
             }
         }
         if (this.valueChangeListener != null) {
-            evh.addValueChangeListener(new MethodExpressionValueChangeListener(
-                    this.valueChangeListener.getMethodExpression(ctx, null,
-                            VALUECHANGE_SIG)));
+            MethodExpression me = this.valueChangeListener.getMethodExpression(
+                    ctx, null, VALUECHANGE_SIG);
+            if (FacesAPI.getVersion((UIComponent) evh) >= 12) {
+                evh
+                        .addValueChangeListener(new MethodExpressionValueChangeListener(
+                                me));
+            } else {
+                evh.setValueChangeListener(new LegacyMethodBinding(me));
+            }
         }
     }
 
@@ -214,8 +184,9 @@ public class ComponentHandler extends AbstractComponentHandler {
         if (this.value.isLiteral()) {
             oc.setValue(this.value.getValue());
         } else {
-            ((UIComponent) oc).setValueExpression("value", this.value
-                    .getValueExpression(ctx, Object.class));
+            ValueExpression ve = this.value.getValueExpression(ctx,
+                    Object.class);
+            ELAdaptor.setExpression((UIComponent) oc, "value", ve);
         }
     }
 
@@ -244,10 +215,10 @@ public class ComponentHandler extends AbstractComponentHandler {
         }
         MethodExpression m = this.action.getMethodExpression(ctx, String.class,
                 ACTION_SIG);
-        if (src instanceof ActionSource2) {
+        if (FacesAPI.getVersion((UIComponent) src) >= 12 && src instanceof ActionSource2) {
             ((ActionSource2) src).setActionExpression(m);
         } else {
-            src.setAction(new MethodExpressionAsBinding(m));
+            src.setAction(new LegacyMethodBinding(m));
         }
     }
 

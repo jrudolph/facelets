@@ -32,6 +32,9 @@ import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 
 import com.sun.facelets.FaceletContext;
+import com.sun.facelets.el.ELAdaptor;
+import com.sun.facelets.el.LegacyValueBinding;
+import com.sun.facelets.util.FacesAPI;
 
 /**
  * Utility class for wiring TagAttributes to Object properties. Uses the
@@ -39,7 +42,7 @@ import com.sun.facelets.FaceletContext;
  * 
  * @see com.sun.facelets.tag.TagAttribute
  * @author Jacob Hookom
- * @version $Id: ObjectHandler.java,v 1.1 2005/05/21 17:54:38 jhook Exp $
+ * @version $Id: ObjectHandler.java,v 1.2 2005/07/07 03:08:36 jhook Exp $
  */
 public abstract class ObjectHandler extends TagHandler {
 
@@ -108,6 +111,27 @@ public abstract class ObjectHandler extends TagHandler {
         }
     }
 
+    private class ValueBindingMapper implements Mapper {
+        protected final TagAttribute attr;
+
+        protected final String property;
+
+        protected final Class type;
+
+        public ValueBindingMapper(String property, TagAttribute attr, Class type) {
+            this.property = property;
+            this.attr = attr;
+            this.type = type;
+        }
+
+        public void apply(Object obj, FaceletContext ctx)
+                throws FacesException, ELException {
+            ((UIComponent) obj).setValueBinding(this.property,
+                    new LegacyValueBinding(this.attr.getValueExpression(ctx,
+                            this.type)));
+        }
+    }
+
     private interface Mapper {
         public void apply(Object obj, FaceletContext ctx)
                 throws FacesException, ELException;
@@ -158,6 +182,8 @@ public abstract class ObjectHandler extends TagHandler {
             // get our attributes
             Map pdm = this.getPropertyDescriptors(type);
             boolean isUIComponent = (obj instanceof UIComponent);
+            boolean isELSupported = (isUIComponent && FacesAPI
+                    .getVersion((UIComponent) obj) >= 12);
 
             // do processing
             TagAttribute[] aa = this.tag.getAttributes().getAll();
@@ -190,13 +216,23 @@ public abstract class ObjectHandler extends TagHandler {
                         if (pd == null) {
                             this.warnAttr(a, type, n);
                             if (isUIComponent) {
-                                mapper = new ExpressionMapper(n, a,
-                                        Object.class);
+                                if (isELSupported) {
+                                    mapper = new ExpressionMapper(n, a,
+                                            Object.class);
+                                } else {
+                                    mapper = new ValueBindingMapper(n, a,
+                                            Object.class);
+                                }
                             }
                         } else {
                             if (isUIComponent) {
-                                mapper = new ExpressionMapper(n, a, pd
-                                        .getPropertyType());
+                                if (isELSupported) {
+                                    mapper = new ExpressionMapper(n, a, pd
+                                            .getPropertyType());
+                                } else {
+                                    mapper = new ValueBindingMapper(n, a,
+                                            Object.class);
+                                }
                             } else {
                                 mapper = new EvalExpressionMapper(a, pd
                                         .getWriteMethod(), pd.getPropertyType());
