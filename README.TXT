@@ -5,8 +5,11 @@ You MUST have the following:
  - A Java.net Glassfish membership (for EL API/Impl)
    https://glassfish.dev.java.net/
 
- - Nightly Snapshot of JSF RI (Version 1.2)
+ - Nightly Snapshot of JSF RI (Version 1.2 recommended)
    https://javaserverfaces.dev.java.net
+
+ - OR, Current release of MyFaces
+   http://myfaces.apache.org
 
 
 Building Facelets
@@ -15,7 +18,7 @@ Building Facelets
 
   - servlet-api.jar (a jar containing servlet api's)
 
-  - jsf-api.jar (version 1.2, see requirements)
+  - jsf-api.jar (version 1.1 or 1.2, see requirements)
 
 
 2.  Now that you have the lib's available, modify the build.properties
