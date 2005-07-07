@@ -42,6 +42,7 @@
     <mkdir dir="${dist}/docs"/>
     <mkdir dir="${dist}/docs/api"/>
     <mkdir dir="${dist}/src"/>
+    <mkdir dir="${dist}/demo"/>
 	
     <!-- CVS Dependencies -->
     <mkdir dir="${dependencies}"/>
@@ -132,6 +133,11 @@
     <!-- Copy API source files -->
     <copy todir="${dist}/src">
         <fileset dir="src"/>
+    </copy>
+
+    <!-- Copy Demo source files -->
+    <copy todir="${dist}/demo">
+        <fileset dir="demo"/>
     </copy>
          
   </target>
