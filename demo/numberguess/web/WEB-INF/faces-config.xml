@@ -1,0 +1,115 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<!--
+ Copyright 2004 Sun Microsystems, Inc. All Rights Reserved.
+ 
+ Redistribution and use in source and binary forms, with or
+ without modification, are permitted provided that the following
+ conditions are met:
+ 
+ - Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+ 
+ - Redistribution in binary form must reproduce the above
+   copyright notice, this list of conditions and the following
+   disclaimer in the documentation and/or other materials
+   provided with the distribution.
+    
+ Neither the name of Sun Microsystems, Inc. or the names of
+ contributors may be used to endorse or promote products derived
+ from this software without specific prior written permission.
+  
+ This software is provided "AS IS," without a warranty of any
+ kind. ALL EXPRESS OR IMPLIED CONDITIONS, REPRESENTATIONS AND
+ WARRANTIES, INCLUDING ANY IMPLIED WARRANTY OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE OR NON-INFRINGEMENT, ARE HEREBY
+ EXCLUDED. SUN AND ITS LICENSORS SHALL NOT BE LIABLE FOR ANY
+ DAMAGES OR LIABILITIES SUFFERED BY LICENSEE AS A RESULT OF OR
+ RELATING TO USE, MODIFICATION OR DISTRIBUTION OF THIS SOFTWARE OR
+ ITS DERIVATIVES. IN NO EVENT WILL SUN OR ITS LICENSORS BE LIABLE
+ FOR ANY LOST REVENUE, PROFIT OR DATA, OR FOR DIRECT, INDIRECT,
+ SPECIAL, CONSEQUENTIAL, INCIDENTAL OR PUNITIVE DAMAGES, HOWEVER
+ CAUSED AND REGARDLESS OF THE THEORY OF LIABILITY, ARISING OUT OF
+ THE USE OF OR INABILITY TO USE THIS SOFTWARE, EVEN IF SUN HAS
+ BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.
+  
+ You acknowledge that this software is not designed, licensed or
+ intended for use in the design, construction, operation or
+ maintenance of any nuclear facility.
+-->
+
+<faces-config xmlns="http://java.sun.com/xml/ns/j2ee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-facesconfig_1_2.xsd"
+    version="1.2">
+
+  <application>
+  	<view-handler>com.sun.facelets.FaceletViewHandler</view-handler>
+    <locale-config>
+      <default-locale>en</default-locale>
+      <supported-locale>de</supported-locale>
+      <supported-locale>fr</supported-locale>
+      <supported-locale>es</supported-locale>
+    </locale-config>
+  </application>
+
+  <navigation-rule>
+    <description>
+        The decision rule used by the NavigationHandler to
+        determine which view must be displayed after the
+        current view, greeting.jsp is processed.
+    </description>
+    <from-view-id>/greeting.xhtml</from-view-id>
+    <navigation-case>
+        <description>
+            Indicates to the NavigationHandler that the response.jsp
+            view must be displayed if the Action referenced by a 
+            UICommand component on the greeting.jsp view returns 
+            the outcome "success".
+        </description>
+      <from-outcome>success</from-outcome>
+      <to-view-id>/response.xhtml</to-view-id>
+    </navigation-case>
+  </navigation-rule>
+
+  <navigation-rule>
+   <description>
+        The decision rules used by the NavigationHandler to
+        determine which view must be displayed after the
+        current view, response.jsp is processed.
+    </description>
+    <from-view-id>/response.xhtml</from-view-id>
+    <navigation-case>
+        <description>
+            Indicates to the NavigationHandler that the greeting.jsp
+            view must be displayed if the Action referenced by a 
+            UICommand component on the response.jsp view returns 
+            the outcome "success".
+        </description>
+        <from-outcome>success</from-outcome>
+      <to-view-id>/greeting.xhtml</to-view-id>
+    </navigation-case>
+  </navigation-rule>
+
+  <managed-bean>
+    <description>
+      The "backing file" bean that backs up the guessNumber webapp
+    </description>
+    <managed-bean-name>UserNumberBean</managed-bean-name>
+    <managed-bean-class>guessNumber.UserNumberBean</managed-bean-class>
+    <managed-bean-scope>session</managed-bean-scope>
+    <managed-property>
+      <property-name>minimum</property-name>
+      <property-class>int</property-class>
+      <value>1</value>
+    </managed-property>
+    <managed-property>
+      <property-name>maximum</property-name>
+      <property-class>int</property-class>
+      <value>10</value>
+    </managed-property>
+
+  </managed-bean>
+
+
+</faces-config>

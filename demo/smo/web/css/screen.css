@@ -1,0 +1,342 @@
+/* Setup defaults since variable in browsers
+----------------------------------------------- */
+body, div, dd, dt, dl, img, ul, ol, li, p, h1, h2, h3, h4, h5, form {
+	margin: 0;
+	padding: 0;
+}
+/* Element Defaults
+----------------------------------------------- */
+html {
+	height: 100%;
+}
+img {
+	border: 0;
+}
+body {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: small;
+	line-height: 1.25em;
+	color: #333;
+	position: relative;
+	background: #fff url(../img/bg.gif) 0 0 repeat-x;
+	width: 760px;
+	height: 100%;
+	margin-left: auto;
+	margin-right: auto;
+}
+input {
+	border: 1px solid #aaa;
+	padding: 2px;
+}
+p {
+	text-align: justify;
+	padding: 12px 0;
+	line-height: 150%;
+}
+ol, ul {
+	margin: 10px 0px 10px 6px;
+}
+li {
+	margin: 10px 12px;
+}
+/* Layout
+----------------------------------------------- */
+#document {
+	height: 100%;
+}
+#footer {
+	clear: both;
+	text-align: right;
+	display: block;
+	margin: 40px 6px 6px 6px;
+	border-top: 1px solid #eaeaea;
+	color: #ccc;
+	font-size: x-small;
+}
+#container {
+	padding-top: 16px;
+}
+#sidebar {
+	width: 180px;
+	float: right;
+	margin-bottom: 12px;
+	text-align: center;
+}
+#content {
+	margin-right: 192px;
+}
+
+/* Header
+----------------------------------------------- */
+#header {
+	position: relative;
+	background: #376098 url(../img/hdr.bg2.gif) repeat;
+	height: 60px;
+}
+#header span img {
+    display: block;
+    width: 0;
+}
+#header span {
+	position: absolute;
+    top: 12px;
+    left: 16px;
+    width: 179px;
+    height: 40px;
+    background: url(../img/mck.logo.hifi.gif) no-repeat;
+}
+/* Navigation
+----------------------------------------------- */
+#nav {
+	position: relative;
+	padding: 1px 20px 0 20px;
+	background: #f9f9f9 url(../img/nav.bg.gif) repeat-x left bottom;
+	border-top: 1px solid #c0c0c0;
+	border-bottom: 1px solid #dadada;
+	line-height: normal;
+	height: 25px;
+}
+#nav ul {
+	margin: 0px;
+	padding: 0px;
+	position: absolute;
+	margin-top: 1px;
+	list-style: none;
+	text-align: center;
+}
+#nav li {
+	float: left;
+	margin: 0px;
+	margin-right: 2px;
+	padding: 0 0 0 4px;
+}
+#nav li a {
+	display: block;
+	padding: 6px 20px 6px 16px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	font-weight: bold;
+	text-decoration: none;
+	color: #333;
+}
+#nav li a:hover {
+	text-decoration: underline;
+}
+#nav #current {
+	border-bottom: 1px solid #fff;
+	background: url(../img/nav.tab.left.gif) no-repeat left top;
+}
+#nav #current a {
+	color: #044c9c;
+	background: url(../img/nav.tab.right.gif) no-repeat right top;
+}
+#nav #current a {
+	text-decoration: none;
+}
+/* Breadcrumb
+----------------------------------------------- */
+#breadcrumb {
+	color: #3b66a2;
+	font-size: x-small;
+	padding: 0 6px 6px 200px;
+}
+/* Headings
+----------------------------------------------- */
+h1, h2, h3, h4, h5 {
+	font-family: "Trebuchet MS", Arial, sans-serif;
+	line-height: normal;
+	color: #225598;
+	font-weight: normal;
+}
+h1 {
+	font-size: x-large;
+	border-top: 1px solid #eaeaea;
+	border-bottom: 1px solid #eaeaea;
+	background: #f9f9f9;
+	padding: 8px;
+	margin-bottom: 12px;
+	margin-top: 2px;
+}
+h2 {
+	font-size: large;
+	letter-spacing: 0px;
+	color: #376098;
+	line-height: 170%
+}
+h3 {
+	font-size: medium;
+	letter-spacing: 0px;
+	color: #333;
+}
+/* Content Boxes
+----------------------------------------------- */
+.cntInfo, .cntError, .cntAlert {
+	padding: 4px;
+	margin: 0 0 10px 0;
+	border: 1px solid #dadada;
+	background-color: #fff;
+}
+.cntInfo {
+	background: #fff url(../img/shade.info.gif) 0 0 repeat-x;
+}
+.cntError {
+	background-color: #ffc;
+	border-color: #930;
+}
+.cntAlert {
+	background-color: #d3e4ff;
+	border-color: #36c;
+}
+.spacer {
+	margin-top: 20px;
+}
+
+/* Box
+----------------------------------------------- */
+.box {
+	text-align: left;
+	border: 1px solid #aaa;
+	margin-bottom: 20px;
+	width: 170px;
+}
+.boxHeader {
+	background: #f6f5e7 url(../img/box.hdr.bg.yellow.gif) repeat-x;
+	padding: 5px 10px;
+}
+.boxHeader h3 {
+	font-weight: bold;
+	padding: 0px;
+	color: #333;
+}
+.boxContent {
+	background: #fff url(../img/shade.gif) repeat-x;
+	border-top: 1px solid #aaa;
+	padding : 10px;
+}
+.boxFooter {
+	text-align: center;
+	padding-bottom: 10px;
+}
+/* Forms
+----------------------------------------------- */
+.required {
+	font-weight: bold;
+	color: #900;
+}
+/* Menu
+----------------------------------------------- */
+.menu {
+	background: #619ad9 url(../img/menu.bg.gif) 0 100% no-repeat;
+	text-align: left;
+	margin-bottom: 10px;
+	padding-bottom: 12px;
+}
+.menu dt {
+	color: #fff;
+	font-weight: bold;
+	padding: 6px 6px 6px 16px;
+	border-bottom: 2px groove #6AA9EE;
+}
+.menu dd {
+	background-color: #BDD6EF;
+	border-top: 1px solid #F9FBFD;
+	border-bottom: 1px solid #3B7FBD;
+	border-left: 1px solid #C1C1C1;
+	border-right: 1px solid #C1C1C1;
+	padding: 6px;
+}
+.menuHeader {
+	background: #619ad9 url(../img/menu.top.bg.gif) 0 0 no-repeat;
+	border-bottom: 1px solid #000;
+}
+.menuLogin dd, .menuLogin dt {
+	border: 0;
+	padding: 0;
+}
+.menuLogin dt {
+	color: #2C5298;
+	font-size: 12px;
+}
+.menuLogin dd {
+	padding-bottom: 14px;
+}
+.menuLogin input {
+	width: 156px;
+}
+
+/*
+.menu {
+	margin-bottom: 10px;
+	text-align: left;
+}
+.menu ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.menu li {
+	margin: 0;
+	padding: 4px 0px;
+	border-bottom: 1px solid #eaeaea;
+}
+.menu a {
+	text-decoration: none;
+	color: #333;
+	padding-left: 16px;
+	margin: 6px 0px;
+	font-weight: bold;
+	font-size: 10px;
+	background: #fff url(../img/menu.off.gif) 0px 50% no-repeat;
+}
+.menu a:hover {
+	color: #044c9c;
+	background: #fff url(../img/menu.on.gif) 0px 50% no-repeat;
+}
+*/
+/* Status Box
+----------------------------------------------- */
+#status {
+	float: right;
+	padding: 5px 10px;
+	text-align: right;
+}
+#status dl {
+	list-style: none;
+	background-image: url(../img/status.bg.gif);
+}
+#status dt {
+	display: none;
+}
+#status dd {
+	color: #fff;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: x-small;
+	padding: 2px 4px;
+	line-height: normal;
+	border: 1px solid #003080;
+}
+/* Login
+----------------------------------------------- */
+#pgLogin #login dt, #pgLogin #login dd {
+	margin: 5px 0px;
+}
+#pgLogin #login input {
+	width: 186px;
+}
+#pgLogin #login {
+	border: 0;
+	width: 180px;
+}
+#pgLogin #login .boxHeader {
+	background: #fff url(../img/login.hdr.bg.gif) repeat-x;
+}
+#pgLogin #login .boxContent {
+	border: 1px solid #aaa;
+	border-bottom: 0;
+}
+#pgLogin #login .boxFooter {
+	background: #fff url(../img/login.ftr.bg.gif) no-repeat bottom;
+}
+/* Main Menu
+----------------------------------------------- */
+

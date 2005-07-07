@@ -1,0 +1,24 @@
+P  {}
+
+H1  {}
+
+H2  {}
+
+H3  {}
+
+A  {}
+
+A:Visited  {}
+
+A:Active  {}
+
+A:Hover  {}
+
+BODY  {
+	background-color : #456745;
+}
+
+A.select-letter:Hover  {
+	background-color : Gray;
+}
+

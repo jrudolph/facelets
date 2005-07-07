@@ -1,0 +1,192 @@
+<?xml version="1.0"?>
+
+<!--
+ Copyright 2003 Sun Microsystems, Inc. All rights reserved.
+ SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+-->
+
+<!DOCTYPE faces-config PUBLIC
+  "-//Sun Microsystems, Inc.//DTD JavaServer Faces Config 1.0//EN"
+  "http://java.sun.com/dtd/web-facesconfig_1_0.dtd">
+
+<faces-config>
+
+  <application>
+    <view-handler>
+      com.sun.facelets.FaceletViewHandler
+    </view-handler>
+  </application>
+
+  <navigation-rule>
+    <navigation-case>
+      <from-outcome>newGame</from-outcome>
+      <to-view-id>/guess.jsf</to-view-id>
+      <redirect/>
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>win</from-outcome>
+      <to-view-id>/win.jsf</to-view-id>
+      <redirect/>
+    </navigation-case>
+    <navigation-case>
+      <from-outcome>lose</from-outcome>
+      <to-view-id>/lose.jsf</to-view-id>
+      <redirect/>
+    </navigation-case>
+  </navigation-rule>
+
+  <managed-bean>
+    <managed-bean-name>visit</managed-bean-name>
+    <managed-bean-class>hangman1.Visit</managed-bean-class>
+    <managed-bean-scope>session</managed-bean-scope>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>guessesLeftImages</managed-bean-name>
+    <managed-bean-class>java.util.ArrayList</managed-bean-class>
+    <managed-bean-scope>application</managed-bean-scope>
+    <list-entries>
+      <value>images/Chalkboard_1x7.png</value>
+      <value>images/Chalkboard_1x8.png</value>
+      <value>images/Chalkboard_2x7.png</value>
+      <value>images/Chalkboard_2x8.png</value>
+      <value>images/Chalkboard_3x7.png</value>
+      <value>images/Chalkboard_3x8.png</value>
+    </list-entries>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>scaffoldImages</managed-bean-name>
+    <managed-bean-class>java.util.ArrayList</managed-bean-class>
+    <managed-bean-scope>application</managed-bean-scope>
+    <list-entries>
+      <value>images/scaffold-5.png</value>
+      <value>images/scaffold-4.png</value>
+      <value>images/scaffold-3.png</value>
+      <value>images/scaffold-2.png</value>
+      <value>images/scaffold-1.png</value>
+      <value>images/scaffold.png</value>
+    </list-entries>
+  </managed-bean>
+
+  <managed-bean>
+    <managed-bean-name>letterImages</managed-bean-name>
+    <managed-bean-class>java.util.TreeMap</managed-bean-class>
+    <managed-bean-scope>application</managed-bean-scope>
+    <map-entries>
+      <map-entry>
+        <key>#</key>
+        <value>images/letter-spacer.png</value>
+      </map-entry>
+      <map-entry>
+        <key>_</key>
+        <value>images/Chalkboard_5x3.png</value>
+      </map-entry>
+      <map-entry>
+        <key>a</key>
+        <value>images/Chalkboard_1x1.png</value>
+      </map-entry>
+      <map-entry>
+        <key>b</key>
+        <value>images/Chalkboard_1x2.png</value>
+      </map-entry>
+      <map-entry>
+        <key>c</key>
+        <value>images/Chalkboard_1x3.png</value>
+      </map-entry>
+      <map-entry>
+        <key>d</key>
+        <value>images/Chalkboard_1x4.png</value>
+      </map-entry>
+      <map-entry>
+        <key>e</key>
+        <value>images/Chalkboard_1x5.png</value>
+      </map-entry>
+      <map-entry>
+        <key>f</key>
+        <value>images/Chalkboard_1x6.png</value>
+      </map-entry>
+      <map-entry>
+        <key>g</key>
+        <value>images/Chalkboard_2x1.png</value>
+      </map-entry>
+      <map-entry>
+        <key>h</key>
+        <value>images/Chalkboard_2x2.png</value>
+      </map-entry>
+      <map-entry>
+        <key>i</key>
+        <value>images/Chalkboard_2x3.png</value>
+      </map-entry>
+      <map-entry>
+        <key>j</key>
+        <value>images/Chalkboard_2x4.png</value>
+      </map-entry>
+      <map-entry>
+        <key>k</key>
+        <value>images/Chalkboard_2x5.png</value>
+      </map-entry>
+      <map-entry>
+        <key>l</key>
+        <value>images/Chalkboard_2x6.png</value>
+      </map-entry>
+      <map-entry>
+        <key>m</key>
+        <value>images/Chalkboard_3x1.png</value>
+      </map-entry>
+      <map-entry>
+        <key>n</key>
+        <value>images/Chalkboard_3x2.png</value>
+      </map-entry>
+      <map-entry>
+        <key>o</key>
+        <value>images/Chalkboard_3x3.png</value>
+      </map-entry>
+      <map-entry>
+        <key>p</key>
+        <value>images/Chalkboard_3x4.png</value>
+      </map-entry>
+      <map-entry>
+        <key>q</key>
+        <value>images/Chalkboard_3x5.png</value>
+      </map-entry>
+      <map-entry>
+        <key>r</key>
+        <value>images/Chalkboard_3x6.png</value>
+      </map-entry>
+      <map-entry>
+        <key>s</key>
+        <value>images/Chalkboard_4x1.png</value>
+      </map-entry>
+      <map-entry>
+        <key>t</key>
+        <value>images/Chalkboard_4x2.png</value>
+      </map-entry>
+      <map-entry>
+        <key>u</key>
+        <value>images/Chalkboard_4x3.png</value>
+      </map-entry>
+      <map-entry>
+        <key>v</key>
+        <value>images/Chalkboard_4x4.png</value>
+      </map-entry>
+      <map-entry>
+        <key>w</key>
+        <value>images/Chalkboard_4x5.png</value>
+      </map-entry>
+      <map-entry>
+        <key>x</key>
+        <value>images/Chalkboard_4x6.png</value>
+      </map-entry>
+      <map-entry>
+        <key>y</key>
+        <value>images/Chalkboard_5x1.png</value>
+      </map-entry>
+      <map-entry>
+        <key>z</key>
+        <value>images/Chalkboard_5x2.png</value>
+      </map-entry>
+    </map-entries>
+  </managed-bean>
+
+</faces-config>

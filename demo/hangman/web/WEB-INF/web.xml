@@ -1,0 +1,88 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<!DOCTYPE web-app PUBLIC
+  "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+  "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+
+<web-app>
+
+    <display-name>Facelets Hangman Rip-Off</display-name>
+    <description>
+        Facelets Hangman Rip-Off
+    </description>
+
+    <context-param>
+        <param-name>facelet.LIBRARIES</param-name>
+        <param-value>/WEB-INF/facelet/mycompany.taglib.xml</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>javax.faces.STATE_SAVING_METHOD</param-name>
+        <param-value>server</param-value>
+    </context-param>
+	
+	<context-param>
+		<param-name>javax.faces.DEFAULT_SUFFIX</param-name>
+		<param-value>.xhtml</param-value>
+	</context-param>
+
+    <context-param>
+        <param-name>com.sun.faces.validateXml</param-name>
+        <param-value>true</param-value>
+        <description>
+            Set this flag to true if you want the JavaServer Faces
+            Reference Implementation to validate the XML in your
+            faces-config.xml resources against the DTD.  Default
+            value is false.
+        </description>
+    </context-param>
+
+    <context-param>
+        <param-name>com.sun.faces.verifyObjects</param-name>
+        <param-value>true</param-value>
+        <description>
+            Set this flag to true if you want the JavaServer Faces
+            Reference Implementation to verify that all of the application
+            objects you have configured (components, converters,
+            renderers, and validators) can be successfully created.
+            Default value is false.
+        </description>
+    </context-param>
+
+    <!-- Faces Servlet -->
+    <servlet>
+        <servlet-name>Faces Servlet</servlet-name>
+        <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+        <load-on-startup> 1 </load-on-startup>
+    </servlet>
+
+
+    <!-- Faces Servlet Mapping -->
+    <servlet-mapping>
+        <servlet-name>Faces Servlet</servlet-name>
+        <url-pattern>*.jsf</url-pattern>
+    </servlet-mapping>
+
+    <security-constraint>
+	 <!-- This security constraint illustrates how JSP pages 
+             with JavaServer Faces components can be protected from
+             being accessed without going through the Faces Servlet.
+             The security constraint ensures that the Faces Servlet will
+             be used or the pages will not be processed. -->
+	<display-name>Restrict access to JSP pages</display-name>
+	<web-resource-collection>
+            <web-resource-name>
+		Restrict access to JSP pages
+            </web-resource-name>
+	    <url-pattern>/greeting.xhtml</url-pattern>
+	    <url-pattern>/response.xhtml</url-pattern>
+	</web-resource-collection>
+	<auth-constraint>
+	    <description>
+		With no roles defined, no access granted
+	    </description>
+	</auth-constraint>
+    </security-constraint>
+
+</web-app>

@@ -1,0 +1,30 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:smo="http://www.mckesson.com/jsf"
+      xmlns:ui="http://java.sun.com/jsf/facelet">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>SMO AP Demo App</title>
+<link href="css/screen.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body id="pgMainMenu">
+<div id="document">
+	<div id="header">
+		<span><img src="img/mck.logo.lofi.gif" alt="McKesson Empowering Healthcare" /></span>
+	</div>
+	<div id="nav">
+		<smo:menu />
+	</div>
+	<div id="container">
+		<div id="sidebar">
+			<ui:insert name="sidebar"/>
+		</div>
+		<div id="content">
+			<ui:insert name="content"/>
+		</div>
+		<div id="footer">Copyright &#169; 2002-2004 McKesson Corporation - 050404.143629.937@d.mcksmo.com/smoap</div>
+	</div>
+</div>
+</body>
+</html>
