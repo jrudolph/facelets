@@ -151,7 +151,7 @@
     </copy>
     <mkdir dir="${release}/facelets-${release.version}/lib"/>
     <copy file="README.TXT" todir="${release}/facelets-${release.version}"/>
-    <copy file="build.properties" todir="${release}/facelets-${release.version}"/>
+    <copy file="build.sample.properties" todir="${release}/facelets-${release.version}"/>
     <copy file="build.xml" todir="${release}/facelets-${release.version}"/>
     <zip destfile="facelets-${release.version}.zip" basedir="${release}" />
   </target>
