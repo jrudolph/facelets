@@ -42,7 +42,7 @@ import com.sun.facelets.util.FacesAPI;
  * A Compiler instance may handle compiling multiple sources
  * 
  * @author Jacob Hookom
- * @version $Id: Compiler.java,v 1.2 2005/07/07 03:08:34 jhook Exp $
+ * @version $Id: Compiler.java,v 1.3 2005/07/11 21:54:10 jhook Exp $
  */
 public abstract class Compiler {
 
@@ -56,11 +56,11 @@ public abstract class Compiler {
     private static final TagDecorator EMPTY_DECORATOR = new CompositeTagDecorator(
             new TagDecorator[0]);
 
-    private boolean validating;
+    private boolean validating = true;
 
-    private boolean trimmingWhitespace;
+    private boolean trimmingWhitespace = true;
 
-    private boolean trimmingComments;
+    private boolean trimmingComments = false;
 
     private final List libraries = new ArrayList();
 
