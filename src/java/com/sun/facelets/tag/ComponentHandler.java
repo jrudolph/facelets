@@ -40,7 +40,7 @@ import com.sun.facelets.util.FacesAPI;
  * golden hammer for wiring UIComponents to Facelets.
  * 
  * @author Jacob Hookom
- * @version $Id: ComponentHandler.java,v 1.3 2005/07/13 02:18:57 adamwiner Exp $
+ * @version $Id: ComponentHandler.java,v 1.4 2005/07/13 23:35:50 jhook Exp $
  */
 public class ComponentHandler extends AbstractComponentHandler {
 
@@ -198,16 +198,24 @@ public class ComponentHandler extends AbstractComponentHandler {
      */
     protected final void setActionSource(FaceletContext ctx, ActionSource src) {
         if (this.actionListener != null) {
-            src.addActionListener(new MethodExpressionActionListener(
-                    this.actionListener.getMethodExpression(ctx, null,
-                            ACTION_LISTENER_SIG)));
+            MethodExpression m = this.actionListener.getMethodExpression(ctx,
+                    null, ACTION_LISTENER_SIG);
+            if (FacesAPI.getVersion((UIComponent) src) >= 12) {
+                src.addActionListener(new MethodExpressionActionListener(m));
+            } else {
+                src.setActionListener(new LegacyMethodBinding(m));
+            }
         }
-        MethodExpression m = this.action.getMethodExpression(ctx, String.class,
-                ACTION_SIG);
-        if (FacesAPI.getVersion((UIComponent) src) >= 12 && src instanceof ActionSource2) {
-            ((ActionSource2) src).setActionExpression(m);
-        } else {
-            src.setAction(new LegacyMethodBinding(m));
+
+        if (this.action != null) {
+            MethodExpression m = this.action.getMethodExpression(ctx,
+                    String.class, ACTION_SIG);
+            if (FacesAPI.getVersion((UIComponent) src) >= 12
+                    && src instanceof ActionSource2) {
+                ((ActionSource2) src).setActionExpression(m);
+            } else {
+                src.setAction(new LegacyMethodBinding(m));
+            }
         }
     }
 
