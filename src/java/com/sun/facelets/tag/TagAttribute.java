@@ -22,12 +22,14 @@ import javax.el.ValueExpression;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.el.ELText;
+import com.sun.facelets.el.TagMethodExpression;
+import com.sun.facelets.el.TagValueExpression;
 
 /**
  * Representation of a Tag's attribute in a Facelet File
  * 
  * @author Jacob Hookom
- * @version $Id: TagAttribute.java,v 1.2 2005/07/13 02:56:15 jhook Exp $
+ * @version $Id: TagAttribute.java,v 1.3 2005/07/13 03:49:35 jhook Exp $
  */
 public final class TagAttribute {
 
@@ -42,6 +44,8 @@ public final class TagAttribute {
     protected final String qName;
 
     protected final String value;
+
+    protected String string;
 
     public TagAttribute(Location location, String ns, String localName,
             String qName, String value) {
@@ -135,7 +139,8 @@ public final class TagAttribute {
             Class[] paramTypes) {
         try {
             ExpressionFactory f = ctx.getExpressionFactory();
-            return f.createMethodExpression(ctx, this.value, type, paramTypes);
+            return new TagMethodExpression(this, f.createMethodExpression(ctx,
+                    this.value, type, paramTypes));
         } catch (Exception e) {
             throw new TagAttributeException(this, e);
         }
@@ -249,7 +254,8 @@ public final class TagAttribute {
     public ValueExpression getValueExpression(FaceletContext ctx, Class type) {
         try {
             ExpressionFactory f = ctx.getExpressionFactory();
-            return f.createValueExpression(ctx, this.value, type);
+            return new TagValueExpression(this, f.createValueExpression(ctx,
+                    this.value, type));
         } catch (Exception e) {
             throw new TagAttributeException(this, e);
         }
@@ -270,7 +276,11 @@ public final class TagAttribute {
      * @see java.lang.Object#toString()
      */
     public String toString() {
-        return this.location + " " + this.qName + "=\"" + this.value + "\"";
+        if (this.string == null) {
+            this.string = this.location + " " + this.qName + "=\"" + this.value
+                    + "\"";
+        }
+        return this.string;
     }
 
 }
