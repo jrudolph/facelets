@@ -20,9 +20,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,7 +28,6 @@ import java.util.logging.Logger;
 import javax.faces.FacesException;
 import javax.faces.application.StateManager;
 import javax.faces.application.ViewHandler;
-import javax.faces.application.ViewHandlerWrapper;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.ExternalContext;
@@ -51,9 +48,9 @@ import com.sun.facelets.util.FacesAPI;
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.8 2005/07/13 02:18:56 adamwiner Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.9 2005/07/13 04:46:06 jhook Exp $
  */
-public class FaceletViewHandler extends  ViewHandler {
+public class FaceletViewHandler extends ViewHandler {
 
     protected final static Logger log = Logger
             .getLogger("facelets.viewHandler");
@@ -77,7 +74,7 @@ public class FaceletViewHandler extends  ViewHandler {
         if (c.getChildCount() > 0) {
             for (Iterator itr = c.getChildren().iterator(); itr.hasNext();) {
                 d = (UIComponent) itr.next();
-                if (d.getFacets().size() > 0) {                  
+                if (d.getFacets().size() > 0) {
                     for (Iterator jtr = d.getFacets().values().iterator(); jtr
                             .hasNext();) {
                         e = (UIComponent) jtr.next();
@@ -200,6 +197,47 @@ public class FaceletViewHandler extends  ViewHandler {
         return this.parent;
     }
 
+    protected ResponseWriter createResponseWriter(FacesContext context)
+            throws IOException, FacesException {
+        ExternalContext extContext = context.getExternalContext();
+        RenderKit renderKit = context.getRenderKit();
+        ServletRequest request = (ServletRequest) extContext.getRequest();
+        ServletResponse response = (ServletResponse) extContext.getResponse();
+        String encoding = request.getCharacterEncoding();
+        
+        // Create a dummy ResponseWriter with a bogus writer,
+        // so we can figure out what content type the ReponseWriter
+        // is really going to ask for
+        ResponseWriter writer = renderKit.createResponseWriter(
+                new NullWriter(), "text/html", encoding);
+        response.setContentType(writer.getContentType() + "; charset = "
+                + encoding);
+        
+        // Now, clone with the real writer
+        writer = writer.cloneWithWriter(response.getWriter());
+        
+        return writer;
+    }
+
+    protected void buildView(FacesContext context, UIViewRoot viewToRender)
+            throws IOException, FacesException {
+        // setup our viewId
+        String renderedViewId = this.getRenderedViewId(context, viewToRender
+                .getViewId());
+        viewToRender.setViewId(renderedViewId);
+
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("Building View: " + renderedViewId);
+        }
+
+        // grab our FaceletFactory and create a Facelet
+        FaceletFactory factory = FaceletFactory.getInstance();
+        Facelet f = factory.getFacelet(viewToRender.getViewId());
+
+        // populate UIViewRoot
+        f.apply(context, viewToRender);
+    }
+
     public void renderView(FacesContext context, UIViewRoot viewToRender)
             throws IOException, FacesException {
         if (!this.initialized) {
@@ -215,70 +253,37 @@ public class FaceletViewHandler extends  ViewHandler {
             log.fine("Rendering View: " + viewToRender.getViewId());
         }
 
-        // setup our viewId
-        String renderedViewId = this.getRenderedViewId(context, viewToRender
-                .getViewId());
-        viewToRender.setViewId(renderedViewId);
+        // build view
+        this.buildView(context, viewToRender);
 
-        // grab our FaceletFactory and create a Facelet
-        FaceletFactory factory = FaceletFactory.getInstance();
-        Facelet f = factory.getFacelet(viewToRender.getViewId());
+        // setup writer and assign it to the context
+        ResponseWriter writer = this.createResponseWriter(context);
+        context.setResponseWriter(writer);
 
-        // populate UIViewRoot
-        f.apply(context, viewToRender);
-
-        // setup writer
-        ExternalContext extContext = context.getExternalContext();
-        ResponseWriter writer = context.getResponseWriter();
-        if (writer == null) {
-            RenderKit renderKit = context.getRenderKit();
-            ServletRequest request = (ServletRequest) extContext.getRequest();
-            ServletResponse response = (ServletResponse) extContext
-                    .getResponse();
-            response.setBufferSize(8192);
-            String encoding = request.getCharacterEncoding();
-            // Create a dummy ResponseWriter with a bogus writer,
-            // so we can figure out what content type the ReponseWriter
-            // is really going to ask for
-            writer = renderKit.createResponseWriter(new NullWriter(),
-                    "text/html", encoding);
-            response.setContentType(writer.getContentType() +
-                                    "; charset = " + encoding);
-            // Now, clone with the real writer
-            writer = writer.cloneWithWriter(response.getWriter());
-            context.setResponseWriter(writer);
-        }
-
-        // save the state
-        StateManager stateMgr = context.getApplication().getStateManager();
-        Object state = stateMgr.saveSerializedView(context);
-        extContext.getRequestMap().put(STATE_KEY, state);
-
-        // write the state
+        // render the view to the response
         writer.startDocument();
-        
         if (FacesAPI.getVersion() >= 12) {
             viewToRender.encodeAll(context);
         } else {
             encodeRecursive(context, viewToRender);
         }
-        
         writer.endDocument();
         writer.close();
 
         // finally clean up transients if viewState = true
+        ExternalContext extContext = context.getExternalContext();
         if (extContext.getRequestMap().containsKey(STATE_KEY)) {
             removeTransient(viewToRender);
         }
     }
-    
-    protected final static void encodeRecursive(FacesContext context, UIComponent viewToRender) throws IOException, FacesException {
+
+    protected final static void encodeRecursive(FacesContext context,
+            UIComponent viewToRender) throws IOException, FacesException {
         if (viewToRender.isRendered()) {
             viewToRender.encodeBegin(context);
             if (viewToRender.getRendersChildren()) {
                 viewToRender.encodeChildren(context);
-            }
-            else if (viewToRender.getChildCount() > 0) {
+            } else if (viewToRender.getChildCount() > 0) {
                 Iterator kids = viewToRender.getChildren().iterator();
                 while (kids.hasNext()) {
                     UIComponent kid = (UIComponent) kids.next();
@@ -316,11 +321,13 @@ public class FaceletViewHandler extends  ViewHandler {
 
     public void writeState(FacesContext context) throws IOException {
         StateManager stateMgr = context.getApplication().getStateManager();
-        Object state = context.getExternalContext().getRequestMap().get(
-                STATE_KEY);
-        if (state != null) {
-            stateMgr.writeState(context, (StateManager.SerializedView) state);
+        ExternalContext extContext = context.getExternalContext();
+        Object state = extContext.getRequestMap().get(STATE_KEY);
+        if (state == null) {
+            state = stateMgr.saveSerializedView(context);
+            extContext.getRequestMap().put(STATE_KEY, state);
         }
+        stateMgr.writeState(context, (StateManager.SerializedView) state);
     }
 
     public Locale calculateLocale(FacesContext context) {
@@ -343,14 +350,26 @@ public class FaceletViewHandler extends  ViewHandler {
         return this.parent.getResourceURL(context, path);
     }
 
-    static private class NullWriter extends Writer
-    {
-        public void write(char[] buffer) {}
-        public void write(char[] buffer, int off, int len) {}
-        public void write(String str) {}
-        public void write(int c) {}
-        public void write(String str, int off, int len) {}
-        public void close() {}
-        public void flush() {}
+    static private class NullWriter extends Writer {
+        public void write(char[] buffer) {
+        }
+
+        public void write(char[] buffer, int off, int len) {
+        }
+
+        public void write(String str) {
+        }
+
+        public void write(int c) {
+        }
+
+        public void write(String str, int off, int len) {
+        }
+
+        public void close() {
+        }
+
+        public void flush() {
+        }
     }
 }
