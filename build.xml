@@ -150,6 +150,8 @@
        <fileset dir="${dist}"/>
     </copy>
     <mkdir dir="${release}/facelets-${release.version}/lib"/>
+    <copy file="${lib}/el-api.jar" todir="${release}/facelets-${release.version}/lib"/>
+    <copy file="${lib}/el-ri.jar" todir="${release}/facelets-${release.version}/lib"/>
     <copy file="README.TXT" todir="${release}/facelets-${release.version}"/>
     <copy file="build.sample.properties" todir="${release}/facelets-${release.version}"/>
     <copy file="build.xml" todir="${release}/facelets-${release.version}"/>
@@ -174,9 +176,27 @@
    
    
   <!-- =========================== Dependencies ========================= -->
-  <target name="dependencies">
-  	<ant target="depend-el-api" />
-	<ant target="depend-el-ri" />
+  <target name="dependencies" depends="prepare">
+     <condition property="missing.el-api" >
+       <not>
+          <available file="${lib}/el-api.jar"/>
+       </not>
+     </condition>
+     <condition property="missing.el-ri" >
+       <not>
+          <available file="${lib}/el-ri.jar"/>
+       </not>
+     </condition>
+     <ant target="-auto-depend-el-api" />
+     <ant target="-auto-depend-el-ri" />
+  </target>
+
+  <target name="-auto-depend-el-api" if="missing.el-api">
+    <ant target="depend-el-api" />
+  </target>
+
+  <target name="-auto-depend-el-ri" if="missing.el-ri">
+    <ant target="depend-el-ri" />
   </target>
   
   <target name="depend-el-api">
