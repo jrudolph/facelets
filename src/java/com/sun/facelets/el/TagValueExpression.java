@@ -38,9 +38,9 @@ public class TagValueExpression extends ValueExpression implements
             return this.orig.getType(context);
         } catch (PropertyNotFoundException pnfe) {
             throw new PropertyNotFoundException(this.attr + ": "
-                    + pnfe.getMessage(), pnfe);
+                    + pnfe.getMessage(), pnfe.getCause());
         } catch (ELException e) {
-            throw new ELException(this.attr + ": " + e.getMessage(), e);
+            throw new ELException(this.attr + ": " + e.getMessage(), e.getCause());
         }
     }
 
@@ -49,9 +49,9 @@ public class TagValueExpression extends ValueExpression implements
             return this.orig.getValue(context);
         } catch (PropertyNotFoundException pnfe) {
             throw new PropertyNotFoundException(this.attr + ": "
-                    + pnfe.getMessage(), pnfe);
+                    + pnfe.getMessage(), pnfe.getCause());
         } catch (ELException e) {
-            throw new ELException(this.attr + ": " + e.getMessage(), e);
+            throw new ELException(this.attr + ": " + e.getMessage(), e.getCause());
         }
     }
 
@@ -60,9 +60,9 @@ public class TagValueExpression extends ValueExpression implements
             return this.orig.isReadOnly(context);
         } catch (PropertyNotFoundException pnfe) {
             throw new PropertyNotFoundException(this.attr + ": "
-                    + pnfe.getMessage(), pnfe);
+                    + pnfe.getMessage(), pnfe.getCause());
         } catch (ELException e) {
-            throw new ELException(this.attr + ": " + e.getMessage(), e);
+            throw new ELException(this.attr + ": " + e.getMessage(), e.getCause());
         }
     }
 
@@ -71,12 +71,12 @@ public class TagValueExpression extends ValueExpression implements
             this.orig.setValue(context, value);
         } catch (PropertyNotFoundException pnfe) {
             throw new PropertyNotFoundException(this.attr + ": "
-                    + pnfe.getMessage(), pnfe);
+                    + pnfe.getMessage(), pnfe.getCause());
         } catch (PropertyNotWritableException pnwe) {
             throw new PropertyNotWritableException(this.attr + ": "
-                    + pnwe.getMessage(), pnwe);
+                    + pnwe.getMessage(), pnwe.getCause());
         } catch (ELException e) {
-            throw new ELException(this.attr + ": " + e.getMessage(), e);
+            throw new ELException(this.attr + ": " + e.getMessage(), e.getCause());
         }
     }
 

@@ -33,11 +33,11 @@ public final class TagMethodExpression extends MethodExpression implements
         try {
             return this.orig.getMethodInfo(context);
         } catch (PropertyNotFoundException pnfe) {
-            throw new PropertyNotFoundException(this.attr + ": " + pnfe.getMessage(), pnfe);
+            throw new PropertyNotFoundException(this.attr + ": " + pnfe.getMessage(), pnfe.getCause());
         } catch (MethodNotFoundException mnfe) {
-            throw new MethodNotFoundException(this.attr + ": " + mnfe.getMessage(), mnfe);
+            throw new MethodNotFoundException(this.attr + ": " + mnfe.getMessage(), mnfe.getCause());
         } catch (ELException e) {
-            throw new ELException(this.attr + ": " + e.getMessage(), e);
+            throw new ELException(this.attr + ": " + e.getMessage(), e.getCause());
         }
     }
 
@@ -45,11 +45,11 @@ public final class TagMethodExpression extends MethodExpression implements
         try {
             return this.orig.invoke(context, params);
         } catch (PropertyNotFoundException pnfe) {
-            throw new PropertyNotFoundException(this.attr + ": " + pnfe.getMessage(), pnfe);
+            throw new PropertyNotFoundException(this.attr + ": " + pnfe.getMessage(), pnfe.getCause());
         } catch (MethodNotFoundException mnfe) {
-            throw new MethodNotFoundException(this.attr + ": " + mnfe.getMessage(), mnfe);
+            throw new MethodNotFoundException(this.attr + ": " + mnfe.getMessage(), mnfe.getCause());
         } catch (ELException e) {
-            throw new ELException(this.attr + ": " + e.getMessage(), e);
+            throw new ELException(this.attr + ": " + e.getMessage(), e.getCause());
         }
     }
 
