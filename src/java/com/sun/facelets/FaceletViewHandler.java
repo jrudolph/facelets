@@ -48,7 +48,7 @@ import com.sun.facelets.util.FacesAPI;
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.9 2005/07/13 04:46:06 jhook Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.10 2005/07/13 07:01:11 jhook Exp $
  */
 public class FaceletViewHandler extends ViewHandler {
 
@@ -327,7 +327,9 @@ public class FaceletViewHandler extends ViewHandler {
             state = stateMgr.saveSerializedView(context);
             extContext.getRequestMap().put(STATE_KEY, state);
         }
-        stateMgr.writeState(context, (StateManager.SerializedView) state);
+        if (stateMgr.isSavingStateInClient(context)) {
+            stateMgr.writeState(context, (StateManager.SerializedView) state);
+        }
     }
 
     public Locale calculateLocale(FacesContext context) {
