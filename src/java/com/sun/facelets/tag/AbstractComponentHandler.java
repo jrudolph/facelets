@@ -40,7 +40,7 @@ import com.sun.facelets.util.FacesAPI;
  * Base class with utility methods for processing UIComponent instances
  * 
  * @author Jacob Hookom
- * @version $Id: AbstractComponentHandler.java,v 1.2 2005/07/13 02:18:57 adamwiner Exp $
+ * @version $Id: AbstractComponentHandler.java,v 1.3 2005/07/13 02:45:24 adamwiner Exp $
  */
 public abstract class AbstractComponentHandler extends ObjectHandler {
 
@@ -324,7 +324,7 @@ public abstract class AbstractComponentHandler extends ObjectHandler {
         FacesContext faces = ctx.getFacesContext();
         Application app = faces.getApplication();
         if (this.binding != null) {
-            ValueExpression vb = this.binding.getValueExpression(ctx,
+            ValueExpression ve = this.binding.getValueExpression(ctx,
                     Object.class);
             if (FacesAPI.getVersion() >= 12) { 
                 c = app.createComponent(ve, faces, this.componentType);
