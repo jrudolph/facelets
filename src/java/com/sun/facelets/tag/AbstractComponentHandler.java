@@ -30,14 +30,17 @@ import javax.faces.application.Application;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
+import javax.faces.el.ValueBinding;
 
 import com.sun.facelets.FaceletContext;
+import com.sun.facelets.el.LegacyValueBinding;
+import com.sun.facelets.util.FacesAPI;
 
 /**
  * Base class with utility methods for processing UIComponent instances
  * 
  * @author Jacob Hookom
- * @version $Id: AbstractComponentHandler.java,v 1.1 2005/05/21 17:54:36 jhook Exp $
+ * @version $Id: AbstractComponentHandler.java,v 1.2 2005/07/13 02:18:57 adamwiner Exp $
  */
 public abstract class AbstractComponentHandler extends ObjectHandler {
 
@@ -282,7 +285,9 @@ public abstract class AbstractComponentHandler extends ObjectHandler {
             }
             this.setAttributes(ctx, c);
             c.setId(id);
-            c.setRendererType(this.rendererType);
+            if (this.rendererType != null) {
+           	    c.setRendererType(this.rendererType);
+           	}
         }
 
         // first allow c to get populated
@@ -321,9 +326,25 @@ public abstract class AbstractComponentHandler extends ObjectHandler {
         if (this.binding != null) {
             ValueExpression vb = this.binding.getValueExpression(ctx,
                     Object.class);
-            c = app.createComponent(vb, faces, this.componentType);
-            if (c != null) {
-                c.setValueExpression("binding", vb);
+            if (FacesAPI.getVersion() >= 12) { 
+                c = app.createComponent(ve, faces, this.componentType);
+                if (c != null) {
+                    // Make sure the component supports 1.2
+                    if (FacesAPI.getVersion(c) >= 12) {
+                        c.setValueExpression("binding", ve);
+                    } else {
+                        ValueBinding vb = new LegacyValueBinding(ve);
+                        c.setValueBinding("binding", vb);
+                    }
+
+                }
+            }
+            else {
+                ValueBinding vb = new LegacyValueBinding(ve);
+                c = app.createComponent(vb, faces, this.componentType);
+                if (c != null) {
+                    c.setValueBinding("binding", vb);
+                }
             }
         } else {
             c = app.createComponent(this.componentType);

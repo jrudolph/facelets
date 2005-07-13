@@ -40,7 +40,7 @@ import com.sun.facelets.util.FacesAPI;
  * golden hammer for wiring UIComponents to Facelets.
  * 
  * @author Jacob Hookom
- * @version $Id: ComponentHandler.java,v 1.2 2005/07/07 03:08:35 jhook Exp $
+ * @version $Id: ComponentHandler.java,v 1.3 2005/07/13 02:18:57 adamwiner Exp $
  */
 public class ComponentHandler extends AbstractComponentHandler {
 
@@ -73,13 +73,6 @@ public class ComponentHandler extends AbstractComponentHandler {
         this.validator = this.getAttribute("validator");
         this.converter = this.getAttribute("converter");
         this.value = this.getAttribute("value");
-        if (this.valueChangeListener != null
-                && !this.valueChangeListener.isLiteral()) {
-            throw new TagAttributeException(
-                    this.tag,
-                    this.valueChangeListener,
-                    "Must be a MethodExpression that points to a method that accepts a ValueChangeEvent");
-        }
     }
 
     /**
@@ -208,10 +201,6 @@ public class ComponentHandler extends AbstractComponentHandler {
             src.addActionListener(new MethodExpressionActionListener(
                     this.actionListener.getMethodExpression(ctx, null,
                             ACTION_LISTENER_SIG)));
-        }
-        if (this.action == null) {
-            throw new TagException(this.tag,
-                    "'action' attribute is required for ActionSource Components");
         }
         MethodExpression m = this.action.getMethodExpression(ctx, String.class,
                 ACTION_SIG);

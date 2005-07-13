@@ -44,7 +44,7 @@ import com.sun.facelets.util.Classpath;
  * {@link java.net.URL URL} source.
  * 
  * @author Jacob Hookom
- * @version $Id: TagLibraryConfig.java,v 1.1 2005/05/21 17:54:51 jhook Exp $
+ * @version $Id: TagLibraryConfig.java,v 1.2 2005/07/13 02:18:57 adamwiner Exp $
  */
 public final class TagLibraryConfig {
 
@@ -121,50 +121,67 @@ public final class TagLibraryConfig {
         public void endElement(String uri, String localName, String qName)
                 throws SAXException {
             try {
-                if ("library-class".equals(qName)) {
+                if ("facelet-taglib".equals(qName)) {
+                  ; // Nothing to do
+                }
+                else if ("library-class".equals(qName)) {
                     this.processLibraryClass();
                 }
-                if ("namespace".equals(qName)) {
+                else if ("namespace".equals(qName)) {
                     this.library = new TagLibraryImpl(this.captureBuffer());
                 }
-                if ("tag-name".equals(qName)) {
-                    this.tagName = this.captureBuffer();
-                }
-                if ("handler-class".equals(qName)) {
-                    String cName = this.captureBuffer();
-                    Class c = this.createClass(TagHandler.class, cName);
-                    ((TagLibraryImpl) this.library).putTagHandler(this.tagName,
-                            c);
-                }
-                if ("component-type".equals(qName)) {
+                else if ("component-type".equals(qName)) {
                     this.componentType = this.captureBuffer();
                 }
-                if ("renderer-type".equals(qName)) {
+                else if ("renderer-type".equals(qName)) {
                     this.rendererType = this.captureBuffer();
                 }
-                if ("component".equals(qName)) {
-                    ((TagLibraryImpl) this.library).putComponent(this.tagName,
-                            this.componentType, this.rendererType);
+                else if ("tag-name".equals(qName)) {
+                    this.tagName = this.captureBuffer();
                 }
-                if ("converter-id".equals(qName)) {
-                    ((TagLibraryImpl) this.library).putConverter(this.tagName,
-                            this.captureBuffer());
-                }
-                if ("validator-id".equals(qName)) {
-                    ((TagLibraryImpl) this.library).putValidator(this.tagName,
-                            this.captureBuffer());
-                }
-                if ("source".equals(qName)) {
-                    String path = this.captureBuffer();
-                    URL url = new URL(this.source, path);
-                    ((TagLibraryImpl) this.library).putUserTag(this.tagName,
-                            url);
+                else
+                {
+                    // Make sure there we've seen a namespace element
+                    // before trying any of the following elements to avoid
+                    // obscure NPEs
+                    if (this.library == null) {
+                        throw new IllegalStateException("No <namespace> element");
+                    }
+                    
+                    TagLibraryImpl impl = (TagLibraryImpl) this.library;
+                    
+                    if ("handler-class".equals(qName)) {
+                        String cName = this.captureBuffer();
+                        Class c = this.createClass(TagHandler.class, cName);
+                        impl.putTagHandler(this.tagName, c);
+                    }
+                    else if ("component".equals(qName)) {
+                        impl.putComponent(this.tagName,
+                                          this.componentType,
+                                          this.rendererType);
+                    }
+                    else if ("converter-id".equals(qName)) {
+                        impl.putConverter(this.tagName,
+                                          this.captureBuffer());
+                    }
+                    else if ("validator-id".equals(qName)) {
+                        impl.putValidator(this.tagName,
+                                          this.captureBuffer());
+                    }
+                    else  if ("source".equals(qName)) {
+                        String path = this.captureBuffer();
+                        URL url = new URL(this.source, path);
+                        impl.putUserTag(this.tagName, url);
+                    }
                 }
             } catch (Exception e) {
-                throw new SAXException("Error Handling [" + this.file + "@"
+                SAXException saxe =
+                   new SAXException("Error Handling [" + this.source + "@"
                         + this.locator.getLineNumber() + ","
                         + this.locator.getColumnNumber() + "] <" + qName
-                        + ">: " + e.getMessage());
+                                    + ">");
+                saxe.initCause(e);
+                throw saxe;
             }
         }
 
@@ -220,9 +237,11 @@ public final class TagLibraryConfig {
         }
 
         public void error(SAXParseException e) throws SAXException {
-            throw new SAXException("Error Handling [" + this.file + "@"
-                    + e.getLineNumber() + "," + e.getColumnNumber() + "]: "
-                    + e.getMessage());
+            SAXException saxe = 
+                new SAXException("Error Handling [" + this.source + "@"
+                      + e.getLineNumber() + "," + e.getColumnNumber() + "]");
+            saxe.initCause(e);
+            throw saxe;
         }
 
         public void setDocumentLocator(Locator locator) {
@@ -243,10 +262,15 @@ public final class TagLibraryConfig {
             parser.parse(is, handler);
             return handler.getLibrary();
         } catch (SAXException e) {
-            throw new IOException(e.getMessage());
+          IOException ioe =
+            new IOException("Error parsing [" + url + "]: ");
+          ioe.initCause(e);
+          throw ioe;
         } catch (ParserConfigurationException e) {
-            throw new IOException("Error Handling [" + url.getFile() + "]: "
-                    + e.getMessage());
+          IOException ioe =
+            new IOException("Error parsing [" + url + "]: ");
+          ioe.initCause(e);
+          throw ioe;
         } finally {
             if (is != null)
                 is.close();

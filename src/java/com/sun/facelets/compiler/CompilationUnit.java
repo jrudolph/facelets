@@ -46,7 +46,7 @@ import com.sun.facelets.tag.ui.UITextHandler;
  * @see com.sun.facelets.compiler.Compiler
  * 
  * @author Jacob Hookom
- * @version $Id: CompilationUnit.java,v 1.1 2005/05/21 17:54:49 jhook Exp $
+ * @version $Id: CompilationUnit.java,v 1.2 2005/07/13 02:18:57 adamwiner Exp $
  */
 final class CompilationUnit {
 
@@ -342,7 +342,7 @@ final class CompilationUnit {
             // finally pop our state
             this.popState();
         } catch (Exception e) {
-            throw new TagException(t, e.getMessage(), e.getCause());
+            throw new TagException(t, e.getMessage(), e);
         }
     }
 

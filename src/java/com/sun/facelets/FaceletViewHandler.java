@@ -17,6 +17,7 @@ package com.sun.facelets;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -27,7 +28,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.faces.FacesException;
-import javax.faces.FactoryFinder;
 import javax.faces.application.StateManager;
 import javax.faces.application.ViewHandler;
 import javax.faces.application.ViewHandlerWrapper;
@@ -37,7 +37,6 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 import javax.faces.render.RenderKit;
-import javax.faces.render.RenderKitFactory;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
@@ -52,7 +51,7 @@ import com.sun.facelets.util.FacesAPI;
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.7 2005/07/07 03:08:47 jhook Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.8 2005/07/13 02:18:56 adamwiner Exp $
  */
 public class FaceletViewHandler extends  ViewHandler {
 
@@ -232,16 +231,21 @@ public class FaceletViewHandler extends  ViewHandler {
         ExternalContext extContext = context.getExternalContext();
         ResponseWriter writer = context.getResponseWriter();
         if (writer == null) {
-            RenderKitFactory renderFactory = (RenderKitFactory) FactoryFinder
-                    .getFactory(FactoryFinder.RENDER_KIT_FACTORY);
-            RenderKit renderKit = renderFactory.getRenderKit(context,
-                    viewToRender.getRenderKitId());
+            RenderKit renderKit = context.getRenderKit();
             ServletRequest request = (ServletRequest) extContext.getRequest();
             ServletResponse response = (ServletResponse) extContext
                     .getResponse();
             response.setBufferSize(8192);
-            writer = renderKit.createResponseWriter(response.getWriter(),
-                    "text/html", request.getCharacterEncoding());
+            String encoding = request.getCharacterEncoding();
+            // Create a dummy ResponseWriter with a bogus writer,
+            // so we can figure out what content type the ReponseWriter
+            // is really going to ask for
+            writer = renderKit.createResponseWriter(new NullWriter(),
+                    "text/html", encoding);
+            response.setContentType(writer.getContentType() +
+                                    "; charset = " + encoding);
+            // Now, clone with the real writer
+            writer = writer.cloneWithWriter(response.getWriter());
             context.setResponseWriter(writer);
         }
 
@@ -260,6 +264,7 @@ public class FaceletViewHandler extends  ViewHandler {
         }
         
         writer.endDocument();
+        writer.close();
 
         // finally clean up transients if viewState = true
         if (extContext.getRequestMap().containsKey(STATE_KEY)) {
@@ -336,5 +341,16 @@ public class FaceletViewHandler extends  ViewHandler {
 
     public String getResourceURL(FacesContext context, String path) {
         return this.parent.getResourceURL(context, path);
+    }
+
+    static private class NullWriter extends Writer
+    {
+        public void write(char[] buffer) {}
+        public void write(char[] buffer, int off, int len) {}
+        public void write(String str) {}
+        public void write(int c) {}
+        public void write(String str, int off, int len) {}
+        public void close() {}
+        public void flush() {}
     }
 }
