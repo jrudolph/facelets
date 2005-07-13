@@ -14,11 +14,12 @@ You MUST have the following:
 
 Building Facelets
 ==========================================
+
 1.  Copy 2 jars into /lib of this project:
 
   - servlet-api.jar (a jar containing servlet api's)
 
-  - jsf-api.jar (version 1.1 or 1.2, see requirements)
+  - jsf-api.jar (version 1.2, see requirements)
 
 
 2.  Now that you have the lib's available, modify the build.properties
@@ -55,4 +56,14 @@ FAQ
     can submit a patch if you have the time.
 
     https://facelets.dev.java.net/servlets/ProjectIssues
+
+
+3.  I'm getting ClassNotFound Exceptions for javax.faces.* when I run Ant
+
+    Make sure that you have the JSF 1.2 API in your lib folder when compiling.
+    If you do not have JSF 1.2 available, either download the binary version of
+    Facelets, or download the binaries of the JSF RI (see requirements).
+
+    Once compiled, you can use any JSF 1.1 or 1.2 implementation and API with
+    your project.
 
