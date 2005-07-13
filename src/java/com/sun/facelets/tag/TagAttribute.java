@@ -15,6 +15,7 @@
 
 package com.sun.facelets.tag;
 
+import javax.el.ELException;
 import javax.el.ExpressionFactory;
 import javax.el.MethodExpression;
 import javax.el.ValueExpression;
@@ -26,7 +27,7 @@ import com.sun.facelets.el.ELText;
  * Representation of a Tag's attribute in a Facelet File
  * 
  * @author Jacob Hookom
- * @version $Id: TagAttribute.java,v 1.1 2005/05/21 17:54:38 jhook Exp $
+ * @version $Id: TagAttribute.java,v 1.2 2005/07/13 02:56:15 jhook Exp $
  */
 public final class TagAttribute {
 
@@ -49,7 +50,11 @@ public final class TagAttribute {
         this.localName = localName;
         this.qName = qName;
         this.value = value;
-        this.literal = ELText.isLiteral(this.value);
+        try {
+            this.literal = ELText.isLiteral(this.value);
+        } catch (ELException e) {
+            throw new TagAttributeException(this, e);
+        }
     }
 
     /**
