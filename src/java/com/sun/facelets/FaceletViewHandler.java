@@ -20,7 +20,9 @@ import java.io.IOException;
 import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -48,7 +50,7 @@ import com.sun.facelets.util.FacesAPI;
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.10 2005/07/13 07:01:11 jhook Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.11 2005/07/17 18:53:03 adamwiner Exp $
  */
 public class FaceletViewHandler extends ViewHandler {
 
@@ -57,9 +59,31 @@ public class FaceletViewHandler extends ViewHandler {
 
     public final static long DEFAULT_REFRESH_PERIOD = 2;
 
-    public final static String REFRESH_PERIOD_PARAM_NAME = "facelet.REFRESH_PERIOD";
+    public final static String REFRESH_PERIOD_PARAM_NAME = "facelets.REFRESH_PERIOD";
 
-    public final static String LIBRARIES_PARAM_NAME = "facelet.LIBRARIES";
+    /**
+     * Context initialization parameter for defining what viewIds should be
+     * handled by Facelets, and what should not.  When left unset, all URLs will
+     * be handled by Facelets.  When set, it must be a whitespace separated
+     * list of either extension mappings or prefix mappings.  For example:
+     * <pre>
+     *  &lt;context-param&gt;
+     *    &lt;param-name&gt;facelets.VIEW_MAPPINGS&lt;/param-name&gt;
+     *    &lt;param-value&gt;/demos/* *.xhtml&lt;/param-value&gt;
+     *  &lt;/context-param&gt;
+     * </pre>
+     * would use Facelets for processing all viewIds in the "/demos"
+     * directory or that end in .xhtml, and use the standard JSP
+     * engine for all other viewIds.
+     * <p>
+     * <strong>NOTE</strong>: when using this parameter, you need to use
+     * prefix-mapping for the <code>FacesServlet</code> (that is,
+     * <code>/faces/*</code>, not <code>*.jsf</code>).
+     * </p>
+     */
+    public final static String VIEW_MAPPINGS_PARAM_NAME = "facelets.VIEW_MAPPINGS";
+
+    public final static String LIBRARIES_PARAM_NAME = "facelets.LIBRARIES";
 
     protected final static String STATE_KEY = "com.sun.facelets.VIEW_STATE";
 
@@ -68,6 +92,12 @@ public class FaceletViewHandler extends ViewHandler {
     private boolean initialized = false;
 
     private String defaultSuffix;
+
+    // Array of viewId extensions that should be handled by Facelets
+    private String[] extensionsArray;
+
+    // Array of viewId prefixes that should be handled by Facelets
+    private String[] prefixesArray;
 
     protected static void removeTransient(UIComponent c) {
         UIComponent d, e;
@@ -112,7 +142,10 @@ public class FaceletViewHandler extends ViewHandler {
         this.parent = parent;
     }
 
-    protected void initialize() {
+    /**
+     * Initialize the ViewHandler during its first request.
+     */
+    protected void initialize(FacesContext context) {
         synchronized (this) {
             if (!this.initialized) {
                 log.fine("Initializing");
@@ -121,8 +154,46 @@ public class FaceletViewHandler extends ViewHandler {
                 FaceletFactory f = this.createFaceletFactory(c);
                 FaceletFactory.setInstance(f);
                 this.initialized = true;
+
+                initializeMappings(context);
+
                 log.fine("Initialization Successful");
             }
+        }
+    }
+
+    /**
+     * Initialize mappings, during the first request.
+     */
+    private void initializeMappings(FacesContext context) {
+        ExternalContext external = context.getExternalContext();
+        String viewMappings =
+          external.getInitParameter(VIEW_MAPPINGS_PARAM_NAME);
+        if ((viewMappings != null) && (viewMappings.length() > 0)) {
+            String[] mappingsArray = viewMappings.split("\\s");
+            
+            List extensionsList = new ArrayList(mappingsArray.length);
+            List prefixesList = new ArrayList(mappingsArray.length);
+            
+            for (int i = 0; i < mappingsArray.length; i++) {
+                String mapping = mappingsArray[i];
+                int mappingLength = mapping.length();
+                if (mappingLength <= 1) {
+                    continue;
+                }
+                
+                if (mapping.charAt(0) == '*') {
+                    extensionsList.add(mapping.substring(1));
+                } else if (mapping.charAt(mappingLength - 1) == '*') {
+                    prefixesList.add(mapping.substring(0, mappingLength - 1));
+                }
+            }
+
+            extensionsArray = new String[extensionsList.size()];
+            extensionsList.toArray(extensionsArray);
+            
+            prefixesArray = new String[prefixesList.size()];
+            prefixesList.toArray(prefixesArray);
         }
     }
 
@@ -241,7 +312,12 @@ public class FaceletViewHandler extends ViewHandler {
     public void renderView(FacesContext context, UIViewRoot viewToRender)
             throws IOException, FacesException {
         if (!this.initialized) {
-            this.initialize();
+            this.initialize(context);
+        }
+
+        if (!handledByFacelets(viewToRender)) {
+            this.parent.renderView(context, viewToRender);
+            return;
         }
 
         // exit if the view is not to be rendered
@@ -292,6 +368,40 @@ public class FaceletViewHandler extends ViewHandler {
             }
             viewToRender.encodeEnd(context);
         }
+    }
+
+
+    /**
+     *  Determine if Facelets needs to handle this request.
+     */
+    private boolean handledByFacelets(UIViewRoot viewToRender) {
+        // If there's no extensions array or prefixes array, then
+        // just make Facelets handle everything
+        if ((extensionsArray == null) && (prefixesArray == null)) {
+            return true;
+        }
+        
+        String viewId = viewToRender.getViewId();
+
+        if (extensionsArray != null) {
+            for (int i = 0; i < extensionsArray.length; i++) {
+                String extension = extensionsArray[i];
+                if (viewId.endsWith(extension)) {
+                    return true;
+                }
+            }
+        }
+
+        if (prefixesArray != null) {
+            for (int i = 0; i < prefixesArray.length; i++) {
+                String prefix = prefixesArray[i];
+                if (viewId.startsWith(prefix)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     public String getDefaultSuffix(FacesContext context) throws FacesException {

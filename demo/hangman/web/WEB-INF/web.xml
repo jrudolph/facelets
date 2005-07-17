@@ -13,7 +13,7 @@
     </description>
 
     <context-param>
-        <param-name>facelet.LIBRARIES</param-name>
+        <param-name>facelets.LIBRARIES</param-name>
         <param-value>/WEB-INF/facelet/mycompany.taglib.xml</param-value>
     </context-param>
 

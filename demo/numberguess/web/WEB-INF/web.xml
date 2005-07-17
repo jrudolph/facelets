@@ -13,7 +13,7 @@
     </description>
 
     <context-param>
-        <param-name>facelet.REFRESH_PERIOD</param-name>
+        <param-name>facelets.REFRESH_PERIOD</param-name>
         <param-value>5</param-value>
     </context-param>
 
