@@ -40,7 +40,7 @@ import com.sun.facelets.util.FacesAPI;
  * golden hammer for wiring UIComponents to Facelets.
  * 
  * @author Jacob Hookom
- * @version $Id: ComponentHandler.java,v 1.4 2005/07/13 23:35:50 jhook Exp $
+ * @version $Id: ComponentHandler.java,v 1.5 2005/07/17 18:56:32 adamwiner Exp $
  */
 public class ComponentHandler extends AbstractComponentHandler {
 
@@ -170,16 +170,14 @@ public class ComponentHandler extends AbstractComponentHandler {
                         Converter.class));
             }
         }
-        if (this.value == null) {
-            throw new TagException(this.tag,
-                    "'value' attribute is required for ValueHolder Components");
-        }
-        if (this.value.isLiteral()) {
-            oc.setValue(this.value.getValue());
-        } else {
-            ValueExpression ve = this.value.getValueExpression(ctx,
-                    Object.class);
-            ELAdaptor.setExpression((UIComponent) oc, "value", ve);
+        if (this.value != null) {
+            if (this.value.isLiteral()) {
+                oc.setValue(this.value.getValue());
+            } else {
+                ValueExpression ve = this.value.getValueExpression(ctx,
+                        Object.class);
+                ELAdaptor.setExpression((UIComponent) oc, "value", ve);
+            }
         }
     }
 
