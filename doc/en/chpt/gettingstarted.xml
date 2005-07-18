@@ -1,0 +1,44 @@
+<chapter id="gettingstarted">
+    <title>Getting Started with Facelets</title>
+
+    <sect1 id="gettingstarted-download">
+        <title>Downloading Facelets</title>
+        <para>
+			Facelets is currently available as a sub-project of the JavaServer Faces Reference Implementation on Java.net (http://facelets.dev.java.net/).  You have a couple options for downloading Facelets:
+		</para>
+		<itemizedlist>
+			<listitem>
+				Download a release binary from http://facelets.dev.java.net/servlets/ProjectDocumentList.  Once downloaded, unzip the project into an appropriate folder.
+			</listitem>
+			<listitem>
+				<para>
+					If you are a member of Java.net, you may checkout Facelets from CVS.  Make sure you are located in the appropriate directory and use the following CVS commands (Replace <literal>USER_NAME</literal> with your Java.net Member Login Name):
+				</para>
+				<orderedlist>
+					<listitem>
+						<literal>cvs -d :pserver:USER_NAME@cvs.dev.java.net:/cvs login</literal>
+					</listitem>
+					<listitem>
+						<literal>cvs -d :pserver:USER_NAME@cvs.dev.java.net:/cvs checkout facelets</literal>
+					</listitem>
+				</orderedlist>
+				<para>
+					More information on accessing Java.net's CVS repository is located at http://facelets.dev.java.net/servlets/ProjectSource. 
+				</para>
+			</listitem>
+		</itemizedlist>
+		<para>
+			See TODO for more information on building Facelets from source (specifically if you used CVS).
+		</para>
+    </sect1>
+	
+	<sect1 id="gettingstarted-jsf">
+		<title>Dependencies</title>
+		<para>
+			Facelets will work with both version 1.1 and 1.2 of JavaServer Faces and makes no bearing on the implementation used.  Facelets also uses the new EL-API and again can be used with any implementation of the EL-API.  Please reference the table below to make sure your dependencies are available to Facelets:
+		</para>
+	</sect1>
+	
+</chapter>
+
+

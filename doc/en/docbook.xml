@@ -1,0 +1,83 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5b1//EN"
+                      "../shared/docbook-dtd/docbookx.dtd"
+[
+<!ENTITY gettingstarted            SYSTEM "chpt/gettingstarted.xml">
+]>
+
+<book lang="en">
+
+    <bookinfo>
+        <title>Facelets - JavaServer Faces View Definition Framework</title>
+        <subtitle>Developer Documentation</subtitle>
+        <releaseinfo>1.0.0</releaseinfo>
+    </bookinfo>
+
+    <toc/>
+	
+	<preface id="intro" revision="1">
+        <title>Introduction</title>
+        <para>
+            The web community is eagerly seeking a light-weight, templating framework backed by JavaServer Faces as the industry standard. While JavaServer Faces and JavaServer Pages technology (<abbrev>JSP</abbrev>) are meant to be aligned, Facelets steps outside of the JSP specification and provides a highly performant, JSF-centric view technology. Anyone who has created a JSP page will be able to do the same with Facelets and familiar XML-tag use. The difference is under the hood where all the burden of the JSP vendor API is removed to greatly enhance JSF as a platform and provide easy plug-and-go development without requiring JSP tag development.
+        </para>
+		<para>
+			JavaServer Faces <literal>UIComponents</literal> are first class citizens within Facelets; there's no need to develop extra objects to integrate. There's also no need to learn yet another XML schema to define your views.
+		</para>
+		<para>
+			Facelets includes many features such as:
+		</para>
+		<itemizedlist>
+			<listitem>
+				Works with JSF 1.1 and JSF 1.2, including Sun's RI and Apache MyFaces.
+			</listitem>
+			<listitem>
+				Zero Tag development time for UIComponents
+			</listitem>
+			<listitem>
+				Fast Templating/Decorators for Components and Pages
+			</listitem>
+			<listitem>
+				The ability to specify <literal>UIComponent</literal> trees in separate files (<literal>UICompositions</literal>)
+			</listitem>
+			<listitem>
+				Line/Tag/Attribute precise Error Reporting
+			</listitem>
+			<listitem>
+				Specify Tags in Separate Files, even packaged with Jars
+			</listitem>
+			<listitem>
+				Full EL support, including Functions
+			</listitem>
+			<listitem>
+				Build-time EL Validation
+			</listitem>
+			<listitem>
+				XML configuration files aren't necessary
+			</listitem>
+			<listitem>
+				Reserves the '<literal>jsfc</literal>' attribute which acts the same as Tapestry's jwcid (Example: <literal><![CDATA[<input id="bar" type="text" jsfc="h:inputText" value="#{foo.bar}"/>]]></literal>)
+			</listitem>
+			<listitem>
+				Plugable Decorators to really make designer's job easy (Example: transform <literal><![CDATA[<input type="text"/>]]></literal> to <literal><![CDATA[<h:inputText/>]]></literal> at compile time)
+			</listitem>
+			<listitem>
+				Works with any <literal>RenderKit</literal>
+			</listitem>
+			<listitem>
+				Facelet APIs aren't dependent on a Web Container
+			</listitem>
+		</itemizedlist>
+		<para>
+			Everyone wants to be more designer friendly, and Tapestry seems to be the only choice developers are pursuing. On the other hand, JSF is the standard everyone would like to have happen, but JSF needs a more "pluggable" <literal>ViewHandler</literal> framework that is both designer and developer friendly.
+		</para>
+		<para>
+			Developers go through enough work defining <literal>UIComponents</literal>, <literal>Converters</literal>, and <literal>Validators</literal> in their <literal>faces-config.xml</literal>, and Facelets only asks them to specify a name alias to plug their objects into their pages (no XML necessary).
+		</para>
+		<para>
+			Facelets is a clean slate for correcting concerns with JSF. Templating, re-use, and ease of development are top priorities that will help bring developers on board with JSF as a suitable platform for large scale projects.
+		</para>
+    </preface>
+
+	&gettingstarted;
+
+</book>
