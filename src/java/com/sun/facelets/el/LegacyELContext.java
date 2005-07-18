@@ -33,7 +33,10 @@ import javax.faces.el.PropertyResolver;
 import javax.faces.el.VariableResolver;
 
 /**
+ * 
+ * 
  * @author Jacob Hookom
+ * @version $Id: LegacyELContext.java,v 1.3 2005/07/18 08:25:37 jhook Exp $
  * @deprecated
  */
 public final class LegacyELContext extends ELContext {

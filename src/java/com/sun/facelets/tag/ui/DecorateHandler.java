@@ -26,7 +26,7 @@ import javax.faces.component.UIComponent;
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
 import com.sun.facelets.FaceletHandler;
-import com.sun.facelets.tag.CompositeFaceletHandler;
+import com.sun.facelets.compiler.CompositeFaceletHandler;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagAttributeException;
 import com.sun.facelets.tag.TagConfig;
@@ -34,7 +34,7 @@ import com.sun.facelets.tag.TagHandler;
 
 /**
  * @author Jacob Hookom
- * @version $Id: DecorateHandler.java,v 1.1 2005/05/21 17:54:55 jhook Exp $
+ * @version $Id: DecorateHandler.java,v 1.2 2005/07/18 08:25:35 jhook Exp $
  */
 public final class DecorateHandler extends TagHandler implements TemplateClient {
 

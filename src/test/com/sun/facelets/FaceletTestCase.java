@@ -1,77 +1,91 @@
+/**
+ * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
+ * Licensed under the Common Development and Distribution License,
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *   http://www.sun.com/cddl/
+ *   
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or 
+ * implied. See the License for the specific language governing
+ * permissions and limitations under the License.
+ */
+
 package com.sun.facelets;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.StringWriter;
+import java.io.OutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Set;
 
 import javax.faces.FactoryFinder;
 import javax.faces.application.Application;
 import javax.faces.application.ApplicationFactory;
-import javax.faces.application.StateManager;
-import javax.faces.application.ViewHandler;
-import javax.faces.component.UIComponent;
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
 import javax.faces.context.FacesContextFactory;
-import javax.faces.mock.MockExternalContext;
-import javax.faces.mock.MockHttpServletRequest;
-import javax.faces.mock.MockHttpServletResponse;
-import javax.faces.mock.MockHttpSession;
-import javax.faces.mock.MockJspFactory;
-import javax.faces.mock.MockLifecycle;
-import javax.faces.mock.MockResponseWriter;
-import javax.faces.mock.MockServletConfig;
-import javax.faces.mock.MockServletContext;
-import javax.faces.render.RenderKitFactory;
+import javax.faces.lifecycle.LifecycleFactory;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
-import javax.servlet.jsp.JspFactory;
+import javax.servlet.ServletContextListener;
 
-import com.sun.facelets.FaceletFactory;
-import com.sun.facelets.FaceletViewHandler;
-import com.sun.facelets.compiler.Compiler;
 import com.sun.facelets.compiler.SAXCompiler;
-import com.sun.faces.config.ConfigureListener;
-import com.sun.faces.context.FacesContextFactoryImpl;
+import com.sun.facelets.mock.MockHttpServletResponse;
+import com.sun.facelets.mock.MockServletContext;
+import com.sun.facelets.mock.MockHttpServletRequest;
+import com.sun.facelets.spi.DefaultFaceletFactory;
+import com.sun.faces.util.DebugUtil;
 
 import junit.framework.TestCase;
 
 public abstract class FaceletTestCase extends TestCase {
 
-    protected final String filePath = this.getDirectory();
+    private final String filePath = this.getDirectory();
 
-    // Mock object instances for our tests
-    protected Application application = null;
+    private final URI base = this.getContext();
 
-    protected MockServletConfig config = null;
+    private MockServletContext servletContext;
 
-    protected MockExternalContext externalContext = null;
+    private MockHttpServletRequest servletRequest;
 
-    protected FacesContext facesContext = null;
+    private MockHttpServletResponse servletResponse;
 
-    protected MockLifecycle lifecycle = null;
+    private ApplicationFactory factoryApplication;
 
-    protected MockHttpServletRequest request = null;
+    private FacesContextFactory factoryFacesContext;
 
-    protected MockHttpServletResponse response = null;
+    private LifecycleFactory factoryLifecycle;
 
-    protected MockServletContext servletContext = null;
-
-    protected MockHttpSession session = null;
-
-    protected Compiler compiler = null;
-
-    protected StringWriter writer = null;
+    private boolean initialized = false;
 
     public FaceletTestCase() {
         super();
     }
 
-    public FaceletTestCase(String arg0) {
-        super(arg0);
+    public FaceletTestCase(String name) {
+        super(name);
     }
 
-    protected URL getLocalFile(String name) throws Exception {
+    protected URI getContext() {
+        try {
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            URL url = cl.getResource(this.filePath);
+            if (url == null) {
+                throw new FileNotFoundException(cl.getResource("").getFile()
+                        + this.filePath + " was not found");
+            } else {
+                return new URI(url.toString());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error Initializing Context", e);
+        }
+    }
+
+    protected URL getLocalFile(String name) throws FileNotFoundException {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         URL url = cl.getResource(this.filePath + "/" + name);
         if (url == null) {
@@ -81,86 +95,78 @@ public abstract class FaceletTestCase extends TestCase {
         return url;
     }
 
-    protected String getDirectory() {
+    private String getDirectory() {
         return this.getClass().getName().substring(0,
-                this.getClass().getName().lastIndexOf('.')).replace('.', '/');
-    }
-
-    protected void write(UIComponent c) throws IOException {
-        this.writer = new StringWriter(2560);
-        this.facesContext
-                .setResponseWriter(new MockResponseWriter(this.writer));
-        c.encodeAll(this.facesContext);
+                this.getClass().getName().lastIndexOf('.')).replace('.', '/') + "/";
     }
 
     protected void setUp() throws Exception {
         super.setUp();
+        URI context = this.getContext();
 
-        JspFactory.setDefaultFactory(new MockJspFactory());
+        this.servletContext = new MockServletContext(context);
+        this.servletRequest = new MockHttpServletRequest(this.servletContext,
+                context);
+        this.servletResponse = new MockHttpServletResponse();
 
-        // setup UISettings
-        this.compiler = new SAXCompiler();
-        //this.compiler.addTagDecorator(HtmlDecorator.Instance);
-        this.compiler.setValidating(false);
-        this.compiler.setTrimmingWhitespace(false);
-        this.compiler.setTrimmingComments(false);
+        // initialize Faces
+        this.initFaces();
 
-        // Set up Servlet API Objects
-        this.servletContext = new MockServletContext();
-        this.servletContext.addInitParameter("appParamName", "appParamValue");
-        this.servletContext.addInitParameter(
-                StateManager.STATE_SAVING_METHOD_PARAM_NAME, "client");
-        this.servletContext.addInitParameter(
-                ViewHandler.DEFAULT_SUFFIX_PARAM_NAME, ".xhtml");
-        this.servletContext.setAttribute("appScopeName", "appScopeValue");
-        this.config = new MockServletConfig(this.servletContext);
-        this.session = new MockHttpSession();
-        this.session.setAttribute("sesScopeName", "sesScopeValue");
-        this.request = new MockHttpServletRequest(this.session);
-        this.request.setAttribute("reqScopeName", "reqScopeValue");
-        this.response = new MockHttpServletResponse();
-
-        ConfigureListener listener = new ConfigureListener();
-        listener
-                .contextInitialized(new ServletContextEvent(this.servletContext));
-
-        ApplicationFactory appFactory = (ApplicationFactory) FactoryFinder
-                .getFactory(FactoryFinder.APPLICATION_FACTORY);
-        this.application = appFactory.getApplication();
-        this.application
-                .setDefaultRenderKitId(RenderKitFactory.HTML_BASIC_RENDER_KIT);
-        this.application.setViewHandler(new FaceletViewHandler(this.application
-                .getViewHandler()));
-
-        FacesContextFactory facesFactory = new FacesContextFactoryImpl();
-        this.facesContext = facesFactory.getFacesContext(this.servletContext,
-                this.request, this.response, new MockLifecycle());
-
-        this.writer = new StringWriter(512);
-        this.facesContext
-                .setResponseWriter(new MockResponseWriter(this.writer));
+        this.factoryFacesContext.getFacesContext(this.servletContext,
+                this.servletRequest, this.servletResponse,
+                this.factoryLifecycle
+                        .getLifecycle(LifecycleFactory.DEFAULT_LIFECYCLE));
         
-        FaceletFactory.setInstance(new TestFaceletFactory(this.getClass(), this.compiler));
-        
-        UIViewRoot root = new UIViewRoot();
-        this.facesContext.setViewRoot(root);
-        root.setRenderKitId(RenderKitFactory.HTML_BASIC_RENDER_KIT);
-        root.setViewId("/postback.xhtml");
+        FaceletFactory factory = new DefaultFaceletFactory(new SAXCompiler(), context.toURL());
+        FaceletFactory.setInstance(factory);
+    }
+    
+    public void setRequest(String method, String path, OutputStream os) {
+        this.servletRequest = new MockHttpServletRequest(this.servletContext, method, path);
+        //this.servletResponse = new MockHttpServletResponse(os);
+        this.factoryFacesContext.getFacesContext(this.servletContext,
+                this.servletRequest, this.servletResponse,
+                this.factoryLifecycle
+                        .getLifecycle(LifecycleFactory.DEFAULT_LIFECYCLE));
+    }
+
+    private void initFaces() throws Exception {
+        if (!this.initialized) {
+            this.initialized = true;
+            this.initFacesListener(this.servletContext);
+            this.factoryApplication = (ApplicationFactory) FactoryFinder
+                    .getFactory(FactoryFinder.APPLICATION_FACTORY);
+            this.factoryFacesContext = (FacesContextFactory) FactoryFinder
+                    .getFactory(FactoryFinder.FACES_CONTEXT_FACTORY);
+            this.factoryLifecycle = (LifecycleFactory) FactoryFinder
+                    .getFactory(FactoryFinder.LIFECYCLE_FACTORY);
+
+            Application application = this.factoryApplication.getApplication();
+            application.setViewHandler(new FaceletViewHandler(application
+                    .getViewHandler()));
+        }
+    }
+
+    protected void initFacesListener(ServletContext context) throws Exception {
+        ServletContextListener listener;
+        Class type;
+        try {
+            type = Class.forName("com.sun.faces.config.ConfigureListener");
+        } catch (ClassNotFoundException e) {
+            try {
+                type = Class.forName("");
+            } catch (ClassNotFoundException e2) {
+                throw new FileNotFoundException(
+                        "Either JSF-RI or MyFaces needs to be on the classpath with their supported Jars");
+            }
+        }
+        listener = (ServletContextListener) type.newInstance();
+        listener.contextInitialized(new ServletContextEvent(context));
     }
 
     protected void tearDown() throws Exception {
         super.tearDown();
-
-        this.compiler = null;
-        this.application = null;
-        this.config = null;
-        this.externalContext = null;
-        this.facesContext = null;
-        this.lifecycle = null;
-        this.request = null;
-        this.response = null;
         this.servletContext = null;
-        this.session = null;
     }
 
 }

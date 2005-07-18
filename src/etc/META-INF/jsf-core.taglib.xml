@@ -14,13 +14,13 @@
  implied. See the License for the specific language governing
  permissions and limitations under the License.
  
- $Id: jsf-core.taglib.xml,v 1.1 2005/05/21 17:47:20 jhook Exp $
+ $Id: jsf-core.taglib.xml,v 1.2 2005/07/18 08:25:38 jhook Exp $
 -->
 
 <!DOCTYPE facelet-taglib PUBLIC
   "-//Sun Microsystems, Inc.//DTD Facelet Taglib 1.0//EN"
-  "http://java.sun.com/dtd/faclet-taglib_1_0.dtd">
+  "http://java.sun.com/dtd/facelet-taglib_1_0.dtd">
 
 <facelet-taglib>
-	<library-class>com.sun.facelets.tag.jstl.core.JstlCoreLibrary</library-class>
+	<library-class>com.sun.facelets.tag.core.CoreLibrary</library-class>
 </facelet-taglib>

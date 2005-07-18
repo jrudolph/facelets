@@ -18,11 +18,13 @@ package com.sun.facelets.compiler;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.sun.facelets.tag.TagLibrary;
+
 /**
  * @author Jacob Hookom
- * @version $Id: NamespaceManager.java,v 1.1 2005/05/21 17:54:50 jhook Exp $
+ * @version $Id: NamespaceManager.java,v 1.2 2005/07/18 08:25:29 jhook Exp $
  */
-final class NamespaceManager {
+public final class NamespaceManager {
 
     private final static class NS {
         public final String prefix;
@@ -73,6 +75,18 @@ final class NamespaceManager {
                 return;
             }
         }
+    }
+    
+    public final NamespaceUnit toNamespaceUnit(TagLibrary library) {
+        NamespaceUnit unit = new NamespaceUnit(library);
+        if (this.namespaces.size() > 0) {
+            NS ns = null;
+            for (int i = this.namespaces.size() - 1; i >= 0; i--) {
+                ns = (NS) this.namespaces.get(i);
+                unit.setNamespace(ns.prefix, ns.namespace);
+            }
+        }
+        return unit;
     }
 
 }

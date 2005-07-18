@@ -13,23 +13,32 @@
  * permissions and limitations under the License.
  */
 
-package com.sun.facelets.tag;
+package com.sun.facelets.mock;
 
-import com.sun.facelets.FaceletHandler;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+
+import javax.servlet.ServletOutputStream;
 
 /**
- * A FaceletHandler that is derived of 1 or more, inner FaceletHandlers. This
- * interface would be found if the next FaceletHandler is structually, a body
- * with multiple child elements as defined in XML.
  * 
  * @author Jacob Hookom
- * @version $Id: CompositeFaceletHandler.java,v 1.1 2005/05/21 17:54:37 jhook Exp $
+ * @version $Id: MockServletOutputStream.java,v 1.1 2005/07/18 08:25:43 jhook Exp $
  */
-public interface CompositeFaceletHandler extends FaceletHandler {
-    /**
-     * Inner FaceletHandlers this handler delegates to
-     * 
-     * @return an array of 0 or more in length, never null.
-     */
-    public FaceletHandler[] getHandlers();
+public class MockServletOutputStream extends ServletOutputStream {
+
+    private final OutputStream dest;
+    
+    public MockServletOutputStream() {
+        this.dest = new ByteArrayOutputStream();
+    }
+    
+    public MockServletOutputStream(OutputStream dest) {
+        this.dest = dest;
+    }
+
+    public void write(int b) throws IOException {
+        this.dest.write(b);
+    }
 }

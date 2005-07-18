@@ -29,9 +29,9 @@ import com.sun.facelets.el.TagValueExpression;
  * Representation of a Tag's attribute in a Facelet File
  * 
  * @author Jacob Hookom
- * @version $Id: TagAttribute.java,v 1.3 2005/07/13 03:49:35 jhook Exp $
+ * @version $Id: TagAttribute.java,v 1.4 2005/07/18 08:25:34 jhook Exp $
  */
-public final class TagAttribute {
+public class TagAttribute {
 
     protected final boolean literal;
 

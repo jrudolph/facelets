@@ -30,11 +30,16 @@ import javax.faces.el.PropertyNotFoundException;
 import javax.faces.el.ValueBinding;
 
 /**
+ * 
+ * 
  * @author Jacob Hookom
+ * @version $Id: LegacyValueBinding.java,v 1.3 2005/07/18 08:25:37 jhook Exp $
  * @deprecated
  */
 public final class LegacyValueBinding extends ValueBinding implements Externalizable {
 
+    private static final long serialVersionUID = 1L;
+    
     protected ValueExpression delegate;
     
     public LegacyValueBinding() {

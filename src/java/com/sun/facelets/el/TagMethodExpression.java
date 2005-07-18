@@ -29,8 +29,16 @@ import javax.el.PropertyNotFoundException;
 
 import com.sun.facelets.tag.TagAttribute;
 
+/**
+ * 
+ * 
+ * @author Jacob Hookom
+ * @version $Id: TagMethodExpression.java,v 1.4 2005/07/18 08:25:37 jhook Exp $
+ */
 public final class TagMethodExpression extends MethodExpression implements
         Externalizable {
+    
+    private static final long serialVersionUID = 1L;
     
     protected String attr;
     protected MethodExpression orig;

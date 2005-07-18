@@ -47,7 +47,7 @@ import com.sun.facelets.tag.TagAttributes;
  * @see com.sun.facelets.compiler.Compiler
  * 
  * @author Jacob Hookom
- * @version $Id: SAXCompiler.java,v 1.1 2005/05/21 17:54:51 jhook Exp $
+ * @version $Id: SAXCompiler.java,v 1.2 2005/07/18 08:25:29 jhook Exp $
  */
 public final class SAXCompiler extends Compiler {
 
@@ -60,9 +60,9 @@ public final class SAXCompiler extends Compiler {
 
         private Locator locator;
 
-        private final CompilationUnit unit;
+        private final CompilationManager unit;
 
-        public CompilationHandler(CompilationUnit unit, String alias) {
+        public CompilationHandler(CompilationManager unit, String alias) {
             this.unit = unit;
             this.alias = alias;
         }
@@ -192,11 +192,11 @@ public final class SAXCompiler extends Compiler {
 
     public FaceletHandler doCompile(URL src, String alias) throws IOException,
             FaceletException, ELException, FacesException {
-        CompilationUnit unit = null;
+        CompilationManager unit = null;
         InputStream is = null;
         try {
             is = src.openStream();
-            unit = new CompilationUnit(this);
+            unit = new CompilationManager(this);
             CompilationHandler handler = new CompilationHandler(unit, alias);
             SAXParser parser = this.createSAXParser(handler);
             parser.parse(is, handler);

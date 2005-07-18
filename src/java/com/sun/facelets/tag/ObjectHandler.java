@@ -32,7 +32,6 @@ import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 
 import com.sun.facelets.FaceletContext;
-import com.sun.facelets.el.ELAdaptor;
 import com.sun.facelets.el.LegacyValueBinding;
 import com.sun.facelets.util.FacesAPI;
 
@@ -42,7 +41,7 @@ import com.sun.facelets.util.FacesAPI;
  * 
  * @see com.sun.facelets.tag.TagAttribute
  * @author Jacob Hookom
- * @version $Id: ObjectHandler.java,v 1.2 2005/07/07 03:08:36 jhook Exp $
+ * @version $Id: ObjectHandler.java,v 1.3 2005/07/18 08:25:33 jhook Exp $
  */
 public abstract class ObjectHandler extends TagHandler {
 

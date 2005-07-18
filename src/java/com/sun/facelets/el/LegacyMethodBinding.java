@@ -19,7 +19,6 @@ import java.io.Serializable;
 
 import javax.el.ELException;
 import javax.el.MethodExpression;
-import javax.faces.component.ActionSource;
 import javax.faces.context.FacesContext;
 import javax.faces.el.EvaluationException;
 import javax.faces.el.MethodBinding;
@@ -28,8 +27,8 @@ import javax.faces.el.MethodNotFoundException;
 /**
  * For legacy ActionSources
  * 
- * @see ActionSource
  * @author Jacob Hookom
+ * @version $Id: LegacyMethodBinding.java,v 1.3 2005/07/18 08:25:37 jhook Exp $
  * @deprecated
  */
 public class LegacyMethodBinding extends

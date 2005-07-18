@@ -28,8 +28,17 @@ import javax.el.ValueExpression;
 
 import com.sun.facelets.tag.TagAttribute;
 
+/**
+ * 
+ * 
+ * @author Jacob Hookom
+ * @version $Id: TagValueExpression.java,v 1.4 2005/07/18 08:25:37 jhook Exp $
+ * @deprecated
+ */
 public class TagValueExpression extends ValueExpression implements
         Externalizable {
+
+    private static final long serialVersionUID = 1L;
 
     protected ValueExpression orig;
 

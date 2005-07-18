@@ -14,7 +14,7 @@
  implied. See the License for the specific language governing
  permissions and limitations under the License.
  
- $Id: jsf-ui.taglib.xml,v 1.2 2005/07/18 08:25:39 jhook Exp $
+ $Id: jstl-fn.taglib.xml,v 1.1 2005/07/18 08:25:39 jhook Exp $
 -->
 
 <!DOCTYPE facelet-taglib PUBLIC
@@ -22,5 +22,5 @@
   "http://java.sun.com/dtd/facelet-taglib_1_0.dtd">
 
 <facelet-taglib>
-	<library-class>com.sun.facelets.tag.ui.UILibrary</library-class>
+	<library-class>com.sun.facelets.tag.jstl.fn.JstlFnLibrary</library-class>
 </facelet-taglib>

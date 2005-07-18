@@ -26,7 +26,7 @@ import com.sun.facelets.el.ELText;
 
 /**
  * @author Jacob Hookom
- * @version $Id: UIText.java,v 1.2 2005/07/07 03:08:36 jhook Exp $
+ * @version $Id: UIText.java,v 1.3 2005/07/18 08:25:36 jhook Exp $
  */
 public final class UIText extends UIComponentBase {
 
@@ -34,6 +34,8 @@ public final class UIText extends UIComponentBase {
 
     public UIText(ELText txt) {
         this.txt = txt;
+        this.setRendered(true);
+        this.setTransient(true);
     }
 
     public String getFamily() {
@@ -50,14 +52,6 @@ public final class UIText extends UIComponentBase {
     }
 
     public boolean getRendersChildren() {
-        return true;
-    }
-
-    public boolean isRendered() {
-        return true;
-    }
-
-    public boolean isTransient() {
         return true;
     }
 }
