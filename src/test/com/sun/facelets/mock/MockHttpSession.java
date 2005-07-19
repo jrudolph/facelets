@@ -16,17 +16,16 @@
 package com.sun.facelets.mock;
 
 import java.util.Enumeration;
+import java.util.Hashtable;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpSessionContext;
 
-import com.sun.org.apache.xalan.internal.xsltc.runtime.Hashtable;
-
 /**
  * 
  * @author Jacob Hookom
- * @version $Id: MockHttpSession.java,v 1.1 2005/07/18 08:25:42 jhook Exp $
+ * @version $Id: MockHttpSession.java,v 1.2 2005/07/19 00:49:02 jhook Exp $
  */
 public class MockHttpSession implements HttpSession {
 

@@ -17,18 +17,17 @@ package com.sun.facelets.mock;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Hashtable;
 import java.util.Locale;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 
-import com.sun.org.apache.xalan.internal.xsltc.runtime.Hashtable;
-
 /**
  * 
  * @author Jacob Hookom
- * @version $Id: MockHttpServletResponse.java,v 1.1 2005/07/18 08:25:42 jhook Exp $
+ * @version $Id: MockHttpServletResponse.java,v 1.2 2005/07/19 00:49:01 jhook Exp $
  */
 public class MockHttpServletResponse implements HttpServletResponse {
     
