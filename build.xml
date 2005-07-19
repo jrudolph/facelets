@@ -116,7 +116,7 @@
   <!-- ======================== Build DocBook =========================== -->
   <target name="doc" depends="prepare">
     <delete dir="${build}/docs/dev"/>
-  	<xslt basedir="${doc}/en"
+    <xslt basedir="${doc}/en"
            destdir="${build}/docs/dev"
            style="${doc}/../../shared/xhtml.xsl"
            includes="*.xml"
