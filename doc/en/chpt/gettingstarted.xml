@@ -35,8 +35,86 @@
 	<sect1 id="gettingstarted-jsf">
 		<title>Dependencies</title>
 		<para>
-			Facelets will work with both version 1.1 and 1.2 of JavaServer Faces and makes no bearing on the implementation used.  Facelets also uses the new EL-API and again can be used with any implementation of the EL-API.  Please reference the table below to make sure your dependencies are available to Facelets:
+			Facelets will work with both version 1.1 and 1.2 of JavaServer Faces and makes no bearing on the implementation used.  Facelets also uses the new EL-API and again can be used with any implementation of that API.  Please reference the table below to make sure your dependencies are available to Facelets:
 		</para>
+		<table>
+			<title>Facelets Dependencies</title>
+			<tgroup cols="4">
+				<thead>
+					<row>
+						<entry>Project</entry>
+						<entry>Build Req?</entry>
+						<entry>Included?</entry>
+						<entry>Description</entry>
+						<entry>Link</entry>
+					</row>
+				</thead>
+				<tbody>
+					<row>
+						<entry>JavaServer Faces RI</entry>
+						<entry>No</entry>
+						<entry>No</entry>
+						<entry>The reference implementation of JSF 1.1 and JSF 1.2 are available for use with your application.</entry>
+						<entry>https://javaserverfaces.dev.java.net/</entry>
+					</row>
+					<row>
+						<entry>Apache MyFaces</entry>
+						<entry>No</entry>
+						<entry>No</entry>
+						<entry>The alternative to the JSF reference implementation.  MyFaces currently implements the JSF 1.1 specification.</entry>
+						<entry>http://myfaces.apache.org/</entry>
+					</row>
+					<row>
+						<entry>JavaServer Faces 1.2 API</entry>
+						<entry>Yes</entry>
+						<entry>No</entry>
+						<entry>JSF 1.2 API that works with the new EL Specification.  This API is packaged with the JavaServer Faces RI and available on Java.net.</entry>
+						<entry>https://javaserverfaces.dev.java.net/</entry>
+					</row>
+					<row>
+						<entry>EL API</entry>
+						<entry>Yes</entry>
+						<entry>Yes</entry>
+						<entry>The standardized EL specification that is standalone from JSP or JSF, but used by both frameworks.</entry>
+						<entry>https://glassfish.dev.java.net/</entry>
+					</row>
+					<row>
+						<entry>EL RI</entry>
+						<entry>No</entry>
+						<entry>Yes</entry>
+						<entry>The reference implementation that is used by Facelets for handling EL.</entry>
+						<entry>https://glassfish.dev.java.net/</entry>
+					</row>
+					<row>
+						<entry>XML SAX</entry>
+						<entry>Yes</entry>
+						<entry>No</entry>
+						<entry>This dependency should not be an issue for most deployments as it's a standard part of web containers and JREs.</entry>
+						<entry>http://java.sun.com/xml/</entry>
+					</row>
+				</tbody>
+			</tgroup>
+		</table>
+		<para>
+			For more information on using these projects:
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para>
+					Those projects that are required to build Facelets, please see TODO
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					If you would like to use Apache MyFaces with Facelets, see TODO
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					To use Facelets with the JavaServer Faces Reference Implementation, see TODO
+				</para>
+			</listitem>
+		</itemizedlist>
 	</sect1>
 	
 </chapter>
