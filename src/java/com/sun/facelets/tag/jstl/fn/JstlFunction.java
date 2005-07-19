@@ -23,7 +23,7 @@ import java.util.Map;
  * Implementations of JSTL Functions
  * 
  * @author Jacob Hookom
- * @version $Id: JstlFunction.java,v 1.1 2005/07/18 08:25:41 jhook Exp $
+ * @version $Id: JstlFunction.java,v 1.2 2005/07/19 00:49:35 jhook Exp $
  */
 public final class JstlFunction {
 
@@ -35,14 +35,14 @@ public final class JstlFunction {
             return false;
         }
 
-        return name.contains(searchString);
+        return -1 != name.indexOf(searchString);
     }
 
     public static boolean containsIgnoreCase(String name, String searchString) {
         if (name == null || searchString == null) {
             return false;
         }
-        return name.toUpperCase().contains(searchString.toUpperCase());
+        return -1 != name.toUpperCase().indexOf(searchString.toUpperCase());
     }
 
     public static boolean endsWith(String name, String searchString) {
@@ -56,7 +56,7 @@ public final class JstlFunction {
         if (value == null) {
             return null;
         }
-        return value.replace("<", "&lt;");
+        return value.replaceAll("<", "&lt;");
     }
 
     public static int indexOf(String name, String searchString) {
@@ -105,7 +105,7 @@ public final class JstlFunction {
         if (value == null || a == null || b == null) {
             return null;
         }
-        return value.replace(a, b);
+        return value.replaceAll(a, b);
     }
     
     public static String[] split(String value, String d) {
