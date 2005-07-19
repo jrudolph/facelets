@@ -1,0 +1,104 @@
+<chapter id="config">
+    <title>Configuration</title>
+
+    <sect1 id="config-faces">
+        <title>Configuring JavaServer Faces</title>
+        <para>
+			Facelets comes with an extensible <literal>ViewHandler</literal>.  This is the only necessary integration point within your <literal>faces-config.xml</literal>.			
+		</para>
+		<programlisting><![CDATA[<faces-config>		
+  <application>
+    <view-handler>
+      com.sun.facelets.FaceletViewHandler
+    </view-handler>    
+  </application> 
+</faces-config>]]></programlisting>
+		<para>
+			The <literal>FaceletViewHandler</literal> utilizes several <literal><![CDATA[<context-param>]]></literal> declarations in your <literal>web.xml</literal> which are detailed in <xref linkend="config-webapp-init"/>.
+		</para>
+		<sect2 id="config-faces-ri">
+			<title>JavaServer Faces RI</title>
+			<para>
+				See <xref linkend="gettingstarted"/> for a tutorial that uses JavaServer Faces RI as an example.  More information on the JSF RI is available at:
+			</para>
+			<itemizedlist>
+				<listitem>
+					<para>http://javaserverfaces.dev.java.net</para>
+				</listitem>
+			</itemizedlist>
+		</sect2>
+		<sect2 id="config-faces-apache">
+			<title>Apache MyFaces</title>
+			<para>
+				Apache MyFaces has it's own version of the JavaServer Faces API included in its distribution.  Currently, Apache MyFaces is only up to the 1.1 specification, but has not yet passed the TCK.
+			</para>
+			<itemizedlist>
+				<listitem>
+					<para>http://myfaces.apache.org</para>
+				</listitem>
+			</itemizedlist>
+		</sect2>
+	</sect1>
+	
+	<sect1 id="config-webapp">
+        <title>Web Application Descriptors</title>
+		
+		<sect2 id="config-webapp-init">
+			<title>Initialization Parameters</title>
+			<para>
+				  These parameters help with development and increase the flexibility of Facelet use.
+			</para>
+			<table>
+			<title>Web.xml Parameter List</title>
+			<tgroup cols="3">
+				<thead>
+					<row>
+						<entry>Parameter Name</entry>
+						<entry>Default Value</entry>
+						<entry>Description</entry>
+						<entry>Example</entry>
+					</row>
+				</thead>
+				<tbody>
+					<row>
+						<entry>facelets.LIBRARIES</entry>
+						<entry></entry>
+						<entry>A semicolon (<literal>;</literal>) delimitted list of paths to Facelet tag libraries, relative to your application's root.  These libraries will be loaded when the first request hits the <literal>FaceletViewHandler</literal> for page compilation.</entry>
+						<entry>/WEB-INF/facelets/foo.taglib.xml; /WEB-INF/facelets/bar.taglib.xml</entry>
+					</row>
+					<row>
+						<entry>facelets.REFRESH_PERIOD</entry>
+						<entry>2</entry>
+						<entry>When a page is requested, what interval in <literal>seconds</literal> should the compiler change for changes.  If you don't want the compiler to check for changes once the page is compiled, then use a value of <literal>-1</literal>. Setting a low refresh period helps during development to be able to edit pages in a running application.</entry>
+						<entry>-1</entry>
+					</row>
+					<row>
+						<entry>facelets.VIEW_MAPPINGS</entry>
+						<entry></entry>
+						<entry>A semicolon (<literal>;</literal>) delimitted list of resources that Facelets should use.  If no resource paths are specified, Facelets will handle all requests (DEFAULT). If one or more paths are specified, Facelets will only use the ones specified, otherwise fall back on the parent or default <literal>ViewHandler</literal> (JSP).</entry>
+						<entry>/demos/*; *.xhtml</entry>
+					</row>
+				</tbody>
+			</tgroup>
+		</table>
+		</sect2>
+		
+		<sect2 id="config-webapp-security">
+			<title>Security</title>
+			<para>
+				Java applications can restrict access to resources or pages by outside users.  This feature is common to all application servers and part of the Servlet specification.
+			</para>
+		</sect2>
+		
+	</sect1>
+	
+	<sect1 id="config-logging">
+        <title>Logging</title>
+        <para>
+			TODO
+		</para>
+	</sect1>
+	
+</chapter>
+
+

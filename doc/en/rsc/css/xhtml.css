@@ -25,11 +25,11 @@ tbody tr td {
 h1, h2, h3, h4, h5, h6 {
 	font-family: "Trebuchet MS", Arial, sans-serif;
 	line-height: normal;
-	color: #600;
+	color: #800;
 	font-weight: normal;
 }
 h1 {
-	font-size: x-large;;
+	font-size: xx-large;
 	color: #1F4D8A;
 	margin-bottom: 12px;
 	font-weight: bold;
@@ -37,22 +37,30 @@ h1 {
 	border: 0px;
 }
 h2 {
-	font-size: large;
+	font-size: x-large;
 	letter-spacing: 0px;
+	font-weight: bold;
 	line-height: 170%
 }
 h3 {
-	font-size: medium;
+	font-size: large;
 	letter-spacing: 0px;
-	color: #333;
+	font-weight: bold;
+	line-height: 170%;
 }
 .literal {
 	color: #1F4D8A;
 }
-.chapter, .preface {
+.chapter {
 	padding-top: 20px;
 }
 .chapter .title, .preface .title {
 	width: 100%;
 	border-bottom: 1px solid #CCC;
+}
+.programlisting {
+	background-color: #F9F9F9;
+	border: 1px solid #CCC;
+	margin: 8px 0px;
+	padding: 4px;
 }

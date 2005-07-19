@@ -3,6 +3,12 @@
                       "../shared/docbook-dtd/docbookx.dtd"
 [
 <!ENTITY gettingstarted            SYSTEM "chpt/gettingstarted.xml">
+<!ENTITY configuration             SYSTEM "chpt/configuration.xml">
+<!ENTITY taglib                    SYSTEM "chpt/taglib.xml">
+<!ENTITY architecture              SYSTEM "chpt/architecture.xml">
+<!ENTITY template                  SYSTEM "chpt/template.xml">
+<!ENTITY development               SYSTEM "chpt/development.xml">
+<!ENTITY building                  SYSTEM "chpt/building.xml">
 ]>
 
 <book lang="en">
@@ -71,13 +77,60 @@
 			Everyone wants to be more designer friendly, and Tapestry seems to be the only choice developers are pursuing. On the other hand, JSF is the standard everyone would like to have happen, but JSF needs a more "pluggable" <literal>ViewHandler</literal> framework that is both designer and developer friendly.
 		</para>
 		<para>
-			Developers go through enough work defining <literal>UIComponents</literal>, <literal>Converters</literal>, and <literal>Validators</literal> in their <literal>faces-config.xml</literal>, and Facelets only asks them to specify a name alias to plug their objects into their pages (no XML necessary).
+			Out of the box, Facelets provides full support for all components specified in the JavaServer Faces specification, including limited support for JSTL tags such as <literal><![CDATA[<c:forEach>]]></literal> and <literal><![CDATA[<c:if>]]></literal>.  Where developers really gain an advantage with using Facelets is its ability to auto-wire additional artifacts to your XML documents such as <literal>UIComponents</literal>, <literal>Validators</literal>, and <literal>Converters</literal>.
 		</para>
 		<para>
 			Facelets is a clean slate for correcting concerns with JSF. Templating, re-use, and ease of development are top priorities that will help bring developers on board with JSF as a suitable platform for large scale projects.
 		</para>
     </preface>
-
-	&gettingstarted;
+    
+    <preface id="guide" revision="1">
+		<title>Documentation Guide</title>
+		<para>
+			To get a jump start on development, this guide covers varying degrees of depth.  Please follow these steps:
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para><xref linkend="gettingstarted"/> as an entry-level tutorial on using JavaServer Faces and Facelets together.</para>
+			</listitem>
+			<listitem>
+				<para><xref linkend="config"/> for details on setting up your web application for use with Facelets.</para>
+			</listitem>
+			<listitem>
+				<para><xref linkend="taglib"/> for incorporating JSF objects into Facelet documents as tags.</para>
+			</listitem>
+			<listitem>
+				<para><xref linkend="template"/> to learn about how Facelets encourages templating and re-use in your documents.</para>
+			</listitem>
+			<listitem>
+				<para><xref linkend="architecture"/> as an overview to the Facelets API and compiler.</para>
+			</listitem>
+			<listitem>
+				<para><xref linkend="dev"/> as a starting point for extending Facelets functionality with custom tag handlers.</para>
+			</listitem>
+		</itemizedlist>
+		<para>
+			Additional documentation and resources such as: mailing lists, forums, and announcements, are available on Facelets' home page at:
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para>http://facelets.dev.java.net</para>
+			</listitem>
+		</itemizedlist>
+    </preface>
+    
+    &gettingstarted;
+    
+    &configuration;
+    
+    &taglib;
+    
+    &template;
+    
+    &architecture;
+    
+    &development;
+    
+    &building;
 
 </book>

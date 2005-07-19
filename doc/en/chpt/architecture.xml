@@ -1,0 +1,45 @@
+<chapter id="architecture">
+    <title>Facelets Architecture</title>
+
+    <sect1 id="architecture-overview">
+        <title>Architecture Overview</title>
+        <para>
+			TODO
+		</para>
+	</sect1>
+	
+	<sect1 id="architecture-api">
+        <title>Facelets API</title>
+        <para>
+			TODO
+		</para>
+		<sect2 id="architecture-api-factory">
+			<title>FaceletFactory</title>
+			<para>
+				TODO
+			</para>
+		</sect2>
+		<sect2 id="architecture-api-facelet">
+			<title>Facelet</title>
+			<para>
+				TODO
+			</para>
+		</sect2>
+		<sect2 id="architecture-api-handler">
+			<title>FaceletHandler</title>
+			<para>
+				TODO
+			</para>
+		</sect2>
+	</sect1>
+	
+	<sect1 id="architecture-compiler">
+        <title>Document Compiler</title>
+        <para>
+			TODO
+		</para>
+	</sect1>
+	
+</chapter>
+
+

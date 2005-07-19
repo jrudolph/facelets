@@ -1,0 +1,26 @@
+<chapter id="dev">
+    <title>Extending Facelets</title>
+    
+    <sect1 id="dev-tag">
+        <title>Developing Tags</title>
+        <para>
+			TODO
+		</para>
+	</sect1>
+    
+    <sect1 id="dev-custom">
+        <title>Custom JSF Handlers</title>
+        <sect2 id="dev-custom-component">
+			<title>UIComponents</title>
+        </sect2>
+        <sect2 id="dev-custom-validator">
+			<title>Validators</title>
+        </sect2>
+        <sect2 id="dev-custom-converter">
+			<title>Converters</title>
+        </sect2>
+	</sect1>
+	
+</chapter>
+
+
