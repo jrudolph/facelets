@@ -20,7 +20,6 @@ import java.net.URL;
 
 import javax.el.ELContext;
 import javax.el.ELException;
-import javax.el.ELResolver;
 import javax.el.ExpressionFactory;
 import javax.el.FunctionMapper;
 import javax.el.VariableMapper;
@@ -32,7 +31,7 @@ import javax.faces.context.FacesContext;
  * Context representative of a single request from a Facelet
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletContext.java,v 1.2 2005/06/07 02:15:35 jhook Exp $
+ * @version $Id: FaceletContext.java,v 1.3 2005/07/20 05:00:28 jhook Exp $
  */
 public abstract class FaceletContext extends ELContext {
 
