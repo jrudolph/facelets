@@ -42,7 +42,7 @@ import com.sun.facelets.util.FacesAPI;
  * A Compiler instance may handle compiling multiple sources
  * 
  * @author Jacob Hookom
- * @version $Id: Compiler.java,v 1.4 2005/07/13 02:18:57 adamwiner Exp $
+ * @version $Id: Compiler.java,v 1.5 2005/07/20 05:27:45 jhook Exp $
  */
 public abstract class Compiler {
 
@@ -103,7 +103,7 @@ public abstract class Compiler {
     protected abstract FaceletHandler doCompile(URL src, String alias)
             throws IOException, FaceletException, ELException, FacesException;
 
-    public TagDecorator createTagDecorator() {
+    public final TagDecorator createTagDecorator() {
         if (this.decorators.size() > 0) {
             return new CompositeTagDecorator((TagDecorator[]) this.decorators
                     .toArray(new TagDecorator[this.decorators.size()]));
@@ -111,14 +111,14 @@ public abstract class Compiler {
         return EMPTY_DECORATOR;
     }
 
-    public void addTagDecorator(TagDecorator decorator) {
+    public final void addTagDecorator(TagDecorator decorator) {
         Assert.param("decorator", decorator);
         if (!this.decorators.contains(decorator)) {
             this.decorators.add(decorator);
         }
     }
 
-    public ExpressionFactory createExpressionFactory() {
+    public final ExpressionFactory createExpressionFactory() {
         ExpressionFactory el = null;
         if (FacesAPI.getVersion() >= 12) {
             try {
@@ -138,7 +138,7 @@ public abstract class Compiler {
         return el;
     }
 
-    private Object featureInstance(String name) {
+    private final Object featureInstance(String name) {
         String type = (String) this.features.get(name);
         if (type != null) {
             try {
@@ -151,7 +151,7 @@ public abstract class Compiler {
         return null;
     }
 
-    public TagLibrary createTagLibrary() {
+    public final TagLibrary createTagLibrary() {
         if (this.libraries.size() > 0) {
             return new CompositeTagLibrary((TagLibrary[]) this.libraries
                     .toArray(new TagLibrary[this.libraries.size()]));
@@ -159,42 +159,42 @@ public abstract class Compiler {
         return EMPTY_LIBRARY;
     }
 
-    public void addTagLibrary(TagLibrary library) {
+    public final void addTagLibrary(TagLibrary library) {
         Assert.param("library", library);
         if (!this.libraries.contains(library)) {
             this.libraries.add(library);
         }
     }
 
-    public void setFeature(String name, String value) {
+    public final void setFeature(String name, String value) {
         this.features.put(name, value);
     }
 
-    public String getFeature(String name) {
+    public final String getFeature(String name) {
         return (String) this.features.get(name);
     }
 
-    public boolean isTrimmingComments() {
+    public final boolean isTrimmingComments() {
         return this.trimmingComments;
     }
 
-    public void setTrimmingComments(boolean trimmingComments) {
+    public final void setTrimmingComments(boolean trimmingComments) {
         this.trimmingComments = trimmingComments;
     }
 
-    public boolean isTrimmingWhitespace() {
+    public final boolean isTrimmingWhitespace() {
         return this.trimmingWhitespace;
     }
 
-    public void setTrimmingWhitespace(boolean trimmingWhitespace) {
+    public final void setTrimmingWhitespace(boolean trimmingWhitespace) {
         this.trimmingWhitespace = trimmingWhitespace;
     }
 
-    public boolean isValidating() {
+    public final boolean isValidating() {
         return this.validating;
     }
 
-    public void setValidating(boolean validating) {
+    public final void setValidating(boolean validating) {
         this.validating = validating;
     }
 }

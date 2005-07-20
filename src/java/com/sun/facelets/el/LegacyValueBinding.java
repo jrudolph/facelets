@@ -33,14 +33,14 @@ import javax.faces.el.ValueBinding;
  * 
  * 
  * @author Jacob Hookom
- * @version $Id: LegacyValueBinding.java,v 1.3 2005/07/18 08:25:37 jhook Exp $
+ * @version $Id: LegacyValueBinding.java,v 1.4 2005/07/20 05:27:46 jhook Exp $
  * @deprecated
  */
 public final class LegacyValueBinding extends ValueBinding implements Externalizable {
 
     private static final long serialVersionUID = 1L;
     
-    protected ValueExpression delegate;
+    private ValueExpression delegate;
     
     public LegacyValueBinding() {
         super();

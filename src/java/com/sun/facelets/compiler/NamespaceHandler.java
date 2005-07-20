@@ -30,7 +30,7 @@ import com.sun.facelets.FaceletHandler;
 import com.sun.facelets.el.CompositeFunctionMapper;
 import com.sun.facelets.tag.TagLibrary;
 
-public final class NamespaceHandler extends FunctionMapper implements FaceletHandler {
+final class NamespaceHandler extends FunctionMapper implements FaceletHandler {
 
     private final TagLibrary library;
     private final Map ns;

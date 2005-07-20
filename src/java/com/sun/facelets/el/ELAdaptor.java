@@ -30,11 +30,11 @@ import com.sun.facelets.util.FacesAPI;
  * 
  * 
  * @author Jacob Hookom
- * @version $Id: ELAdaptor.java,v 1.3 2005/07/18 08:25:37 jhook Exp $
+ * @version $Id: ELAdaptor.java,v 1.4 2005/07/20 05:27:46 jhook Exp $
  */
 public final class ELAdaptor {
 
-    protected static final boolean ELSUPPORT = (FacesAPI.getVersion() >= 12);
+    private static final boolean ELSUPPORT = (FacesAPI.getVersion() >= 12);
     
     private final static String LEGACY_ELCONTEXT_KEY = "com.sun.facelets.legacy.ELCONTEXT";
     

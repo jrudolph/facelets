@@ -20,9 +20,9 @@ import com.sun.facelets.FaceletHandler;
 /**
  * 
  * @author Jacob Hookom
- * @version $Id: RemoveUnit.java,v 1.1 2005/07/18 08:25:29 jhook Exp $
+ * @version $Id: RemoveUnit.java,v 1.2 2005/07/20 05:27:45 jhook Exp $
  */
-public final class RemoveUnit extends CompilationUnit {
+final class RemoveUnit extends CompilationUnit {
 
     public RemoveUnit() {
         super();

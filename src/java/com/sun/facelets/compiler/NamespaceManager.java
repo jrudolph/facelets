@@ -22,9 +22,9 @@ import com.sun.facelets.tag.TagLibrary;
 
 /**
  * @author Jacob Hookom
- * @version $Id: NamespaceManager.java,v 1.2 2005/07/18 08:25:29 jhook Exp $
+ * @version $Id: NamespaceManager.java,v 1.3 2005/07/20 05:27:45 jhook Exp $
  */
-public final class NamespaceManager {
+final class NamespaceManager {
 
     private final static class NS {
         public final String prefix;
@@ -37,7 +37,7 @@ public final class NamespaceManager {
         }
     }
 
-    protected final List namespaces;
+    private final List namespaces;
 
     /**
      * 

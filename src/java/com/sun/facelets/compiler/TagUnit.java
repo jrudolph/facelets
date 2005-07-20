@@ -23,9 +23,9 @@ import com.sun.facelets.tag.TagLibrary;
 /**
  * 
  * @author Jacob Hookom
- * @version $Id: TagUnit.java,v 1.1 2005/07/18 08:25:30 jhook Exp $
+ * @version $Id: TagUnit.java,v 1.2 2005/07/20 05:27:46 jhook Exp $
  */
-public final class TagUnit extends CompilationUnit implements TagConfig {
+final class TagUnit extends CompilationUnit implements TagConfig {
 
     private final TagLibrary library;
 

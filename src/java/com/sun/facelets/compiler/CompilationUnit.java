@@ -30,9 +30,9 @@ import com.sun.facelets.FaceletHandler;
 /**
  * 
  * @author Jacob Hookom
- * @version $Id: CompilationUnit.java,v 1.3 2005/07/18 08:25:27 jhook Exp $
+ * @version $Id: CompilationUnit.java,v 1.4 2005/07/20 05:27:45 jhook Exp $
  */
-public class CompilationUnit {
+class CompilationUnit {
 
     protected final static FaceletHandler LEAF = new FaceletHandler() {
         public void apply(FaceletContext ctx, UIComponent parent)

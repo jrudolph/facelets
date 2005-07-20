@@ -36,7 +36,7 @@ import javax.faces.el.VariableResolver;
  * 
  * 
  * @author Jacob Hookom
- * @version $Id: LegacyELContext.java,v 1.3 2005/07/18 08:25:37 jhook Exp $
+ * @version $Id: LegacyELContext.java,v 1.4 2005/07/20 05:27:46 jhook Exp $
  * @deprecated
  */
 public final class LegacyELContext extends ELContext {
@@ -48,9 +48,9 @@ public final class LegacyELContext extends ELContext {
     
     private final static FunctionMapper functions = new EmptyFunctionMapper();
     
-    protected final FacesContext faces;
-    protected final ELResolver resolver;
-    protected final VariableMapper variables;
+    private final FacesContext faces;
+    private final ELResolver resolver;
+    private final VariableMapper variables;
     
     public LegacyELContext(FacesContext faces) {
         this.faces = faces;

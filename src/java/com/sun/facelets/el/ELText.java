@@ -30,11 +30,11 @@ import javax.el.ValueExpression;
  * parser accepts either <code>${..}</code> or <code>#{..}</code>.
  * 
  * @author Jacob Hookom
- * @version $Id: ELText.java,v 1.1 2005/05/21 17:54:53 jhook Exp $
+ * @version $Id: ELText.java,v 1.2 2005/07/20 05:27:46 jhook Exp $
  */
 public class ELText {
 
-    private final static class LiteralValueExpression extends ValueExpression {
+    private static final class LiteralValueExpression extends ValueExpression {
 
         /**
          * 
@@ -85,7 +85,7 @@ public class ELText {
     }
 
     private static final class ELTextComposite extends ELText {
-        protected final ELText[] txt;
+        private final ELText[] txt;
 
         public ELTextComposite(ELText[] txt) {
             super(null);
@@ -122,7 +122,7 @@ public class ELText {
     }
 
     private static final class ELTextVariable extends ELText {
-        protected final ValueExpression ve;
+        private final ValueExpression ve;
 
         public ELTextVariable(ValueExpression ve) {
             super(ve.getExpressionString());

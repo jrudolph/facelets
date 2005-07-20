@@ -38,9 +38,9 @@ import com.sun.facelets.tag.ui.UILibrary;
  * @see com.sun.facelets.compiler.Compiler
  * 
  * @author Jacob Hookom
- * @version $Id: CompilationManager.java,v 1.1 2005/07/18 08:25:27 jhook Exp $
+ * @version $Id: CompilationManager.java,v 1.2 2005/07/20 05:27:45 jhook Exp $
  */
-public final class CompilationManager {
+final class CompilationManager {
 
     private final static Logger log = Logger.getLogger("facelets.compiler");
 

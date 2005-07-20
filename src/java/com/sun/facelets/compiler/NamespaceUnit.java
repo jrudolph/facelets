@@ -24,9 +24,9 @@ import com.sun.facelets.tag.TagLibrary;
 /**
  * 
  * @author Jacob Hookom
- * @version $Id: NamespaceUnit.java,v 1.1 2005/07/18 08:25:29 jhook Exp $
+ * @version $Id: NamespaceUnit.java,v 1.2 2005/07/20 05:27:45 jhook Exp $
  */
-public final class NamespaceUnit extends CompilationUnit {
+final class NamespaceUnit extends CompilationUnit {
 
     private final Map ns = new HashMap();
     private final TagLibrary library;

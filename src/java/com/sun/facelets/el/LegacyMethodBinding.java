@@ -28,15 +28,15 @@ import javax.faces.el.MethodNotFoundException;
  * For legacy ActionSources
  * 
  * @author Jacob Hookom
- * @version $Id: LegacyMethodBinding.java,v 1.3 2005/07/18 08:25:37 jhook Exp $
+ * @version $Id: LegacyMethodBinding.java,v 1.4 2005/07/20 05:27:46 jhook Exp $
  * @deprecated
  */
-public class LegacyMethodBinding extends
+public final class LegacyMethodBinding extends
         MethodBinding implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    protected final MethodExpression m;
+    private final MethodExpression m;
 
     public LegacyMethodBinding(MethodExpression m) {
         this.m = m;

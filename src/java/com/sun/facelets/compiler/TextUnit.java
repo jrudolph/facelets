@@ -31,9 +31,9 @@ import com.sun.facelets.tag.ui.UITextHandler;
 /**
  * 
  * @author Jacob Hookom
- * @version $Id: TextUnit.java,v 1.1 2005/07/18 08:25:30 jhook Exp $
+ * @version $Id: TextUnit.java,v 1.2 2005/07/20 05:27:46 jhook Exp $
  */
-public final class TextUnit extends CompilationUnit {
+final class TextUnit extends CompilationUnit {
 
     private final StringBuffer buffer;
 

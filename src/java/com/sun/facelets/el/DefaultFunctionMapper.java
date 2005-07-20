@@ -35,14 +35,14 @@ import com.sun.el.util.ReflectionUtil;
  * @see javax.el.FunctionMapper
  * 
  * @author Jacob Hookom
- * @version $Id: DefaultFunctionMapper.java,v 1.1 2005/07/18 08:25:37 jhook Exp $
+ * @version $Id: DefaultFunctionMapper.java,v 1.2 2005/07/20 05:27:46 jhook Exp $
  */
-public class DefaultFunctionMapper extends FunctionMapper implements
+public final class DefaultFunctionMapper extends FunctionMapper implements
         Externalizable {
 
     private static final long serialVersionUID = 1L;
     
-    protected Map functions = null;
+    private Map functions = null;
 
     /*
      * (non-Javadoc)
@@ -97,8 +97,10 @@ public class DefaultFunctionMapper extends FunctionMapper implements
         return sb.toString();
     }
     
-    public static class Function implements Externalizable {
+    private static class Function implements Externalizable {
     
+        private static final long serialVersionUID = 1L;
+        
         protected transient Method m;
         protected String owner;
         protected String name;
@@ -203,7 +205,4 @@ public class DefaultFunctionMapper extends FunctionMapper implements
             return sb.toString();
         }
     }
-
-    
-
 }
