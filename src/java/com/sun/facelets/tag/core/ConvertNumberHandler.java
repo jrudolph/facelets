@@ -34,7 +34,7 @@ import com.sun.facelets.tag.TagConfig;
  * documentation</a>.
  * 
  * @author Jacob Hookom
- * @version $Id: ConvertNumberHandler.java,v 1.2 2005/07/20 06:37:08 jhook Exp $
+ * @version $Id: ConvertNumberHandler.java,v 1.3 2005/07/20 19:31:47 jhook Exp $
  */
 public final class ConvertNumberHandler extends ConvertHandler {
 
@@ -56,7 +56,7 @@ public final class ConvertNumberHandler extends ConvertHandler {
      */
     protected Converter createConverter(FaceletContext ctx)
             throws FacesException, ELException, FaceletException {
-        return new NumberConverter();
+        return ctx.getFacesContext().getApplication().createConverter(NumberConverter.CONVERTER_ID);
     }
 
     /**

@@ -29,7 +29,7 @@ import com.sun.facelets.tag.ValidateHandler;
  * documentation</a>.
  * 
  * @author Jacob Hookom
- * @version $Id: ValidateLongRangeHandler.java,v 1.1 2005/05/21 17:54:45 jhook Exp $
+ * @version $Id: ValidateLongRangeHandler.java,v 1.2 2005/07/20 19:31:47 jhook Exp $
  */
 public final class ValidateLongRangeHandler extends ValidateHandler {
 
@@ -44,6 +44,6 @@ public final class ValidateLongRangeHandler extends ValidateHandler {
      * @see com.sun.facelets.tag.ValidateHandler#createValidator(com.sun.facelets.FaceletContext)
      */
     protected Validator createValidator(FaceletContext ctx) {
-        return new LongRangeValidator();
+        return ctx.getFacesContext().getApplication().createValidator(LongRangeValidator.VALIDATOR_ID);
     }
 }

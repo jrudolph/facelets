@@ -37,7 +37,7 @@ import com.sun.facelets.tag.TagConfig;
  * documentation</a>.
  * 
  * @author Jacob Hookom
- * @version $Id: ConvertDateTimeHandler.java,v 1.2 2005/07/20 06:37:08 jhook Exp $
+ * @version $Id: ConvertDateTimeHandler.java,v 1.3 2005/07/20 19:31:47 jhook Exp $
  */
 public final class ConvertDateTimeHandler extends ConvertHandler {
 
@@ -74,7 +74,7 @@ public final class ConvertDateTimeHandler extends ConvertHandler {
      */
     protected Converter createConverter(FaceletContext ctx)
             throws FacesException, ELException, FaceletException {
-        return new DateTimeConverter();
+        return ctx.getFacesContext().getApplication().createConverter(DateTimeConverter.CONVERTER_ID);
 
     }
 

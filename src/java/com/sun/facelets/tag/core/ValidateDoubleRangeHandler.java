@@ -29,7 +29,7 @@ import com.sun.facelets.tag.ValidateHandler;
  * documentation</a>.
  * 
  * @author Jacob Hookom
- * @version $Id: ValidateDoubleRangeHandler.java,v 1.1 2005/05/21 17:54:44 jhook Exp $
+ * @version $Id: ValidateDoubleRangeHandler.java,v 1.2 2005/07/20 19:31:47 jhook Exp $
  */
 public final class ValidateDoubleRangeHandler extends ValidateHandler {
 
@@ -44,6 +44,6 @@ public final class ValidateDoubleRangeHandler extends ValidateHandler {
      * @see com.sun.facelets.tag.ValidateHandler#createValidator(com.sun.facelets.FaceletContext)
      */
     protected Validator createValidator(FaceletContext ctx) {
-        return new DoubleRangeValidator();
+        return ctx.getFacesContext().getApplication().createValidator(DoubleRangeValidator.VALIDATOR_ID);
     }
 }
