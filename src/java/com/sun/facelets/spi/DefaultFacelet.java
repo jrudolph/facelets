@@ -30,29 +30,29 @@ import com.sun.facelets.Facelet;
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
 import com.sun.facelets.FaceletHandler;
-import com.sun.facelets.tag.AbstractComponentHandler;
+import com.sun.facelets.tag.ComponentSupport;
 
 /**
  * Default Facelet implementation.
  * 
  * @author Jacob Hookom
- * @version $Id: DefaultFacelet.java,v 1.1 2005/05/21 17:54:58 jhook Exp $
+ * @version $Id: DefaultFacelet.java,v 1.2 2005/07/20 06:37:11 jhook Exp $
  */
-public class DefaultFacelet extends Facelet {
+final class DefaultFacelet extends Facelet {
 
-    protected final String alias;
+    private final String alias;
 
-    protected final ExpressionFactory elFactory;
+    private final ExpressionFactory elFactory;
 
-    protected final DefaultFaceletFactory factory;
+    private final DefaultFaceletFactory factory;
 
-    protected final long createTime;
+    private final long createTime;
 
     private final Map relativePaths;
 
-    protected final FaceletHandler root;
+    private final FaceletHandler root;
 
-    protected final URL src;
+    private final URL src;
 
     public DefaultFacelet(DefaultFaceletFactory factory, ExpressionFactory el,
             URL src, String alias, FaceletHandler root) {
@@ -73,9 +73,9 @@ public class DefaultFacelet extends Facelet {
             throws IOException, FacesException, FaceletException, ELException {
         DefaultFaceletContext ctx = new DefaultFaceletContext(facesContext,
                 this);
-        AbstractComponentHandler.markForDeletion(parent);
+        ComponentSupport.markForDeletion(parent);
         this.root.apply(ctx, parent);
-        AbstractComponentHandler.finalizeForDeletion(parent);
+        ComponentSupport.finalizeForDeletion(parent);
     }
 
     /**
@@ -115,7 +115,7 @@ public class DefaultFacelet extends Facelet {
      * @throws IOException
      *             if there is a problem creating the URL for the path specified
      */
-    protected final URL getRelativePath(String path) throws IOException {
+    private URL getRelativePath(String path) throws IOException {
         URL url = (URL) this.relativePaths.get(path);
         if (url == null) {
             url = this.factory.resolveURL(this.src, path);
@@ -147,7 +147,7 @@ public class DefaultFacelet extends Facelet {
      * @throws FaceletException
      * @throws ELException
      */
-    protected void include(FaceletContext ctx, UIComponent parent)
+    private void include(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
         // should we reset the context?
         // FaceletContext nCtx = new

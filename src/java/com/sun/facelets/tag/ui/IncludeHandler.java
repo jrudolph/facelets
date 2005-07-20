@@ -31,11 +31,11 @@ import com.sun.facelets.tag.TagHandler;
 
 /**
  * @author Jacob Hookom
- * @version $Id: IncludeHandler.java,v 1.1 2005/05/21 17:54:55 jhook Exp $
+ * @version $Id: IncludeHandler.java,v 1.2 2005/07/20 06:37:11 jhook Exp $
  */
 public final class IncludeHandler extends TagHandler {
 
-    protected final TagAttribute src;
+    private final TagAttribute src;
 
     /**
      * @param config

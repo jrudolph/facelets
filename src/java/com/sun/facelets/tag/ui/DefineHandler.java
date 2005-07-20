@@ -30,11 +30,11 @@ import com.sun.facelets.tag.TagHandler;
 
 /**
  * @author Jacob Hookom
- * @version $Id: DefineHandler.java,v 1.1 2005/05/21 17:54:55 jhook Exp $
+ * @version $Id: DefineHandler.java,v 1.2 2005/07/20 06:37:10 jhook Exp $
  */
 public final class DefineHandler extends TagHandler {
 
-    protected final String name;
+    private final String name;
 
     /**
      * @param config

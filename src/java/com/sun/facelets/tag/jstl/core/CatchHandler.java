@@ -29,11 +29,11 @@ import com.sun.facelets.tag.TagHandler;
 
 /**
  * @author Jacob Hookom
- * @version $Id: CatchHandler.java,v 1.2 2005/06/07 02:15:34 jhook Exp $
+ * @version $Id: CatchHandler.java,v 1.3 2005/07/20 06:37:09 jhook Exp $
  */
 public final class CatchHandler extends TagHandler {
 
-    protected final TagAttribute var;
+    private final TagAttribute var;
 
     /**
      * @param config

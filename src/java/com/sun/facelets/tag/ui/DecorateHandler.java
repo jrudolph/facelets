@@ -34,13 +34,13 @@ import com.sun.facelets.tag.TagHandler;
 
 /**
  * @author Jacob Hookom
- * @version $Id: DecorateHandler.java,v 1.2 2005/07/18 08:25:35 jhook Exp $
+ * @version $Id: DecorateHandler.java,v 1.3 2005/07/20 06:37:10 jhook Exp $
  */
 public final class DecorateHandler extends TagHandler implements TemplateClient {
 
-    protected final TagAttribute template;
+    private final TagAttribute template;
 
-    protected final Map handlers;
+    private final Map handlers;
 
     /**
      * @param config

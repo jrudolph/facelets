@@ -22,15 +22,15 @@ package com.sun.facelets.tag;
  * @see com.sun.facelets.tag.Tag
  * @see com.sun.facelets.tag.TagAttribute
  * @author Jacob Hookom
- * @version $Id: Location.java,v 1.1 2005/05/21 17:54:37 jhook Exp $
+ * @version $Id: Location.java,v 1.2 2005/07/20 06:37:07 jhook Exp $
  */
 public final class Location {
 
-    protected final String path;
+    private final String path;
 
-    protected final int line;
+    private final int line;
 
-    protected final int column;
+    private final int column;
 
     public Location(String path, int line, int column) {
         this.path = path;

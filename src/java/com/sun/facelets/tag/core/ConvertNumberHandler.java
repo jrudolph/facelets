@@ -22,7 +22,7 @@ import javax.faces.convert.NumberConverter;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
-import com.sun.facelets.tag.AbstractComponentHandler;
+import com.sun.facelets.tag.ComponentSupport;
 import com.sun.facelets.tag.ConvertHandler;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagConfig;
@@ -34,11 +34,11 @@ import com.sun.facelets.tag.TagConfig;
  * documentation</a>.
  * 
  * @author Jacob Hookom
- * @version $Id: ConvertNumberHandler.java,v 1.1 2005/05/21 17:54:43 jhook Exp $
+ * @version $Id: ConvertNumberHandler.java,v 1.2 2005/07/20 06:37:08 jhook Exp $
  */
 public final class ConvertNumberHandler extends ConvertHandler {
 
-    protected final TagAttribute locale;
+    private final TagAttribute locale;
 
     /**
      * @param config
@@ -77,7 +77,7 @@ public final class ConvertNumberHandler extends ConvertHandler {
         super.setAttributes(ctx, obj);
         NumberConverter c = (NumberConverter) obj;
         if (this.locale != null) {
-            c.setLocale(AbstractComponentHandler.getLocale(ctx, this.locale));
+            c.setLocale(ComponentSupport.getLocale(ctx, this.locale));
         }
     }
 

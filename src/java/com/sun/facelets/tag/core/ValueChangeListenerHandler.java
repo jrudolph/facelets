@@ -39,15 +39,15 @@ import com.sun.facelets.tag.TagHandler;
  * documentation</a>.
  * 
  * @author Jacob Hookom
- * @version $Id: ValueChangeListenerHandler.java,v 1.1 2005/05/21 17:54:45 jhook Exp $
+ * @version $Id: ValueChangeListenerHandler.java,v 1.2 2005/07/20 06:37:09 jhook Exp $
  */
 public final class ValueChangeListenerHandler extends TagHandler {
 
-    protected Class listenerType;
+    private Class listenerType;
 
-    protected final TagAttribute type;
+    private final TagAttribute type;
 
-    protected final TagAttribute binding;
+    private final TagAttribute binding;
 
     public ValueChangeListenerHandler(TagConfig config) {
         super(config);

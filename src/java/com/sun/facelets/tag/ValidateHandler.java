@@ -35,11 +35,11 @@ import com.sun.facelets.FaceletException;
  * that it wasn't restored from an existing tree.
  * 
  * @author Jacob Hookom
- * @version $Id: ValidateHandler.java,v 1.1 2005/05/21 17:54:40 jhook Exp $
+ * @version $Id: ValidateHandler.java,v 1.2 2005/07/20 06:37:07 jhook Exp $
  */
 public abstract class ValidateHandler extends ObjectHandler {
 
-    protected final TagAttribute binding;
+    private final TagAttribute binding;
 
     public ValidateHandler(TagConfig config) {
         super(config);
@@ -52,7 +52,7 @@ public abstract class ValidateHandler extends ObjectHandler {
      * @see com.sun.facelets.FaceletHandler#apply(com.sun.facelets.FaceletContext,
      *      javax.faces.component.UIComponent)
      */
-    public void apply(FaceletContext ctx, UIComponent parent)
+    public final void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
 
         if (parent == null || !(parent instanceof EditableValueHolder)) {

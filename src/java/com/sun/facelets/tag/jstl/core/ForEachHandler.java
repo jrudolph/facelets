@@ -36,11 +36,11 @@ import com.sun.facelets.tag.TagHandler;
 
 /**
  * @author Jacob Hookom
- * @version $Id: ForEachHandler.java,v 1.1 2005/05/21 17:54:47 jhook Exp $
+ * @version $Id: ForEachHandler.java,v 1.2 2005/07/20 06:37:09 jhook Exp $
  */
 public final class ForEachHandler extends TagHandler {
 
-    protected static class ArrayIterator implements Iterator {
+    private static class ArrayIterator implements Iterator {
 
         protected final Object array;
 
@@ -67,19 +67,19 @@ public final class ForEachHandler extends TagHandler {
         }
     }
 
-    protected final TagAttribute begin;
+    private final TagAttribute begin;
 
-    protected final TagAttribute end;
+    private final TagAttribute end;
 
-    protected final TagAttribute items;
+    private final TagAttribute items;
 
-    protected final TagAttribute step;
+    private final TagAttribute step;
 
-    protected final TagAttribute tranzient;
+    private final TagAttribute tranzient;
 
-    protected final TagAttribute var;
+    private final TagAttribute var;
 
-    protected final TagAttribute varStatus;
+    private final TagAttribute varStatus;
 
     /**
      * @param config

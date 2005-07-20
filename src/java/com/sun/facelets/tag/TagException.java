@@ -21,9 +21,9 @@ import com.sun.facelets.FaceletException;
  * An Exception caused by a Tag
  * 
  * @author Jacob Hookom
- * @version $Id: TagException.java,v 1.1 2005/05/21 17:54:39 jhook Exp $
+ * @version $Id: TagException.java,v 1.2 2005/07/20 06:37:07 jhook Exp $
  */
-public class TagException extends FaceletException {
+public final class TagException extends FaceletException {
 
     /**
      * 

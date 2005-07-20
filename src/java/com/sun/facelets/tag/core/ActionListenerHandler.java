@@ -41,15 +41,15 @@ import com.sun.facelets.tag.TagHandler;
  * @see javax.faces.event.ActionListener
  * @see javax.faces.component.ActionSource
  * @author Jacob Hookom
- * @version $Id: ActionListenerHandler.java,v 1.1 2005/05/21 17:54:42 jhook Exp $
+ * @version $Id: ActionListenerHandler.java,v 1.2 2005/07/20 06:37:08 jhook Exp $
  */
 public final class ActionListenerHandler extends TagHandler {
 
-    protected Class listenerType;
+    private Class listenerType;
 
-    protected final TagAttribute type;
+    private final TagAttribute type;
 
-    protected final TagAttribute binding;
+    private final TagAttribute binding;
 
     /**
      * @param config

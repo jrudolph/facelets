@@ -37,19 +37,19 @@ import com.sun.facelets.util.Assert;
  * Default FaceletFactory implementation.
  * 
  * @author Jacob Hookom
- * @version $Id: DefaultFaceletFactory.java,v 1.2 2005/06/20 01:42:24 jhook Exp $
+ * @version $Id: DefaultFaceletFactory.java,v 1.3 2005/07/20 06:37:12 jhook Exp $
  */
 public class DefaultFaceletFactory extends FaceletFactory {
 
     protected final static Logger log = Logger.getLogger("facelets.factory");
 
-    protected final Compiler compiler;
+    private final Compiler compiler;
 
-    protected final Map facelets;
+    private final Map facelets;
 
-    protected final Map relativeLocations;
+    private final Map relativeLocations;
 
-    protected final URL location;
+    private final URL location;
 
     public DefaultFaceletFactory(Compiler compiler, URL url) {
         Assert.param("compiler", compiler);
@@ -150,7 +150,7 @@ public class DefaultFaceletFactory extends FaceletFactory {
      * @throws FacesException
      * @throws ELException
      */
-    protected DefaultFacelet createFacelet(URL url) throws IOException,
+    private DefaultFacelet createFacelet(URL url) throws IOException,
             FaceletException, FacesException, ELException {
         if (log.isLoggable(Level.FINE)) {
             log.fine("Creating Facelet for: " + url);

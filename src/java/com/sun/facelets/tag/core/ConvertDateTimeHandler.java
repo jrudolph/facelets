@@ -24,7 +24,7 @@ import javax.faces.convert.DateTimeConverter;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
-import com.sun.facelets.tag.AbstractComponentHandler;
+import com.sun.facelets.tag.ComponentSupport;
 import com.sun.facelets.tag.ConvertHandler;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagAttributeException;
@@ -37,21 +37,21 @@ import com.sun.facelets.tag.TagConfig;
  * documentation</a>.
  * 
  * @author Jacob Hookom
- * @version $Id: ConvertDateTimeHandler.java,v 1.1 2005/05/21 17:54:43 jhook Exp $
+ * @version $Id: ConvertDateTimeHandler.java,v 1.2 2005/07/20 06:37:08 jhook Exp $
  */
 public final class ConvertDateTimeHandler extends ConvertHandler {
 
-    protected final TagAttribute dateStyle;
+    private final TagAttribute dateStyle;
 
-    protected final TagAttribute locale;
+    private final TagAttribute locale;
 
-    protected final TagAttribute pattern;
+    private final TagAttribute pattern;
 
-    protected final TagAttribute timeStyle;
+    private final TagAttribute timeStyle;
 
-    protected final TagAttribute timeZone;
+    private final TagAttribute timeZone;
 
-    protected final TagAttribute type;
+    private final TagAttribute type;
 
     /**
      * @param config
@@ -87,7 +87,7 @@ public final class ConvertDateTimeHandler extends ConvertHandler {
     protected void setAttributes(FaceletContext ctx, Object obj) {
         DateTimeConverter c = (DateTimeConverter) obj;
         if (this.locale != null) {
-            c.setLocale(AbstractComponentHandler.getLocale(ctx, this.locale));
+            c.setLocale(ComponentSupport.getLocale(ctx, this.locale));
         }
         if (this.pattern != null) {
             c.setPattern(this.pattern.getValue());

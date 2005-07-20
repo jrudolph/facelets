@@ -35,7 +35,7 @@ import com.sun.facelets.FaceletHandler;
  * Base class for defining TagLibraries in Java
  * 
  * @author Jacob Hookom
- * @version $Id: AbstractTagLibrary.java,v 1.1 2005/05/21 17:54:36 jhook Exp $
+ * @version $Id: AbstractTagLibrary.java,v 1.2 2005/07/20 06:37:06 jhook Exp $
  */
 public abstract class AbstractTagLibrary implements TagLibrary {
 
@@ -224,9 +224,9 @@ public abstract class AbstractTagLibrary implements TagLibrary {
 
     private final Map factories;
 
-    protected final String namespace;
+    private final String namespace;
 
-    protected final Map functions;
+    private final Map functions;
 
     public AbstractTagLibrary(String namespace) {
         this.namespace = namespace;
@@ -412,5 +412,9 @@ public abstract class AbstractTagLibrary implements TagLibrary {
      */
     public int hashCode() {
         return this.namespace.hashCode();
+    }
+
+    public String getNamespace() {
+        return namespace;
     }
 }

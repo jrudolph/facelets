@@ -20,7 +20,7 @@ import javax.el.ValueExpression;
 
 /**
  * @author Jacob Hookom
- * @version $Id: IndexedValueExpression.java,v 1.1 2005/05/21 17:54:47 jhook Exp $
+ * @version $Id: IndexedValueExpression.java,v 1.2 2005/07/20 06:37:10 jhook Exp $
  */
 public final class IndexedValueExpression extends ValueExpression {
 
@@ -29,9 +29,9 @@ public final class IndexedValueExpression extends ValueExpression {
      */
     private static final long serialVersionUID = 1L;
 
-    protected final Integer i;
+    private final Integer i;
 
-    protected final ValueExpression orig;
+    private final ValueExpression orig;
 
     /**
      * 

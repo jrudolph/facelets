@@ -19,18 +19,18 @@ package com.sun.facelets.tag;
  * Representation of a Tag in the Facelet definition
  * 
  * @author Jacob Hookom
- * @version $Id: Tag.java,v 1.1 2005/05/21 17:54:38 jhook Exp $
+ * @version $Id: Tag.java,v 1.2 2005/07/20 06:37:07 jhook Exp $
  */
 public final class Tag {
-    protected final TagAttributes attributes;
+    private final TagAttributes attributes;
 
-    protected final Location location;
+    private final Location location;
 
-    protected final String namespace;
+    private final String namespace;
 
-    protected final String localName;
+    private final String localName;
 
-    protected final String qName;
+    private final String qName;
 
     public Tag(Location location, String namespace, String localName,
             String qName, TagAttributes attributes) {

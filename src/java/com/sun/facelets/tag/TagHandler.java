@@ -22,7 +22,7 @@ import com.sun.facelets.FaceletHandler;
  * document.
  * 
  * @author Jacob Hookom
- * @version $Id: TagHandler.java,v 1.1 2005/05/21 17:54:40 jhook Exp $
+ * @version $Id: TagHandler.java,v 1.2 2005/07/20 06:37:07 jhook Exp $
  */
 public abstract class TagHandler implements FaceletHandler {
 
@@ -45,7 +45,7 @@ public abstract class TagHandler implements FaceletHandler {
      *            name of attribute
      * @return TagAttribute if found, otherwise null
      */
-    protected TagAttribute getAttribute(String localName) {
+    protected final TagAttribute getAttribute(String localName) {
         return this.tag.getAttributes().get(localName);
     }
 
@@ -58,7 +58,7 @@ public abstract class TagHandler implements FaceletHandler {
      * @throws TagException
      *             if the attribute was not found
      */
-    protected TagAttribute getRequiredAttribute(String localName)
+    protected final TagAttribute getRequiredAttribute(String localName)
             throws TagException {
         TagAttribute attr = this.getAttribute(localName);
         if (attr == null) {

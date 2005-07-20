@@ -32,11 +32,11 @@ import com.sun.facelets.tag.TagConfig;
  * documentation</a>.
  * 
  * @author Jacob Hookom
- * @version $Id: ConvertDelegateHandler.java,v 1.1 2005/05/21 17:54:43 jhook Exp $
+ * @version $Id: ConvertDelegateHandler.java,v 1.2 2005/07/20 06:37:08 jhook Exp $
  */
 public final class ConvertDelegateHandler extends ConvertHandler {
 
-    protected final TagAttribute converterId;
+    private final TagAttribute converterId;
 
     /**
      * @param config

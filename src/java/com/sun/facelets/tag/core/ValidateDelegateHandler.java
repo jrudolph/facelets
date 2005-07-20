@@ -29,11 +29,11 @@ import com.sun.facelets.tag.ValidateHandler;
  * documentation</a>.
  * 
  * @author Jacob Hookom
- * @version $Id: ValidateDelegateHandler.java,v 1.1 2005/05/21 17:54:44 jhook Exp $
+ * @version $Id: ValidateDelegateHandler.java,v 1.2 2005/07/20 06:37:08 jhook Exp $
  */
 public final class ValidateDelegateHandler extends ValidateHandler {
 
-    protected final TagAttribute validatorId;
+    private final TagAttribute validatorId;
 
     public ValidateDelegateHandler(TagConfig config) {
         super(config);

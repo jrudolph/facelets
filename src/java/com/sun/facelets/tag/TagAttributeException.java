@@ -21,9 +21,9 @@ import com.sun.facelets.FaceletException;
  * An Exception caused by a TagAttribute
  * 
  * @author Jacob Hookom
- * @version $Id: TagAttributeException.java,v 1.1 2005/05/21 17:54:38 jhook Exp $
+ * @version $Id: TagAttributeException.java,v 1.2 2005/07/20 06:37:07 jhook Exp $
  */
-public class TagAttributeException extends FaceletException {
+public final class TagAttributeException extends FaceletException {
 
     /**
      * 
@@ -54,8 +54,8 @@ public class TagAttributeException extends FaceletException {
         super(print(tag, attr));
     }
 
-    protected final static String print(Tag tag, TagAttribute attr) {
-        return tag.location + " <" + tag.getQName() + " " + attr.getQName()
+    private final static String print(Tag tag, TagAttribute attr) {
+        return tag.getLocation() + " <" + tag.getQName() + " " + attr.getQName()
                 + "=\"" + attr.getValue() + "\">";
     }
 

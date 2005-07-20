@@ -23,11 +23,11 @@ import com.sun.facelets.util.Assert;
  * TagDecorators return a value other than null.
  * 
  * @author Jacob Hookom
- * @version $Id: CompositeTagDecorator.java,v 1.1 2005/05/21 17:54:37 jhook Exp $
+ * @version $Id: CompositeTagDecorator.java,v 1.2 2005/07/20 06:37:06 jhook Exp $
  */
 public final class CompositeTagDecorator implements TagDecorator {
 
-    public final TagDecorator[] decorators;
+    private final TagDecorator[] decorators;
 
     public CompositeTagDecorator(TagDecorator[] decorators) {
         Assert.param("decorators", decorators);

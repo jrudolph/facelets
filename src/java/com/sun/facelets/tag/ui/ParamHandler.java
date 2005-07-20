@@ -30,13 +30,13 @@ import com.sun.facelets.tag.TagHandler;
 
 /**
  * @author Jacob Hookom
- * @version $Id: ParamHandler.java,v 1.1 2005/05/21 17:54:56 jhook Exp $
+ * @version $Id: ParamHandler.java,v 1.2 2005/07/20 06:37:11 jhook Exp $
  */
 public final class ParamHandler extends TagHandler {
 
-    protected final TagAttribute name;
+    private final TagAttribute name;
 
-    protected final TagAttribute value;
+    private final TagAttribute value;
 
     /**
      * @param config

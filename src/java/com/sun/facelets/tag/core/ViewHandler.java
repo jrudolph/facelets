@@ -25,7 +25,7 @@ import javax.faces.event.PhaseEvent;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
-import com.sun.facelets.tag.AbstractComponentHandler;
+import com.sun.facelets.tag.ComponentSupport;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.TagHandler;
@@ -37,19 +37,19 @@ import com.sun.facelets.tag.TagHandler;
  * documentation</a>.
  * 
  * @author Jacob Hookom
- * @version $Id: ViewHandler.java,v 1.1 2005/05/21 17:54:45 jhook Exp $
+ * @version $Id: ViewHandler.java,v 1.2 2005/07/20 06:37:09 jhook Exp $
  */
 public final class ViewHandler extends TagHandler {
 
-    protected final static Class[] LISTENER_SIG = new Class[] { PhaseEvent.class };
+    private final static Class[] LISTENER_SIG = new Class[] { PhaseEvent.class };
 
-    protected final TagAttribute locale;
+    private final TagAttribute locale;
 
-    protected final TagAttribute renderKitId;
+    private final TagAttribute renderKitId;
 
-    protected final TagAttribute beforePhaseListener;
+    private final TagAttribute beforePhaseListener;
 
-    protected final TagAttribute afterPhaseListener;
+    private final TagAttribute afterPhaseListener;
 
     /**
      * @param config
@@ -70,10 +70,10 @@ public final class ViewHandler extends TagHandler {
      */
     public void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
-        UIViewRoot root = AbstractComponentHandler.getViewRoot(ctx, parent);
+        UIViewRoot root = ComponentSupport.getViewRoot(ctx, parent);
         if (root != null) {
             if (this.locale != null) {
-                root.setLocale(AbstractComponentHandler.getLocale(ctx,
+                root.setLocale(ComponentSupport.getLocale(ctx,
                         this.locale));
             }
             if (this.renderKitId != null) {

@@ -20,7 +20,7 @@ import javax.el.ValueExpression;
 
 /**
  * @author Jacob Hookom
- * @version $Id: IterationStatusExpression.java,v 1.1 2005/05/21 17:54:48 jhook Exp $
+ * @version $Id: IterationStatusExpression.java,v 1.2 2005/07/20 06:37:10 jhook Exp $
  */
 public final class IterationStatusExpression extends ValueExpression {
 
@@ -29,7 +29,7 @@ public final class IterationStatusExpression extends ValueExpression {
      */
     private static final long serialVersionUID = 1L;
 
-    protected final IterationStatus status;
+    private final IterationStatus status;
 
     /**
      * 

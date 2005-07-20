@@ -45,21 +45,21 @@ import com.sun.facelets.el.ELAdaptor;
  * directive.
  * 
  * @author Jacob Hookom
- * @version $Id: DefaultFaceletContext.java,v 1.3 2005/07/07 03:08:35 jhook Exp $
+ * @version $Id: DefaultFaceletContext.java,v 1.4 2005/07/20 06:37:12 jhook Exp $
  */
-public final class DefaultFaceletContext extends FaceletContext {
+final class DefaultFaceletContext extends FaceletContext {
 
-    protected final FacesContext faces;
+    private final FacesContext faces;
 
-    protected final ELContext ctx;
+    private final ELContext ctx;
 
-    protected final DefaultFacelet facelet;
+    private final DefaultFacelet facelet;
 
-    protected VariableMapper varMapper;
+    private VariableMapper varMapper;
 
-    protected FunctionMapper fnMapper;
+    private FunctionMapper fnMapper;
 
-    protected final Map ids;
+    private final Map ids;
 
     public DefaultFaceletContext(FacesContext faces, DefaultFacelet facelet) {
         this.ctx = ELAdaptor.getELContext(faces);

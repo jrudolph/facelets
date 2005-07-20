@@ -15,8 +15,15 @@
 
 package com.sun.facelets.tag;
 
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.el.ELException;
 import javax.el.MethodExpression;
 import javax.el.ValueExpression;
+import javax.faces.FacesException;
+import javax.faces.application.Application;
 import javax.faces.component.ActionSource;
 import javax.faces.component.ActionSource2;
 import javax.faces.component.EditableValueHolder;
@@ -24,6 +31,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.component.ValueHolder;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
+import javax.faces.el.ValueBinding;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.MethodExpressionActionListener;
 import javax.faces.event.MethodExpressionValueChangeListener;
@@ -33,6 +41,7 @@ import javax.faces.validator.MethodExpressionValidator;
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.el.ELAdaptor;
 import com.sun.facelets.el.LegacyMethodBinding;
+import com.sun.facelets.el.LegacyValueBinding;
 import com.sun.facelets.util.FacesAPI;
 
 /**
@@ -40,9 +49,12 @@ import com.sun.facelets.util.FacesAPI;
  * golden hammer for wiring UIComponents to Facelets.
  * 
  * @author Jacob Hookom
- * @version $Id: ComponentHandler.java,v 1.5 2005/07/17 18:56:32 adamwiner Exp $
+ * @version $Id: ComponentHandler.java,v 1.6 2005/07/20 06:37:06 jhook Exp $
  */
-public class ComponentHandler extends AbstractComponentHandler {
+public class ComponentHandler extends ObjectHandler {
+
+    private final static Logger log = Logger
+            .getLogger("facelets.tag.component");
 
     private final static Class[] ACTION_LISTENER_SIG = new Class[] { ActionEvent.class };
 
@@ -53,26 +65,181 @@ public class ComponentHandler extends AbstractComponentHandler {
 
     private final static Class[] VALUECHANGE_SIG = new Class[] { ValueChangeEvent.class };
 
-    protected final TagAttribute action;
+    private final TagAttribute binding;
 
-    protected final TagAttribute actionListener;
+    private final String componentType;
 
-    protected final TagAttribute converter;
+    private final TagAttribute id;
 
-    protected final TagAttribute validator;
+    private final String rendererType;
 
-    protected final TagAttribute value;
+    private final TagAttribute action;
 
-    protected final TagAttribute valueChangeListener;
+    private final TagAttribute actionListener;
+
+    private final TagAttribute converter;
+
+    private final TagAttribute validator;
+
+    private final TagAttribute value;
+
+    private final TagAttribute valueChangeListener;
 
     public ComponentHandler(ComponentConfig config) {
         super(config);
+        this.componentType = config.getComponentType();
+        this.rendererType = config.getRendererType();
+        this.id = this.getAttribute("id");
+        this.binding = this.getAttribute("binding");
         this.action = this.getAttribute("action");
         this.actionListener = this.getAttribute("actionListener");
         this.valueChangeListener = this.getAttribute("valueChangeListener");
         this.validator = this.getAttribute("validator");
         this.converter = this.getAttribute("converter");
         this.value = this.getAttribute("value");
+    }
+
+    /**
+     * Method handles UIComponent tree creation in accordance with the JSF 1.2
+     * spec.
+     * <ol>
+     * <li>First determines this UIComponent's id by calling
+     * {@link #getId(FaceletContext) getId(FaceletContext)}.</li>
+     * <li>Search the parent for an existing UIComponent of the id we just
+     * grabbed</li>
+     * <li>If found, {@link #markForDeletion(UIComponent) mark} its children
+     * for deletion.</li>
+     * <li>If <i>not</i> found, call
+     * {@link #createComponent(FaceletContext) createComponent}.
+     * <ol>
+     * <li>Only here do we apply
+     * {@link ObjectHandler#setAttributes(FaceletContext, Object) attributes}</li>
+     * <li>Set the UIComponent's id</li>
+     * <li>Set the RendererType of this instance</li>
+     * </ol>
+     * </li>
+     * <li>Now apply the nextHandler, passing the UIComponent we've
+     * created/found.</li>
+     * <li>Now add the UIComponent to the passed parent</li>
+     * <li>Lastly, if the UIComponent already existed (found), then
+     * {@link #finalizeForDeletion(UIComponent) finalize} for deletion.</li>
+     * </ol>
+     * 
+     * @see com.sun.facelets.FaceletHandler#apply(com.sun.facelets.FaceletContext,
+     *      javax.faces.component.UIComponent)
+     * 
+     * @throws TagException
+     *             if the UIComponent parent is null
+     */
+    public final void apply(FaceletContext ctx, UIComponent parent)
+            throws IOException, FacesException, ELException {
+        // make sure our parent is not null
+        if (parent == null) {
+            throw new TagException(this.tag, "Parent UIComponent was null");
+        }
+
+        // our id
+        String id = this.getId(ctx);
+
+        // grab our component
+        UIComponent c = ComponentSupport.findChild(parent, id);
+        boolean componentFound = false;
+        if (c != null) {
+            componentFound = true;
+            // mark all children for cleaning
+            if (log.isLoggable(Level.FINE)) {
+                log.fine(this.tag
+                        + " Component Found, marking children for cleanup");
+            }
+            ComponentSupport.markForDeletion(c);
+        } else {
+            c = this.createComponent(ctx);
+            if (log.isLoggable(Level.FINE)) {
+                log.fine(this.tag + " Component Created: "
+                        + c.getClass().getName());
+            }
+            this.setAttributes(ctx, c);
+            c.setId(id);
+            if (this.rendererType != null) {
+                c.setRendererType(this.rendererType);
+            }
+        }
+
+        // first allow c to get populated
+        this.nextHandler.apply(ctx, c);
+
+        // add to the tree afterwards
+        // this allows children to determine if it's
+        // been part of the tree or not yet
+        parent.getChildren().add(c);
+
+        // finish cleaning up orphaned children
+        if (componentFound) {
+            ComponentSupport.finalizeForDeletion(c);
+        }
+    }
+
+    /**
+     * If the binding attribute was specified, use that in conjuction with our
+     * componentType String variable to call createComponent on the Application,
+     * otherwise just pass the componentType String.
+     * <p />
+     * If the binding was used, then set the ValueExpression "binding" on the
+     * created UIComponent.
+     * 
+     * @see Application#createComponent(javax.faces.el.ValueBinding,
+     *      javax.faces.context.FacesContext, java.lang.String)
+     * @see Application#createComponent(java.lang.String)
+     * @param ctx
+     *            FaceletContext to use in creating a component
+     * @return
+     */
+    protected UIComponent createComponent(FaceletContext ctx) {
+        UIComponent c = null;
+        FacesContext faces = ctx.getFacesContext();
+        Application app = faces.getApplication();
+        if (this.binding != null) {
+            ValueExpression ve = this.binding.getValueExpression(ctx,
+                    Object.class);
+            if (FacesAPI.getVersion() >= 12) {
+                c = app.createComponent(ve, faces, this.componentType);
+                if (c != null) {
+                    // Make sure the component supports 1.2
+                    if (FacesAPI.getVersion(c) >= 12) {
+                        c.setValueExpression("binding", ve);
+                    } else {
+                        ValueBinding vb = new LegacyValueBinding(ve);
+                        c.setValueBinding("binding", vb);
+                    }
+
+                }
+            } else {
+                ValueBinding vb = new LegacyValueBinding(ve);
+                c = app.createComponent(vb, faces, this.componentType);
+                if (c != null) {
+                    c.setValueBinding("binding", vb);
+                }
+            }
+        } else {
+            c = app.createComponent(this.componentType);
+        }
+        return c;
+    }
+
+    /**
+     * If the id TagAttribute was specified, get it's value, otherwise generate
+     * a unique id from our tagId.
+     * 
+     * @see TagAttribute#getValue(FaceletContext)
+     * @param ctx
+     *            FaceletContext to use
+     * @return what should be a unique Id
+     */
+    protected String getId(FaceletContext ctx) {
+        if (this.id != null) {
+            return this.id.getValue(ctx);
+        }
+        return ctx.generateUniqueId(this.tagId);
     }
 
     /**
@@ -120,7 +287,7 @@ public class ComponentHandler extends AbstractComponentHandler {
      * @param ctx
      * @param evh
      */
-    protected final void setEditableValueHolder(FaceletContext ctx,
+    private final void setEditableValueHolder(FaceletContext ctx,
             EditableValueHolder evh) {
         if (this.validator != null) {
             if (this.validator.isLiteral()) {
@@ -160,7 +327,7 @@ public class ComponentHandler extends AbstractComponentHandler {
      * @param oc
      *            ValueHolder to apply attributes to
      */
-    protected final void setValueHolder(FaceletContext ctx, ValueHolder oc) {
+    private final void setValueHolder(FaceletContext ctx, ValueHolder oc) {
         if (this.converter != null) {
             if (this.converter.isLiteral()) {
                 oc.setConverter(ctx.getFacesContext().getApplication()
@@ -194,7 +361,7 @@ public class ComponentHandler extends AbstractComponentHandler {
      * @param src
      *            ActionSource to apply attributes to
      */
-    protected final void setActionSource(FaceletContext ctx, ActionSource src) {
+    private final void setActionSource(FaceletContext ctx, ActionSource src) {
         if (this.actionListener != null) {
             MethodExpression m = this.actionListener.getMethodExpression(ctx,
                     null, ACTION_LISTENER_SIG);
@@ -233,6 +400,9 @@ public class ComponentHandler extends AbstractComponentHandler {
      *      java.lang.String)
      */
     protected boolean isAttributeHandled(Object obj, String n) {
+        if ("binding".equals(n) || "id".equals(n)) {
+            return true;
+        }
         if (obj instanceof ActionSource) {
             if ("action".equals(n) || "actionListener".equals(n)) {
                 return true;

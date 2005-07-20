@@ -39,11 +39,11 @@ import com.sun.facelets.FaceletException;
  * @see javax.faces.convert.Converter
  * @see javax.faces.component.ValueHolder
  * @author Jacob Hookom
- * @version $Id: ConvertHandler.java,v 1.1 2005/05/21 17:54:37 jhook Exp $
+ * @version $Id: ConvertHandler.java,v 1.2 2005/07/20 06:37:07 jhook Exp $
  */
 public abstract class ConvertHandler extends ObjectHandler {
 
-    protected final TagAttribute binding;
+    private final TagAttribute binding;
 
     /**
      * @param config
@@ -74,7 +74,7 @@ public abstract class ConvertHandler extends ObjectHandler {
      * @see com.sun.facelets.FaceletHandler#apply(com.sun.facelets.FaceletContext,
      *      javax.faces.component.UIComponent)
      */
-    public void apply(FaceletContext ctx, UIComponent parent)
+    public final void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
         if (parent == null || !(parent instanceof ValueHolder)) {
             throw new TagException(this.tag,

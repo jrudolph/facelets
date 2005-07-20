@@ -26,11 +26,11 @@ import com.sun.facelets.el.ELText;
 
 /**
  * @author Jacob Hookom
- * @version $Id: UIText.java,v 1.3 2005/07/18 08:25:36 jhook Exp $
+ * @version $Id: UIText.java,v 1.4 2005/07/20 06:37:11 jhook Exp $
  */
 public final class UIText extends UIComponentBase {
 
-    protected final ELText txt;
+    private final ELText txt;
 
     public UIText(ELText txt) {
         this.txt = txt;

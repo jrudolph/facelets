@@ -29,23 +29,23 @@ import com.sun.facelets.el.TagValueExpression;
  * Representation of a Tag's attribute in a Facelet File
  * 
  * @author Jacob Hookom
- * @version $Id: TagAttribute.java,v 1.4 2005/07/18 08:25:34 jhook Exp $
+ * @version $Id: TagAttribute.java,v 1.5 2005/07/20 06:37:07 jhook Exp $
  */
-public class TagAttribute {
+public final class TagAttribute {
 
-    protected final boolean literal;
+    private final boolean literal;
 
-    protected final String localName;
+    private final String localName;
 
-    protected final Location location;
+    private final Location location;
 
-    protected final String namespace;
+    private final String namespace;
 
-    protected final String qName;
+    private final String qName;
 
-    protected final String value;
+    private final String value;
 
-    protected String string;
+    private String string;
 
     public TagAttribute(Location location, String ns, String localName,
             String qName, String value) {

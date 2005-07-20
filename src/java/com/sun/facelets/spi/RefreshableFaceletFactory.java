@@ -27,11 +27,11 @@ import com.sun.facelets.compiler.Compiler;
  * @see java.net.URLConnection#getLastModified()
  * 
  * @author Jacob Hookom
- * @version $Id: RefreshableFaceletFactory.java,v 1.1 2005/05/21 17:54:59 jhook Exp $
+ * @version $Id: RefreshableFaceletFactory.java,v 1.2 2005/07/20 06:37:12 jhook Exp $
  */
 public class RefreshableFaceletFactory extends DefaultFaceletFactory {
 
-    protected final long refreshPeriod;
+    private final long refreshPeriod;
 
     /**
      * @param compiler

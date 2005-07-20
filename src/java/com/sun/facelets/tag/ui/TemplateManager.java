@@ -24,15 +24,15 @@ import com.sun.facelets.FaceletHandler;
 
 /**
  * @author Jacob Hookom
- * @version $Id: TemplateManager.java,v 1.1 2005/05/21 17:54:57 jhook Exp $
+ * @version $Id: TemplateManager.java,v 1.2 2005/07/20 06:37:11 jhook Exp $
  */
-public final class TemplateManager implements TemplateClient {
+final class TemplateManager implements TemplateClient {
 
-    protected final static String KEY = TemplateManager.class.getName();
+    private final static String KEY = TemplateManager.class.getName();
 
-    protected final List clients;
+    private final List clients;
 
-    protected TemplateClient currentClient;
+    private TemplateClient currentClient;
 
     /**
      * 

@@ -28,13 +28,13 @@ import com.sun.facelets.tag.TagHandler;
 
 /**
  * @author Jacob Hookom
- * @version $Id: IfHandler.java,v 1.2 2005/06/07 02:15:34 jhook Exp $
+ * @version $Id: IfHandler.java,v 1.3 2005/07/20 06:37:09 jhook Exp $
  */
 public final class IfHandler extends TagHandler {
 
-    protected final TagAttribute test;
+    private final TagAttribute test;
 
-    protected final TagAttribute var;
+    private final TagAttribute var;
 
     /**
      * @param config

@@ -33,7 +33,7 @@ import javax.faces.context.FacesContext;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
-import com.sun.facelets.tag.AbstractComponentHandler;
+import com.sun.facelets.tag.ComponentSupport;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagAttributeException;
 import com.sun.facelets.tag.TagConfig;
@@ -47,7 +47,7 @@ import com.sun.facelets.tag.TagHandler;
  * documentation</a>.
  * 
  * @author Jacob Hookom
- * @version $Id: LoadBundleHandler.java,v 1.1 2005/05/21 17:54:44 jhook Exp $
+ * @version $Id: LoadBundleHandler.java,v 1.2 2005/07/20 06:37:08 jhook Exp $
  */
 public final class LoadBundleHandler extends TagHandler {
 
@@ -162,9 +162,9 @@ public final class LoadBundleHandler extends TagHandler {
         }
     }
 
-    protected final TagAttribute basename;
+    private final TagAttribute basename;
 
-    protected final TagAttribute var;
+    private final TagAttribute var;
 
     /**
      * @param config
@@ -183,7 +183,7 @@ public final class LoadBundleHandler extends TagHandler {
      */
     public void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
-        UIViewRoot root = AbstractComponentHandler.getViewRoot(ctx, parent);
+        UIViewRoot root = ComponentSupport.getViewRoot(ctx, parent);
         ResourceBundle bundle = null;
         try {
             String name = this.basename.getValue(ctx);

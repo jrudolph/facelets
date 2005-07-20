@@ -41,13 +41,13 @@ import com.sun.facelets.tag.TagHandler;
  * @see javax.faces.component.UIComponent#setValueExpression(java.lang.String,
  *      javax.el.ValueExpression)
  * @author Jacob Hookom
- * @version $Id: AttributeHandler.java,v 1.1 2005/05/21 17:54:43 jhook Exp $
+ * @version $Id: AttributeHandler.java,v 1.2 2005/07/20 06:37:08 jhook Exp $
  */
 public final class AttributeHandler extends TagHandler {
 
-    protected final TagAttribute name;
+    private final TagAttribute name;
 
-    protected final TagAttribute value;
+    private final TagAttribute value;
 
     /**
      * @param config
