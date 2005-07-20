@@ -1,0 +1,10 @@
+It should be noted that this demo was originally created by Howard Lewis Ship for Tapestry under Apache.
+
+It was since adapted by Hans Bergsten for his article on "Improving JSF, By Dumping JSP" on OnJava.com under O'Reilly Publishing
+
+http://www.onjava.com/pub/a/onjava/2004/06/09/jsf.html
+
+--
+
+The version included in this demo was okay'ed by Hans Bergsten.
+
