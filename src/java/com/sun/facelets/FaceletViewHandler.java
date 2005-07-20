@@ -50,7 +50,7 @@ import com.sun.facelets.util.FacesAPI;
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.11 2005/07/17 18:53:03 adamwiner Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.12 2005/07/20 02:07:54 adamwiner Exp $
  */
 public class FaceletViewHandler extends ViewHandler {
 
@@ -64,12 +64,12 @@ public class FaceletViewHandler extends ViewHandler {
     /**
      * Context initialization parameter for defining what viewIds should be
      * handled by Facelets, and what should not.  When left unset, all URLs will
-     * be handled by Facelets.  When set, it must be a whitespace separated
+     * be handled by Facelets.  When set, it must be a semicolon separated
      * list of either extension mappings or prefix mappings.  For example:
      * <pre>
      *  &lt;context-param&gt;
      *    &lt;param-name&gt;facelets.VIEW_MAPPINGS&lt;/param-name&gt;
-     *    &lt;param-value&gt;/demos/* *.xhtml&lt;/param-value&gt;
+     *    &lt;param-value&gt;/demos/*; *.xhtml&lt;/param-value&gt;
      *  &lt;/context-param&gt;
      * </pre>
      * would use Facelets for processing all viewIds in the "/demos"
@@ -170,13 +170,13 @@ public class FaceletViewHandler extends ViewHandler {
         String viewMappings =
           external.getInitParameter(VIEW_MAPPINGS_PARAM_NAME);
         if ((viewMappings != null) && (viewMappings.length() > 0)) {
-            String[] mappingsArray = viewMappings.split("\\s");
+            String[] mappingsArray = viewMappings.split(";");
             
             List extensionsList = new ArrayList(mappingsArray.length);
             List prefixesList = new ArrayList(mappingsArray.length);
             
             for (int i = 0; i < mappingsArray.length; i++) {
-                String mapping = mappingsArray[i];
+                String mapping = mappingsArray[i].trim();
                 int mappingLength = mapping.length();
                 if (mappingLength <= 1) {
                     continue;
