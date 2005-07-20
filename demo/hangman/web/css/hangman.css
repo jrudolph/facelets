@@ -14,8 +14,8 @@ A:Active  {}
 
 A:Hover  {}
 
-BODY  {
-	background-color : #456745;
+body,html  {
+background-color : #456745;
 }
 
 A.select-letter:Hover  {
