@@ -35,7 +35,7 @@ import com.sun.facelets.FaceletHandler;
  * Base class for defining TagLibraries in Java
  * 
  * @author Jacob Hookom
- * @version $Id: AbstractTagLibrary.java,v 1.2 2005/07/20 06:37:06 jhook Exp $
+ * @version $Id: AbstractTagLibrary.java,v 1.3 2005/07/20 17:49:53 jhook Exp $
  */
 public abstract class AbstractTagLibrary implements TagLibrary {
 
@@ -326,6 +326,19 @@ public abstract class AbstractTagLibrary implements TagLibrary {
      */
     protected final void addUserTag(String name, URL source) {
         this.factories.put(name, new UserTagFactory(source));
+    }
+    
+    
+    /**
+     * Add a Method to be used as a Function at Compilation.
+     * 
+     * @see javax.el.FunctionMapper
+     * 
+     * @param name (suffix) of function name
+     * @param method method instance 
+     */
+    protected final void addFunction(String name, Method method) {
+        this.functions.put(name, method);
     }
 
     /*
