@@ -23,6 +23,7 @@ import javax.faces.component.UIComponent;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
+import com.sun.facelets.el.ELAdaptor;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.TagException;
@@ -41,7 +42,7 @@ import com.sun.facelets.tag.TagHandler;
  * @see javax.faces.component.UIComponent#setValueExpression(java.lang.String,
  *      javax.el.ValueExpression)
  * @author Jacob Hookom
- * @version $Id: AttributeHandler.java,v 1.2 2005/07/20 06:37:08 jhook Exp $
+ * @version $Id: AttributeHandler.java,v 1.3 2005/07/20 17:51:26 jhook Exp $
  */
 public final class AttributeHandler extends TagHandler {
 
@@ -77,8 +78,8 @@ public final class AttributeHandler extends TagHandler {
                 if (this.value.isLiteral()) {
                     parent.getAttributes().put(n, this.value.getValue());
                 } else {
-                    parent.setValueExpression(n, this.value.getValueExpression(
-                            ctx, Object.class));
+                    ELAdaptor.setExpression(parent, n, this.value
+                            .getValueExpression(ctx, Object.class));
                 }
             }
         }
