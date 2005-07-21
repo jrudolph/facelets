@@ -1,0 +1,9 @@
+<composition xmlns="http://java.sun.com/jsf/facelet"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core">
+    <h:form id="form" prependId="false">
+		<h:inputText id="input">
+			<f:validateLongRange minimum="1024" maximum="2056" />
+		</h:inputText>
+	</h:form>
+</composition>

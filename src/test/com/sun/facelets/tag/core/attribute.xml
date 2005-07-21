@@ -1,0 +1,10 @@
+<composition xmlns="http://java.sun.com/jsf/facelet"
+             xmlns:h="http://java.sun.com/jsf/html"
+             xmlns:f="http://java.sun.com/jsf/core">
+    <h:graphicImage id="graphic1">
+		<f:attribute name="title" value="literal"/>
+	</h:graphicImage>
+	<h:graphicImage id="graphic2">
+		<f:attribute name="title" value="#{title}"/>
+	</h:graphicImage>
+</composition>

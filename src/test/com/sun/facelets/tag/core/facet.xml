@@ -1,0 +1,10 @@
+<view xmlns="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html">
+      
+	<h:dataTable id="table">
+    	<facet name="footer">
+      		Boogie Footers
+      	</facet>
+    </h:dataTable>
+      
+</view>
