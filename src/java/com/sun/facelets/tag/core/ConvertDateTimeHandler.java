@@ -37,7 +37,7 @@ import com.sun.facelets.tag.TagConfig;
  * documentation</a>.
  * 
  * @author Jacob Hookom
- * @version $Id: ConvertDateTimeHandler.java,v 1.3 2005/07/20 19:31:47 jhook Exp $
+ * @version $Id: ConvertDateTimeHandler.java,v 1.4 2005/07/21 03:37:11 jhook Exp $
  */
 public final class ConvertDateTimeHandler extends ConvertHandler {
 
@@ -101,19 +101,21 @@ public final class ConvertDateTimeHandler extends ConvertHandler {
             if (this.timeStyle != null) {
                 c.setTimeStyle(this.timeStyle.getValue(ctx));
             }
-            if (this.timeZone != null) {
-                Object t = this.timeZone.getObject(ctx);
-                if (t instanceof TimeZone) {
-                    c.setTimeZone((TimeZone) t);
-                } else if (t instanceof String) {
-                    c.setTimeZone(TimeZone.getTimeZone((String) t));
-                } else {
-                    throw new TagAttributeException(
-                            this.tag,
-                            this.timeZone,
-                            "Illegal TimeZone, must evaluate to either a java.util.TimeZone or String, is type: "
-                                    + t);
-                }
+        }
+        
+        if (this.timeZone != null) {
+            Object t = this.timeZone.getObject(ctx);
+            if (t instanceof TimeZone) {
+                c.setTimeZone((TimeZone) t);
+            } else if (t instanceof String) {
+                TimeZone tz = TimeZone.getTimeZone((String) t);
+                c.setTimeZone(tz);
+            } else {
+                throw new TagAttributeException(
+                        this.tag,
+                        this.timeZone,
+                        "Illegal TimeZone, must evaluate to either a java.util.TimeZone or String, is type: "
+                                + t);
             }
         }
     }
