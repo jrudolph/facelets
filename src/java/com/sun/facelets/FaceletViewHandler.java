@@ -50,12 +50,12 @@ import com.sun.facelets.util.FacesAPI;
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.12 2005/07/20 02:07:54 adamwiner Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.13 2005/07/21 05:30:04 jhook Exp $
  */
 public class FaceletViewHandler extends ViewHandler {
 
     protected final static Logger log = Logger
-            .getLogger("facelets.viewHandler");
+            .getLogger("facelets.viewhandler");
 
     public final static long DEFAULT_REFRESH_PERIOD = 2;
 
