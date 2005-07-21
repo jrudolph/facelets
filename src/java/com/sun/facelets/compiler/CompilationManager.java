@@ -38,7 +38,7 @@ import com.sun.facelets.tag.ui.UILibrary;
  * @see com.sun.facelets.compiler.Compiler
  * 
  * @author Jacob Hookom
- * @version $Id: CompilationManager.java,v 1.2 2005/07/20 05:27:45 jhook Exp $
+ * @version $Id: CompilationManager.java,v 1.3 2005/07/21 02:08:57 jhook Exp $
  */
 final class CompilationManager {
 
@@ -107,17 +107,28 @@ final class CompilationManager {
     }
 
     public void pushTag(Tag orig) {
+        
+        if (this.finished) {
+            return;
+        }
+        
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("Tag Pushed: "+orig);
+        }
+        
         Tag t = this.tagDecorator.decorate(orig);
         t = this.processAttributes(t);
 
         boolean handled = false;
 
         if (isComposition(t)) {
+            log.fine("Composition Found, Popping Parent Tags");
             this.units.clear();
             NamespaceUnit nsUnit = this.namespaceManager
                     .toNamespaceUnit(this.tagLibrary);
             this.units.push(nsUnit);
             this.startUnit(new TagUnit(this.tagLibrary, t, this.nextTagId()));
+            log.fine("New Namespace and [Composition] TagUnit pushed");
         } else if (isRemove(t)) {
             this.units.push(new RemoveUnit());
         } else if (this.tagLibrary.containsTagHandler(t.getNamespace(), t
@@ -158,6 +169,7 @@ final class CompilationManager {
             TagUnit t = (TagUnit) unit;
             if (isComposition(t.getTag())) {
                 this.finished = true;
+                return;
             }
         }
 
@@ -172,6 +184,11 @@ final class CompilationManager {
     }
 
     public void pushNamespace(String prefix, String uri) {
+        
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("Namespace Pushed "+prefix+": "+uri);
+        }
+        
         this.namespaceManager.pushNamespace(prefix, uri);
         NamespaceUnit unit;
         if (this.currentUnit() instanceof NamespaceUnit) {
@@ -188,7 +205,10 @@ final class CompilationManager {
     }
 
     private CompilationUnit currentUnit() {
-        return (CompilationUnit) this.units.peek();
+        if (!this.units.isEmpty()) {
+            return (CompilationUnit) this.units.peek();
+        }
+        return null;
     }
 
     private void finishUnit() {
