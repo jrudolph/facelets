@@ -37,13 +37,13 @@
     <mkdir dir="${build}/classes"/>
     <mkdir dir="${build}/docs"/>
     <mkdir dir="${build}/docs/api"/>
-	<mkdir dir="${build}/docs/dev"/>
+    <mkdir dir="${build}/docs/dev"/>
 
     <!-- "Dist" Hierarchy -->
     <mkdir dir="${dist}"/>
     <mkdir dir="${dist}/docs"/>
     <mkdir dir="${dist}/docs/api"/>
-	<mkdir dir="${dist}/docs/dev"/>
+    <mkdir dir="${dist}/docs/dev"/>
     <mkdir dir="${dist}/src"/>
     <mkdir dir="${dist}/demo"/>
 	
@@ -141,8 +141,8 @@
    description="Create binary distribution">
                                                                                 
     <!-- Copy Javadocs -->
-    <copy todir="${dist}/docs/api">
-        <fileset dir="${build}/docs/api"/>
+    <copy todir="${dist}/docs/">
+        <fileset dir="${build}/docs/"/>
     </copy>
                                                                                 
     <!-- Copy API source files -->
@@ -159,7 +159,7 @@
 
 
   <!-- ========================= Create Release ========================= -->
-  <target name="release" depends="clean, dependencies, dist">
+  <target name="release" depends="clean, dependencies, doc, dist">
     <mkdir dir="${release}/facelets-${release.version}"/>
     <copy todir="${release}/facelets-${release.version}">
        <fileset dir="${dist}"/>
