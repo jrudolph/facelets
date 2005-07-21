@@ -41,7 +41,7 @@ import com.sun.facelets.tag.TagHandler;
  * @see javax.faces.event.ActionListener
  * @see javax.faces.component.ActionSource
  * @author Jacob Hookom
- * @version $Id: ActionListenerHandler.java,v 1.2 2005/07/20 06:37:08 jhook Exp $
+ * @version $Id: ActionListenerHandler.java,v 1.3 2005/07/21 02:09:34 jhook Exp $
  */
 public final class ActionListenerHandler extends TagHandler {
 
@@ -57,8 +57,11 @@ public final class ActionListenerHandler extends TagHandler {
     public ActionListenerHandler(TagConfig config) {
         super(config);
         this.binding = this.getAttribute("binding");
-        this.type = this.getAttribute("type");
+        this.type = this.getRequiredAttribute("type");
         if (type != null) {
+            if (!type.isLiteral()) {
+                throw new TagAttributeException(this.tag, this.type, "Must be literal");
+            }
             try {
                 this.listenerType = Class.forName(type.getValue());
             } catch (Exception e) {
@@ -86,18 +89,15 @@ public final class ActionListenerHandler extends TagHandler {
                             ActionListener.class);
                     listener = (ActionListener) ve.getValue(ctx);
                 }
-                if (listener == null && this.listenerType != null) {
+                if (listener == null) {
                     try {
                         listener = (ActionListener) listenerType.newInstance();
                     } catch (Exception e) {
-                        throw new TagAttributeException(this.tag, this.type, e);
+                        throw new TagAttributeException(this.tag, this.type, e.getCause());
                     }
                     if (ve != null) {
                         ve.setValue(ctx, ve);
                     }
-                } else {
-                    throw new TagAttributeException(this.tag, this.binding,
-                            "Binding evaluated to null, and there wasn't a 'type' Attribute Specified");
                 }
                 src.addActionListener(listener);
             }
