@@ -35,7 +35,7 @@ import com.sun.facelets.FaceletHandler;
  * Base class for defining TagLibraries in Java
  * 
  * @author Jacob Hookom
- * @version $Id: AbstractTagLibrary.java,v 1.3 2005/07/20 17:49:53 jhook Exp $
+ * @version $Id: AbstractTagLibrary.java,v 1.4 2005/07/21 02:09:14 jhook Exp $
  */
 public abstract class AbstractTagLibrary implements TagLibrary {
 
@@ -178,8 +178,10 @@ public abstract class AbstractTagLibrary implements TagLibrary {
                         this.componentType, this.renderType);
                 return (TagHandler) this.constructor
                         .newInstance(new Object[] { ccfg });
+            } catch (InvocationTargetException e) {
+                throw new FaceletException(e.getCause().getMessage(), e.getCause().getCause());
             } catch (Exception e) {
-                throw new FaceletException("Error Instantiating TagHandler", e);
+                throw new FaceletException("Error Instantiating TagHandler: "+this.type.getName(), e);
             }
         }
     }
