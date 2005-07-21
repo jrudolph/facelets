@@ -112,10 +112,12 @@ public abstract class FaceletTestCase extends TestCase {
         // initialize Faces
         this.initFaces();
 
-        this.factoryFacesContext.getFacesContext(this.servletContext,
+        FacesContext faces = this.factoryFacesContext.getFacesContext(this.servletContext,
                 this.servletRequest, this.servletResponse,
                 this.factoryLifecycle
                         .getLifecycle(LifecycleFactory.DEFAULT_LIFECYCLE));
+        
+        faces.setViewRoot(new UIViewRoot());
         
         FaceletFactory factory = new DefaultFaceletFactory(new SAXCompiler(), context.toURL());
         FaceletFactory.setInstance(factory);
