@@ -35,7 +35,7 @@ import com.sun.facelets.FaceletException;
  * that it wasn't restored from an existing tree.
  * 
  * @author Jacob Hookom
- * @version $Id: ValidateHandler.java,v 1.2 2005/07/20 06:37:07 jhook Exp $
+ * @version $Id: ValidateHandler.java,v 1.3 2005/07/21 04:36:15 jhook Exp $
  */
 public abstract class ValidateHandler extends ObjectHandler {
 
@@ -71,7 +71,7 @@ public abstract class ValidateHandler extends ObjectHandler {
                 v = (Validator) ve.getValue(ctx);
             }
             if (v == null) {
-                this.createValidator(ctx);
+                v = this.createValidator(ctx);
                 if (ve != null) {
                     ve.setValue(ctx, v);
                 }
