@@ -31,7 +31,7 @@ import com.sun.facelets.tag.ui.UITextHandler;
 /**
  * 
  * @author Jacob Hookom
- * @version $Id: TextUnit.java,v 1.2 2005/07/20 05:27:46 jhook Exp $
+ * @version $Id: TextUnit.java,v 1.3 2005/07/21 17:56:54 jhook Exp $
  */
 final class TextUnit extends CompilationUnit {
 
@@ -52,6 +52,11 @@ final class TextUnit extends CompilationUnit {
 
     public FaceletHandler createFaceletHandler() {
         this.flushBufferToConfig(false);
+        
+        if (this.children.size() == 0) {
+            return LEAF;
+        }
+        
         FaceletHandler[] h = new FaceletHandler[this.children.size()];
         Object obj;
         for (int i = 0; i < h.length; i++) {
@@ -164,5 +169,9 @@ final class TextUnit extends CompilationUnit {
         } else {
             return s.substring(0, i + 1);
         }
+    }
+
+    public String toString() {
+        return "TextUnit["+this.children.size()+"]";
     }
 }

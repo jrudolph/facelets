@@ -23,7 +23,7 @@ import com.sun.facelets.tag.TagLibrary;
 /**
  * 
  * @author Jacob Hookom
- * @version $Id: TagUnit.java,v 1.2 2005/07/20 05:27:46 jhook Exp $
+ * @version $Id: TagUnit.java,v 1.3 2005/07/21 17:56:54 jhook Exp $
  */
 final class TagUnit extends CompilationUnit implements TagConfig {
 
@@ -54,6 +54,10 @@ final class TagUnit extends CompilationUnit implements TagConfig {
 
     public String getTagId() {
         return this.id;
+    }
+
+    public String toString() {
+        return this.tag.toString();
     }
 
 }

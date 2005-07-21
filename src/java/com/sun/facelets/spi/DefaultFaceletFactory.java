@@ -15,6 +15,7 @@
 
 package com.sun.facelets.spi;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
@@ -37,7 +38,7 @@ import com.sun.facelets.util.Assert;
  * Default FaceletFactory implementation.
  * 
  * @author Jacob Hookom
- * @version $Id: DefaultFaceletFactory.java,v 1.5 2005/07/21 02:18:39 jhook Exp $
+ * @version $Id: DefaultFaceletFactory.java,v 1.6 2005/07/21 17:56:55 jhook Exp $
  */
 public class DefaultFaceletFactory extends FaceletFactory {
 
@@ -72,9 +73,9 @@ public class DefaultFaceletFactory extends FaceletFactory {
         if (url == null) {
             url = this.resolveURL(this.location, uri);
             if (url != null) {
-            this.relativeLocations.put(uri, url);
+                this.relativeLocations.put(uri, url);
             } else {
-                throw new IOException("'"+uri+"' not found.");
+                throw new IOException("'" + uri + "' not found.");
             }
         }
         return this.getFacelet(url);
@@ -96,8 +97,13 @@ public class DefaultFaceletFactory extends FaceletFactory {
      */
     public URL resolveURL(URL source, String path) throws IOException {
         if (path.startsWith("/")) {
-            return FacesContext.getCurrentInstance().getExternalContext()
+            URL url = FacesContext.getCurrentInstance().getExternalContext()
                     .getResource(path);
+            if (url == null) {
+                throw new FileNotFoundException(path
+                        + " Not Found in ExternalContext as a Resource");
+            }
+            return url;
         } else {
             return new URL(source, path);
         }
@@ -155,7 +161,8 @@ public class DefaultFaceletFactory extends FaceletFactory {
         if (log.isLoggable(Level.FINE)) {
             log.fine("Creating Facelet for: " + url);
         }
-        String alias = "/" + url.getFile().replaceFirst(this.location.getFile(), "");
+        String alias = "/"
+                + url.getFile().replaceFirst(this.location.getFile(), "");
         FaceletHandler h = this.compiler.compile(url, alias);
         DefaultFacelet f = new DefaultFacelet(this, this.compiler
                 .createExpressionFactory(), url, alias, h);

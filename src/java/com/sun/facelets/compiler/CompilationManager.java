@@ -38,7 +38,7 @@ import com.sun.facelets.tag.ui.UILibrary;
  * @see com.sun.facelets.compiler.Compiler
  * 
  * @author Jacob Hookom
- * @version $Id: CompilationManager.java,v 1.3 2005/07/21 02:08:57 jhook Exp $
+ * @version $Id: CompilationManager.java,v 1.4 2005/07/21 17:56:54 jhook Exp $
  */
 final class CompilationManager {
 
@@ -80,6 +80,16 @@ final class CompilationManager {
     }
 
     public void writeText(String value) {
+        
+        if (this.finished) {
+            return;
+        }
+        
+        // don't carelessly add empty tags
+        if (value.length() == 0) {
+            return;
+        }
+        
         TextUnit unit;
         if (this.currentUnit() instanceof TextUnit) {
             unit = (TextUnit) this.currentUnit();
@@ -212,7 +222,11 @@ final class CompilationManager {
     }
 
     private void finishUnit() {
-        this.units.pop();
+        Object obj = this.units.pop();
+        
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("Finished Unit: "+obj);
+        }
     }
 
     private CompilationUnit searchUnits(Class type) {
@@ -227,6 +241,11 @@ final class CompilationManager {
     }
 
     private void startUnit(CompilationUnit unit) {
+        
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("Starting Unit: "+unit+" and adding it to parent: "+this.currentUnit());
+        }
+
         this.currentUnit().addChild(unit);
         this.units.push(unit);
     }

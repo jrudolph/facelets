@@ -15,6 +15,7 @@
 
 package com.sun.facelets.spi;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Map;
@@ -36,7 +37,7 @@ import com.sun.facelets.tag.ComponentSupport;
  * Default Facelet implementation.
  * 
  * @author Jacob Hookom
- * @version $Id: DefaultFacelet.java,v 1.2 2005/07/20 06:37:11 jhook Exp $
+ * @version $Id: DefaultFacelet.java,v 1.3 2005/07/21 17:56:55 jhook Exp $
  */
 final class DefaultFacelet extends Facelet {
 
