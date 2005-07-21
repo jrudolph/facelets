@@ -37,7 +37,7 @@ import com.sun.facelets.util.Assert;
  * Default FaceletFactory implementation.
  * 
  * @author Jacob Hookom
- * @version $Id: DefaultFaceletFactory.java,v 1.4 2005/07/21 02:08:41 jhook Exp $
+ * @version $Id: DefaultFaceletFactory.java,v 1.5 2005/07/21 02:18:39 jhook Exp $
  */
 public class DefaultFaceletFactory extends FaceletFactory {
 
@@ -155,7 +155,7 @@ public class DefaultFaceletFactory extends FaceletFactory {
         if (log.isLoggable(Level.FINE)) {
             log.fine("Creating Facelet for: " + url);
         }
-        String alias = url.getFile().substring(this.location.getFile().length()-1);
+        String alias = "/" + url.getFile().replaceFirst(this.location.getFile(), "");
         FaceletHandler h = this.compiler.compile(url, alias);
         DefaultFacelet f = new DefaultFacelet(this, this.compiler
                 .createExpressionFactory(), url, alias, h);
