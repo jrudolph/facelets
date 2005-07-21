@@ -6,13 +6,11 @@ import java.util.Locale;
 import javax.faces.component.UICommand;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIData;
-import javax.faces.component.UIGraphic;
 import javax.faces.component.UIInput;
 import javax.faces.component.UIOutput;
 import javax.faces.component.UIViewRoot;
 import javax.faces.component.html.HtmlGraphicImage;
 import javax.faces.context.FacesContext;
-import javax.faces.convert.DateTimeConverter;
 import javax.faces.event.ActionListener;
 import javax.faces.validator.Validator;
 
@@ -159,15 +157,15 @@ public class CoreTestCase extends FaceletTestCase {
         assertNotNull("out5 converter", out5.getConverter());
 
         assertEquals("out1 value", "12", out1.getConverter().getAsString(
-                faces, out1, 12.001));
+                faces, out1, new Double(12.001)));
         assertEquals("out2 value", "$12.00", out2.getConverter()
-                .getAsString(faces, out2, 12.00));
+                .getAsString(faces, out2, new Double(12.00)));
         assertEquals("out3 value", "00,032", out3.getConverter()
-                .getAsString(faces, out3, 32));
+                .getAsString(faces, out3, new Double(32)));
         assertEquals("out4 value", "0.67", out4.getConverter()
-                .getAsString(faces, out4, 2.0/3.0));
+                .getAsString(faces, out4, new Double(2.0/3.0)));
         assertEquals("out5 value", "67%", out5.getConverter()
-                .getAsString(faces, out5, 0.67));
+                .getAsString(faces, out5, new Double(0.67)));
     }
     
     public void testFacetHandler() throws Exception {
