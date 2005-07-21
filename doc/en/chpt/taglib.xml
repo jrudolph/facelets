@@ -1,15 +1,93 @@
 <chapter id="taglib">
     <title>Tag Libraries</title>
     
-    <sect1 id="taglib-overview">
-        <title>Overview</title>
-        <para>
-			TODO
+    <sect1 id="taglib-use">
+        <title>Using Tags</title>
+        <sect2 id="taglib-use-normal">
+			<title>Tag Namespaces</title>
+			<para>
+				Facelets uses valid XML with namespace support for compilation.  If you are new to XML, there are great resources online, such as http://www.w3schools.com.  To use a library of tags, you would 'include' the library by declaring a namespace.  Declaring a namespace involves using the library's URI (or URL) and mapping it to a prefix.
+			</para>
+			<programlisting><![CDATA[<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html">
+      
+<body>
+  <h:inputText value="#{hello.world}"/>
+</body>
+
+</html>]]></programlisting>
+		<para>
+			In the example above, we've declared 2 namespaces:
 		</para>
+		<itemizedlist>
+			<listitem>
+				<para><literal>xmlns="http://www.w3.org/1999/xhtml"</literal> Says every tag without a prefix, such as <literal><![CDATA[<body>]]></literal>, are part of XHTML.</para>
+			</listitem>
+			<listitem>
+				<para><literal>xmlns:h="http://java.sun.com/jsf/html"</literal> Maps the prefix <literal>h:</literal> to the JSF HTML library.</para>
+			</listitem>
+		</itemizedlist>
+        </sect2>
+        <sect2 id="taglib-use-jsfc">
+			<title>Using 'jsfc'</title>
+			<para>
+				Facelets provides you the ability to have one XML element in the page be converted to another at compile time by specifying the <literal>jsfc</literal> attribute.
+			</para>
+			<programlisting><![CDATA[<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html">
+      
+<body>
+  <input type="text" jsfc="h:inputText" value="#{hello.world}" />
+</body>
+
+</html>]]></programlisting>
+			<para>
+				The <literal><![CDATA[<input>]]></literal> tag above is readable/displayable in browsers and visual tools as a normal text field.  It would be nice to use that same text field in JavaServer Faces, so we provide the <literal>jsfc="h:inputText"</literal>.  This declaration tells the compiler to resolve the <literal><![CDATA[<input>]]></literal> tag as an <literal><![CDATA[<h:inputText>]]></literal> (the same as above).  Note, the same rules for namespaces and naming apply to the value of the <literal>jsfc</literal> attribute.
+			</para>
+        </sect2>
+        <sect2 id="taglib-use-unresolved">
+			<title>Unresolved Namespaces</title>
+			<para>
+				Any namespace that is unresolved and/or the tag's name is not found in any library, then it is treated as regular text.  If your tag or component isn't showing up in your rendered page, check the source of page and see if the tag was simply ignored.  This usually means you either misspelled the tag's name or you are using the wrong namespace for your library.
+			</para>
+        </sect2>
+	</sect1>
+    
+    <sect1 id="taglib-spec">
+        <title>Specification Tag Libraries</title>
+        <para>
+			Facelets comes with support for all tags (components) included in the JavaServer Faces Specification.  Great care was taken to mimic the specification's JSP tag counterparts to leverage existing knowledge and available documentation.  For development, you may reference the 'Tag Library Documentation' at:
+		</para>
+		<itemizedlist>
+			<listitem>http://java.sun.com/j2ee/javaserverfaces/reference/api/index.html</listitem>
+		</itemizedlist>
+		<table>
+			<title>Specification Tag Libraries</title>
+			<tgroup cols="2">
+				<thead>
+					<row>
+						<entry>Namespace</entry>
+						<entry>Description</entry>
+					</row>
+				</thead>
+				<tbody>
+					<row>
+						<entry>http://java.sun.com/jsf/core</entry>
+						<entry>The core JavaServer Faces custom actions that are independent of any RenderKit used.</entry>
+					</row>
+					<row>
+						<entry>http://java.sun.com/jsf/html</entry>
+						<entry>This tag library contains JavaServer Faces component tags for all UIComponent + HTML RenderKit Renderer combinations defined in the JavaServer Faces Specification.</entry>
+					</row>
+				</tbody>
+			</tgroup>
+		  </table>
 	</sect1>
 	
-	<sect1 id="taglib-tag">
-        <title>Specifying Tags</title>
+	<sect1 id="taglib-custom">
+        <title>Custom Tag Libraries</title>
         
         <sect2 id="taglib-tag-component">
 			<title>UIComponents</title>

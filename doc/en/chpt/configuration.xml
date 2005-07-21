@@ -75,18 +75,41 @@
 					<row>
 						<entry>facelets.VIEW_MAPPINGS</entry>
 						<entry></entry>
-						<entry>A semicolon (<literal>;</literal>) delimitted list of resources that Facelets should use.  If no resource paths are specified, Facelets will handle all requests (DEFAULT). If one or more paths are specified, Facelets will only use the ones specified, otherwise fall back on the parent or default <literal>ViewHandler</literal> (JSP).</entry>
+						<entry>A semicolon (<literal>;</literal>) delimitted list of resources that Facelets should use.  If no resource paths are specified, Facelets will handle all requests (DEFAULT). If one or more paths are specified, Facelets will only use the ones specified, otherwise fall back on the parent or default <literal>ViewHandler</literal> (JSP).  Note, this requires the FacesServlet in your <literal>web.xml</literal> to be mapped with a prefix for capturing multiple file types ex: <literal>/faces/*</literal>.</entry>
 						<entry>/demos/*; *.xhtml</entry>
 					</row>
 				</tbody>
 			</tgroup>
-		</table>
+		  </table>
 		</sect2>
 		
 		<sect2 id="config-webapp-security">
 			<title>Security</title>
 			<para>
 				Java applications can restrict access to resources or pages by outside users.  This feature is common to all application servers and part of the Servlet specification.
+			</para>
+			<para>
+				Lets presume that you want to take advantage of developing simple Facelet XHTML documents that are viewable in your browser during development.  When your application is deployed to production, you don't want anyone from the outside to access your XHTML documents unless they are served through the JavaServer Faces Servlet.
+			</para>
+			<programlisting><![CDATA[<security-constraint><web-app>
+			
+  <!-- servlets and such would be above -->
+
+  <security-constraint>	 
+    <display-name>Restrict XHTML Documents</display-name>
+    <web-resource-collection>
+      <web-resource-name>XHTML</web-resource-name>
+      <url-pattern>*.xhtml</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+      <description>Only Let 'developer's access XHTML pages</description>
+      <role-name>developer</role-name>
+    </auth-constraint>
+  </security-constraint>
+
+</web-app>]]></programlisting>
+			<para>
+				You can read more about Security in the Web Tier at http://java.sun.com/webservices/docs/1.3/tutorial/doc/Security2.html
 			</para>
 		</sect2>
 		
@@ -95,8 +118,50 @@
 	<sect1 id="config-logging">
         <title>Logging</title>
         <para>
-			TODO
+			Facelets uses <literal>java.util.Logger</literal> for handling logging.  This was done to reduce library dependencies while taking advantage of many Servlet container's ability to modify logging levels on the fly.
 		</para>
+		<para>
+			For many, using the JDK 1.4 <literal>java.util.Logger</literal> will be new to them.  You can read more on it at http://java.sun.com/j2se/1.4.2/docs/guide/util/logging/index.html
+		</para>
+		<table>
+			<title>Facelet Logger Names</title>
+			<tgroup cols="2">
+				<thead>
+					<row>
+						<entry>Name</entry>
+						<entry>Description</entry>
+					</row>
+				</thead>
+				<tbody>
+					<row>
+						<entry>facelets.compiler</entry>
+						<entry>For outputting debug information about the compilation process.  This would include namespace resolution for TagLibraries and XML events.  Most of the output will be <literal>FINE</literal>.</entry>
+					</row>
+					<row>
+						<entry>facelets.factory</entry>
+						<entry>Information about the inner workings of the <literal>FaceletFactory</literal>.</entry>
+					</row>
+					<row>
+						<entry>facelets.tag.component</entry>
+						<entry>Debug information that helps with component lifecycles in relation to Facelets.</entry>
+					</row>
+					<row>
+						<entry>facelets.viewhandler</entry>
+						<entry>Will output view-id mapping/resolution and the states of your views.</entry>
+					</row>
+				</tbody>
+			</tgroup>
+		  </table>
+		  <para>
+			For those who are currently developing a Facelets project and would like to have all the debug information available on both your application server and in your IDE; modify the <literal>logging.properties</literal> in your <literal>JRE/lib</literal> directory and add the following lines to the end of that file:
+		  </para>
+		  <programlisting><![CDATA[facelets.level = FINEST
+
+# uncomment any of the below
+
+#facelets.compiler = SEVERE
+#facelets.tag.component = INFO
+#facelets.viewhandler = SEVERE]]></programlisting>
 	</sect1>
 	
 </chapter>
