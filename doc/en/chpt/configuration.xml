@@ -91,7 +91,7 @@
 			<para>
 				Lets presume that you want to take advantage of developing simple Facelet XHTML documents that are viewable in your browser during development.  When your application is deployed to production, you don't want anyone from the outside to access your XHTML documents unless they are served through the JavaServer Faces Servlet.
 			</para>
-			<programlisting><![CDATA[<security-constraint><web-app>
+			<programlisting><![CDATA[<web-app>
 			
   <!-- servlets and such would be above -->
 
@@ -159,9 +159,9 @@
 
 # uncomment any of the below
 
-#facelets.compiler = SEVERE
-#facelets.tag.component = INFO
-#facelets.viewhandler = SEVERE]]></programlisting>
+#facelets.compiler.level = SEVERE
+#facelets.tag.component.level = INFO
+#facelets.viewhandler.level = SEVERE]]></programlisting>
 	</sect1>
 	
 </chapter>

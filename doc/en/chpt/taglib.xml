@@ -55,53 +55,83 @@
         </sect2>
 	</sect1>
     
-    <sect1 id="taglib-spec">
-        <title>Specification Tag Libraries</title>
-        <para>
-			Facelets comes with support for all tags (components) included in the JavaServer Faces Specification.  Great care was taken to mimic the specification's JSP tag counterparts to leverage existing knowledge and available documentation.  For development, you may reference the 'Tag Library Documentation' at:
-		</para>
-		<itemizedlist>
-			<listitem>http://java.sun.com/j2ee/javaserverfaces/reference/api/index.html</listitem>
-		</itemizedlist>
-		<table>
-			<title>Specification Tag Libraries</title>
-			<tgroup cols="2">
-				<thead>
-					<row>
-						<entry>Namespace</entry>
-						<entry>Description</entry>
-					</row>
-				</thead>
-				<tbody>
-					<row>
-						<entry>http://java.sun.com/jsf/core</entry>
-						<entry>The core JavaServer Faces custom actions that are independent of any RenderKit used.</entry>
-					</row>
-					<row>
-						<entry>http://java.sun.com/jsf/html</entry>
-						<entry>This tag library contains JavaServer Faces component tags for all UIComponent + HTML RenderKit Renderer combinations defined in the JavaServer Faces Specification.</entry>
-					</row>
-				</tbody>
-			</tgroup>
-		  </table>
+    <sect1 id="taglib-available">
+        <title>Available Tag Libraries</title>
+        
+        <sect2 id="taglib-available-spec">
+			<title>JavaServer Faces Specification</title>
+			<para>
+				Facelets comes with support for all tags (components) included in the JavaServer Faces Specification.  Great care was taken to mimic the specification's JSP tag counterparts to leverage existing knowledge and available documentation.  For development, you may reference the 'Tag Library Documentation' at:
+			</para>
+			<itemizedlist>
+				<listitem>http://java.sun.com/j2ee/javaserverfaces/reference/api/index.html</listitem>
+			</itemizedlist>
+			<table>
+				<title>Specification Tag Libraries</title>
+				<tgroup cols="2">
+					<thead>
+						<row>
+							<entry>Namespace</entry>
+							<entry>Description</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry>http://java.sun.com/jsf/core</entry>
+							<entry>The core JavaServer Faces custom actions that are independent of any RenderKit used.</entry>
+						</row>
+						<row>
+							<entry>http://java.sun.com/jsf/html</entry>
+							<entry>This tag library contains JavaServer Faces component tags for all UIComponent + HTML RenderKit Renderer combinations defined in the JavaServer Faces Specification.</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</table>
+		  </sect2>
+		  
+		  <sect2 id="taglib-available-jstl">
+			<title>JSTL Support</title>
+			<para>
+				TODO (limited)
+			</para>
+		  </sect2>
+		  
+		  <sect2 id="taglib-available-adf">
+			<title>Oracle ADF Faces</title>
+			<para>
+				TODO
+			</para>
+		  </sect2>
+		  
 	</sect1>
 	
-	<sect1 id="taglib-custom">
-        <title>Custom Tag Libraries</title>
+	<sect1 id="taglib-create">
+        <title>Creating Tag Libraries</title>
         
-        <sect2 id="taglib-tag-component">
+        <preface id="taglib-create-overview">
+			<title>Overview</title>
+			<para>
+				TODO
+			</para>
+        </preface>
+        
+        <sect2 id="taglib-create-schema">
+			<title>Tag Library Schema</title>
+        </sect2>
+        
+        <sect2 id="taglib-create-component">
 			<title>UIComponents</title>
         </sect2>
         
-        <sect2 id="taglib-tag-validator">
+        <sect2 id="taglib-create-validator">
 			<title>Validators</title>
         </sect2>
         
-        <sect2 id="taglib-tag-converter">
+        <sect2 id="taglib-create-converter">
 			<title>Converters</title>
         </sect2>
         
-        <sect2 id="taglib-tag-custom">
+        <sect2 id="taglib-create-custom">
 			<title>Custom Tags</title>
         </sect2>
         
