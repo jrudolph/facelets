@@ -105,6 +105,38 @@
 		  
 	</sect1>
 	
+	<sect1 id="taglib-function">
+		<title>Functions</title>
+		<para>
+			As part of the EL Specification, you can incorporate <literal>static</literal> Java methods into your documents.  The JSTL library already has some of these functions available, see <xref linkend="taglib-available-jstl"/>.
+		</para>
+		<para>
+			Functions are declared within EL in the following format: <literal>#{fn:sizeOf(myCollection)}</literal>.  What that line says is to reference the tag library using the prefix <literal>fn</literal> for a function named <literal>sizeOf</literal>.  This syntax should feel similar to what's required for using tags from imported libraries.
+		</para>
+		<para>
+			Any tag library can offer any amount of functions.  Please reference the particular library's documentation for function names and parameters information.
+		</para>
+	</sect1>
+    
+    <sect1 id="taglib-web">
+		<title>Loading Libraries</title>
+		<para>
+			Tag libraries can be loaded multiple ways.  First Facelets will load all libraries from your classpath (including packaged Jars) and then any libraries you have specified in your <literal>web.xml</literal>.
+		</para>
+		<itemizedlist>
+			<listitem>
+				<para>
+					When Facelets searches the classpath, it will attempt to load any file with the extension <literal>*.taglib.xml</literal> from the <literal>/meta-inf</literal> folder of your Jars.  For example, <literal>/meta-inf/mycompany.taglib.xml</literal> would be found by Facelets while <literal>/mycompany.taglib.xml</literal> and <literal>/meta-inf/mycompany.xml</literal> would not.  See <xref linkend="config-logging"/> for information on recieving debug information on the libraries loaded.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Facelets will check for an initialization parameter from your <literal>web.xml</literal> and load all libraries specified there relative to your application's root. See <xref linkend="config-webapp-init"/> for details on the parameter.  This is an ideal way to declare specialized tags for a particular application, tags that aren't necessarily distributed with code in Jars.
+				</para>
+			</listitem>
+		</itemizedlist>
+	</sect1>
+	
 	<sect1 id="taglib-create">
         <title>Creating Tag Libraries</title>
         
@@ -135,16 +167,6 @@
 			<title>Custom Tags</title>
         </sect2>
         
-	</sect1>
-	
-	<sect1 id="taglib-function">
-		<title>Functions</title>
-		
-	</sect1>
-    
-    <sect1 id="taglib-web">
-		<title>Loading Libraries</title>
-		
 	</sect1>
 	
 </chapter>
