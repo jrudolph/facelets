@@ -117,10 +117,12 @@ public abstract class FaceletTestCase extends TestCase {
                 this.factoryLifecycle
                         .getLifecycle(LifecycleFactory.DEFAULT_LIFECYCLE));
         
-        faces.setViewRoot(new UIViewRoot());
+        
         
         FaceletFactory factory = new DefaultFaceletFactory(new SAXCompiler(), context.toURL());
         FaceletFactory.setInstance(factory);
+        
+        faces.setViewRoot(faces.getApplication().getViewHandler().createView(faces, "/test"));
     }
     
     public void setRequest(String method, String path, OutputStream os) {
