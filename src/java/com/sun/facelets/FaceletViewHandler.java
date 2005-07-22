@@ -50,7 +50,7 @@ import com.sun.facelets.util.FacesAPI;
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.13 2005/07/21 05:30:04 jhook Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.14 2005/07/22 22:42:26 jhook Exp $
  */
 public class FaceletViewHandler extends ViewHandler {
 
@@ -417,11 +417,13 @@ public class FaceletViewHandler extends ViewHandler {
 
     protected String getRenderedViewId(FacesContext context, String actionId) {
         ExternalContext extCtx = context.getExternalContext();
-        String viewId = extCtx.getRequestPathInfo();
+        String viewId = actionId;
         if (extCtx.getRequestPathInfo() == null) {
             String facesSuffix = actionId.substring(actionId.lastIndexOf('.'));
             String viewSuffix = this.getDefaultSuffix(context);
             viewId = actionId.replaceFirst(facesSuffix, viewSuffix);
+        } else {
+            log.fine(extCtx.getRequestPathInfo());
         }
         if (log.isLoggable(Level.FINE)) {
             log.fine("ActionId -> ViewId: " + actionId + " -> " + viewId);
