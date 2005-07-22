@@ -38,6 +38,7 @@ import javax.faces.context.ResponseWriter;
 import javax.faces.render.RenderKit;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletResponse;
 
 import com.sun.facelets.compiler.Compiler;
 import com.sun.facelets.compiler.SAXCompiler;
@@ -50,7 +51,7 @@ import com.sun.facelets.util.FacesAPI;
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.15 2005/07/22 22:42:59 jhook Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.16 2005/07/22 23:35:52 jhook Exp $
  */
 public class FaceletViewHandler extends ViewHandler {
 
@@ -311,45 +312,61 @@ public class FaceletViewHandler extends ViewHandler {
 
     public void renderView(FacesContext context, UIViewRoot viewToRender)
             throws IOException, FacesException {
+        
+        // lazy initialize so we have a FacesContext to use
         if (!this.initialized) {
             this.initialize(context);
         }
-
-        if (!handledByFacelets(viewToRender)) {
-            this.parent.renderView(context, viewToRender);
-            return;
-        }
-
+        
         // exit if the view is not to be rendered
         if (!viewToRender.isRendered()) {
             return;
         }
 
+        // if facelets is not supposed to handle this request
+        if (!handledByFacelets(viewToRender)) {
+            this.parent.renderView(context, viewToRender);
+            return;
+        } 
+
+        // log request
         if (log.isLoggable(Level.FINE)) {
             log.fine("Rendering View: " + viewToRender.getViewId());
         }
+        
+        try {
+            // build view
+            this.buildView(context, viewToRender);
 
-        // build view
-        this.buildView(context, viewToRender);
-
-        // setup writer and assign it to the context
-        ResponseWriter writer = this.createResponseWriter(context);
-        context.setResponseWriter(writer);
-
-        // render the view to the response
-        writer.startDocument();
-        if (FacesAPI.getVersion() >= 12) {
-            viewToRender.encodeAll(context);
-        } else {
-            encodeRecursive(context, viewToRender);
+            // setup writer and assign it to the context
+            ResponseWriter writer = this.createResponseWriter(context);
+            context.setResponseWriter(writer);
+    
+            // render the view to the response
+            writer.startDocument();
+            if (FacesAPI.getVersion() >= 12) {
+                viewToRender.encodeAll(context);
+            } else {
+                encodeRecursive(context, viewToRender);
+            }
+            writer.endDocument();
+            writer.close();
+            
+        } catch (FileNotFoundException fnfe) {
+            if (log.isLoggable(Level.WARNING)) {
+                log.log(Level.WARNING, fnfe.getMessage());
+            }
+            String originalViewId = this.getActionURL(context, viewToRender.getViewId());
+            this.handleFaceletNotFound(context, originalViewId);
         }
-        writer.endDocument();
-        writer.close();
-
-        // finally clean up transients if viewState = true
-        ExternalContext extContext = context.getExternalContext();
-        if (extContext.getRequestMap().containsKey(STATE_KEY)) {
-            removeTransient(viewToRender);
+    }
+    
+    protected void handleFaceletNotFound(FacesContext context, String viewId) throws FacesException, IOException {
+        Object respObj = context.getExternalContext().getResponse();
+        if (respObj instanceof HttpServletResponse) {
+            HttpServletResponse respHttp = (HttpServletResponse) respObj;
+            respHttp.sendError(HttpServletResponse.SC_NOT_FOUND, viewId);
+            context.responseComplete();
         }
     }
 
