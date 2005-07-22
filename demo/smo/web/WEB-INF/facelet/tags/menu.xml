@@ -1,8 +1,0 @@
-<composition xmlns="http://java.sun.com/jsf/facelet">
-<ul>
-  <li id="current"><a href="#">Secure Login</a></li>
-  <li><a href="help.jsf">Register New User</a></li>
-  <li><a href="help.jsf">Take a Tour</a></li>
-  <li><a href="help.jsf">Contact Us</a></li>
-</ul>
-</composition>
