@@ -13,7 +13,7 @@
  * permissions and limitations under the License.
  */
 
-package com.sun.facelets.compiler;
+package com.sun.facelets.tag;
 
 import java.io.IOException;
 
@@ -31,7 +31,7 @@ import com.sun.facelets.FaceletHandler;
  * with multiple child elements as defined in XML.
  * 
  * @author Jacob Hookom
- * @version $Id: CompositeFaceletHandler.java,v 1.1 2005/07/18 08:25:27 jhook Exp $
+ * @version $Id: CompositeFaceletHandler.java,v 1.3 2005/07/23 19:42:07 jhook Exp $
  */
 public final class CompositeFaceletHandler implements FaceletHandler {
 

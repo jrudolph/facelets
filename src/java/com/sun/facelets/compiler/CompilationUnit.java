@@ -26,11 +26,12 @@ import javax.faces.component.UIComponent;
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
 import com.sun.facelets.FaceletHandler;
+import com.sun.facelets.tag.CompositeFaceletHandler;
 
 /**
  * 
  * @author Jacob Hookom
- * @version $Id: CompilationUnit.java,v 1.4 2005/07/20 05:27:45 jhook Exp $
+ * @version $Id: CompilationUnit.java,v 1.5 2005/07/23 19:42:06 jhook Exp $
  */
 class CompilationUnit {
 
