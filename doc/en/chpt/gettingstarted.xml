@@ -526,7 +526,7 @@ This text below will also not be displayed.
 					<para>Again we use an <literal><![CDATA[<ui:composition>]]></literal> to trim unecessary content from our page and use the <literal>template.xhtml</literal>.</para>
 				</listitem>
 				<listitem>
-					<para>We also introduced the <literal>jsfc</literal> attribute which allows the XHTML tags to be compiled into <literal><![CDATA[<h:form>]]></literal> and <literal><![CDATA[<h:commandLink>]]></literal> when the page is compiled.  This means that a designer's visual editor will render a normal form and button, but it will be transformed into a dynamic <literal>UIComponent</literal> when compiled by Facelets.</para>
+					<para>We also introduced the <literal>jsfc</literal> attribute which allows the XHTML tags to be compiled into <literal><![CDATA[<h:form>]]></literal> and <literal><![CDATA[<h:commandButton>]]></literal> when the page is compiled.  This means that a designer's visual editor will render a normal form and button, but it will be transformed into a dynamic <literal>UIComponent</literal> when compiled by Facelets.</para>
 				</listitem>
 			</orderedlist>
 			<para>
