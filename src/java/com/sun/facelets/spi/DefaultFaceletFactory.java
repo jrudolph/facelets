@@ -38,9 +38,9 @@ import com.sun.facelets.util.Assert;
  * Default FaceletFactory implementation.
  * 
  * @author Jacob Hookom
- * @version $Id: DefaultFaceletFactory.java,v 1.6 2005/07/21 17:56:55 jhook Exp $
+ * @version $Id: DefaultFaceletFactory.java,v 1.7 2005/07/23 21:00:47 jhook Exp $
  */
-public class DefaultFaceletFactory extends FaceletFactory {
+public final class DefaultFaceletFactory extends FaceletFactory {
 
     protected final static Logger log = Logger.getLogger("facelets.factory");
 
@@ -51,8 +51,14 @@ public class DefaultFaceletFactory extends FaceletFactory {
     private final Map relativeLocations;
 
     private final URL location;
+    
+    private final long refreshPeriod;
 
     public DefaultFaceletFactory(Compiler compiler, URL url) {
+        this(compiler, url, -1);
+    }
+    
+    public DefaultFaceletFactory(Compiler compiler, URL url, long refreshPeriod) {
         Assert.param("compiler", compiler);
         Assert.param("url", url);
         this.compiler = compiler;
@@ -60,6 +66,8 @@ public class DefaultFaceletFactory extends FaceletFactory {
         this.relativeLocations = new HashMap();
         this.location = url;
         log.fine("Using Base Location: " + url);
+        this.refreshPeriod = (refreshPeriod > 0) ? refreshPeriod * 1000 : -1;
+        log.fine("Using Refresh Period: " + this.refreshPeriod);
     }
 
     /*
@@ -141,6 +149,20 @@ public class DefaultFaceletFactory extends FaceletFactory {
      * @return true if it needs to be refreshed
      */
     protected boolean needsToBeRefreshed(DefaultFacelet facelet) {
+        if (this.refreshPeriod != -1) {
+            long ttl = facelet.getCreateTime() + this.refreshPeriod;
+            if (System.currentTimeMillis() > ttl) {
+                try {
+                    long atl = facelet.getSource().openConnection()
+                            .getLastModified();
+                    return atl > ttl;
+                } catch (Exception e) {
+                    throw new FaceletException(
+                            "Error Checking Last Modified for "
+                                    + facelet.getAlias(), e);
+                }
+            }
+        }
         return false;
     }
 
