@@ -20,7 +20,7 @@
   <property name="release"             value="release"/>
   <property name="doc"                 value="doc"/>
   <property name="dependencies"        value="dependencies"/>
-  <property name="jar"                 value="jsf-facelet.jar"/>
+  <property name="jar"                 value="jsf-facelets.jar"/>
 
 
   <path id="compile.classpath">
