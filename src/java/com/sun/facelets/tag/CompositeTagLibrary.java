@@ -19,7 +19,7 @@ import java.lang.reflect.Method;
 
 import javax.faces.FacesException;
 
-import com.sun.facelets.util.Assert;
+import com.sun.facelets.util.ParameterCheck;
 
 /**
  * A TagLibrary that is composed of 1 or more TagLibrary children. Uses the
@@ -27,14 +27,14 @@ import com.sun.facelets.util.Assert;
  * children handles the requested method.
  * 
  * @author Jacob Hookom
- * @version $Id: CompositeTagLibrary.java,v 1.1 2005/05/21 17:54:37 jhook Exp $
+ * @version $Id: CompositeTagLibrary.java,v 1.2 2005/07/23 21:16:24 jhook Exp $
  */
 public final class CompositeTagLibrary implements TagLibrary {
 
     private final TagLibrary[] libraries;
 
     public CompositeTagLibrary(TagLibrary[] libraries) {
-        Assert.param("libraries", libraries);
+        ParameterCheck.notNull("libraries", libraries);
         this.libraries = libraries;
     }
 

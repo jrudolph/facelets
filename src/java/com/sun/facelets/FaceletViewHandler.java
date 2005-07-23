@@ -43,7 +43,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.sun.facelets.compiler.Compiler;
 import com.sun.facelets.compiler.SAXCompiler;
 import com.sun.facelets.compiler.TagLibraryConfig;
-import com.sun.facelets.spi.RefreshableFaceletFactory;
+import com.sun.facelets.spi.DefaultFaceletFactory;
 import com.sun.facelets.tag.TagLibrary;
 import com.sun.facelets.util.FacesAPI;
 
@@ -51,7 +51,7 @@ import com.sun.facelets.util.FacesAPI;
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.16 2005/07/22 23:35:52 jhook Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.17 2005/07/23 21:16:24 jhook Exp $
  */
 public class FaceletViewHandler extends ViewHandler {
 
@@ -208,7 +208,7 @@ public class FaceletViewHandler extends ViewHandler {
         }
         log.fine("Using Refresh Period: " + refreshPeriod + " sec");
         try {
-            return new RefreshableFaceletFactory(c, ctx.getExternalContext()
+            return new DefaultFaceletFactory(c, ctx.getExternalContext()
                     .getResource("/"), refreshPeriod);
         } catch (MalformedURLException e) {
             throw new FaceletException("Error Creating FaceletFactory", e);

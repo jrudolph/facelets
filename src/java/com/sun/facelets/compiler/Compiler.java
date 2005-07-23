@@ -35,14 +35,14 @@ import com.sun.facelets.tag.CompositeTagDecorator;
 import com.sun.facelets.tag.CompositeTagLibrary;
 import com.sun.facelets.tag.TagDecorator;
 import com.sun.facelets.tag.TagLibrary;
-import com.sun.facelets.util.Assert;
+import com.sun.facelets.util.ParameterCheck;
 import com.sun.facelets.util.FacesAPI;
 
 /**
  * A Compiler instance may handle compiling multiple sources
  * 
  * @author Jacob Hookom
- * @version $Id: Compiler.java,v 1.5 2005/07/20 05:27:45 jhook Exp $
+ * @version $Id: Compiler.java,v 1.6 2005/07/23 21:16:23 jhook Exp $
  */
 public abstract class Compiler {
 
@@ -112,7 +112,7 @@ public abstract class Compiler {
     }
 
     public final void addTagDecorator(TagDecorator decorator) {
-        Assert.param("decorator", decorator);
+        ParameterCheck.notNull("decorator", decorator);
         if (!this.decorators.contains(decorator)) {
             this.decorators.add(decorator);
         }
@@ -160,7 +160,7 @@ public abstract class Compiler {
     }
 
     public final void addTagLibrary(TagLibrary library) {
-        Assert.param("library", library);
+        ParameterCheck.notNull("library", library);
         if (!this.libraries.contains(library)) {
             this.libraries.add(library);
         }

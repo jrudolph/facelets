@@ -17,11 +17,11 @@ package com.sun.facelets.util;
 
 /**
  * @author Jacob Hookom
- * @version $Id: Assert.java,v 1.1 2005/05/21 17:54:45 jhook Exp $
+ * @version $Id: ParameterCheck.java,v 1.1 2005/07/23 21:16:23 jhook Exp $
  */
-public final class Assert {
+public final class ParameterCheck {
 
-    public final static void param(String name, Object value)
+    public final static void notNull(String name, Object value)
             throws NullPointerException {
         if (value == null) {
             throw new NullPointerException("Parameter '" + name

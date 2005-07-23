@@ -15,7 +15,7 @@
 
 package com.sun.facelets.tag;
 
-import com.sun.facelets.util.Assert;
+import com.sun.facelets.util.ParameterCheck;
 
 /**
  * A TagDecorator that is composed of 1 or more TagDecorator instances. It uses
@@ -23,14 +23,14 @@ import com.sun.facelets.util.Assert;
  * TagDecorators return a value other than null.
  * 
  * @author Jacob Hookom
- * @version $Id: CompositeTagDecorator.java,v 1.2 2005/07/20 06:37:06 jhook Exp $
+ * @version $Id: CompositeTagDecorator.java,v 1.3 2005/07/23 21:16:24 jhook Exp $
  */
 public final class CompositeTagDecorator implements TagDecorator {
 
     private final TagDecorator[] decorators;
 
     public CompositeTagDecorator(TagDecorator[] decorators) {
-        Assert.param("decorators", decorators);
+        ParameterCheck.notNull("decorators", decorators);
         this.decorators = decorators;
     }
 

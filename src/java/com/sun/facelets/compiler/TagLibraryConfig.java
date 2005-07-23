@@ -36,7 +36,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import com.sun.facelets.tag.AbstractTagLibrary;
 import com.sun.facelets.tag.TagHandler;
 import com.sun.facelets.tag.TagLibrary;
-import com.sun.facelets.util.Assert;
+import com.sun.facelets.util.ParameterCheck;
 import com.sun.facelets.util.Classpath;
 
 /**
@@ -44,7 +44,7 @@ import com.sun.facelets.util.Classpath;
  * {@link java.net.URL URL} source.
  * 
  * @author Jacob Hookom
- * @version $Id: TagLibraryConfig.java,v 1.2 2005/07/13 02:18:57 adamwiner Exp $
+ * @version $Id: TagLibraryConfig.java,v 1.3 2005/07/23 21:16:23 jhook Exp $
  */
 public final class TagLibraryConfig {
 
@@ -58,33 +58,33 @@ public final class TagLibraryConfig {
         }
 
         public void putConverter(String name, String id) {
-            Assert.param("name", name);
-            Assert.param("id", id);
+            ParameterCheck.notNull("name", name);
+            ParameterCheck.notNull("id", id);
             this.addConverter(name, id);
         }
 
         public void putValidator(String name, String id) {
-            Assert.param("name", name);
-            Assert.param("id", id);
+            ParameterCheck.notNull("name", name);
+            ParameterCheck.notNull("id", id);
             this.addValidator(name, id);
         }
 
         public void putTagHandler(String name, Class type) {
-            Assert.param("name", name);
-            Assert.param("type", type);
+            ParameterCheck.notNull("name", name);
+            ParameterCheck.notNull("type", type);
             this.addTagHandler(name, type);
         }
 
         public void putComponent(String name, String componentId,
                 String rendererId) {
-            Assert.param("name", name);
-            Assert.param("componentId", componentId);
+            ParameterCheck.notNull("name", name);
+            ParameterCheck.notNull("componentId", componentId);
             this.addComponent(name, componentId, rendererId);
         }
 
         public void putUserTag(String name, URL source) {
-            Assert.param("name", name);
-            Assert.param("source", source);
+            ParameterCheck.notNull("name", name);
+            ParameterCheck.notNull("source", source);
             this.addUserTag(name, source);
         }
     }

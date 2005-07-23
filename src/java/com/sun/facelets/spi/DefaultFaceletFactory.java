@@ -32,13 +32,13 @@ import com.sun.facelets.FaceletException;
 import com.sun.facelets.FaceletFactory;
 import com.sun.facelets.FaceletHandler;
 import com.sun.facelets.compiler.Compiler;
-import com.sun.facelets.util.Assert;
+import com.sun.facelets.util.ParameterCheck;
 
 /**
  * Default FaceletFactory implementation.
  * 
  * @author Jacob Hookom
- * @version $Id: DefaultFaceletFactory.java,v 1.7 2005/07/23 21:00:47 jhook Exp $
+ * @version $Id: DefaultFaceletFactory.java,v 1.8 2005/07/23 21:16:24 jhook Exp $
  */
 public final class DefaultFaceletFactory extends FaceletFactory {
 
@@ -59,8 +59,8 @@ public final class DefaultFaceletFactory extends FaceletFactory {
     }
     
     public DefaultFaceletFactory(Compiler compiler, URL url, long refreshPeriod) {
-        Assert.param("compiler", compiler);
-        Assert.param("url", url);
+        ParameterCheck.notNull("compiler", compiler);
+        ParameterCheck.notNull("url", url);
         this.compiler = compiler;
         this.facelets = new HashMap();
         this.relativeLocations = new HashMap();
@@ -132,7 +132,7 @@ public final class DefaultFaceletFactory extends FaceletFactory {
      */
     public Facelet getFacelet(URL url) throws IOException, FaceletException,
             FacesException, ELException {
-        Assert.param("url", url);
+        ParameterCheck.notNull("url", url);
         DefaultFacelet f = (DefaultFacelet) this.facelets.get(url);
         if (f == null || this.needsToBeRefreshed(f)) {
             f = this.createFacelet(url);
