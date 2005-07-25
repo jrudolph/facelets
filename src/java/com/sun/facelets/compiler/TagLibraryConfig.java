@@ -21,7 +21,6 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.regex.Pattern;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -38,7 +37,6 @@ import org.xml.sax.helpers.DefaultHandler;
 import com.sun.facelets.tag.AbstractTagLibrary;
 import com.sun.facelets.tag.TagHandler;
 import com.sun.facelets.tag.TagLibrary;
-import com.sun.facelets.tag.jstl.fn.JstlFunction;
 import com.sun.facelets.util.ParameterCheck;
 import com.sun.facelets.util.Classpath;
 
@@ -47,7 +45,7 @@ import com.sun.facelets.util.Classpath;
  * {@link java.net.URL URL} source.
  * 
  * @author Jacob Hookom
- * @version $Id: TagLibraryConfig.java,v 1.4 2005/07/25 02:20:49 jhook Exp $
+ * @version $Id: TagLibraryConfig.java,v 1.5 2005/07/25 02:26:50 jhook Exp $
  */
 public final class TagLibraryConfig {
 
