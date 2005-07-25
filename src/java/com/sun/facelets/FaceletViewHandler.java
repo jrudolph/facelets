@@ -51,7 +51,7 @@ import com.sun.facelets.util.FacesAPI;
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.17 2005/07/23 21:16:24 jhook Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.18 2005/07/25 23:32:20 jhook Exp $
  */
 public class FaceletViewHandler extends ViewHandler {
 
@@ -351,6 +351,11 @@ public class FaceletViewHandler extends ViewHandler {
             }
             writer.endDocument();
             writer.close();
+            
+            // remove transients
+            if (FacesAPI.getVersion() < 12) {
+                removeTransient(viewToRender);
+            }
             
         } catch (FileNotFoundException fnfe) {
             if (log.isLoggable(Level.WARNING)) {
