@@ -17,9 +17,11 @@ package com.sun.facelets.compiler;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -36,6 +38,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import com.sun.facelets.tag.AbstractTagLibrary;
 import com.sun.facelets.tag.TagHandler;
 import com.sun.facelets.tag.TagLibrary;
+import com.sun.facelets.tag.jstl.fn.JstlFunction;
 import com.sun.facelets.util.ParameterCheck;
 import com.sun.facelets.util.Classpath;
 
@@ -44,7 +47,7 @@ import com.sun.facelets.util.Classpath;
  * {@link java.net.URL URL} source.
  * 
  * @author Jacob Hookom
- * @version $Id: TagLibraryConfig.java,v 1.3 2005/07/23 21:16:23 jhook Exp $
+ * @version $Id: TagLibraryConfig.java,v 1.4 2005/07/25 02:20:49 jhook Exp $
  */
 public final class TagLibraryConfig {
 
@@ -87,6 +90,12 @@ public final class TagLibraryConfig {
             ParameterCheck.notNull("source", source);
             this.addUserTag(name, source);
         }
+        
+        public void putFunction(String name, Method method) {
+            ParameterCheck.notNull("name", name);
+            ParameterCheck.notNull("method", method);
+            this.addFunction(name, method);
+        }
     }
 
     private static class LibraryHandler extends DefaultHandler {
@@ -107,6 +116,12 @@ public final class TagLibraryConfig {
         private String componentType;
 
         private String rendererType;
+        
+        private String functionName;
+        
+        private Class functionClass;
+        
+        private String functionSignature;
 
         public LibraryHandler(URL source) {
             this.file = source.getFile();
@@ -138,6 +153,13 @@ public final class TagLibraryConfig {
                 }
                 else if ("tag-name".equals(qName)) {
                     this.tagName = this.captureBuffer();
+                }
+                else if ("function-name".equals(qName)) {
+                    this.functionName = this.captureBuffer();
+                }
+                else if ("function-class".equals(qName)) {
+                    String className = this.captureBuffer();
+                    this.functionClass = this.createClass(Object.class, className);
                 }
                 else
                 {
@@ -173,6 +195,11 @@ public final class TagLibraryConfig {
                         URL url = new URL(this.source, path);
                         impl.putUserTag(this.tagName, url);
                     }
+                    else if ("function-signature".equals(qName)) {
+                        this.functionSignature = this.captureBuffer();
+                        Method m = this.createMethod(this.functionClass, this.functionSignature);
+                        impl.putFunction(this.functionName, m);
+                    }
                 }
             } catch (Exception e) {
                 SAXException saxe =
@@ -194,13 +221,51 @@ public final class TagLibraryConfig {
             return s;
         }
 
-        private Class createClass(Class type, String name) throws Exception {
-            Class factory = Class.forName(name);
+        private static Class createClass(Class type, String name) throws Exception {
+            Class factory = ReflectionUtil.forName(name);
             if (!type.isAssignableFrom(factory)) {
                 throw new Exception(name + " must be an instance of "
                         + type.getName());
             }
             return factory;
+        }
+        
+        private static Method createMethod(Class type, String s) throws Exception {
+            Method m = null;
+            int pos = s.indexOf(' ');
+            if (pos == -1) {
+                throw new Exception("Must Provide Return Type: "+s);
+            } else {
+                String rt = s.substring(0, pos).trim();
+                int pos2 = s.indexOf('(', pos+1);
+                if (pos2 == -1) {
+                    throw new Exception("Must provide a method name, followed by '(': "+s);
+                } else {
+                    String mn = s.substring(pos+1, pos2).trim();
+                    pos = s.indexOf(')', pos2 + 1);
+                    if (pos == -1) {
+                        throw new Exception("Must close parentheses, ')' missing: "+s);
+                    } else {
+                        String[] ps = s.substring(pos2 + 1, pos).trim().split(",");
+                        Class[] pc;
+                        if (ps.length == 1 && "".equals(ps[0])) {
+                            pc = new Class[0];
+                        } else {
+                            pc = new Class[ps.length];
+                            for (int i = 0; i < pc.length; i ++) {
+                                pc[i] = ReflectionUtil.forName(ps[i].trim());
+                            }
+                        }
+                        try {
+                            return type.getMethod(mn, pc);
+                        } catch (NoSuchMethodException e) {
+                            throw new Exception("No Function Found on type: "+type.getName()+" with signature: "+s);
+                        }
+                        
+                    }
+                            
+                }
+            }
         }
 
         private void processLibraryClass() throws Exception {
@@ -233,6 +298,10 @@ public final class TagLibraryConfig {
                 this.componentType = null;
                 this.rendererType = null;
                 this.tagName = null;
+            } else if ("function".equals(qName)) {
+                this.functionName = null;
+                this.functionClass = null;
+                this.functionSignature = null;
             }
         }
 
@@ -246,6 +315,14 @@ public final class TagLibraryConfig {
 
         public void setDocumentLocator(Locator locator) {
             this.locator = locator;
+        }
+
+        public void fatalError(SAXParseException e) throws SAXException {
+            throw e;
+        }
+
+        public void warning(SAXParseException e) throws SAXException {
+            throw e;
         }
     }
 

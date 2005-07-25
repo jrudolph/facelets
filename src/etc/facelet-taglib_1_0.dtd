@@ -12,10 +12,10 @@
  implied. See the License for the specific language governing
  permissions and limitations under the License.
  
- $Id: facelet-taglib_1_0.dtd,v 1.1 2005/05/21 17:47:19 jhook Exp $
+ $Id: facelet-taglib_1_0.dtd,v 1.2 2005/07/25 02:20:49 jhook Exp $
 -->
 
-<!ELEMENT facelet-taglib (library-class|(namespace,tag+))>
+<!ELEMENT facelet-taglib (library-class|(namespace,(tag|function)+))>
 <!ATTLIST facelet-taglib xmlns CDATA #FIXED "http://java.sun.com/JSF/Facelet">
 <!ELEMENT namespace (#PCDATA)>
 <!ELEMENT library-class (#PCDATA)>
@@ -30,3 +30,7 @@
 <!ELEMENT validator (validator-id)>
 <!ELEMENT validator-id (#PCDATA)>
 <!ELEMENT source (#PCDATA)>
+<!ELEMENT function (function-name,function-class,function-signature)>
+<!ELEMENT function-name (#PCDATA)>
+<!ELEMENT function-class (#PCDATA)>
+<!ELEMENT function-signature (#PCDATA)>
