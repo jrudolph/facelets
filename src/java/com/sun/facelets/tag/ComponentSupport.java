@@ -1,6 +1,8 @@
 package com.sun.facelets.tag;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -9,11 +11,12 @@ import javax.faces.component.UIComponent;
 import javax.faces.component.UIViewRoot;
 
 import com.sun.facelets.FaceletContext;
+import com.sun.facelets.FaceletHandler;
 
 public final class ComponentSupport {
 
     private final static String MARK_DELETED = "com.sun.facelets.MARK_DELETED";
-
+    
     /**
      * Used in conjunction with markForDeletion where any UIComponent marked
      * will be removed.

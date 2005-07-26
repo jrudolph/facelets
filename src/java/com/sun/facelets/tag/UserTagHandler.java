@@ -32,9 +32,9 @@ import com.sun.facelets.el.VariableMapperWrapper;
  * sets them on the FaceletContext before including the targeted Facelet file.
  * 
  * @author Jacob Hookom
- * @version $Id: UserTagHandler.java,v 1.1 2005/05/21 17:54:40 jhook Exp $
+ * @version $Id: UserTagHandler.java,v 1.2 2005/07/26 01:37:01 jhook Exp $
  */
-public final class UserTagHandler extends TagHandler {
+final class UserTagHandler extends TagHandler {
 
     protected final TagAttribute[] vars;
 

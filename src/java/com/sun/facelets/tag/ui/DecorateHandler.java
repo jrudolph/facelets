@@ -17,6 +17,7 @@ package com.sun.facelets.tag.ui;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.el.ELException;
@@ -26,7 +27,6 @@ import javax.faces.component.UIComponent;
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
 import com.sun.facelets.FaceletHandler;
-import com.sun.facelets.tag.CompositeFaceletHandler;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagAttributeException;
 import com.sun.facelets.tag.TagConfig;
@@ -34,7 +34,7 @@ import com.sun.facelets.tag.TagHandler;
 
 /**
  * @author Jacob Hookom
- * @version $Id: DecorateHandler.java,v 1.4 2005/07/23 19:42:07 jhook Exp $
+ * @version $Id: DecorateHandler.java,v 1.5 2005/07/26 01:37:01 jhook Exp $
  */
 public final class DecorateHandler extends TagHandler implements TemplateClient {
 
@@ -49,25 +49,17 @@ public final class DecorateHandler extends TagHandler implements TemplateClient 
         super(config);
         this.template = this.getRequiredAttribute("template");
         this.handlers = new HashMap();
-        if (this.template != null) {
-            if (this.nextHandler instanceof CompositeFaceletHandler) {
-                FaceletHandler[] c = ((CompositeFaceletHandler) this.nextHandler)
-                        .getHandlers();
-                for (int i = 0; i < c.length; i++) {
-                    if (c[i] instanceof DefineHandler) {
-                        this.handlers.put(((DefineHandler) c[i]).getName(),
-                                c[i]);
-                    }
-                }
-
-            } else if (this.nextHandler instanceof DefineHandler) {
-                this.handlers.put(((DefineHandler) this.nextHandler).getName(),
-                        this.nextHandler);
-            }
-            if (this.handlers.isEmpty()) {
-                throw new TagAttributeException(this.tag, this.template,
-                        "Template Specified, but no DefineHandler children");
-            }
+        
+        Iterator itr = this.findNextByType(DefineHandler.class);
+        DefineHandler d = null;
+        while (itr.hasNext()) {
+            d = (DefineHandler) itr.next();
+            this.handlers.put(d.getName(), d);
+        }
+        
+        if (this.handlers.isEmpty()) {
+            throw new TagAttributeException(this.tag, this.template,
+                    "Template Specified, but no DefineHandler children");
         }
     }
 

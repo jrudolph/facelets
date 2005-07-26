@@ -3,7 +3,10 @@
       
 	<h:dataTable id="table">
     	<facet name="footer">
-      		Boogie Footers
+      		
+      		<h:outputText value="Boogie Footers"/>
+      		
+      		
       	</facet>
     </h:dataTable>
       

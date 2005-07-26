@@ -19,7 +19,7 @@ package com.sun.facelets.tag;
  * Representation of a Tag in the Facelet definition
  * 
  * @author Jacob Hookom
- * @version $Id: Tag.java,v 1.2 2005/07/20 06:37:07 jhook Exp $
+ * @version $Id: Tag.java,v 1.3 2005/07/26 01:37:00 jhook Exp $
  */
 public final class Tag {
     private final TagAttributes attributes;
@@ -39,6 +39,11 @@ public final class Tag {
         this.localName = localName;
         this.qName = qName;
         this.attributes = attributes;
+    }
+
+    public Tag(Tag orig, TagAttributes attributes) {
+        this(orig.getLocation(), orig.getNamespace(), orig.getLocalName(), orig
+                .getQName(), attributes);
     }
 
     /**
@@ -86,7 +91,9 @@ public final class Tag {
         return qName;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.lang.Object#toString()
      */
     public String toString() {

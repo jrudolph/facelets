@@ -41,9 +41,9 @@ import com.sun.facelets.util.FacesAPI;
  * 
  * @see com.sun.facelets.tag.TagAttribute
  * @author Jacob Hookom
- * @version $Id: ObjectHandler.java,v 1.5 2005/07/20 06:46:52 jhook Exp $
+ * @version $Id: ObjectHandler.java,v 1.6 2005/07/26 01:37:00 jhook Exp $
  */
-public abstract class ObjectHandler extends TagHandler {
+abstract class ObjectHandler extends TagHandler {
 
     private final static Logger log = Logger.getLogger("facelets.tag.object");
 

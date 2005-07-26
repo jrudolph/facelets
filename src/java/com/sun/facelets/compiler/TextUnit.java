@@ -27,12 +27,11 @@ import com.sun.facelets.tag.CompositeFaceletHandler;
 import com.sun.facelets.tag.Tag;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagException;
-import com.sun.facelets.tag.ui.UITextHandler;
 
 /**
  * 
  * @author Jacob Hookom
- * @version $Id: TextUnit.java,v 1.4 2005/07/23 19:42:06 jhook Exp $
+ * @version $Id: TextUnit.java,v 1.5 2005/07/26 01:37:03 jhook Exp $
  */
 final class TextUnit extends CompilationUnit {
 

@@ -15,6 +15,11 @@
 
 package com.sun.facelets.tag;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+
 import com.sun.facelets.FaceletHandler;
 
 /**
@@ -22,7 +27,7 @@ import com.sun.facelets.FaceletHandler;
  * document.
  * 
  * @author Jacob Hookom
- * @version $Id: TagHandler.java,v 1.2 2005/07/20 06:37:07 jhook Exp $
+ * @version $Id: TagHandler.java,v 1.3 2005/07/26 01:37:01 jhook Exp $
  */
 public abstract class TagHandler implements FaceletHandler {
 
@@ -66,6 +71,31 @@ public abstract class TagHandler implements FaceletHandler {
                     + "' is required");
         }
         return attr;
+    }
+    
+    /**
+     * Searches child handlers, starting at the 'nextHandler' for all
+     * instances of the passed type.  This process will stop searching
+     * a branch if an instance is found.
+     * 
+     * @param type Class type to search for
+     * @return iterator over instances of FaceletHandlers of the matching type
+     */
+    protected final Iterator findNextByType(Class type) {
+        List list = new ArrayList();
+        findHandlersByTypeHelper(list, this.nextHandler, type);
+        return Collections.unmodifiableCollection(list).iterator();
+    }
+    
+    private static final void findHandlersByTypeHelper(List found, FaceletHandler root, Class type) {
+        if (type.isAssignableFrom(root.getClass())) {
+            found.add(root);
+        } else if (root instanceof CompositeFaceletHandler) {
+            FaceletHandler[] h = ((CompositeFaceletHandler) root).getHandlers();
+            for (int i = 0; i < h.length; i++) {
+                findHandlersByTypeHelper(found, h[i], type);
+            }
+        }
     }
 
     public String toString() {

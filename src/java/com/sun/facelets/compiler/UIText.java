@@ -13,7 +13,7 @@
  * permissions and limitations under the License.
  */
 
-package com.sun.facelets.tag.ui;
+package com.sun.facelets.compiler;
 
 import java.io.IOException;
 
@@ -26,9 +26,9 @@ import com.sun.facelets.el.ELText;
 
 /**
  * @author Jacob Hookom
- * @version $Id: UIText.java,v 1.4 2005/07/20 06:37:11 jhook Exp $
+ * @version $Id: UIText.java,v 1.1 2005/07/26 01:37:03 jhook Exp $
  */
-public final class UIText extends UIComponentBase {
+final class UIText extends UIComponentBase {
 
     private final ELText txt;
 

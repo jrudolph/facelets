@@ -23,9 +23,9 @@ import javax.faces.FacesException;
  * 
  * @see TagLibrary
  * @author Jacob Hookom
- * @version $Id: TagHandlerFactory.java,v 1.1 2005/05/21 17:54:40 jhook Exp $
+ * @version $Id: TagHandlerFactory.java,v 1.2 2005/07/26 01:37:01 jhook Exp $
  */
-public interface TagHandlerFactory {
+interface TagHandlerFactory {
     /**
      * A new TagHandler instantiated with the passed TagConfig
      * 

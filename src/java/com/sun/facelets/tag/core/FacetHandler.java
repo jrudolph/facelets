@@ -27,8 +27,8 @@ import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagConfig;
+import com.sun.facelets.tag.TagException;
 import com.sun.facelets.tag.TagHandler;
-import com.sun.facelets.tag.ui.UIText;
 
 /**
  * Register a named facet on the UIComponent associated with the closest parent
@@ -37,7 +37,7 @@ import com.sun.facelets.tag.ui.UIText;
  * documentation</a>.
  * 
  * @author Jacob Hookom
- * @version $Id: FacetHandler.java,v 1.1 2005/05/21 17:54:44 jhook Exp $
+ * @version $Id: FacetHandler.java,v 1.2 2005/07/26 01:37:03 jhook Exp $
  */
 public final class FacetHandler extends TagHandler {
 
@@ -48,7 +48,7 @@ public final class FacetHandler extends TagHandler {
      * @author Jacob Hookom
      * 
      */
-    public final static class UIFacet extends UIComponentBase {
+    private final static class UIFacet extends UIComponentBase {
         public String getFamily() {
             return null;
         }
@@ -73,14 +73,8 @@ public final class FacetHandler extends TagHandler {
         if (childCount == 1) {
             c = (UIComponent) facet.getChildren().get(0);
             parent.getFacets().put(this.name.getValue(ctx), c);
-        } else if (childCount > 0) {
-            for (Iterator itr = facet.getChildren().iterator(); itr.hasNext();) {
-                c = (UIComponent) itr.next();
-                if (!(c instanceof UIText)) {
-                    parent.getFacets().put(this.name.getValue(ctx), c);
-                    break;
-                }
-            }
+        } else {
+            throw new TagException(this.tag, "Facet Tag can only have one child UIComponent");
         }
     }
 }
