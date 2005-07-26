@@ -19,11 +19,11 @@ import com.sun.facelets.tag.AbstractTagLibrary;
 
 /**
  * @author Jacob Hookom
- * @version $Id: UILibrary.java,v 1.1 2005/05/21 17:54:57 jhook Exp $
+ * @version $Id: UILibrary.java,v 1.2 2005/07/26 23:35:11 jhook Exp $
  */
 public final class UILibrary extends AbstractTagLibrary {
 
-    public final static String Namespace = "http://java.sun.com/jsf/facelet";
+    public final static String Namespace = "http://java.sun.com/jsf/facelets";
 
     public final static UILibrary Instance = new UILibrary();
 
