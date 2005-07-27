@@ -30,7 +30,7 @@ import com.sun.facelets.util.FacesAPI;
  * 
  * 
  * @author Jacob Hookom
- * @version $Id: ELAdaptor.java,v 1.4 2005/07/20 05:27:46 jhook Exp $
+ * @version $Id: ELAdaptor.java,v 1.5 2005/07/27 04:32:48 jhook Exp $
  */
 public final class ELAdaptor {
 
@@ -65,7 +65,7 @@ public final class ELAdaptor {
     }
     
     public final static void setExpression(UIComponent c, String name, ValueExpression ve) {
-        if (FacesAPI.getVersion(c) >= 12) {
+        if (FacesAPI.getComponentVersion(c) >= 12) {
             c.setValueExpression(name, ve);
         } else {
             c.setValueBinding(name, new LegacyValueBinding(ve));

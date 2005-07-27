@@ -13,7 +13,7 @@
  * permissions and limitations under the License.
  */
 
-package com.sun.facelets.spi;
+package com.sun.facelets.impl;
 
 import java.io.IOException;
 import java.net.URL;
@@ -30,13 +30,13 @@ import com.sun.facelets.Facelet;
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
 import com.sun.facelets.FaceletHandler;
-import com.sun.facelets.tag.ComponentSupport;
+import com.sun.facelets.tag.jsf.ComponentSupport;
 
 /**
  * Default Facelet implementation.
  * 
  * @author Jacob Hookom
- * @version $Id: DefaultFacelet.java,v 1.4 2005/07/23 19:42:08 jhook Exp $
+ * @version $Id: DefaultFacelet.java,v 1.5 2005/07/27 04:32:49 jhook Exp $
  */
 final class DefaultFacelet extends Facelet {
 

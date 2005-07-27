@@ -38,7 +38,7 @@ import com.sun.facelets.tag.ui.UILibrary;
  * @see com.sun.facelets.compiler.Compiler
  * 
  * @author Jacob Hookom
- * @version $Id: CompilationManager.java,v 1.4 2005/07/21 17:56:54 jhook Exp $
+ * @version $Id: CompilationManager.java,v 1.5 2005/07/27 04:32:47 jhook Exp $
  */
 final class CompilationManager {
 
@@ -127,7 +127,7 @@ final class CompilationManager {
         }
         
         Tag t = this.tagDecorator.decorate(orig);
-        t = this.processAttributes(t);
+        t = this.trimAttributes(t);
 
         boolean handled = false;
 
@@ -250,9 +250,9 @@ final class CompilationManager {
         this.units.push(unit);
     }
 
-    private Tag processAttributes(Tag tag) {
-        Tag t = this.processAttributesJSFC(tag);
-        t = this.processAttributesNS(t);
+    private Tag trimAttributes(Tag tag) {
+        Tag t = this.trimJSFCAttribute(tag);
+        t = this.trimNSAttributes(t);
         return t;
     }
 
@@ -266,7 +266,7 @@ final class CompilationManager {
                 && CompositionHandler.Name.equals(t.getLocalName());
     }
 
-    private Tag processAttributesJSFC(Tag tag) {
+    private Tag trimJSFCAttribute(Tag tag) {
         TagAttribute attr = tag.getAttributes().get("jsfc");
         if (attr != null) {
             if (log.isLoggable(Level.FINE)) {
@@ -300,7 +300,7 @@ final class CompilationManager {
         return tag;
     }
 
-    private Tag processAttributesNS(Tag tag) {
+    private Tag trimNSAttributes(Tag tag) {
         TagAttribute[] attr = tag.getAttributes().getAll();
         int remove = 0;
         for (int i = 0; i < attr.length; i++) {

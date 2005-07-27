@@ -28,21 +28,31 @@ import com.sun.facelets.el.ELText;
 
 /**
  * @author Jacob Hookom
- * @version $Id: UITextHandler.java,v 1.1 2005/07/26 01:37:04 jhook Exp $
+ * @version $Id: UITextHandler.java,v 1.2 2005/07/27 04:32:48 jhook Exp $
  */
 final class UITextHandler implements FaceletHandler {
 
     private final ELText txt;
+    private final UILiteralText txtComponent;
 
     public UITextHandler(ELText txt) {
         this.txt = txt;
+        if (this.txt.isLiteral()) {
+            this.txtComponent = new UILiteralText(this.txt);
+        } else {
+            this.txtComponent = null;
+        }
     }
 
     public void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
         if (parent != null) {
-            ELText nt = this.txt.apply(ctx.getExpressionFactory(), ctx);
-            parent.getChildren().add(new UIText(nt));
+            if (this.txtComponent != null) {
+                parent.getChildren().add(this.txtComponent);
+            } else {
+                ELText nt = this.txt.apply(ctx.getExpressionFactory(), ctx);          
+                parent.getChildren().add(new UIText(nt));
+            }
         }
     }
 

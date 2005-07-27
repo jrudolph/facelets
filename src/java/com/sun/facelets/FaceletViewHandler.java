@@ -43,7 +43,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.sun.facelets.compiler.Compiler;
 import com.sun.facelets.compiler.SAXCompiler;
 import com.sun.facelets.compiler.TagLibraryConfig;
-import com.sun.facelets.spi.DefaultFaceletFactory;
+import com.sun.facelets.impl.DefaultFaceletFactory;
 import com.sun.facelets.tag.TagLibrary;
 import com.sun.facelets.util.FacesAPI;
 
@@ -51,7 +51,7 @@ import com.sun.facelets.util.FacesAPI;
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.18 2005/07/25 23:32:20 jhook Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.19 2005/07/27 04:32:46 jhook Exp $
  */
 public class FaceletViewHandler extends ViewHandler {
 

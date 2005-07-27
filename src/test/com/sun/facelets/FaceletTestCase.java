@@ -34,10 +34,10 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import com.sun.facelets.compiler.SAXCompiler;
+import com.sun.facelets.impl.DefaultFaceletFactory;
 import com.sun.facelets.mock.MockHttpServletResponse;
 import com.sun.facelets.mock.MockServletContext;
 import com.sun.facelets.mock.MockHttpServletRequest;
-import com.sun.facelets.spi.DefaultFaceletFactory;
 import com.sun.faces.util.DebugUtil;
 
 import junit.framework.TestCase;

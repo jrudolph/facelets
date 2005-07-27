@@ -24,7 +24,7 @@ import com.sun.facelets.FaceletHandler;
 
 /**
  * @author Jacob Hookom
- * @version $Id: TemplateManager.java,v 1.2 2005/07/20 06:37:11 jhook Exp $
+ * @version $Id: TemplateManager.java,v 1.3 2005/07/27 04:33:09 jhook Exp $
  */
 final class TemplateManager implements TemplateClient {
 
@@ -69,7 +69,14 @@ final class TemplateManager implements TemplateClient {
 
     public FaceletHandler getHandler(FaceletContext ctx, String name) {
         if (this.currentClient != null) {
-            return this.currentClient.getHandler(ctx, name);
+            FaceletHandler handler = this.currentClient.getHandler(ctx, name);
+            if (handler == null) {
+                for (int i = this.clients.size() - 1; handler == null && i >= 0; i--) {
+                    handler = ((TemplateClient) this.clients.get(i))
+                            .getHandler(ctx, name);
+                }
+            }
+            return handler;
         }
         return null;
     }

@@ -30,12 +30,16 @@ import javax.faces.validator.Validator;
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
 import com.sun.facelets.FaceletHandler;
+import com.sun.facelets.tag.jsf.ComponentConfig;
+import com.sun.facelets.tag.jsf.ComponentHandler;
+import com.sun.facelets.tag.jsf.ConvertHandler;
+import com.sun.facelets.tag.jsf.ValidateHandler;
 
 /**
  * Base class for defining TagLibraries in Java
  * 
  * @author Jacob Hookom
- * @version $Id: AbstractTagLibrary.java,v 1.4 2005/07/21 02:09:14 jhook Exp $
+ * @version $Id: AbstractTagLibrary.java,v 1.5 2005/07/27 04:32:50 jhook Exp $
  */
 public abstract class AbstractTagLibrary implements TagLibrary {
 

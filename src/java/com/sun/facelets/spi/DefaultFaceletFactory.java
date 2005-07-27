@@ -13,7 +13,7 @@
  * permissions and limitations under the License.
  */
 
-package com.sun.facelets.spi;
+package com.sun.facelets.impl;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -38,7 +38,7 @@ import com.sun.facelets.util.ParameterCheck;
  * Default FaceletFactory implementation.
  * 
  * @author Jacob Hookom
- * @version $Id: DefaultFaceletFactory.java,v 1.8 2005/07/23 21:16:24 jhook Exp $
+ * @version $Id: DefaultFaceletFactory.java,v 1.9 2005/07/27 04:32:49 jhook Exp $
  */
 public final class DefaultFaceletFactory extends FaceletFactory {
 

@@ -13,7 +13,7 @@
  * permissions and limitations under the License.
  */
 
-package com.sun.facelets.spi;
+package com.sun.facelets.impl;
 
 import java.io.IOException;
 import java.net.URL;
@@ -45,7 +45,7 @@ import com.sun.facelets.el.ELAdaptor;
  * directive.
  * 
  * @author Jacob Hookom
- * @version $Id: DefaultFaceletContext.java,v 1.4 2005/07/20 06:37:12 jhook Exp $
+ * @version $Id: DefaultFaceletContext.java,v 1.5 2005/07/27 04:32:49 jhook Exp $
  */
 final class DefaultFaceletContext extends FaceletContext {
 
