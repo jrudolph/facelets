@@ -51,7 +51,7 @@ import com.sun.facelets.util.FacesAPI;
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.22 2005/07/27 20:09:50 jhook Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.23 2005/07/27 20:21:47 jhook Exp $
  */
 public class FaceletViewHandler extends ViewHandler {
 
@@ -292,10 +292,6 @@ public class FaceletViewHandler extends ViewHandler {
         String encoding = writer.getCharacterEncoding();
         if (encoding == null) {
             encoding = "UTF-8";
-        }
-        
-        if (log.isLoggable(Level.FINE)) {
-            log.fine("ContentType: '"+contentType+"' Encoding: '"+encoding+"'");
         }
         
         // apply them to the response
