@@ -21,14 +21,18 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.el.ELContext;
+import javax.el.ELException;
 import javax.el.ELResolver;
 import javax.el.FunctionMapper;
 import javax.el.PropertyNotWritableException;
 import javax.el.VariableMapper;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
+import javax.faces.el.EvaluationException;
+import javax.faces.el.PropertyNotFoundException;
 import javax.faces.el.PropertyResolver;
 import javax.faces.el.VariableResolver;
 
@@ -36,22 +40,24 @@ import javax.faces.el.VariableResolver;
  * 
  * 
  * @author Jacob Hookom
- * @version $Id: LegacyELContext.java,v 1.4 2005/07/20 05:27:46 jhook Exp $
+ * @version $Id: LegacyELContext.java,v 1.5 2005/07/27 20:03:25 jhook Exp $
  * @deprecated
  */
 public final class LegacyELContext extends ELContext {
 
     private static final String[] IMPLICIT_OBJECTS = new String[] {
-        "application", "applicationScope", "cookie", "facesContext",
-        "header", "headerValues", "initParam", "param", "paramValues",
-        "request", "requestScope", "session", "sessionScope", "view" };
-    
+            "application", "applicationScope", "cookie", "facesContext",
+            "header", "headerValues", "initParam", "param", "paramValues",
+            "request", "requestScope", "session", "sessionScope", "view" };
+
     private final static FunctionMapper functions = new EmptyFunctionMapper();
-    
+
     private final FacesContext faces;
+
     private final ELResolver resolver;
+
     private final VariableMapper variables;
-    
+
     public LegacyELContext(FacesContext faces) {
         this.faces = faces;
         this.resolver = new LegacyELResolver();
@@ -69,7 +75,7 @@ public final class LegacyELContext extends ELContext {
     public VariableMapper getVariableMapper() {
         return this.variables;
     }
-    
+
     private final class LegacyELResolver extends ELResolver {
 
         public Class getCommonPropertyType(ELContext context, Object base) {
@@ -79,11 +85,11 @@ public final class LegacyELContext extends ELContext {
         public Iterator getFeatureDescriptors(ELContext context, Object base) {
             return Collections.EMPTY_LIST.iterator();
         }
-        
+
         private VariableResolver getVariableResolver() {
             return faces.getApplication().getVariableResolver();
         }
-        
+
         private PropertyResolver getPropertyResolver() {
             return faces.getApplication().getPropertyResolver();
         }
@@ -92,16 +98,26 @@ public final class LegacyELContext extends ELContext {
             if (property == null) {
                 return null;
             }
-            context.setPropertyResolved(true);
-            if (base == null) {
-                Object obj = this.getVariableResolver().resolveVariable(faces, property.toString());
-                return (obj != null) ? obj.getClass() : null;
-            } else {
-                if (base instanceof List || base.getClass().isArray()) {
-                    return this.getPropertyResolver().getType(base, Integer.parseInt(property.toString()));
+            try {
+                context.setPropertyResolved(true);
+                if (base == null) {
+                    Object obj = this.getVariableResolver().resolveVariable(
+                            faces, property.toString());
+                    return (obj != null) ? obj.getClass() : null;
                 } else {
-                    return this.getPropertyResolver().getType(base, property);
+                    if (base instanceof List || base.getClass().isArray()) {
+                        return this.getPropertyResolver().getType(base,
+                                Integer.parseInt(property.toString()));
+                    } else {
+                        return this.getPropertyResolver().getType(base,
+                                property);
+                    }
                 }
+            } catch (PropertyNotFoundException e) {
+                throw new javax.el.PropertyNotFoundException(e.getMessage(), e
+                        .getCause());
+            } catch (EvaluationException e) {
+                throw new ELException(e.getMessage(), e.getCause());
             }
         }
 
@@ -109,71 +125,100 @@ public final class LegacyELContext extends ELContext {
             if (property == null) {
                 return null;
             }
-            context.setPropertyResolved(true);
-            if (base == null) {
-                return this.getVariableResolver().resolveVariable(faces, property.toString());
-            } else {
-                if (base instanceof List || base.getClass().isArray()) {
-                    return this.getPropertyResolver().getValue(base, Integer.parseInt(property.toString()));
+            try {
+                context.setPropertyResolved(true);
+                if (base == null) {
+                    return this.getVariableResolver().resolveVariable(faces,
+                            property.toString());
                 } else {
-                    return this.getPropertyResolver().getValue(base, property);
+                    if (base instanceof List || base.getClass().isArray()) {
+                        return this.getPropertyResolver().getValue(base,
+                                Integer.parseInt(property.toString()));
+                    } else {
+                        return this.getPropertyResolver().getValue(base,
+                                property);
+                    }
                 }
+            } catch (PropertyNotFoundException e) {
+                throw new javax.el.PropertyNotFoundException(e.getMessage(), e
+                        .getCause());
+            } catch (EvaluationException e) {
+                throw new ELException(e.getMessage(), e.getCause());
             }
         }
 
-        public boolean isReadOnly(ELContext context, Object base, Object property) {
+        public boolean isReadOnly(ELContext context, Object base,
+                Object property) {
             if (property == null) {
                 return true;
             }
-            context.setPropertyResolved(true);
-            if (base == null) {
-                return false;  // what can I do?
-            } else {
-                if (base instanceof List || base.getClass().isArray()) {
-                    return this.getPropertyResolver().isReadOnly(base, Integer.parseInt(property.toString()));
+            try {
+                context.setPropertyResolved(true);
+                if (base == null) {
+                    return false; // what can I do?
                 } else {
-                    return this.getPropertyResolver().isReadOnly(base, property);
+                    if (base instanceof List || base.getClass().isArray()) {
+                        return this.getPropertyResolver().isReadOnly(base,
+                                Integer.parseInt(property.toString()));
+                    } else {
+                        return this.getPropertyResolver().isReadOnly(base,
+                                property);
+                    }
                 }
+            } catch (PropertyNotFoundException e) {
+                throw new javax.el.PropertyNotFoundException(e.getMessage(), e
+                        .getCause());
+            } catch (EvaluationException e) {
+                throw new ELException(e.getMessage(), e.getCause());
             }
         }
 
-        public void setValue(ELContext context, Object base, Object property, Object value) {
+        public void setValue(ELContext context, Object base, Object property,
+                Object value) {
             if (property == null) {
                 throw new PropertyNotWritableException("Null Property");
             }
-            context.setPropertyResolved(true);
-            if (base == null) {
-                if (Arrays.binarySearch(IMPLICIT_OBJECTS, property.toString()) >= 0) {
-                    throw new PropertyNotWritableException("Implicit Variable Not Setable: " +property);
+            try {
+                context.setPropertyResolved(true);
+                if (base == null) {
+                    if (Arrays.binarySearch(IMPLICIT_OBJECTS, property
+                            .toString()) >= 0) {
+                        throw new PropertyNotWritableException(
+                                "Implicit Variable Not Setable: " + property);
+                    } else {
+                        Map scope = this.resolveScope(property.toString());
+                        this.getPropertyResolver().setValue(scope, property,
+                                value);
+                    }
                 } else {
-                    Map scope = this.resolveScope(property.toString());
-                    this.getPropertyResolver().setValue(scope, property, value);
+                    if (base instanceof List || base.getClass().isArray()) {
+                        this.getPropertyResolver().setValue(base,
+                                Integer.parseInt(property.toString()), value);
+                    } else {
+                        this.getPropertyResolver().setValue(base, property,
+                                value);
+                    }
                 }
-            } else {
-                if (base instanceof List || base.getClass().isArray()) {
-                    this.getPropertyResolver().setValue(base, Integer.parseInt(property.toString()), value);
-                } else {
-                    this.getPropertyResolver().setValue(base, property, value);
-                }
+            } catch (PropertyNotFoundException e) {
+                throw new javax.el.PropertyNotFoundException(e.getMessage(), e
+                        .getCause());
+            } catch (EvaluationException e) {
+                throw new ELException(e.getMessage(), e.getCause());
             }
-            
+
         }
-        
-        private final Map resolveScope(String var)
-        {
+
+        private final Map resolveScope(String var) {
             ExternalContext ext = faces.getExternalContext();
 
             // cycle through the scopes to find a match, if no
             // match is found, then return the requestScope
             Map map = ext.getRequestMap();
-            if (!map.containsKey(var))
-            {
+            if (!map.containsKey(var)) {
                 map = ext.getSessionMap();
-                if (!map.containsKey(var))
-                {
+                if (!map.containsKey(var)) {
                     map = ext.getApplicationMap();
-                    if (!map.containsKey(var))
-                    {
+                    if (!map.containsKey(var)) {
                         map = ext.getRequestMap();
                     }
                 }
@@ -181,13 +226,13 @@ public final class LegacyELContext extends ELContext {
             return map;
         }
     }
-    
+
     private final static class EmptyFunctionMapper extends FunctionMapper {
 
         public Method resolveFunction(String prefix, String localName) {
             return null;
         }
-        
+
     }
 
 }
