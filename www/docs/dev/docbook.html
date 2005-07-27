@@ -252,7 +252,7 @@ public class NumberBean implements Serializable {
 				Facelets comes with a library of UI (user interface) tags to use in writing your application.  We will only focus on using a couple of them in creating a page called <code class="literal">template.xhtml</code>.
 			</p><pre class="programlisting">&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&gt;
 &lt;html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelet"&gt;
+      xmlns:ui="http://java.sun.com/jsf/facelets"&gt;
 &lt;head&gt;
 &lt;meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" /&gt;
 &lt;title&gt;Facelets: Number Guess Tutorial&lt;/title&gt;
@@ -281,7 +281,7 @@ body {
 				In this example page, we will incorporate components from the JavaServer Faces standard component libraries.
 			</p><pre class="programlisting">&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&gt;
 &lt;html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelet"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"&gt;
 &lt;body&gt;
 
@@ -314,7 +314,7 @@ This text below will also not be displayed.
 				Finally, if a user entered valid input as specified by the <code class="literal">NumberBean.validate</code> method, then we need a page to give them feedback on their guess.
 			</p><pre class="programlisting">&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&gt;
 &lt;html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelet"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"&gt;
 &lt;body&gt;
 
@@ -333,7 +333,7 @@ This text below will also not be displayed.
 &lt;/ui:composition&gt;
 
 &lt;/body&gt;
-&lt;/html&gt;</pre><div class="orderedlist"><ol type="1"><li><p>Again we use an <code class="literal">&lt;ui:composition&gt;</code> to trim unecessary content from our page and use the <code class="literal">template.xhtml</code>.</p></li><li><p>We also introduced the <code class="literal">jsfc</code> attribute which allows the XHTML tags to be compiled into <code class="literal">&lt;h:form&gt;</code> and <code class="literal">&lt;h:commandLink&gt;</code> when the page is compiled.  This means that a designer's visual editor will render a normal form and button, but it will be transformed into a dynamic <code class="literal">UIComponent</code> when compiled by Facelets.</p></li></ol></div><p>
+&lt;/html&gt;</pre><div class="orderedlist"><ol type="1"><li><p>Again we use an <code class="literal">&lt;ui:composition&gt;</code> to trim unecessary content from our page and use the <code class="literal">template.xhtml</code>.</p></li><li><p>We also introduced the <code class="literal">jsfc</code> attribute which allows the XHTML tags to be compiled into <code class="literal">&lt;h:form&gt;</code> and <code class="literal">&lt;h:commandButton&gt;</code> when the page is compiled.  This means that a designer's visual editor will render a normal form and button, but it will be transformed into a dynamic <code class="literal">UIComponent</code> when compiled by Facelets.</p></li></ol></div><p>
 				That's it for the pages.  Again, if you have questions about JavaServer Faces components or would like some additional background, visit http://java.sun.com/j2ee/javaserverfaces
 			</p></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="gettingstarted-nav" />1.7. Handling Navigation</h2></div></div><div /></div><p>
 			We would like to tie our two pages together from <code class="literal">guess.xhtml</code> to <code class="literal">response.xhtml</code> and back again.  To do this, we need to go back into the <code class="literal">faces-config.xml</code> to specify navigation cases.
