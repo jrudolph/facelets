@@ -36,7 +36,7 @@ import com.sun.facelets.tag.jsf.ComponentSupport;
  * Default Facelet implementation.
  * 
  * @author Jacob Hookom
- * @version $Id: DefaultFacelet.java,v 1.5 2005/07/27 04:32:49 jhook Exp $
+ * @version $Id: DefaultFacelet.java,v 1.1 2005/07/27 04:41:56 jhook Exp $
  */
 final class DefaultFacelet extends Facelet {
 
