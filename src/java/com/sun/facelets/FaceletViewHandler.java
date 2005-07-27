@@ -51,7 +51,7 @@ import com.sun.facelets.util.FacesAPI;
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.20 2005/07/27 17:41:36 jhook Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.21 2005/07/27 18:17:02 jhook Exp $
  */
 public class FaceletViewHandler extends ViewHandler {
 
@@ -275,6 +275,7 @@ public class FaceletViewHandler extends ViewHandler {
         RenderKit renderKit = context.getRenderKit();
         ServletRequest request = (ServletRequest) extContext.getRequest();
         ServletResponse response = (ServletResponse) extContext.getResponse();
+        
         String encoding = request.getCharacterEncoding();
         String contentType = request.getContentType();
         
@@ -282,7 +283,7 @@ public class FaceletViewHandler extends ViewHandler {
         // so we can figure out what content type the ReponseWriter
         // is really going to ask for
         ResponseWriter writer = renderKit.createResponseWriter(
-                NullWriter.Instance, contentType, encoding);
+                NullWriter.Instance, null, null);
         
         // make sure we have a content type assigned
         contentType = writer.getContentType();
@@ -294,6 +295,10 @@ public class FaceletViewHandler extends ViewHandler {
         encoding = writer.getCharacterEncoding();
         if (encoding == null) {
             encoding = "ISO-8859-1";
+        }
+        
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("ContentType: '"+contentType+"' Encoding: '"+encoding+"'");
         }
         
         // apply them to the response
