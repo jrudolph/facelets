@@ -51,7 +51,7 @@ import com.sun.facelets.util.FacesAPI;
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.23 2005/07/27 20:21:47 jhook Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.24 2005/07/27 20:46:05 jhook Exp $
  */
 public class FaceletViewHandler extends ViewHandler {
 
@@ -276,23 +276,29 @@ public class FaceletViewHandler extends ViewHandler {
         ServletRequest request = (ServletRequest) extContext.getRequest();
         ServletResponse response = (ServletResponse) extContext.getResponse();
         
+        // get our content type
+        String contentType = request.getContentType();
+        if (contentType == null) {
+            contentType = (String) extContext.getRequestHeaderMap().get("Accept");
+            if (contentType == null) {
+                contentType = "text/html";
+            }
+        }
+        
+        // get the encoding
+        String encoding = request.getCharacterEncoding();
+        if (encoding == null) {
+            encoding = "UTF-8";
+        }
+        
         // Create a dummy ResponseWriter with a bogus writer,
         // so we can figure out what content type the ReponseWriter
         // is really going to ask for
         ResponseWriter writer = renderKit.createResponseWriter(
-                NullWriter.Instance, null, null);
+                NullWriter.Instance, contentType, encoding);
         
-        // make sure we have a content type assigned
-        String contentType = writer.getContentType();
-        if (contentType == null) {
-            contentType = "text/html";
-        }
-        
-        // make sure we have an encoding assigned
-        String encoding = writer.getCharacterEncoding();
-        if (encoding == null) {
-            encoding = "UTF-8";
-        }
+        contentType = writer.getContentType();
+        encoding = writer.getCharacterEncoding();
         
         // apply them to the response
         response.setContentType(contentType + "; charset = " + encoding);
