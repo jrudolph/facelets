@@ -89,6 +89,13 @@
 			</table>
 		  </sect2>
 		  
+		  <sect2 id="taglib-available-ui">
+			<title>Templating Library</title>
+			<para>
+				TODO (link to full section)
+			</para>
+		  </sect2>
+		  
 		  <sect2 id="taglib-available-jstl">
 			<title>JSTL Support</title>
 			<para>
@@ -131,7 +138,7 @@
 			</listitem>
 			<listitem>
 				<para>
-					Facelets will check for an initialization parameter from your <literal>web.xml</literal> and load all libraries specified there relative to your application's root. See <xref linkend="config-webapp-init"/> for details on the parameter.  This is an ideal way to declare specialized tags for a particular application, tags that aren't necessarily distributed with code in Jars.
+					Facelets will check for an initialization parameter from your <literal>web.xml</literal> and load all libraries specified there relative to your application's root. See <xref linkend="config-webapp-init"/> for details on the parameter.  This is an ideal way to declare specialized tags for a particular application; tags that aren't necessarily distributed with code in Jars.
 				</para>
 			</listitem>
 		</itemizedlist>
@@ -143,20 +150,123 @@
         <preface id="taglib-create-overview">
 			<title>Overview</title>
 			<para>
-				TODO
+				Facelets allows you to configure custom tag libraries in a short amount of time.  This section will focus on defining tag libraries in XML which can be automatically loaded by Facelets compiler as described in <xref linkend="taglib-web"/>.
 			</para>
         </preface>
         
         <sect2 id="taglib-create-schema">
 			<title>Tag Library Schema</title>
+			<para>
+				The schema (or DTD) for Facelets is extremely simple.  Future releases of Facelets will actually just use your <literal>faces-config.xml</literal> files the same way a visual tool would for determining required attributes and namespaces.
+			</para>
+			<para>
+				Facelets currently uses the following doc type:
+			</para>
+			<programlisting><![CDATA[<!DOCTYPE facelet-taglib PUBLIC
+  "-//Sun Microsystems, Inc.//DTD Facelet Taglib 1.0//EN"
+  "http://java.sun.com/dtd/facelet-taglib_1_0.dtd">]]></programlisting>
+			<para>
+				This is the (simple) DTD that Facelets uses:
+			</para>
+			<programlisting><![CDATA[<!ELEMENT facelet-taglib (library-class|(namespace,(tag|function)+))>
+<!ATTLIST facelet-taglib xmlns CDATA #FIXED "http://java.sun.com/JSF/Facelet">
+<!ELEMENT namespace (#PCDATA)>
+<!ELEMENT library-class (#PCDATA)>
+<!ELEMENT tag (tag-name,(handler-class|component|converter|validator|source))>
+<!ELEMENT tag-name (#PCDATA)>
+<!ELEMENT handler-class (#PCDATA)>
+<!ELEMENT component (component-type,renderer-type?)>
+<!ELEMENT component-type (#PCDATA)>
+<!ELEMENT renderer-type (#PCDATA)>
+<!ELEMENT converter (converter-id)>
+<!ELEMENT converter-id (#PCDATA)>
+<!ELEMENT validator (validator-id)>
+<!ELEMENT validator-id (#PCDATA)>
+<!ELEMENT source (#PCDATA)>
+<!ELEMENT function (function-name,function-class,function-signature)>
+<!ELEMENT function-name (#PCDATA)>
+<!ELEMENT function-class (#PCDATA)>
+<!ELEMENT function-signature (#PCDATA)>]]></programlisting>
+			<para>
+				As you can see, JSF entities are treated as first class citizens in Facelets' tag libraries.  A couple things to observe from the schema above:
+			</para>
+			<itemizedlist>
+			<listitem>
+				<para>
+					The definition of a tag library (including namespace) can be delegated to the class specified in the <literal>library-class</literal> element.  The class specified must implement <literal>com.sun.facelets.tag.TagLibrary</literal>.  This is useful if you would like to maintain your tag library in Java, but would like to have it automatically picked up by the compiler by placing an XML file in your Jar's <literal>meta-inf</literal> folder.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Each document (not specified by <literal>library-class</literal>) requires a <literal>namespace</literal> element which will match the namespace used in your document, see <xref linkend="taglib-use-normal"/>.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					The rest of the document is made up of <literal>tag</literal> and <literal>function</literal> elements.  Tag elements require a <literal>tag-name</literal> and can take on different behavior depending on what you would like Facelets to handle for you.  Functions can also be specified under the library's namespaces and follow the same signature as in JSP TLD files.
+				</para>
+			</listitem>
+			</itemizedlist>
+			<para>
+				The following sections describe how to integrate your objects within the XML tag library.
+			</para>
         </sect2>
         
         <sect2 id="taglib-create-component">
 			<title>UIComponents</title>
+			<para>
+				<literal>UIComponents</literal> can be auto-wired by using the <literal>component</literal> element in your tag library.
+			</para>
+			<programlisting><![CDATA[<tag>
+  <tag-name>bar</tag-name>
+  <component>
+    <component-type>com.mycompany.Data</component-type>
+    <renderer-type>com.mycompany.Bar</renderer-type>
+  </component>
+</tag>]]></programlisting>
+			<para>
+				In the above example, we are binding a component of type (not Class) <literal>com.mycompany.Data</literal> to the tag name <literal>bar</literal>.  A <literal>renderer-type</literal> is also provided, but not required since <literal>UIComponents</literal> can easily render themselves.
+			</para>
+			<para>
+				Based on if your component implements <literal>ActionSource[2]</literal>, <literal>ValueHolder</literal>, or <literal>EditableValueHolder</literal>, Facelets will take care of auto-wiring those standard attributes according to the specification.  This includes validators, EL expressions, converters, etc.  Any additional properties on your component will also be wired for you too, just as JSP sets the properties on a <literal>JspTag</literal>.  If you think that Facelets can't handle the special wiring your component needs, then skip to <xref linkend="taglib-create-custom"/>.
+			</para>
+			<para>
+				If you've just created a <literal>UIComponent</literal> from scratch and you are not sure how to integrate it into JavaServer Faces, here's all the code you need:
+			</para>
+			<programlisting><![CDATA[<faces-config>
+  <component>
+    <component-type>com.mycompany.Data</component-type>
+    <component-class>com.mycompany.jsf.components.UIDataComponent</component-class>
+  </component>
+</faces-config>]]></programlisting>
+			<para>
+				Notice that the <literal>component-type</literal> matches the one used in the Facelets tag library XML.  This degree of indirection by referencing components by type increases the maintainability and portability of JavaServer Faces components.
+			</para>
         </sect2>
         
         <sect2 id="taglib-create-validator">
 			<title>Validators</title>
+			<para>
+				<literal>Validators</literal> can also be added to Facelets with the <literal>validator</literal> element.
+			</para>
+			<programlisting><![CDATA[<tag>
+  <tag-name>validateEmail</tag-name>
+  <validator>
+    <validator-id>faces.validator.Email</validator-id>
+  </validator>
+</tag>]]></programlisting>
+			<para>
+				Again, we reference JSF entities by type or id.  Facelets will also take care of wiring properties directly to your <literal>Validator</literal> by matching attribute name to property name.  If you would like to provide special behavior or wire odd properties, you can jump ahead to <xref linkend="taglib-create-custom"/>.
+			</para>
+			<para>
+				If you've just written your own <literal>Validator</literal>, you can add it to your JSF Application with the following snippet in your <literal>faces-config.xml</literal>:
+			</para>
+			<programlisting><![CDATA[<faces-config>
+  <validator>
+    <validator-id>faces.validator.Email</validator-id>
+    <validator-class>com.mycompany.jsf.validate.EmailValidator</validator-class>
+  </validator>
+</faces-config>]]></programlisting>
         </sect2>
         
         <sect2 id="taglib-create-converter">
