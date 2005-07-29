@@ -51,7 +51,7 @@ import com.sun.facelets.util.FacesAPI;
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.27 2005/07/29 02:22:20 jhook Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.28 2005/07/29 20:39:40 jhook Exp $
  */
 public class FaceletViewHandler extends ViewHandler {
 
@@ -297,8 +297,11 @@ public class FaceletViewHandler extends ViewHandler {
         // Create a dummy ResponseWriter with a bogus writer,
         // so we can figure out what content type the ReponseWriter
         // is really going to ask for
+        
+        // TODO This needs to be changed back from null once
+        // MyFaces corrects the bug in their RenderKit
         ResponseWriter writer = renderKit.createResponseWriter(
-                NullWriter.Instance, contentType, encoding);
+                NullWriter.Instance, null, encoding);
         
         contentType = writer.getContentType();
         encoding = writer.getCharacterEncoding();
