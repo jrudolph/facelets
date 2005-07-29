@@ -31,7 +31,7 @@ import com.sun.facelets.tag.TagHandler;
 
 /**
  * @author Jacob Hookom
- * @version $Id: InsertHandler.java,v 1.2 2005/07/20 06:37:11 jhook Exp $
+ * @version $Id: InsertHandler.java,v 1.3 2005/07/29 01:13:19 jhook Exp $
  */
 public final class InsertHandler extends TagHandler {
 
@@ -42,11 +42,15 @@ public final class InsertHandler extends TagHandler {
      */
     public InsertHandler(TagConfig config) {
         super(config);
-        TagAttribute attr = this.getRequiredAttribute("name");
-        if (!attr.isLiteral()) {
-            throw new TagAttributeException(this.tag, attr, "Must be Literal");
+        TagAttribute attr = this.getAttribute("name");
+        if (attr != null) {
+            if (!attr.isLiteral()) {
+                throw new TagAttributeException(this.tag, attr, "Must be Literal");
+            }
+            this.name = attr.getValue();
+        } else {
+            this.name = null;
         }
-        this.name = attr.getValue();
     }
 
     /*

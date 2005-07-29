@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.el.ELException;
 import javax.faces.FacesException;
@@ -34,10 +36,12 @@ import com.sun.facelets.tag.TagHandler;
 
 /**
  * @author Jacob Hookom
- * @version $Id: DecorateHandler.java,v 1.5 2005/07/26 01:37:01 jhook Exp $
+ * @version $Id: DecorateHandler.java,v 1.6 2005/07/29 01:13:19 jhook Exp $
  */
 public final class DecorateHandler extends TagHandler implements TemplateClient {
 
+    private final Logger log = Logger.getLogger("facelets.tag.ui.decorate");
+    
     private final TagAttribute template;
 
     private final Map handlers;
@@ -55,11 +59,9 @@ public final class DecorateHandler extends TagHandler implements TemplateClient 
         while (itr.hasNext()) {
             d = (DefineHandler) itr.next();
             this.handlers.put(d.getName(), d);
-        }
-        
-        if (this.handlers.isEmpty()) {
-            throw new TagAttributeException(this.tag, this.template,
-                    "Template Specified, but no DefineHandler children");
+            if (log.isLoggable(Level.FINE)) {
+                log.fine(tag + " found Define["+d.getName()+"]");
+            }
         }
     }
 
@@ -81,6 +83,10 @@ public final class DecorateHandler extends TagHandler implements TemplateClient 
     }
 
     public FaceletHandler getHandler(FaceletContext ctx, String name) {
-        return (FaceletHandler) this.handlers.get(name);
+        if (name != null) {
+            return (FaceletHandler) this.handlers.get(name);
+        } else {
+            return this.nextHandler;
+        }
     }
 }
