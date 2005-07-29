@@ -26,16 +26,14 @@ import com.sun.facelets.el.ELText;
 
 /**
  * @author Jacob Hookom
- * @version $Id: UIText.java,v 1.1 2005/07/26 01:37:03 jhook Exp $
+ * @version $Id: UIText.java,v 1.2 2005/07/29 16:05:31 jhook Exp $
  */
-final class UIText extends UIComponentBase {
+final class UIText extends UILeaf {
 
     private final ELText txt;
 
     public UIText(ELText txt) {
         this.txt = txt;
-        this.setRendered(true);
-        this.setTransient(true);
     }
 
     public String getFamily() {

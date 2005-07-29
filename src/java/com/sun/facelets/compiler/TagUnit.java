@@ -23,7 +23,7 @@ import com.sun.facelets.tag.TagLibrary;
 /**
  * 
  * @author Jacob Hookom
- * @version $Id: TagUnit.java,v 1.4 2005/07/29 00:27:08 jhook Exp $
+ * @version $Id: TagUnit.java,v 1.5 2005/07/29 16:05:30 jhook Exp $
  */
 class TagUnit extends CompilationUnit implements TagConfig {
 
@@ -32,16 +32,21 @@ class TagUnit extends CompilationUnit implements TagConfig {
     private final String id;
 
     private final Tag tag;
+    
+    private final String namespace;
+    
+    private final String name;
 
-    public TagUnit(TagLibrary library, Tag tag, String id) {
+    public TagUnit(TagLibrary library, String namespace, String name, Tag tag, String id) {
         this.library = library;
         this.tag = tag;
+        this.namespace = namespace;
+        this.name = name;
         this.id = id;
     }
 
     public FaceletHandler createFaceletHandler() {
-        return this.library.createTagHandler(this.tag.getNamespace(), this.tag
-                .getLocalName(), this);
+        return this.library.createTagHandler(this.namespace, this.name, this);
     }
 
     public FaceletHandler getNextHandler() {

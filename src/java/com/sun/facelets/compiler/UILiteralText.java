@@ -19,7 +19,7 @@ import javax.faces.render.Renderer;
 
 import com.sun.facelets.el.ELText;
 
-final class UILiteralText extends UIComponent {
+final class UILiteralText extends UILeaf {
 
     private final static Map attributes = new HashMap(){
     
@@ -34,191 +34,15 @@ final class UILiteralText extends UIComponent {
     
     private final static Map facets = attributes;
     
-    private final ELText text;
+    private final String text;
     
-    public UILiteralText(ELText text) {
+    public UILiteralText(String text) {
         this.text = text;
-    }
-
-    public Map getAttributes() {
-        return Collections.EMPTY_MAP;
-    }
-
-    public ValueBinding getValueBinding(String binding) {
-        return null;
-    }
-
-    public void setValueBinding(String name, ValueBinding binding) {
-        // do nothing
-    }
-
-    public ValueExpression getValueExpression(String name) {
-        return null;
-    }
-
-    public void setValueExpression(String name, ValueExpression arg1) {
-        // do nothing
-    }
-
-    public String getClientId(FacesContext ctx) {
-        return this.getId();
-    }
-
-    protected String getContainerClientId(FacesContext arg0) {
-        return null;
-    }
-
-    public String getFamily() {
-        return "facelets.LiteralText";
-    }
-
-    public String getId() {
-        return FacesContext.getCurrentInstance().getViewRoot().createUniqueId();
-    }
-
-    public void setId(String id) {
-        // do nothing
-    }
-
-    public UIComponent getParent() {
-        return null;
-    }
-
-    public void setParent(UIComponent parent) {
-        // do nothing
-    }
-
-    public boolean isRendered() {
-        return true;
-    }
-
-    public void setRendered(boolean rendered) {
-        // do nothing
-    }
-
-    public String getRendererType() {
-        return null;
-    }
-
-    public void setRendererType(String rendererType) {
-        // do nothing
-    }
-
-    public boolean getRendersChildren() {
-        return true;
-    }
-
-    public List getChildren() {
-        return Collections.EMPTY_LIST;
-    }
-
-    public int getChildCount() {
-        return 0;
-    }
-
-    public UIComponent findComponent(String id) {
-        return null;
-    }
-
-    public Map getFacets() {
-        return facets;
-    }
-
-    public int getFacetCount() {
-        return 0;
-    }
-
-    public UIComponent getFacet(String name) {
-        return null;
-    }
-
-    public Iterator getFacetsAndChildren() {
-        return Collections.EMPTY_LIST.iterator();
-    }
-
-    public void broadcast(FacesEvent event) throws AbortProcessingException {
-        // do nothing
-    }
-
-    public void decode(FacesContext faces) {
-        // do nothing
     }
 
     public void encodeBegin(FacesContext faces) throws IOException {
         ResponseWriter writer = faces.getResponseWriter();
-        writer.write(this.text.toString());
-    }
-
-    public void encodeChildren(FacesContext faces) throws IOException {
-        // do nothing
-    }
-
-    public void encodeEnd(FacesContext faces) throws IOException {
-        // do nothing
-    }
-
-    public void encodeAll(FacesContext faces) throws IOException {
-        this.encodeBegin(faces);
-    }
-
-    protected void addFacesListener(FacesListener faces) {
-        // do nothing
-    }
-
-    protected FacesListener[] getFacesListeners(Class faces) {
-        return null;
-    }
-
-    protected void removeFacesListener(FacesListener faces) {
-        // do nothing
-    }
-
-    public void queueEvent(FacesEvent event) {
-        // do nothing
-    }
-
-    public void processRestoreState(FacesContext faces, Object state) {
-        // do nothing
-    }
-
-    public void processDecodes(FacesContext faces) {
-        // do nothing
-    }
-
-    public void processValidators(FacesContext faces) {
-        // do nothing
-    }
-
-    public void processUpdates(FacesContext faces) {
-        // do nothing
-    }
-
-    public Object processSaveState(FacesContext faces) {
-        return null;
-    }
-
-    protected FacesContext getFacesContext() {
-        return FacesContext.getCurrentInstance();
-    }
-
-    protected Renderer getRenderer(FacesContext faces) {
-        return null;
-    }
-
-    public Object saveState(FacesContext faces) {
-        return null;
-    }
-
-    public void restoreState(FacesContext faces, Object state) {
-        // do nothing
-    }
-
-    public boolean isTransient() {
-        return true;
-    }
-
-    public void setTransient(boolean tranzient) {
-        // do nothing
+        writer.write(this.text);
     }
 
 }
