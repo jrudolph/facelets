@@ -78,6 +78,12 @@
 						<entry>A semicolon (<literal>;</literal>) delimitted list of resources that Facelets should use.  If no resource paths are specified, Facelets will handle all requests (DEFAULT). If one or more paths are specified, Facelets will only use the ones specified, otherwise fall back on the parent or default <literal>ViewHandler</literal> (JSP).  Note, this requires the FacesServlet in your <literal>web.xml</literal> to be mapped with a prefix for capturing multiple file types ex: <literal>/faces/*</literal>.</entry>
 						<entry>/demos/*; *.xhtml</entry>
 					</row>
+					<row>
+						<entry>facelets.SKIP_COMMENTS</entry>
+						<entry>false</entry>
+						<entry>A boolean value that tells the compiler to skip comments.  Even if you comment out code in your page, the tags will not be compiled but expressions (EL) will be treated as if they were inlined-- still compiled and evaluated for output in the document.  Skipping comments will remove all comments completely from the document.</entry>
+						<entry>true</entry>
+					</row>
 				</tbody>
 			</tgroup>
 		  </table>

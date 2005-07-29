@@ -51,7 +51,7 @@ import com.sun.facelets.util.FacesAPI;
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.25 2005/07/29 01:25:28 jhook Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.26 2005/07/29 02:11:30 jhook Exp $
  */
 public class FaceletViewHandler extends ViewHandler {
 
@@ -61,6 +61,8 @@ public class FaceletViewHandler extends ViewHandler {
     public final static long DEFAULT_REFRESH_PERIOD = 2;
 
     public final static String REFRESH_PERIOD_PARAM_NAME = "facelets.REFRESH_PERIOD";
+    
+    public final static String SKIP_COMMENTS_PARAM_NAME = "facelets.SKIP_COMMENTS";
 
     /**
      * Context initialization parameter for defining what viewIds should be
@@ -242,6 +244,10 @@ public class FaceletViewHandler extends ViewHandler {
                             e);
                 }
             }
+        }
+        String skipParam = ext.getInitParameter(SKIP_COMMENTS_PARAM_NAME);
+        if (skipParam != null && "true".equals(skipParam)) {
+            c.setTrimmingComments(true);
         }
     }
 
