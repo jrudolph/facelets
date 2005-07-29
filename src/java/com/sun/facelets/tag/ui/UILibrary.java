@@ -19,7 +19,7 @@ import com.sun.facelets.tag.AbstractTagLibrary;
 
 /**
  * @author Jacob Hookom
- * @version $Id: UILibrary.java,v 1.2 2005/07/26 23:35:11 jhook Exp $
+ * @version $Id: UILibrary.java,v 1.3 2005/07/29 00:27:09 jhook Exp $
  */
 public final class UILibrary extends AbstractTagLibrary {
 
@@ -33,6 +33,8 @@ public final class UILibrary extends AbstractTagLibrary {
         this.addTagHandler("include", IncludeHandler.class);
 
         this.addTagHandler("composition", CompositionHandler.class);
+        
+        this.addComponent("component", ComponentRef.COMPONENT_TYPE, null, ComponentRefHandler.class);
 
         this.addTagHandler("define", DefineHandler.class);
 

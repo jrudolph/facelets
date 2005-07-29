@@ -28,6 +28,7 @@ import com.sun.facelets.tag.TagAttributeException;
 import com.sun.facelets.tag.TagAttributes;
 import com.sun.facelets.tag.TagDecorator;
 import com.sun.facelets.tag.TagLibrary;
+import com.sun.facelets.tag.ui.ComponentRefHandler;
 import com.sun.facelets.tag.ui.CompositionHandler;
 import com.sun.facelets.tag.ui.UILibrary;
 
@@ -38,7 +39,7 @@ import com.sun.facelets.tag.ui.UILibrary;
  * @see com.sun.facelets.compiler.Compiler
  * 
  * @author Jacob Hookom
- * @version $Id: CompilationManager.java,v 1.5 2005/07/27 04:32:47 jhook Exp $
+ * @version $Id: CompilationManager.java,v 1.6 2005/07/29 00:27:08 jhook Exp $
  */
 final class CompilationManager {
 
@@ -55,7 +56,7 @@ final class CompilationManager {
     private final Stack units;
 
     private int tagId;
-    
+
     private boolean finished;
 
     public CompilationManager(Compiler compiler) {
@@ -70,7 +71,7 @@ final class CompilationManager {
 
         // tag uids
         this.tagId = 0;
-        
+
         // for composition use
         this.finished = false;
 
@@ -80,16 +81,16 @@ final class CompilationManager {
     }
 
     public void writeText(String value) {
-        
+
         if (this.finished) {
             return;
         }
-        
+
         // don't carelessly add empty tags
         if (value.length() == 0) {
             return;
         }
-        
+
         TextUnit unit;
         if (this.currentUnit() instanceof TextUnit) {
             unit = (TextUnit) this.currentUnit();
@@ -117,29 +118,31 @@ final class CompilationManager {
     }
 
     public void pushTag(Tag orig) {
-        
+
         if (this.finished) {
             return;
         }
-        
+
         if (log.isLoggable(Level.FINE)) {
-            log.fine("Tag Pushed: "+orig);
+            log.fine("Tag Pushed: " + orig);
         }
-        
+
         Tag t = this.tagDecorator.decorate(orig);
+        String[] qname = this.determineQName(t);
         t = this.trimAttributes(t);
 
         boolean handled = false;
 
-        if (isComposition(t)) {
+        if (isTrimmed(qname[0], qname[1])) {
             log.fine("Composition Found, Popping Parent Tags");
             this.units.clear();
             NamespaceUnit nsUnit = this.namespaceManager
                     .toNamespaceUnit(this.tagLibrary);
             this.units.push(nsUnit);
-            this.startUnit(new TagUnit(this.tagLibrary, t, this.nextTagId()));
-            log.fine("New Namespace and [Composition] TagUnit pushed");
-        } else if (isRemove(t)) {
+            this.startUnit(new TrimmedTagUnit(this.tagLibrary, t, this
+                    .nextTagId()));
+            log.fine("New Namespace and [Trimmed] TagUnit pushed");
+        } else if (isRemove(qname[0], qname[1])) {
             this.units.push(new RemoveUnit());
         } else if (this.tagLibrary.containsTagHandler(t.getNamespace(), t
                 .getLocalName())) {
@@ -157,11 +160,11 @@ final class CompilationManager {
     }
 
     public void popTag() {
-        
+
         if (this.finished) {
             return;
         }
-        
+
         CompilationUnit unit = this.currentUnit();
 
         if (unit instanceof TextUnit) {
@@ -173,11 +176,11 @@ final class CompilationManager {
                 return;
             }
         }
-        
+
         unit = this.currentUnit();
         if (unit instanceof TagUnit) {
             TagUnit t = (TagUnit) unit;
-            if (isComposition(t.getTag())) {
+            if (t instanceof TrimmedTagUnit) {
                 this.finished = true;
                 return;
             }
@@ -194,11 +197,11 @@ final class CompilationManager {
     }
 
     public void pushNamespace(String prefix, String uri) {
-        
+
         if (log.isLoggable(Level.FINE)) {
-            log.fine("Namespace Pushed "+prefix+": "+uri);
+            log.fine("Namespace Pushed " + prefix + ": " + uri);
         }
-        
+
         this.namespaceManager.pushNamespace(prefix, uri);
         NamespaceUnit unit;
         if (this.currentUnit() instanceof NamespaceUnit) {
@@ -223,9 +226,9 @@ final class CompilationManager {
 
     private void finishUnit() {
         Object obj = this.units.pop();
-        
+
         if (log.isLoggable(Level.FINE)) {
-            log.fine("Finished Unit: "+obj);
+            log.fine("Finished Unit: " + obj);
         }
     }
 
@@ -241,9 +244,10 @@ final class CompilationManager {
     }
 
     private void startUnit(CompilationUnit unit) {
-        
+
         if (log.isLoggable(Level.FINE)) {
-            log.fine("Starting Unit: "+unit+" and adding it to parent: "+this.currentUnit());
+            log.fine("Starting Unit: " + unit + " and adding it to parent: "
+                    + this.currentUnit());
         }
 
         this.currentUnit().addChild(unit);
@@ -256,46 +260,55 @@ final class CompilationManager {
         return t;
     }
 
-    protected static boolean isRemove(Tag t) {
-        return UILibrary.Namespace.equals(t.getNamespace())
-                && "remove".equals(t.getLocalName());
+    protected static boolean isRemove(String ns, String name) {
+        return UILibrary.Namespace.equals(ns)
+                && "remove".equals(name);
     }
 
-    protected static boolean isComposition(Tag t) {
-        return UILibrary.Namespace.equals(t.getNamespace())
-                && CompositionHandler.Name.equals(t.getLocalName());
+    protected static boolean isTrimmed(String ns, String name) {
+        return UILibrary.Namespace.equals(ns)
+                && (CompositionHandler.Name.equals(name) || ComponentRefHandler.Name.equals(name));
     }
 
-    private Tag trimJSFCAttribute(Tag tag) {
+    private String[] determineQName(Tag tag) {
         TagAttribute attr = tag.getAttributes().get("jsfc");
         if (attr != null) {
             if (log.isLoggable(Level.FINE)) {
                 log.fine(attr + " JSF Facelet Compile Directive Found");
             }
-            String pre = attr.getValue();
-            int c = pre.indexOf(':');
+            String value = attr.getValue();
+            String namespace, localName;
+            int c = value.indexOf(':');
             if (c == -1) {
-                throw new TagAttributeException(tag, attr,
-                        "Must be in the form prefix:localName");
+                namespace = this.namespaceManager.getNamespace("");
+                localName = value;
             } else {
-                pre = pre.substring(0, c);
-                String ns = this.namespaceManager.getNamespace(pre);
-                if (ns == null) {
+                String prefix = value.substring(0, c);
+                namespace = this.namespaceManager.getNamespace(prefix);
+                if (namespace == null) {
                     throw new TagAttributeException(tag, attr,
-                            "No Namespace matched for: " + pre);
+                            "No Namespace matched for: " + prefix);
                 }
-                TagAttribute[] oa = tag.getAttributes().getAll();
-                TagAttribute[] na = new TagAttribute[oa.length - 1];
-                int p = 0;
-                for (int i = 0; i < oa.length; i++) {
-                    if (!"jsfc".equals(oa[i].getLocalName())) {
-                        na[p++] = oa[i];
-                    }
-                }
-                return new Tag(tag.getLocation(), ns, attr.getValue()
-                        .substring(c + 1), tag.getQName(),
-                        new TagAttributes(na));
+                localName = value.substring(c + 1);
             }
+            return new String[] { namespace, localName };
+        } else {
+            return new String[] { tag.getNamespace(), tag.getLocalName() };
+        }
+    }
+
+    private Tag trimJSFCAttribute(Tag tag) {
+        TagAttribute attr = tag.getAttributes().get("jsfc");
+        if (attr != null) {
+            TagAttribute[] oa = tag.getAttributes().getAll();
+            TagAttribute[] na = new TagAttribute[oa.length - 1];
+            int p = 0;
+            for (int i = 0; i < oa.length; i++) {
+                if (!"jsfc".equals(oa[i].getLocalName())) {
+                    na[p++] = oa[i];
+                }
+            }
+            return new Tag(tag, new TagAttributes(na));
         }
         return tag;
     }
