@@ -51,7 +51,7 @@ import com.sun.facelets.util.FacesAPI;
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.26 2005/07/29 02:11:30 jhook Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.27 2005/07/29 02:22:20 jhook Exp $
  */
 public class FaceletViewHandler extends ViewHandler {
 
@@ -246,8 +246,8 @@ public class FaceletViewHandler extends ViewHandler {
             }
         }
         String skipParam = ext.getInitParameter(SKIP_COMMENTS_PARAM_NAME);
-        if (skipParam != null && "true".equals(skipParam)) {
-            c.setTrimmingComments(true);
+        if (skipParam != null && "false".equals(skipParam)) {
+            c.setTrimmingComments(false);
         }
     }
 
