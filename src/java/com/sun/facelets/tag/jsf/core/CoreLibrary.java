@@ -15,6 +15,8 @@
 
 package com.sun.facelets.tag.jsf.core;
 
+import javax.faces.component.UIOutput;
+
 import com.sun.facelets.tag.AbstractTagLibrary;
 
 /**
@@ -23,7 +25,7 @@ import com.sun.facelets.tag.AbstractTagLibrary;
  * documentation</a>.
  * 
  * @author Jacob Hookom
- * @version $Id: CoreLibrary.java,v 1.1 2005/07/27 04:33:05 jhook Exp $
+ * @version $Id: CoreLibrary.java,v 1.2 2005/07/29 02:49:10 jhook Exp $
  */
 public final class CoreLibrary extends AbstractTagLibrary {
 
@@ -67,5 +69,7 @@ public final class CoreLibrary extends AbstractTagLibrary {
                 ValueChangeListenerHandler.class);
 
         this.addTagHandler("view", ViewHandler.class);
+        
+        this.addComponent("verbatim", UIOutput.COMPONENT_TYPE, null);
     }
 }
