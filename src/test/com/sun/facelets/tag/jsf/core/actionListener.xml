@@ -2,9 +2,9 @@
              xmlns:h="http://java.sun.com/jsf/html"
              xmlns:f="http://java.sun.com/jsf/core">
 	<h:commandLink id="action1" action="foo">
-		<f:actionListener type="com.sun.facelets.tag.core.ActionListenerImpl"/>
+		<f:actionListener type="com.sun.facelets.tag.jsf.core.ActionListenerImpl"/>
 	</h:commandLink>
 	<h:commandLink id="action2" action="foo">
-		<f:actionListener binding="#{actionListener}" type="com.sun.facelets.tag.core.ActionListenerImpl"/>
+		<f:actionListener binding="#{actionListener}" type="com.sun.facelets.tag.jsf.core.ActionListenerImpl"/>
 	</h:commandLink>
 </composition>

@@ -3,7 +3,7 @@
              xmlns:f="http://java.sun.com/jsf/core">
     <h:form id="form" prependId="false">
 		<h:inputText id="input">
-			<f:valueChangeListener type="com.sun.facelets.tag.core.ValueChangeListenerImpl" />
+			<f:valueChangeListener type="com.sun.facelets.tag.jsf.core.ValueChangeListenerImpl" />
 		</h:inputText>
 	</h:form>
 </composition>

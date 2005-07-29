@@ -1,4 +1,4 @@
-package com.sun.facelets.tag.core;
+package com.sun.facelets.tag.jsf.core;
 
 import java.util.Date;
 import java.util.Locale;

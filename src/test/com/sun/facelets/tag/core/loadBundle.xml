@@ -1,3 +1,0 @@
-<view xmlns="http://java.sun.com/jsf/core">
-      <loadBundle var="foo" basename="com.sun.facelets.tag.core.bundle" />
-</view>
