@@ -39,7 +39,7 @@ import com.sun.facelets.tag.ui.UILibrary;
  * @see com.sun.facelets.compiler.Compiler
  * 
  * @author Jacob Hookom
- * @version $Id: CompilationManager.java,v 1.7 2005/07/29 16:05:38 jhook Exp $
+ * @version $Id: CompilationManager.java,v 1.8 2005/07/29 16:06:35 jhook Exp $
  */
 final class CompilationManager {
 
@@ -139,7 +139,7 @@ final class CompilationManager {
             NamespaceUnit nsUnit = this.namespaceManager
                     .toNamespaceUnit(this.tagLibrary);
             this.units.push(nsUnit);
-            this.startUnit(new TrimmedTagUnit(this.tagLibrary, t, this
+            this.startUnit(new TrimmedTagUnit(this.tagLibrary, qname[0], qname[1], t, this
                     .nextTagId()));
             log.fine("New Namespace and [Trimmed] TagUnit pushed");
         } else if (isRemove(qname[0], qname[1])) {
