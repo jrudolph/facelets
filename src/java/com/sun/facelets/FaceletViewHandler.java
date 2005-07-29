@@ -51,7 +51,7 @@ import com.sun.facelets.util.FacesAPI;
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.24 2005/07/27 20:46:05 jhook Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.25 2005/07/29 01:25:28 jhook Exp $
  */
 public class FaceletViewHandler extends ViewHandler {
 
@@ -277,12 +277,9 @@ public class FaceletViewHandler extends ViewHandler {
         ServletResponse response = (ServletResponse) extContext.getResponse();
         
         // get our content type
-        String contentType = request.getContentType();
+        String contentType = (String) extContext.getRequestHeaderMap().get("Accept");
         if (contentType == null) {
-            contentType = (String) extContext.getRequestHeaderMap().get("Accept");
-            if (contentType == null) {
-                contentType = "text/html";
-            }
+            contentType = "text/html";
         }
         
         // get the encoding
