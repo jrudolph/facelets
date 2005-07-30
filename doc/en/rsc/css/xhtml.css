@@ -13,6 +13,7 @@ table {
 	border: 1px solid #CCC;
 	border-collapse: collapse;
 	border-spacing: 0px;
+	width: 100%;
 }
 thead tr th {
 	padding: 2px;
@@ -63,4 +64,7 @@ h3 {
 	border: 1px solid #CCC;
 	margin: 8px 0px;
 	padding: 4px;
+}
+.sect1, .sect2, .sect3 {
+	padding-top: 10px;
 }

@@ -99,7 +99,7 @@
 		  <sect2 id="taglib-available-jstl">
 			<title>JSTL Support</title>
 			<para>
-				TODO (limited)
+				TODO (partial)
 			</para>
 		  </sect2>
 		  
@@ -228,7 +228,7 @@
 				In the above example, we are binding a component of type (not Class) <literal>com.mycompany.Data</literal> to the tag name <literal>bar</literal>.  A <literal>renderer-type</literal> is also provided, but not required since <literal>UIComponents</literal> can easily render themselves.
 			</para>
 			<para>
-				Based on if your component implements <literal>ActionSource[2]</literal>, <literal>ValueHolder</literal>, or <literal>EditableValueHolder</literal>, Facelets will take care of auto-wiring those standard attributes according to the specification.  This includes validators, EL expressions, converters, etc.  Any additional properties on your component will also be wired for you too, just as JSP sets the properties on a <literal>JspTag</literal>.  If you think that Facelets can't handle the special wiring your component needs, then skip to <xref linkend="taglib-create-custom"/>.
+				Based on if your component implements <literal>ActionSource[2]</literal>, <literal>ValueHolder</literal>, or <literal>EditableValueHolder</literal>, Facelets will take care of auto-wiring those standard attributes according to the specification.  This includes validators, EL expressions, converters, etc.  Any additional properties on your component will also be wired for you too, just as JSP sets the properties on a <literal>JspTag</literal>.  If you think that Facelets can't handle the special wiring your component needs, then skip to <xref linkend="dev-meta-component"/>.
 			</para>
 			<para>
 				If you've just created a <literal>UIComponent</literal> from scratch and you are not sure how to integrate it into JavaServer Faces, here's all the code you need:
@@ -256,7 +256,7 @@
   </validator>
 </tag>]]></programlisting>
 			<para>
-				Again, we reference JSF entities by type or id.  Facelets will also take care of wiring properties directly to your <literal>Validator</literal> by matching attribute name to property name.  If you would like to provide special behavior or wire odd properties, you can jump ahead to <xref linkend="taglib-create-custom"/>.
+				Again, we reference JSF entities by type or id.  Facelets will also take care of wiring attributes directly to your <literal>Validator</literal> by matching attribute name to property name.  If you would like to provide special behavior or wire odd properties, you can jump ahead to <xref linkend="dev-meta-validator"/>.
 			</para>
 			<para>
 				If you've just written your own <literal>Validator</literal>, you can add it to your JSF Application with the following snippet in your <literal>faces-config.xml</literal>:
@@ -271,10 +271,86 @@
         
         <sect2 id="taglib-create-converter">
 			<title>Converters</title>
+			<para>
+				<literal>Converters</literal> can be registered with Facelets by adding a <literal>converter</literal> element.
+			</para>
+			<programlisting><![CDATA[<tag>
+  <tag-name>convertMoney</tag-name>
+  <converter>
+    <converter-id>faces.convert.Money</converter-id>
+  </converter>
+</tag>]]></programlisting>
+			<para>
+				Converters are referenced by id.  Facelets will take care of wiring attributes directly to your <literal>Converter</literal> by matching attribute name to property name.  If you would like to provide special behavior or wire odd properties, you can jump ahead to <xref linkend="dev-meta-converter"/>.
+			</para>
+			<para>
+				If you've just written your own <literal>Converter</literal>, you can add it to your JSF Application with the following snippet in your <literal>faces-config.xml</literal>:
+			</para>
+			<programlisting><![CDATA[<faces-config>
+  <converter>
+    <converter-id>faces.convert.Money</converter-id>
+    <converter-class>com.mycompany.jsf.convert.ConvertMoney</converter-class>
+  </converter>
+</faces-config>]]></programlisting>
+        </sect2>
+        
+        <sect2 id="taglib-create-source">
+			<title>Tag (Source) Files</title>
+			<para>
+				Facelets has a feature similar to JSP's Tag Files.  Within your tag library definition, you can provide a <literal>source</literal> element that points to a another file, that will be compiled into another Facelet.  Since this file can be referenced by <literal>tag-name</literal>, you can easily include that Facelets into another and pass variable data to it.
+			</para>
+			<programlisting><![CDATA[<tag>
+  <tag-name>echo</tag-name>
+  <source>tags/echo.xhtml</source>
+</tag>]]></programlisting>
+			<para>
+				The <literal>echo.xhtml</literal> will be included anytime a developer uses the <literal>echo</literal> tag.  The following is an example tag file:
+			</para>
+			<programlisting><![CDATA[<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets">
+  <span class="message">#{msg}</span>
+</ui:composition>]]></programlisting>
+			<para>
+				This tag file can be included and any variable used within the tag file can be passed as an attribute:
+			</para>
+			<programlisting><![CDATA[<my:echo msg="#{bean.warningMessage}"/>]]></programlisting>
+			<para>
+				In this example, the <literal>msg</literal> attribute is assigned to <literal>#{bean.warningMessage}</literal> and then referenceable within <literal>echo.xhtml</literal> under the variable <literal>msg</literal>.
+			</para>
+			<para>
+				This was a simple example, but you can do some fairly cool things with building reusable components in your pages.  See <xref linkend="template"/> for more information.
+			</para>
         </sect2>
         
         <sect2 id="taglib-create-custom">
 			<title>Custom Tags</title>
+			<para>
+				Facelets allows you to write stateless tags that can be used in dictating component tree creation.  This includes JSTL-like functionality that may be tied to business logic.  Including your custom tag into your library requires using the <literal>handler-class</literal> element.
+			</para>
+			<programlisting><![CDATA[<tag>
+  <tag-name>if</tag-name>
+  <handler-class>com.mycompany.IfHandler</handler-class>
+</tag>]]></programlisting>
+			<para>
+				All tags in a Facelets extend <literal>com.sun.facelets.tag.TagHandler</literal> which provides some base functionality for tying XML data to your Java code.  To read more about creating custom tags, jump to <xref linkend="dev-taghandler"/>.
+			</para>
+        </sect2>
+        
+        <sect2 id="taglib-create-function">
+			<title>Function Specification</title>
+			<para>
+				You may reference functions within your tag library.  Functions are represented by static methods in Java.
+			</para>
+			<programlisting><![CDATA[<function>
+  <function-name>reverse</function-name>
+  <function-class>com.mycompany.Functions</function-class>
+  <function-signature>java.lang.String reverse(java.lang.String)</function-signature>
+</function>]]></programlisting>
+			<para>
+				The <literal>function</literal> element is a top level entity like the <literal>tag</literal> element.  You need to specify both the class type and the method signature that Facelets should use.  All class names in the signature must be fully qualified, with the exception of primitives such as <literal>int</literal> or <literal>boolean</literal>.
+			</para>
+			<para>
+				In this example, you would be able to reference this function with a namespace prefix in your document, such as <literal>#{my:reverse(employee.name}}</literal>.  See <xref linkend="taglib-function"/> for more information on function use in your pages.
+			</para>
         </sect2>
         
 	</sect1>

@@ -21,7 +21,7 @@
 
     <toc/>
 	
-	<preface id="intro" revision="1">
+	<preface id="intro">
         <title>Introduction</title>
         <para>
             The web community is eagerly seeking a light-weight, templating framework backed by JavaServer Faces as the industry standard. While JavaServer Faces and JavaServer Pages technology (<abbrev>JSP</abbrev>) are meant to be aligned, Facelets steps outside of the JSP specification and provides a highly performant, JSF-centric view technology. Anyone who has created a JSP page will be able to do the same with Facelets and familiar XML-tag use. The difference is under the hood where all the burden of the JSP vendor API is removed to greatly enhance JSF as a platform and provide easy plug-and-go development without requiring JSP tag development.

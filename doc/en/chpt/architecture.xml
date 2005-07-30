@@ -1,34 +1,51 @@
 <chapter id="architecture">
     <title>Facelets Architecture</title>
-
-    <sect1 id="architecture-overview">
-        <title>Architecture Overview</title>
-        <para>
-			TODO
-		</para>
-	</sect1>
 	
 	<sect1 id="architecture-api">
         <title>Facelets API</title>
         <para>
-			TODO
+			Facelets is founded on simple principles and the API is a solid reflection of it.  The framework is focused on one specific task, and that's tree creation and content interweaving-- taking an XHTML or XML document and using it as instructions to populate a tree of <literal>UIComponents</literal>.  That's it.
+		</para>
+		<para>
+			The JavaServer Faces platform is extremely extensible on many levels and Facelets only provides one part of that equation.  Different render kits, controllers, components, validators, converters, frameworks-- all usable with Facelets.  That's the beauty of JavaServer Faces as a platform that Facelets only seeks to enhance.
 		</para>
 		<sect2 id="architecture-api-factory">
 			<title>FaceletFactory</title>
 			<para>
-				TODO
+				The <literal>FaceletFactory</literal> is an interface to the Facelet compiler while offering features such as caching and modification monitoring. 
 			</para>
+			<programlisting><![CDATA[FaceletFactory factory = FaceletFactory.getInstance();
+Facelet facelet = factory.getFacelet("/example.xml");]]></programlisting>
 		</sect2>
 		<sect2 id="architecture-api-facelet">
 			<title>Facelet</title>
 			<para>
-				TODO
+				The <literal>Facelet</literal> class is similar to a lot of the Servlet API, such that it's stateless and can handle multiple threads accessing it at once.  The Facelet's soul responsibility is to populate a tree of <literal>UIComponents</literal> for manipulation and, of course, rendering.
+			</para>
+			<programlisting><![CDATA[FacesContext faces = FacesContext.getCurrentInstance();
+Facelet facelet = factory.getFacelet("/example.xml");
+facelet.apply(faces, faces.getViewRoot());
+]]></programlisting>
+			<para>
+				After 'applying' this <literal>Facelet</literal> to the <literal>UIViewRoot</literal>, it will be fully populated according to your various XHTML or XML pages used with the Facelets framework.
+			</para>
+			<para>
+				<literal>Facelets</literal> delegate tree creation logic to an internal tree of <literal>FaceletHandlers</literal> constructed by the compiler.  The action of passing <literal>UIComponents</literal> through the tree of <literal>FaceletHandlers</literal> causes the view to be populated in a <literal>UIComponent</literal> tree, reflective of the logic included in the <literal>FaceletHandlers</literal>.
 			</para>
 		</sect2>
 		<sect2 id="architecture-api-handler">
 			<title>FaceletHandler</title>
 			<para>
-				TODO
+				The <literal>FaceletHandler</literal> is a part of a parent <literal>Facelet</literal> in a many to one association.  <literal>FaceletHandlers</literal> work off of the visitor pattern where state is passed to them for modification and tree creation, then possibly passed along to the next <literal>FaceletHandler</literal> in the chain.  
+			</para>
+			<programlisting><![CDATA[public class LoggingHandler implements FaceletHandler
+  public void apply(FaceletContext ctx, UIComponent parent)
+            throws IOException, FacesException, FaceletException, ELException {
+    Logger.getLogger("example").info("Hello Logger");
+  }
+}]]></programlisting>
+			<para>
+				That example, while silly, shows the simple API that the FaceletHandler uses.  If you would like to construct your own FaceletHandlers for use in <literal>UIComponent</literal> tree creation, jump over to <xref linkend="dev-taghandler"/>.
 			</para>
 		</sect2>
 	</sect1>
@@ -36,7 +53,7 @@
 	<sect1 id="architecture-compiler">
         <title>Document Compiler</title>
         <para>
-			TODO
+			It's a secret.
 		</para>
 	</sect1>
 	
