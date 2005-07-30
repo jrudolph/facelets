@@ -19,7 +19,7 @@ import com.sun.facelets.tag.AbstractTagLibrary;
 
 /**
  * @author Jacob Hookom
- * @version $Id: JstlCoreLibrary.java,v 1.1 2005/05/21 17:54:48 jhook Exp $
+ * @version $Id: JstlCoreLibrary.java,v 1.2 2005/07/30 21:35:56 jhook Exp $
  */
 public final class JstlCoreLibrary extends AbstractTagLibrary {
 
@@ -35,7 +35,12 @@ public final class JstlCoreLibrary extends AbstractTagLibrary {
         this.addTagHandler("forEach", ForEachHandler.class);
 
         this.addTagHandler("catch", CatchHandler.class);
-
+        
+        this.addTagHandler("choose", ChooseHandler.class);
+        
+        this.addTagHandler("when", ChooseWhenHandler.class);
+        
+        this.addTagHandler("otherwise", ChooseOtherwiseHandler.class);
     }
 
 }
