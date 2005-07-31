@@ -317,7 +317,7 @@
 				In this example, the <literal>msg</literal> attribute is assigned to <literal>#{bean.warningMessage}</literal> and then referenceable within <literal>echo.xhtml</literal> under the variable <literal>msg</literal>.
 			</para>
 			<para>
-				This was a simple example, but you can do some fairly cool things with building reusable components in your pages.  See <xref linkend="template"/> for more information.
+				This was a simple example, but you can do some fairly cool things with building reusable components in your pages.  Going one step further, you may provide a body to your custom tag, by placing a <literal><![CDATA[<ui:insert/>]]></literal> as a place for body inclusion.  See <xref linkend="template"/> for more information.
 			</para>
         </sect2>
         
