@@ -7,7 +7,7 @@
 body, div, span, td, th, caption { font-family: 'Trebuchet MS', Verdana, Arial, Sans-Serif; font-size: small; }
 ul, li, pre { padding: 0; margin: 0; }
 h1 { color: #900; }
-h2, h2 span { font-size: x-large; color: #339; }
+h2, h2 span { font-size: large; color: #339; }
 h2 a { text-decoration: none; color: #339; }
 .grayBox { padding: 8px; margin: 10px 0; border: 1px solid #CCC; background-color: #f9f9f9;  }
 #error { color: #900; font-weight: bold; font-size: medium; }
