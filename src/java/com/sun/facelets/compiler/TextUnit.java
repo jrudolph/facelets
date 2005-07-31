@@ -21,6 +21,7 @@ import java.util.Stack;
 
 import javax.el.ELException;
 
+import com.sun.facelets.FaceletException;
 import com.sun.facelets.FaceletHandler;
 import com.sun.facelets.el.ELText;
 import com.sun.facelets.tag.CompositeFaceletHandler;
@@ -31,7 +32,7 @@ import com.sun.facelets.tag.TagException;
 /**
  * 
  * @author Jacob Hookom
- * @version $Id: TextUnit.java,v 1.6 2005/07/29 16:05:30 jhook Exp $
+ * @version $Id: TextUnit.java,v 1.7 2005/07/31 22:28:48 jhook Exp $
  */
 final class TextUnit extends CompilationUnit {
 
@@ -42,8 +43,11 @@ final class TextUnit extends CompilationUnit {
     private final List children;
 
     private boolean startTagOpen;
+    
+    private final String alias;
 
-    public TextUnit() {
+    public TextUnit(String alias) {
+        this.alias = alias;
         this.buffer = new StringBuffer(256);
         this.tags = new Stack();
         this.children = new ArrayList();
@@ -140,7 +144,7 @@ final class TextUnit extends CompilationUnit {
                             if (txt.isLiteral()) {
                                 this.children.add(new UILiteralTextHandler(txt.toString()));
                             } else {
-                                this.children.add(new UITextHandler(txt));
+                                this.children.add(new UITextHandler(this.alias, txt));
                             }
                         }
                     } catch (ELException e) {
@@ -148,7 +152,7 @@ final class TextUnit extends CompilationUnit {
                             throw new TagException((Tag) this.tags.peek(), e
                                     .getMessage());
                         } else {
-                            throw e;
+                            throw new ELException(this.alias + ": "+e.getMessage(), e.getCause());
                         }
                     }
                 }

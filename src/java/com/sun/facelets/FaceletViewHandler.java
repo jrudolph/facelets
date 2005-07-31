@@ -17,6 +17,7 @@ package com.sun.facelets;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -27,6 +28,7 @@ import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.el.ELException;
 import javax.faces.FacesException;
 import javax.faces.application.StateManager;
 import javax.faces.application.ViewHandler;
@@ -45,13 +47,14 @@ import com.sun.facelets.compiler.SAXCompiler;
 import com.sun.facelets.compiler.TagLibraryConfig;
 import com.sun.facelets.impl.DefaultFaceletFactory;
 import com.sun.facelets.tag.TagLibrary;
+import com.sun.facelets.util.DevTools;
 import com.sun.facelets.util.FacesAPI;
 
 /**
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.28 2005/07/29 20:39:40 jhook Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.29 2005/07/31 22:28:51 jhook Exp $
  */
 public class FaceletViewHandler extends ViewHandler {
 
@@ -61,23 +64,29 @@ public class FaceletViewHandler extends ViewHandler {
     public final static long DEFAULT_REFRESH_PERIOD = 2;
 
     public final static String REFRESH_PERIOD_PARAM_NAME = "facelets.REFRESH_PERIOD";
-    
+
     public final static String SKIP_COMMENTS_PARAM_NAME = "facelets.SKIP_COMMENTS";
 
     /**
      * Context initialization parameter for defining what viewIds should be
-     * handled by Facelets, and what should not.  When left unset, all URLs will
-     * be handled by Facelets.  When set, it must be a semicolon separated
-     * list of either extension mappings or prefix mappings.  For example:
+     * handled by Facelets, and what should not. When left unset, all URLs will
+     * be handled by Facelets. When set, it must be a semicolon separated list
+     * of either extension mappings or prefix mappings. For example:
+     * 
      * <pre>
-     *  &lt;context-param&gt;
-     *    &lt;param-name&gt;facelets.VIEW_MAPPINGS&lt;/param-name&gt;
-     *    &lt;param-value&gt;/demos/*; *.xhtml&lt;/param-value&gt;
-     *  &lt;/context-param&gt;
+     * 
+     *  
+     *    &lt;context-param&gt;
+     *      &lt;param-name&gt;facelets.VIEW_MAPPINGS&lt;/param-name&gt;
+     *      &lt;param-value&gt;/demos/*; *.xhtml&lt;/param-value&gt;
+     *    &lt;/context-param&gt;
+     *   
+     *  
      * </pre>
-     * would use Facelets for processing all viewIds in the "/demos"
-     * directory or that end in .xhtml, and use the standard JSP
-     * engine for all other viewIds.
+     * 
+     * would use Facelets for processing all viewIds in the "/demos" directory
+     * or that end in .xhtml, and use the standard JSP engine for all other
+     * viewIds.
      * <p>
      * <strong>NOTE</strong>: when using this parameter, you need to use
      * prefix-mapping for the <code>FacesServlet</code> (that is,
@@ -88,9 +97,13 @@ public class FaceletViewHandler extends ViewHandler {
 
     public final static String LIBRARIES_PARAM_NAME = "facelets.LIBRARIES";
 
+    public final static String DEVELOPMENT_PARAM_NAME = "facelets.DEVELOPMENT";
+
     protected final static String STATE_KEY = "com.sun.facelets.VIEW_STATE";
 
     private final ViewHandler parent;
+
+    private boolean development = false;
 
     private boolean initialized = false;
 
@@ -156,13 +169,21 @@ public class FaceletViewHandler extends ViewHandler {
                 this.initializeCompiler(c);
                 FaceletFactory f = this.createFaceletFactory(c);
                 FaceletFactory.setInstance(f);
-                this.initialized = true;
 
-                initializeMappings(context);
+                this.initializeMappings(context);
+                this.initializeMode(context);
+
+                this.initialized = true;
 
                 log.fine("Initialization Successful");
             }
         }
+    }
+
+    private void initializeMode(FacesContext context) {
+        ExternalContext external = context.getExternalContext();
+        String param = external.getInitParameter(DEVELOPMENT_PARAM_NAME);
+        this.development = (param != null && "true".equals(param));
     }
 
     /**
@@ -170,21 +191,21 @@ public class FaceletViewHandler extends ViewHandler {
      */
     private void initializeMappings(FacesContext context) {
         ExternalContext external = context.getExternalContext();
-        String viewMappings =
-          external.getInitParameter(VIEW_MAPPINGS_PARAM_NAME);
+        String viewMappings = external
+                .getInitParameter(VIEW_MAPPINGS_PARAM_NAME);
         if ((viewMappings != null) && (viewMappings.length() > 0)) {
             String[] mappingsArray = viewMappings.split(";");
-            
+
             List extensionsList = new ArrayList(mappingsArray.length);
             List prefixesList = new ArrayList(mappingsArray.length);
-            
+
             for (int i = 0; i < mappingsArray.length; i++) {
                 String mapping = mappingsArray[i].trim();
                 int mappingLength = mapping.length();
                 if (mappingLength <= 1) {
                     continue;
                 }
-                
+
                 if (mapping.charAt(0) == '*') {
                     extensionsList.add(mapping.substring(1));
                 } else if (mapping.charAt(mappingLength - 1) == '*') {
@@ -194,7 +215,7 @@ public class FaceletViewHandler extends ViewHandler {
 
             extensionsArray = new String[extensionsList.size()];
             extensionsList.toArray(extensionsArray);
-            
+
             prefixesArray = new String[prefixesList.size()];
             prefixesList.toArray(prefixesArray);
         }
@@ -281,37 +302,38 @@ public class FaceletViewHandler extends ViewHandler {
         RenderKit renderKit = context.getRenderKit();
         ServletRequest request = (ServletRequest) extContext.getRequest();
         ServletResponse response = (ServletResponse) extContext.getResponse();
-        
+
         // get our content type
-        String contentType = (String) extContext.getRequestHeaderMap().get("Accept");
+        String contentType = (String) extContext.getRequestHeaderMap().get(
+                "Accept");
         if (contentType == null) {
             contentType = "text/html";
         }
-        
+
         // get the encoding
         String encoding = request.getCharacterEncoding();
         if (encoding == null) {
             encoding = "UTF-8";
         }
-        
+
         // Create a dummy ResponseWriter with a bogus writer,
         // so we can figure out what content type the ReponseWriter
         // is really going to ask for
-        
+
         // TODO This needs to be changed back from null once
         // MyFaces corrects the bug in their RenderKit
         ResponseWriter writer = renderKit.createResponseWriter(
                 NullWriter.Instance, null, encoding);
-        
+
         contentType = writer.getContentType();
         encoding = writer.getCharacterEncoding();
-        
+
         // apply them to the response
         response.setContentType(contentType + "; charset = " + encoding);
-        
+
         // Now, clone with the real writer
         writer = writer.cloneWithWriter(response.getWriter());
-        
+
         return writer;
     }
 
@@ -336,12 +358,12 @@ public class FaceletViewHandler extends ViewHandler {
 
     public void renderView(FacesContext context, UIViewRoot viewToRender)
             throws IOException, FacesException {
-        
+
         // lazy initialize so we have a FacesContext to use
         if (!this.initialized) {
             this.initialize(context);
         }
-        
+
         // exit if the view is not to be rendered
         if (!viewToRender.isRendered()) {
             return;
@@ -351,21 +373,21 @@ public class FaceletViewHandler extends ViewHandler {
         if (!handledByFacelets(viewToRender)) {
             this.parent.renderView(context, viewToRender);
             return;
-        } 
+        }
 
         // log request
         if (log.isLoggable(Level.FINE)) {
             log.fine("Rendering View: " + viewToRender.getViewId());
-        }
-        
+        }        
+
         try {
             // build view
             this.buildView(context, viewToRender);
-
+            
             // setup writer and assign it to the context
             ResponseWriter writer = this.createResponseWriter(context);
             context.setResponseWriter(writer);
-    
+
             // render the view to the response
             writer.startDocument();
             if (FacesAPI.getVersion() >= 12) {
@@ -375,22 +397,42 @@ public class FaceletViewHandler extends ViewHandler {
             }
             writer.endDocument();
             writer.close();
-            
-            // remove transients
-            if (FacesAPI.getVersion() < 12) {
-                removeTransient(viewToRender);
-            }
-            
         } catch (FileNotFoundException fnfe) {
-            if (log.isLoggable(Level.WARNING)) {
-                log.log(Level.WARNING, fnfe.getMessage());
-            }
-            String originalViewId = this.getActionURL(context, viewToRender.getViewId());
-            this.handleFaceletNotFound(context, originalViewId);
+            String origViewId = this.getActionURL(context, viewToRender.getViewId());
+            this.handleFaceletNotFound(context, origViewId);
+        } catch (Exception e) {
+            this.handleEncodeException(context, e);
+        }
+
+        // remove transients for older versions
+        if (FacesAPI.getVersion() < 12) {
+            removeTransient(viewToRender);
         }
     }
-    
-    protected void handleFaceletNotFound(FacesContext context, String viewId) throws FacesException, IOException {
+
+    protected void handleEncodeException(FacesContext context, Exception e)
+            throws IOException, ELException, FacesException {
+        Object resp = context.getExternalContext().getResponse();
+        if (this.development && !context.getResponseComplete()
+                && resp instanceof HttpServletResponse) {
+            HttpServletResponse httpResp = (HttpServletResponse) resp;
+            httpResp.reset();
+            httpResp.setContentType("text/html; charset=UTF-8");
+            PrintWriter w = httpResp.getWriter();
+            DevTools.debugHtml(w, context, e);
+            w.flush();
+            context.responseComplete();
+        } else if (e instanceof RuntimeException) {
+            throw (RuntimeException) e;
+        } else if (e instanceof IOException) {
+            throw (IOException) e;
+        } else {
+            throw new FacesException(e.getMessage(), e);
+        }
+    }
+
+    protected void handleFaceletNotFound(FacesContext context, String viewId)
+            throws FacesException, IOException {
         Object respObj = context.getExternalContext().getResponse();
         if (respObj instanceof HttpServletResponse) {
             HttpServletResponse respHttp = (HttpServletResponse) respObj;
@@ -416,9 +458,8 @@ public class FaceletViewHandler extends ViewHandler {
         }
     }
 
-
     /**
-     *  Determine if Facelets needs to handle this request.
+     * Determine if Facelets needs to handle this request.
      */
     private boolean handledByFacelets(UIViewRoot viewToRender) {
         // If there's no extensions array or prefixes array, then
@@ -426,7 +467,7 @@ public class FaceletViewHandler extends ViewHandler {
         if ((extensionsArray == null) && (prefixesArray == null)) {
             return true;
         }
-        
+
         String viewId = viewToRender.getViewId();
 
         if (extensionsArray != null) {
@@ -509,9 +550,9 @@ public class FaceletViewHandler extends ViewHandler {
     }
 
     static private class NullWriter extends Writer {
-        
+
         static final NullWriter Instance = new NullWriter();
-        
+
         public void write(char[] buffer) {
         }
 

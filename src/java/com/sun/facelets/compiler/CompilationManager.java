@@ -39,7 +39,7 @@ import com.sun.facelets.tag.ui.UILibrary;
  * @see com.sun.facelets.compiler.Compiler
  * 
  * @author Jacob Hookom
- * @version $Id: CompilationManager.java,v 1.8 2005/07/29 16:06:35 jhook Exp $
+ * @version $Id: CompilationManager.java,v 1.9 2005/07/31 22:28:48 jhook Exp $
  */
 final class CompilationManager {
 
@@ -58,8 +58,13 @@ final class CompilationManager {
     private int tagId;
 
     private boolean finished;
+    
+    private final String alias;
 
-    public CompilationManager(Compiler compiler) {
+    public CompilationManager(String alias, Compiler compiler) {
+        
+        // this is our alias
+        this.alias = alias;
 
         // grab compiler state
         this.compiler = compiler;
@@ -95,7 +100,7 @@ final class CompilationManager {
         if (this.currentUnit() instanceof TextUnit) {
             unit = (TextUnit) this.currentUnit();
         } else {
-            unit = new TextUnit();
+            unit = new TextUnit(this.alias);
             this.startUnit(unit);
         }
         unit.write(value);
@@ -151,7 +156,7 @@ final class CompilationManager {
             if (this.currentUnit() instanceof TextUnit) {
                 unit = (TextUnit) this.currentUnit();
             } else {
-                unit = new TextUnit();
+                unit = new TextUnit(this.alias);
                 this.startUnit(unit);
             }
             unit.startTag(t);

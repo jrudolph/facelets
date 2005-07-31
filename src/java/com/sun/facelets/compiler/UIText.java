@@ -17,6 +17,7 @@ package com.sun.facelets.compiler;
 
 import java.io.IOException;
 
+import javax.el.ELException;
 import javax.faces.component.UIComponentBase;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
@@ -26,14 +27,17 @@ import com.sun.facelets.el.ELText;
 
 /**
  * @author Jacob Hookom
- * @version $Id: UIText.java,v 1.3 2005/07/31 17:33:55 jhook Exp $
+ * @version $Id: UIText.java,v 1.4 2005/07/31 22:28:48 jhook Exp $
  */
 final class UIText extends UILeaf {
 
     private final ELText txt;
+    
+    private final String alias;
 
-    public UIText(ELText txt) {
+    public UIText(String alias, ELText txt) {
         this.txt = txt;
+        this.alias = alias;
     }
 
     public String getFamily() {
@@ -42,7 +46,11 @@ final class UIText extends UILeaf {
 
     public void encodeBegin(FacesContext context) throws IOException {
         ResponseWriter out = context.getResponseWriter();
-        txt.write(out, ELAdaptor.getELContext(context));
+        try {
+            txt.write(out, ELAdaptor.getELContext(context));
+        } catch (Exception e) {
+            throw new ELException(this.alias + ": " + e.getMessage(), e.getCause());
+        }
     }
 
     public String getRendererType() {

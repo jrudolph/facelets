@@ -47,7 +47,7 @@ import com.sun.facelets.tag.TagAttributes;
  * @see com.sun.facelets.compiler.Compiler
  * 
  * @author Jacob Hookom
- * @version $Id: SAXCompiler.java,v 1.2 2005/07/18 08:25:29 jhook Exp $
+ * @version $Id: SAXCompiler.java,v 1.3 2005/07/31 22:28:48 jhook Exp $
  */
 public final class SAXCompiler extends Compiler {
 
@@ -196,7 +196,7 @@ public final class SAXCompiler extends Compiler {
         InputStream is = null;
         try {
             is = src.openStream();
-            unit = new CompilationManager(this);
+            unit = new CompilationManager(alias, this);
             CompilationHandler handler = new CompilationHandler(unit, alias);
             SAXParser parser = this.createSAXParser(handler);
             parser.parse(is, handler);

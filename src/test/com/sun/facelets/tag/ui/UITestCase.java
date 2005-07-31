@@ -59,7 +59,7 @@ public class UITestCase extends FaceletTestCase {
         UIViewRoot root = faces.getViewRoot();
         at.apply(faces, root);
         
-        assertEquals("only one child, the component", 1, root.getChildCount());
+        assertEquals("4 children, the component", 4, root.getChildCount());
         assertNotNull("bound to map", map.get("c"));
     }
 
