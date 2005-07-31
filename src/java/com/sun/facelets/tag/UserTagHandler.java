@@ -15,6 +15,7 @@
 
 package com.sun.facelets.tag;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 
@@ -25,16 +26,19 @@ import javax.faces.component.UIComponent;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
+import com.sun.facelets.FaceletHandler;
 import com.sun.facelets.el.VariableMapperWrapper;
+import com.sun.facelets.tag.ui.TemplateClient;
+import com.sun.facelets.tag.ui.TemplateManager;
 
 /**
  * A Tag that is specified in a FaceletFile. Takes all attributes specified and
  * sets them on the FaceletContext before including the targeted Facelet file.
  * 
  * @author Jacob Hookom
- * @version $Id: UserTagHandler.java,v 1.2 2005/07/26 01:37:01 jhook Exp $
+ * @version $Id: UserTagHandler.java,v 1.3 2005/07/31 17:34:22 jhook Exp $
  */
-final class UserTagHandler extends TagHandler {
+final class UserTagHandler extends TagHandler implements TemplateClient {
 
     protected final TagAttribute[] vars;
 
@@ -62,6 +66,7 @@ final class UserTagHandler extends TagHandler {
     public void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
         VariableMapper orig = ctx.getVariableMapper();
+        TemplateManager mngr = TemplateManager.getInstance(ctx);
         try {
             if (this.vars.length > 0) {
                 VariableMapper varMapper = new VariableMapperWrapper(orig);
@@ -71,10 +76,18 @@ final class UserTagHandler extends TagHandler {
                             this.vars[i].getValueExpression(ctx, Object.class));
                 }
             }
+            mngr.pushClient(this);
             ctx.includeFacelet(parent, this.location);
+        } catch (FileNotFoundException e) {
+            throw new TagException(this.tag, e.getMessage());
         } finally {
+            mngr.popClient();
             ctx.setVariableMapper(orig);
         }
+    }
+
+    public FaceletHandler getHandler(FaceletContext ctx, String name) {
+        return (name == null) ? this.nextHandler : null;
     }
 
 }

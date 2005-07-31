@@ -20,8 +20,16 @@ import com.sun.facelets.FaceletHandler;
 
 /**
  * @author Jacob Hookom
- * @version $Id: TemplateClient.java,v 1.2 2005/07/20 06:37:11 jhook Exp $
+ * @version $Id: TemplateClient.java,v 1.3 2005/07/31 17:34:21 jhook Exp $
  */
-interface TemplateClient {
+public interface TemplateClient {
+    
+    /**
+     * Nullsafe resolver of templates, if none is found, return null
+     * 
+     * @param ctx
+     * @param name
+     * @return
+     */
     public FaceletHandler getHandler(FaceletContext ctx, String name);
 }

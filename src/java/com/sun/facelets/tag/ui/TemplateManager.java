@@ -24,9 +24,9 @@ import com.sun.facelets.FaceletHandler;
 
 /**
  * @author Jacob Hookom
- * @version $Id: TemplateManager.java,v 1.3 2005/07/27 04:33:09 jhook Exp $
+ * @version $Id: TemplateManager.java,v 1.4 2005/07/31 17:34:22 jhook Exp $
  */
-final class TemplateManager implements TemplateClient {
+public final class TemplateManager implements TemplateClient {
 
     private final static String KEY = TemplateManager.class.getName();
 
