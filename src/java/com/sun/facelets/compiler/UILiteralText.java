@@ -20,19 +20,6 @@ import javax.faces.render.Renderer;
 import com.sun.facelets.el.ELText;
 
 final class UILiteralText extends UILeaf {
-
-    private final static Map attributes = new HashMap(){
-    
-        public void putAll(Map map) {
-            // do nothing
-        }
-    
-        public Object put(Object name, Object value) {
-            return null;
-        }
-    };
-    
-    private final static Map facets = attributes;
     
     private final String text;
     
@@ -43,6 +30,9 @@ final class UILiteralText extends UILeaf {
     public void encodeBegin(FacesContext faces) throws IOException {
         ResponseWriter writer = faces.getResponseWriter();
         writer.write(this.text);
+    }
+    public String toString() {
+        return this.text;
     }
 
 }

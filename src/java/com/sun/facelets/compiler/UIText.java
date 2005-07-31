@@ -26,7 +26,7 @@ import com.sun.facelets.el.ELText;
 
 /**
  * @author Jacob Hookom
- * @version $Id: UIText.java,v 1.2 2005/07/29 16:05:31 jhook Exp $
+ * @version $Id: UIText.java,v 1.3 2005/07/31 17:33:55 jhook Exp $
  */
 final class UIText extends UILeaf {
 
@@ -51,5 +51,9 @@ final class UIText extends UILeaf {
 
     public boolean getRendersChildren() {
         return true;
+    }
+
+    public String toString() {
+        return this.txt.toString();
     }
 }
