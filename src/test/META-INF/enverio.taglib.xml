@@ -9,4 +9,8 @@
 		<tag-name>echo</tag-name>
 		<source>tags/echo.xml</source>
 	</tag>
+	<tag>
+		<tag-name>span</tag-name>
+		<source>tags/component.xml</source>
+	</tag>
 </facelet-taglib>

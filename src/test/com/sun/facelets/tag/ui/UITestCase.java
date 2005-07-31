@@ -31,8 +31,6 @@ public class UITestCase extends FaceletTestCase {
 
         UIViewRoot root = faces.getViewRoot();
         at.apply(faces, root);
-        
-        DebugUtil.printTree(root, System.out);
     }
     
     public void testComponent() throws Exception {
@@ -42,6 +40,21 @@ public class UITestCase extends FaceletTestCase {
 
         FaceletFactory f = FaceletFactory.getInstance();
         Facelet at = f.getFacelet("component.xml");
+
+        UIViewRoot root = faces.getViewRoot();
+        at.apply(faces, root);
+        
+        assertEquals("only one child, the component", 1, root.getChildCount());
+        assertNotNull("bound to map", map.get("c"));
+    }
+    
+    public void testComponentClient() throws Exception {
+        FacesContext faces = FacesContext.getCurrentInstance();
+        Map map = new HashMap();
+        faces.getExternalContext().getRequestMap().put("map", map);
+
+        FaceletFactory f = FaceletFactory.getInstance();
+        Facelet at = f.getFacelet("component-client.xml");
 
         UIViewRoot root = faces.getViewRoot();
         at.apply(faces, root);
