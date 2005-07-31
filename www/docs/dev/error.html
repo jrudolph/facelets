@@ -1,0 +1,155 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><title>Error - /guess.xhtml @29,61 value="#{visit.letters}": Bean: hangman1.Visit, property: letters</title>
+
+<style type="text/css">
+body, div, span, td, th, caption { font-family: 'Trebuchet MS', Verdana, Arial, Sans-Serif; font-size: small; }
+ul, li, pre { padding: 0; margin: 0; }
+h1 { color: #900; }
+h2, h2 span { font-size: large; color: #339; }
+h2 a { text-decoration: none; color: #339; }
+.grayBox { padding: 8px; margin: 10px 0; border: 1px solid #CCC; background-color: #f9f9f9;  }
+#error { color: #900; font-weight: bold; font-size: medium; }
+#trace, #tree, #vars { display: none; }
+code { font-size: medium; }
+#tree dl { color: #006; }
+#tree dd { margin-top: 2px; margin-bottom: 2px; }
+#tree dt { border: 1px solid #DDD; padding: 4px; border-left: 2px solid #666; font-family: "Courier New", Courier, mono; font-size: small; }
+.uicText { color: #999;  }
+table { border: 1px solid #CCC; border-collapse: collapse; border-spacing: 0px; width: 100%; text-align: left; }
+td { border: 1px solid #CCC; }
+thead tr th { padding: 2px; color: #030; background-color: #F9F9F9; }
+tbody tr td { padding: 10px 6px; }
+table caption { text-align: left; padding: 10px 0; font-size: large; }
+</style>
+<script language="javascript" type="text/javascript">
+function toggle(id) {
+	var style = document.getElementById(id).style;
+	if ("block" == style.display) {
+		style.display = "none";
+		document.getElementById(id+"Off").style.display = "inline";
+		document.getElementById(id+"On").style.display = "none";
+	} else {
+		style.display = "block";
+		document.getElementById(id+"Off").style.display = "none";
+		document.getElementById(id+"On").style.display = "inline";
+	}
+}
+</script></head>
+
+<body>
+<h1>An Error Occurred:</h1>
+<div id="error" class="grayBox" style="border: 1px solid rgb(153, 0, 0);">/guess.xhtml @29,61 value="#{visit.letters}": Bean: hangman1.Visit, property: letters</div>
+<h2><a href="#" onclick="toggle('trace');"><span style="display: inline;" id="traceOff">+</span><span id="traceOn" style="display: none;">-</span> Stack Trace</a></h2>
+<div style="display: none;" id="trace" class="grayBox"><pre><code>javax.faces.el.EvaluationException: /guess.xhtml @29,61 value="#{visit.letters}": Bean: hangman1.Visit, property: letters
+	at com.sun.facelets.el.LegacyValueBinding.getValue(LegacyValueBinding.java:61)
+	at javax.faces.component.UIData.getValue(UIData.java:1173)
+	at javax.faces.component.UIData.createDataModel(UIData.java:850)
+	at javax.faces.component.UIData.getDataModel(UIData.java:839)
+	at javax.faces.component.UIData.setRowIndex(UIData.java:164)
+	at com.mycompany.jsf.renderer.BarRenderer.encodeChildren(BarRenderer.java:64)
+	at javax.faces.component.UIComponentBase.encodeChildren(UIComponentBase.java:329)
+	at com.sun.facelets.FaceletViewHandler.encodeRecursive(FaceletViewHandler.java:449)
+	at com.sun.facelets.FaceletViewHandler.encodeRecursive(FaceletViewHandler.java:454)
+	at com.sun.facelets.FaceletViewHandler.renderView(FaceletViewHandler.java:396)
+	at org.apache.myfaces.lifecycle.LifecycleImpl.render(LifecycleImpl.java:300)
+	at javax.faces.webapp.FacesServlet.service(FacesServlet.java:110)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:237)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:157)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:214)
+	at org.apache.catalina.core.StandardValveContext.invokeNext(StandardValveContext.java:104)
+	at org.apache.catalina.core.StandardPipeline.invoke(StandardPipeline.java:520)
+	at org.apache.catalina.core.StandardContextValve.invokeInternal(StandardContextValve.java:198)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:152)
+	at org.apache.catalina.core.StandardValveContext.invokeNext(StandardValveContext.java:104)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:462)
+	at org.apache.catalina.core.StandardValveContext.invokeNext(StandardValveContext.java:102)
+	at org.apache.catalina.core.StandardPipeline.invoke(StandardPipeline.java:520)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:137)
+	at org.apache.catalina.core.StandardValveContext.invokeNext(StandardValveContext.java:104)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:118)
+	at org.apache.catalina.core.StandardValveContext.invokeNext(StandardValveContext.java:102)
+	at org.apache.catalina.core.StandardPipeline.invoke(StandardPipeline.java:520)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:109)
+	at org.apache.catalina.core.StandardValveContext.invokeNext(StandardValveContext.java:104)
+	at org.apache.catalina.core.StandardPipeline.invoke(StandardPipeline.java:520)
+	at org.apache.catalina.core.ContainerBase.invoke(ContainerBase.java:929)
+	at org.apache.coyote.tomcat5.CoyoteAdapter.service(CoyoteAdapter.java:160)
+	at org.apache.coyote.http11.Http11Processor.process(Http11Processor.java:799)
+	at org.apache.coyote.http11.Http11Protocol$Http11ConnectionHandler.processConnection(Http11Protocol.java:705)
+	at org.apache.tomcat.util.net.TcpWorkerThread.runIt(PoolTcpEndpoint.java:577)
+	at org.apache.tomcat.util.threads.ThreadPool$ControlRunnable.run(ThreadPool.java:683)
+	at java.lang.Thread.run(Thread.java:534)
+Caused by: java.lang.reflect.InvocationTargetException
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:324)
+	at org.apache.myfaces.el.PropertyResolverImpl.getProperty(PropertyResolverImpl.java:419)
+	at org.apache.myfaces.el.PropertyResolverImpl.getValue(PropertyResolverImpl.java:104)
+	at com.sun.facelets.el.LegacyELContext$LegacyELResolver.getValue(LegacyELContext.java:138)
+	at com.sun.el.parser.AstValue.getValue(AstValue.java:96)
+	at com.sun.el.ValueExpressionImpl.getValue(ValueExpressionImpl.java:183)
+	at com.sun.facelets.el.TagValueExpression.getValue(TagValueExpression.java:72)
+	at com.sun.facelets.el.LegacyValueBinding.getValue(LegacyValueBinding.java:57)
+	... 37 more
+Caused by: java.lang.NullPointerException
+	at hangman1.Visit.getLetters(Visit.java:86)
+	... 48 more
+</code></pre></div>
+<h2><a href="#" onclick="toggle('tree');"><span style="display: inline;" id="treeOff">+</span><span id="treeOn" style="display: none;">-</span> Component Tree</a></h2>
+<div style="display: none;" id="tree" class="grayBox"><code></code><dl><dt>&lt;UIViewRoot transient="false" rendered="true" locale="en" renderKitId="HTML_BASIC" viewId="/guess.xhtml"&gt;</dt><dd><dl><dt class="uicText">&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&gt;</dt></dl></dd><dd><dl><dt class="uicText">&lt;html
+xmlns="http://www.w3.org/1999/xhtml"&gt;&lt;head&gt;&lt;title&gt;JSF
+Hangman&lt;/title&gt;&lt;link rel="stylesheet" type="text/css"
+href="css/hangman.css"/&gt;&lt;/head&gt;&lt;body&gt;
+&lt;table&gt;&lt;tr&gt;&lt;td rowspan="1" colspan="1"&gt;&lt;img
+alt="Tapestry Hangman" src="images/tapestry-hangman.png" width="197"
+height="50" border="0"/&gt; &lt;/td&gt;&lt;td width="70" align="right"
+rowspan="1" colspan="1"&gt;</dt></dl></dd><dd><dl><dt>&lt;HtmlGraphicImage
+width="36" transient="false" rendered="true" id="guessesLeft"
+height="36" url="images/Chalkboard_1x7.png"
+value="images/Chalkboard_1x7.png" ismap="false"/&gt;</dt></dl></dd><dd><dl><dt class="uicText">&lt;/td&gt;&lt;td
+rowspan="1" colspan="1"&gt;&lt;img alt="Guesses Left"
+src="images/guesses-left.png" width="164" height="11" border="0"/&gt;
+&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td rowspan="1"
+colspan="1"/&gt;&lt;td rowspan="1" colspan="1"/&gt;&lt;td rowspan="1"
+colspan="1"&gt;</dt></dl></dd><dd><dl><dt>&lt;HtmlGraphicImage
+transient="false" rendered="true" id="scaffold"
+url="images/scaffold-5.png" value="images/scaffold-5.png" ismap="false"
+alt="[Scaffold]"/&gt;</dt></dl></dd><dd><dl><dt class="uicText">&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;br clear="none"/&gt;
+&lt;table&gt;&lt;tr valign="center"&gt;&lt;td width="160" rowspan="1"
+colspan="1"&gt;&lt;p align="right"&gt; &lt;img alt="Current Guess"
+src="images/guess.png" align="middle" width="127" height="20"
+border="0"/&gt; &lt;/p&gt;&lt;/td&gt;&lt;td rowspan="1" colspan="1"&gt;</dt></dl></dd><dd><dl><dt>&lt;UIData var="letter" rows="0" transient="false" first="0" rendered="true" id="letters" rowIndex="0"&gt;</dt><dd><dl><dt>&lt;UIColumn transient="false" rendered="true" id="_tagId3"&gt;</dt><dd><dl><dt>&lt;HtmlGraphicImage width="36" transient="false" rendered="true" id="_tagId4" height="36" ismap="false"/&gt;</dt></dl></dd><dt>&lt;/UIColumn&gt;</dt></dl></dd><dt>&lt;/UIData&gt;</dt></dl></dd><dd><dl><dt class="uicText">&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td
+valign="top" rowspan="1" colspan="1"&gt;&lt;p align="right"&gt; &lt;img
+alt="Choose" src="images/choose.png" height="20" width="151"
+border="0"/&gt; &lt;/p&gt;&lt;/td&gt;&lt;td width="330" rowspan="1"
+colspan="1"&gt;</dt></dl></dd><dd><dl><dt>&lt;HtmlForm transient="false" rendered="true" id="selectForm" enctype="application/x-www-form-urlencoded" submitted="false"&gt;</dt><dd><dl><dt>&lt;UIData
+var="guess" value="[Lhangman1.Visit$GuessBean;@15d45d9" rows="0"
+transient="false" first="0" rendered="true" id="letters"
+rowIndex="-1"&gt;</dt><dd><dl><dt>&lt;UIColumn transient="false" rendered="true" id="_tagId7"&gt;</dt><dd><dl><dt>&lt;HtmlCommandLink transient="false" rendered="true" id="_tagId8" styleClass="select-letter" action=" immediate="false"&gt;</dt><dd><dl><dt>&lt;HtmlGraphicImage width="36" transient="false" rendered="true" id="_tagId9" height="36" ismap="false"/&gt;</dt></dl></dd><dt>&lt;/HtmlCommandLink&gt;</dt></dl></dd><dd><dl><dt>&lt;HtmlGraphicImage width="36" transient="false" rendered="false" id="_tagId10" height="36" ismap="false"/&gt;</dt></dl></dd><dt>&lt;/UIColumn&gt;</dt></dl></dd><dt>&lt;/UIData&gt;</dt></dl></dd><dt>&lt;/HtmlForm&gt;</dt></dl></dd><dd><dl><dt class="uicText">&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/body&gt;&lt;/html&gt;</dt></dl></dd><dt>&lt;/UIViewRoot&gt;</dt></dl></div>
+<h2><a href="#" onclick="toggle('vars');"><span style="display: inline;" id="varsOff">+</span><span id="varsOn" style="display: none;">-</span> Scoped Variables</a></h2>
+<div style="display: none;" id="vars"><table><caption>Request Parameters</caption><thead><tr><th style="width: 10%;">Name</th><th style="width: 90%;">Value</th></tr></thead><tbody><tr><td colspan="2"><em>None</em></td></tr></tbody></table><table><caption>Request Attributes</caption><thead><tr><th style="width: 10%;">Name</th><th style="width: 90%;">Value</th></tr></thead><tbody><tr><td colspan="2"><em>None</em></td></tr></tbody></table><table><caption>Session Attributes</caption><thead><tr><th style="width: 10%;">Name</th><th style="width: 90%;">Value</th></tr></thead><tbody><tr><td>visit</td><td>hangman1.Visit@dd89f9</td></tr></tbody></table><table><caption>Application Attributes</caption><thead><tr><th style="width: 10%;">Name</th><th style="width: 90%;">Value</th></tr></thead><tbody><tr><td>guessesLeftImages</td><td>[images/Chalkboard_1x7.png,
+images/Chalkboard_1x8.png, images/Chalkboard_2x7.png,
+images/Chalkboard_2x8.png, images/Chalkboard_3x7.png,
+images/Chalkboard_3x8.png]</td></tr><tr><td>letterImages</td><td>{#=images/letter-spacer.png,
+_=images/Chalkboard_5x3.png, a=images/Chalkboard_1x1.png,
+b=images/Chalkboard_1x2.png, c=images/Chalkboard_1x3.png,
+d=images/Chalkboard_1x4.png, e=images/Chalkboard_1x5.png,
+f=images/Chalkboard_1x6.png, g=images/Chalkboard_2x1.png,
+h=images/Chalkboard_2x2.png, i=images/Chalkboard_2x3.png,
+j=images/Chalkboard_2x4.png, k=images/Chalkboard_2x5.png,
+l=images/Chalkboard_2x6.png, m=images/Chalkboard_3x1.png,
+n=images/Chalkboard_3x2.png, o=images/Chalkboard_3x3.png,
+p=images/Chalkboard_3x4.png, q=images/Chalkboard_3x5.png,
+r=images/Chalkboard_3x6.png, s=images/Chalkboard_4x1.png,
+t=images/Chalkboard_4x2.png, u=images/Chalkboard_4x3.png,
+v=images/Chalkboard_4x4.png, w=images/Chalkboard_4x5.png,
+x=images/Chalkboard_4x6.png, y=images/Chalkboard_5x1.png,
+z=images/Chalkboard_5x2.png}</td></tr><tr><td>scaffoldImages</td><td>[images/scaffold-5.png,
+images/scaffold-4.png, images/scaffold-3.png, images/scaffold-2.png,
+images/scaffold-1.png, images/scaffold.png]</td></tr></tbody></table></div>
+<div class="grayBox" style="text-align: right; color: rgb(102, 102, 102);">Jul 31, 2005 5:34:07 PM - Generated by Facelets, because It Loves You</div>
+</body></html>
