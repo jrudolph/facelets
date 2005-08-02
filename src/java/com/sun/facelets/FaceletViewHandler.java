@@ -54,7 +54,7 @@ import com.sun.facelets.util.FacesAPI;
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.29 2005/07/31 22:28:51 jhook Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.30 2005/08/02 05:03:30 jhook Exp $
  */
 public class FaceletViewHandler extends ViewHandler {
 
@@ -323,7 +323,7 @@ public class FaceletViewHandler extends ViewHandler {
         // TODO This needs to be changed back from null once
         // MyFaces corrects the bug in their RenderKit
         ResponseWriter writer = renderKit.createResponseWriter(
-                NullWriter.Instance, null, encoding);
+                NullWriter.Instance, "text/html", encoding);
 
         contentType = writer.getContentType();
         encoding = writer.getCharacterEncoding();
@@ -524,7 +524,7 @@ public class FaceletViewHandler extends ViewHandler {
             state = stateMgr.saveSerializedView(context);
             extContext.getRequestMap().put(STATE_KEY, state);
         }
-        if (stateMgr.isSavingStateInClient(context)) {
+        if (stateMgr.isSavingStateInClient(context) || FacesAPI.getVersion() >= 12) {
             stateMgr.writeState(context, (StateManager.SerializedView) state);
         }
     }
