@@ -54,7 +54,7 @@ import com.sun.facelets.util.FacesAPI;
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.30 2005/08/02 05:03:30 jhook Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.31 2005/08/03 22:55:08 jhook Exp $
  */
 public class FaceletViewHandler extends ViewHandler {
 
@@ -63,9 +63,9 @@ public class FaceletViewHandler extends ViewHandler {
 
     public final static long DEFAULT_REFRESH_PERIOD = 2;
 
-    public final static String REFRESH_PERIOD_PARAM_NAME = "facelets.REFRESH_PERIOD";
+    public final static String PARAM_REFRESH_PERIO = "facelets.REFRESH_PERIOD";
 
-    public final static String SKIP_COMMENTS_PARAM_NAME = "facelets.SKIP_COMMENTS";
+    public final static String PARAM_SKIP_COMMENTS = "facelets.SKIP_COMMENTS";
 
     /**
      * Context initialization parameter for defining what viewIds should be
@@ -93,19 +93,23 @@ public class FaceletViewHandler extends ViewHandler {
      * <code>/faces/*</code>, not <code>*.jsf</code>).
      * </p>
      */
-    public final static String VIEW_MAPPINGS_PARAM_NAME = "facelets.VIEW_MAPPINGS";
+    public final static String PARAM_VIEW_MAPPINGS = "facelets.VIEW_MAPPINGS";
 
-    public final static String LIBRARIES_PARAM_NAME = "facelets.LIBRARIES";
+    public final static String PARAM_LIBRARIES = "facelets.LIBRARIES";
 
-    public final static String DEVELOPMENT_PARAM_NAME = "facelets.DEVELOPMENT";
+    public final static String PARAM_DEVELOPMENT = "facelets.DEVELOPMENT";
+    
+    public final static String PARAM_BUFFER_SIZE = "facelets.BUFFER_SIZE";
 
     protected final static String STATE_KEY = "com.sun.facelets.VIEW_STATE";
 
     private final ViewHandler parent;
 
-    private boolean development = false;
+    private boolean developmentMode = false;
 
     private boolean initialized = false;
+    
+    private int bufferSize;
 
     private String defaultSuffix;
 
@@ -172,6 +176,7 @@ public class FaceletViewHandler extends ViewHandler {
 
                 this.initializeMappings(context);
                 this.initializeMode(context);
+                this.initializeBuffer(context);
 
                 this.initialized = true;
 
@@ -182,8 +187,15 @@ public class FaceletViewHandler extends ViewHandler {
 
     private void initializeMode(FacesContext context) {
         ExternalContext external = context.getExternalContext();
-        String param = external.getInitParameter(DEVELOPMENT_PARAM_NAME);
-        this.development = (param != null && "true".equals(param));
+        String param = external.getInitParameter(PARAM_DEVELOPMENT);
+        this.developmentMode = (param != null && "true".equals(param));
+    }
+    
+    private void initializeBuffer(FacesContext context) {
+        ExternalContext external = context.getExternalContext();
+        String param = external.getInitParameter(PARAM_BUFFER_SIZE);
+        this.bufferSize = (param != null && !"".equals(param)) ? Integer
+                .parseInt(param) : -1;
     }
 
     /**
@@ -192,7 +204,7 @@ public class FaceletViewHandler extends ViewHandler {
     private void initializeMappings(FacesContext context) {
         ExternalContext external = context.getExternalContext();
         String viewMappings = external
-                .getInitParameter(VIEW_MAPPINGS_PARAM_NAME);
+                .getInitParameter(PARAM_VIEW_MAPPINGS);
         if ((viewMappings != null) && (viewMappings.length() > 0)) {
             String[] mappingsArray = viewMappings.split(";");
 
@@ -225,7 +237,7 @@ public class FaceletViewHandler extends ViewHandler {
         long refreshPeriod = DEFAULT_REFRESH_PERIOD;
         FacesContext ctx = FacesContext.getCurrentInstance();
         String userPeriod = ctx.getExternalContext().getInitParameter(
-                REFRESH_PERIOD_PARAM_NAME);
+                PARAM_REFRESH_PERIO);
         if (userPeriod != null && userPeriod.length() > 0) {
             refreshPeriod = Long.parseLong(userPeriod);
         }
@@ -245,7 +257,7 @@ public class FaceletViewHandler extends ViewHandler {
     protected void initializeCompiler(Compiler c) {
         FacesContext ctx = FacesContext.getCurrentInstance();
         ExternalContext ext = ctx.getExternalContext();
-        String libParam = ext.getInitParameter(LIBRARIES_PARAM_NAME);
+        String libParam = ext.getInitParameter(PARAM_LIBRARIES);
         if (libParam != null) {
             libParam = libParam.trim();
             String[] libs = libParam.split(";");
@@ -266,7 +278,7 @@ public class FaceletViewHandler extends ViewHandler {
                 }
             }
         }
-        String skipParam = ext.getInitParameter(SKIP_COMMENTS_PARAM_NAME);
+        String skipParam = ext.getInitParameter(PARAM_SKIP_COMMENTS);
         if (skipParam != null && "false".equals(skipParam)) {
             c.setTrimmingComments(false);
         }
@@ -302,6 +314,11 @@ public class FaceletViewHandler extends ViewHandler {
         RenderKit renderKit = context.getRenderKit();
         ServletRequest request = (ServletRequest) extContext.getRequest();
         ServletResponse response = (ServletResponse) extContext.getResponse();
+        
+        // set the buffer for content
+        if (this.bufferSize != -1) {
+            response.setBufferSize(this.bufferSize);
+        }
 
         // get our content type
         String contentType = (String) extContext.getRequestHeaderMap().get(
@@ -396,12 +413,14 @@ public class FaceletViewHandler extends ViewHandler {
                 encodeRecursive(context, viewToRender);
             }
             writer.endDocument();
+            
+            // finish writing
             writer.close();
+            
         } catch (FileNotFoundException fnfe) {
-            String origViewId = this.getActionURL(context, viewToRender.getViewId());
-            this.handleFaceletNotFound(context, origViewId);
+            this.handleFaceletNotFound(context, viewToRender.getViewId());
         } catch (Exception e) {
-            this.handleEncodeException(context, e);
+            this.handleRenderException(context, e);
         }
 
         // remove transients for older versions
@@ -410,11 +429,14 @@ public class FaceletViewHandler extends ViewHandler {
         }
     }
 
-    protected void handleEncodeException(FacesContext context, Exception e)
+    protected void handleRenderException(FacesContext context, Exception e)
             throws IOException, ELException, FacesException {
         Object resp = context.getExternalContext().getResponse();
-        if (this.development && !context.getResponseComplete()
+        if (this.developmentMode && !context.getResponseComplete()
                 && resp instanceof HttpServletResponse) {
+            if (log.isLoggable(Level.SEVERE)) {
+                log.log(Level.SEVERE, "Error Rendering View", e);
+            }
             HttpServletResponse httpResp = (HttpServletResponse) resp;
             httpResp.reset();
             httpResp.setContentType("text/html; charset=UTF-8");
@@ -433,10 +455,11 @@ public class FaceletViewHandler extends ViewHandler {
 
     protected void handleFaceletNotFound(FacesContext context, String viewId)
             throws FacesException, IOException {
+        String actualId = this.getActionURL(context, viewId);
         Object respObj = context.getExternalContext().getResponse();
         if (respObj instanceof HttpServletResponse) {
             HttpServletResponse respHttp = (HttpServletResponse) respObj;
-            respHttp.sendError(HttpServletResponse.SC_NOT_FOUND, viewId);
+            respHttp.sendError(HttpServletResponse.SC_NOT_FOUND, actualId);
             context.responseComplete();
         }
     }
