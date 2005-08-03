@@ -392,7 +392,7 @@ The Text below will be used.]]></programlisting>
         		As stated in this chapter's introduction, templating is a major feature within Facelets.  When describing templating within Facelets, we have two roles: the template and the template client.
         	</para>
         	<para>
-        		Any document can act as a template; even documents that utilize other templates.  What makes a document a template?  It just simply utilizes one or more <literal><![CDATA[<ui:insert/>]]></literal> tags to inject content from another document.
+        		Any document can act as a template; even documents that utilize other templates.  What makes a document a template?  It just simply uses one or more <literal><![CDATA[<ui:insert/>]]></literal> tags to inject content from another document.
         	</para>
         	<para>
         		The other half of the equation are template clients.  These include documents that use the <literal><![CDATA[<ui:component/>]]></literal>, <literal><![CDATA[<ui:composition/>]]></literal>, <literal><![CDATA[<ui:fragment/>]]></literal>, or <literal><![CDATA[<ui:decorate/>]]></literal>.  Each of those tags is detailed in the above sections.  These template clients may coordinate their content with a template in two ways:
