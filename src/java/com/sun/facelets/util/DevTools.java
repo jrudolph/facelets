@@ -66,7 +66,12 @@ public final class DevTools {
         Date now = new Date();
         for (int i = 0; i < parts.length; i++) {
             if ("message".equals(parts[i])) {
-                writer.write(e.getMessage().replaceAll("<", TS));
+                String msg = e.getMessage();
+                if (msg != null) {
+                    writer.write(msg.replaceAll("<", TS));
+                } else {
+                    writer.write(e.getClass().getName());
+                }
             } else if ("trace".equals(parts[i])) {
                 StringWriter str = new StringWriter(256);
                 PrintWriter pstr = new PrintWriter(str);
