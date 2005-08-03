@@ -20,12 +20,15 @@
   <property name="release"             value="release"/>
   <property name="doc"                 value="doc"/>
   <property name="dependencies"        value="dependencies"/>
+  <property name="jsf-api.jar"         value="${basedir}/../javaserverfaces-sources/jsf-api/build/lib/jsf-api.jar" />
   <property name="jar"                 value="jsf-facelets.jar"/>
 
 
   <path id="compile.classpath">
     <pathelement location="${build.home}/classes"/>
     <fileset dir="lib" includes="*.jar"/>
+    <pathelement location="${jsf-api.jar}"/>
+    <pathelement location="${servlet-api.jar}" />
   </path>
 
 

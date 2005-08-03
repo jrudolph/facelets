@@ -388,6 +388,11 @@ public class NumberBean implements Serializable {
 	
 	<sect1 id="gettingstarted-view">
 		<title>Creating Web Pages</title>
+
+                <para>This section contains the only content the
+                "Getting Started" chapter that is entirely specific to
+                Facelets.</para>
+
 		<para>
 			Facelets emphasizes its ability to template content in your application.  Templating promotes re-use and eases long term maintenance of your application, allowing content to be changed in one spot, but used in multiple pages.  While using templating features wouldn't be necessary for this simple application, it does serve as a tutorial.  For more information on this topic, see <xref linkend="template"/>.
 		</para>
@@ -461,10 +466,14 @@ This text above will not be displayed.
 
 <ui:composition template="/template.xhtml">
 
+This text will not be displayed.
+
   <ui:define name="title">
     I'm thinking of a number from #{NumberBean.min} to #{NumberBean.max}.  Can you guess it?
   </ui:define>
-  
+
+This text will also not be displayed.
+
   <ui:define name="body">
     <h:form id="helloForm">
       <h:inputText type="text" id="userNo" value="#{NumberBean.guess}" validator="#{NumberBean.validate}"/>
@@ -474,6 +483,8 @@ This text above will not be displayed.
       <h:message showSummary="true" showDetail="false" style="color: red; font-weight: bold;" id="errors1" for="userNo"/>
     </h:form>
   </ui:define>
+
+This text will not be displayed.
   
 </ui:composition>
 
@@ -507,7 +518,23 @@ This text below will also not be displayed.
 
 			</listitem>
 			<listitem>
-				<para>Facelets also can use 'inlined' EL Expressions to make outputting dynamic content extremely easy.  In the example above, <literal>#{NumberBean.max}</literal> will display the <literal>max</literal> property of the <literal>NumberBean</literal> in your session.</para>
+
+				<para>Facelets also can use 'inlined' EL
+				Expressions to make outputting dynamic
+				content extremely easy.  In the example
+				above,
+				<literal>#{NumberBean.max}</literal>
+				will display the <literal>max</literal>
+				property of the
+				<literal>NumberBean</literal> in your
+				session.  EL expressions may also reside
+				outside tag attributes, in the space
+				between tags, but you must keep in mind
+				that the result of evaluating the
+				expression will only appear in the
+				rendered output if template text in that
+				same position would appear.</para>
+
 			</listitem>
 		</orderedlist>
 		<para>

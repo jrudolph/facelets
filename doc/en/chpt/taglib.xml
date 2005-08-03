@@ -49,9 +49,20 @@
         </sect2>
         <sect2 id="taglib-use-unresolved">
 			<title>Unresolved Namespaces</title>
+
 			<para>
-				Any namespace that is unresolved and/or the tag's name is not found in any library, then it is treated as regular text.  If your tag or component isn't showing up in your rendered page, check the source of page and see if the tag was simply ignored.  This usually means you either misspelled the tag's name or you are using the wrong namespace for your library.
+				If there is a namespace that is
+				unresolved and/or the tag's name is not
+				found in any library, then it is treated
+				as regular text.  If your tag or
+				component isn't showing up in your
+				rendered page, check the source of page
+				and see if the tag was simply ignored.
+				This usually means you either misspelled
+				the tag's name or you are using the
+				wrong namespace for your library.
 			</para>
+
         </sect2>
 	</sect1>
     
@@ -227,9 +238,60 @@
 			<para>
 				In the above example, we are binding a component of type (not Class) <literal>com.mycompany.Data</literal> to the tag name <literal>bar</literal>.  A <literal>renderer-type</literal> is also provided, but not required since <literal>UIComponents</literal> can easily render themselves.
 			</para>
+
 			<para>
-				Based on if your component implements <literal>ActionSource[2]</literal>, <literal>ValueHolder</literal>, or <literal>EditableValueHolder</literal>, Facelets will take care of auto-wiring those standard attributes according to the specification.  This includes validators, EL expressions, converters, etc.  Any additional properties on your component will also be wired for you too, just as JSP sets the properties on a <literal>JspTag</literal>.  If you think that Facelets can't handle the special wiring your component needs, then skip to <xref linkend="dev-meta-component"/>.
+				Based on if your component implements
+				<literal>ActionSource[2]</literal>,
+				<literal>ValueHolder</literal>, or
+				<literal>EditableValueHolder</literal>,
+				Facelets will take care of auto-wiring
+				those standard attributes according to
+				the specification.  Facelets differs
+				greatly from JSP in this important
+				regard, and this difference is a feature
+				of Facelets that takes advantage of the
+				dynamism in JavaServer Faces that is
+				wasted on JSP.  Specifically, any tag
+				attribute in a Facelets page is
+				tolerated.  If the value of the
+				attribute is a ValueExpression, and tag
+				is associated with a UIComponent, the
+				expression is stored in the components's
+				ValueExpression Map.  Otherwise,
+				Facelets looks for a JavaBeans property
+				on the component whose name is equal to
+				the tag attribute name.  If it exists,
+				its setter is called with the value of
+				the tag attribute.  If it doesn't exist,
+				an entry is created in the generic
+				attribute set for the component, the
+				value of which is the value of the tag
+				attribute.  The upshot of all this is
+				that turnaround time is greatly reduced
+				because you can modify the component
+				and/or renderer without having to change
+				a TLD.  Of course, the downside is that
+				any attribute is legal, but errors in
+				that regard are logged in the logging
+				system.</para>
+
+                                <para>This approach exemplifies a
+                                general philosophy of Facelets, sensible
+                                default behavior from the perspective of
+                                the page developer.</para>
+
+                                <para>The attribute wiring behavior also
+                                applies to validators, EL expressions,
+                                converters, etc.  Any additional
+                                properties on your component will also
+                                be wired for you too, just as JSP sets
+                                the properties on a
+                                <literal>JspTag</literal>.  If you think
+                                that Facelets can't handle the special
+                                wiring your component needs, then skip
+                                to <xref linkend="dev-meta-component"/>.
 			</para>
+
 			<para>
 				If you've just created a <literal>UIComponent</literal> from scratch and you are not sure how to integrate it into JavaServer Faces, here's all the code you need:
 			</para>

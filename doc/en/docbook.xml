@@ -14,6 +14,14 @@
 <book lang="en">
 
     <bookinfo>
+        <authorgroup>
+          <collab><collabname>Jacob Hookom</collabname></collab>
+
+          <othercredit><firstname>Ed</firstname>
+          <surname>Burns</surname><contrib>Editing and bug
+          fixes</contrib></othercredit>
+
+        </authorgroup>
         <title>Facelets - JavaServer Faces View Definition Framework</title>
         <subtitle>Developer Documentation</subtitle>
         <releaseinfo>1.0.0</releaseinfo>
@@ -87,11 +95,21 @@
     <preface id="guide" revision="1">
 		<title>Documentation Guide</title>
 		<para>
-			To get a jump start on development, this guide covers varying degrees of depth.  Please follow these steps:
+			<xref linkend="guide"/>To get a jump start on development, this guide covers varying degrees of depth.  Please follow these steps:
 		</para>
 		<itemizedlist>
 			<listitem>
-				<para><xref linkend="gettingstarted"/> as an entry-level tutorial on using JavaServer Faces and Facelets together.</para>
+
+				<para><xref linkend="gettingstarted"/>
+				as an entry-level tutorial on using
+				JavaServer Faces and Facelets together.
+				All of the content in this section is
+				generic to Faces with the exception of
+				<xref linkend="gettingstarted-view"/>.
+				This section describes the simplest
+				Facelets templating scenario that could
+				possibly work.</para>
+
 			</listitem>
 			<listitem>
 				<para><xref linkend="config"/> for details on setting up your web application for use with Facelets.</para>
