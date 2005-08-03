@@ -41,7 +41,7 @@
 			The <literal>component</literal> tag and the <literal>composition</literal> tag behave exactly the same, except the <literal>component</literal> tag will insert a new <literal>UIComponent</literal> instance into the tree as the root of all the child components/fragments it has.
 		</para>
 		<programlisting><![CDATA[Text before will be removed.
-<ui:component binding="#{page.menu}">
+<ui:component binding="#{backingBean.menu}">
   <ul id="mainMenu">
   <c:forEach var="link" items="#{menuOptions[role]}">
 	<c:choose>
@@ -266,7 +266,7 @@ The Text below will be used.]]></programlisting>
 			</tgroup>
 		</table>
 		<para>
-			This tag should be familiar to most.  The <fragment>include</fragment> tag can point at any Facelet which might use the <literal>composition</literal> tag, <literal>component</literal> tag, or simply be straight XHTML/XML. 
+			This tag should be familiar to most.  The <literal>include</literal> tag can point at any Facelet which might use the <literal>composition</literal> tag, <literal>component</literal> tag, or simply be straight XHTML/XML. 
 		</para>
 		<para>
 			It should be noted that the <literal>src</literal> path does allow relative path names, but they will always be resolved against the original Facelet requested.
@@ -385,6 +385,61 @@ The Text below will be used.]]></programlisting>
 			There are times in development when you need to quickly remove parts of the document just for testing purposes, or you would like to leave a 'template-model' in your document, but don't want it to be part of the final Facelet.
 		</para>
 	</sect1>
+
+        <sect1 id="template-detail">
+        	<title>Template/Client Relationships</title>
+        	<para>
+        		As stated in this chapter's introduction, templating is a major feature within Facelets.  When describing templating within Facelets, we have two roles: the template and the template client.
+        	</para>
+        	<para>
+        		Any document can act as a template; even documents that utilize other templates.  What makes a document a template?  It just simply utilizes one or more <literal><![CDATA[<ui:insert/>]]></literal> tags to inject content from another document.
+        	</para>
+        	<para>
+        		The other half of the equation are template clients.  These include documents that use the <literal><![CDATA[<ui:component/>]]></literal>, <literal><![CDATA[<ui:composition/>]]></literal>, <literal><![CDATA[<ui:fragment/>]]></literal>, or <literal><![CDATA[<ui:decorate/>]]></literal>.  Each of those tags is detailed in the above sections.  These template clients may coordinate their content with a template in two ways:
+        	</para>
+			
+			<sect2 id="template-detail-wrap">
+				<title>Wrapping Content within a Template</title>
+				<para>
+					A template client can simply not use any <literal><![CDATA[<ui:define>]]></literal> tags in their body and the target template only uses a single <literal><![CDATA[<ui:insert/>]]></literal> without the <literal>name</literal> attribute.  This will cause the body of the template client to be injected into the template wherever the 'nameless' <literal><![CDATA[<ui:insert/>]]></literal> is located.
+				</para>
+				<programlisting><![CDATA[<!-- template document -->
+...
+<span class="repeatingBox">
+  <c:forEach begin="1" end="10">
+    <ui:insert/><br/>
+  </c:forEach>
+</span>
+...]]></programlisting>
+				<programlisting><![CDATA[<!-- template client document -->
+...
+<c:composition template="template.xhtml">
+  I'm in the spin cycle <h:outputText value="#{random.name}"/>!
+</c:composition>
+...]]></programlisting>
+			</sect2>
+			
+			<sect2 id="template-detail-piecemeal">
+				<title>Piecemeal Content within a Template</title>
+				<para>
+					A template client can break up its body with multiple, named <literal><![CDATA[<ui:define>]]></literal> tags.  These tags may specify what goes in the side bar, in the header, and within the content area of a template all at once.  See <xref linkend="gettingstarted-view"/> for a good example of this type of templating.
+				</para>
+			</sect2>
+			
+			<sect2 id="template-detail-deep">
+				<title>Multi-Level Templating</title>
+				<para>
+					Template use my go multiple levels deep.  This means that a template client may use a template which in turn may use a template, which may also use a template, and then it may use yet another template... you get the picture.
+				</para>
+				<para>
+					Templating is backed by the a <literal>TemplateManager</literal> on your request that has a stack of <literal>TemplateClient</literal> instances.  Tags like <literal><![CDATA[<ui:composition>]]></literal> implement <literal>TemplateClient</literal>.  When a template is being evaluated and comes upon a <literal><![CDATA[<ui:insert/>]]></literal> tag, it will ask the <literal>TemplateManager</literal> on the request for a <literal>TemplateClient</literal> that either has a match for the tag's name attribute, or the top-most <literal>TemplateClient</literal> on the stack.
+				</para>
+				<para>
+					An example would be having a <literal><![CDATA[<ui:insert name="title"/>]]></literal> tag in the template.  The <literal>TemplateManager</literal> will walk through its internal stack of <literal>TemplateClients</literal>, asking each one for a content under the name <literal>title</literal>.  It will continue through the stack until one is found.  If none are found, then the original template is free to include the default content.  See <xref linkend="template-insert"/> for more information on default content.
+				</para>
+			</sect2>
+			
+        </sect1>
 	
 </chapter>
 
