@@ -489,7 +489,22 @@ This text below will also not be displayed.
 				<para>The <literal><![CDATA[<ui:composition>]]></literal> uses the <literal>template</literal> attribute to reference the template or look and feel of this page.</para>
 			</listitem>
 			<listitem>
-				<para>Two <literal><![CDATA[<ui:define>]]></literal> tags are specified with names that match the ones used in the template we had created.  This means that when Facelets builds your page, those blocks of content will be placed appropriately in the template.</para>
+
+				<para>Two
+				<literal><![CDATA[<ui:define>]]></literal>
+				tags are specified with names that match
+				the ones used in the template we had
+				created.  This means that when Facelets
+				builds your page, those blocks of
+				content will be placed appropriately in
+				the template.  Any text that happens to
+				reside inside the
+				<literal><![CDATA[<ui:composition>]]></literal>
+				tag, but outside of the
+				<literal><![CDATA[<ui:define>]]></literal>
+				tags is not displayed in the rendered
+				output.  </para>
+
 			</listitem>
 			<listitem>
 				<para>Facelets also can use 'inlined' EL Expressions to make outputting dynamic content extremely easy.  In the example above, <literal>#{NumberBean.max}</literal> will display the <literal>max</literal> property of the <literal>NumberBean</literal> in your session.</para>
