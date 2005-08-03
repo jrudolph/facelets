@@ -3,6 +3,7 @@
                       "../shared/docbook-dtd/docbookx.dtd"
 [
 <!ENTITY gettingstarted            SYSTEM "chpt/gettingstarted.xml">
+<!ENTITY el                        SYSTEM "chpt/el.xml">
 <!ENTITY configuration             SYSTEM "chpt/configuration.xml">
 <!ENTITY taglib                    SYSTEM "chpt/taglib.xml">
 <!ENTITY architecture              SYSTEM "chpt/architecture.xml">
@@ -142,6 +143,8 @@
     &configuration;
     
     &taglib;
+    
+    &el;
     
     &template;
     

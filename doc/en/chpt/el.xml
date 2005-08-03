@@ -1,0 +1,30 @@
+<chapter id="el">
+    <title>Expression Language</title>
+    
+    <preface id="el-overview">
+		<para>
+			Facelets utilizes the new EL Specification and will continue to support it in future revisions.  This may include extra language extensions such as method invocation and inlined sets, for example.
+		</para>
+		<para>
+			With the new EL Specification, the use of <literal>#{...}</literal> and <literal>${...}</literal> are both supported and Facelets makes no distinction between the two.  The short of it is that you can freely interchange the two with whatever is most familiar to what you're working on.  Both syntaxes will be handled the same way and share the same lifecycles and features.
+		</para>
+    </preface>
+
+    <sect1 id="el-inline">
+        <title>Inlining Text</title>
+        <para>
+			Text and expressions can exist anywhere in the document.  This means you can have an example like below, and have Facelets correctly evaluate it at render time.
+		</para>
+		<programlisting><![CDATA[<span>Your Basket has ${basket.lineCount} Items</span>]]></programlisting>
+	</sect1>
+	
+	<sect1 id="el-lifecycle">
+        <title>EL Lifecycle</title>
+        <para>
+			Facelets provides a unique lifecycle to EL.  When building a <literal>UIComponent</literal> tree, all EL expressions are re-built based on the state of the current <literal>FaceletContext</literal>.  These expressions are either stored on things like <literal>UIComponents</literal> or stored in the component tree as text.  When it's time to render, then these expressions are evaluated as the second phase.  This offers the truest form of variable/state management in relation to tree building within JavaServer Faces.  This is also a feature that is not supported within JSP for inlined text.
+		</para>
+	</sect1>
+	
+</chapter>
+
+
