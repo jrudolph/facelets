@@ -1,18 +1,22 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<title>Hello</title>
-</head>
-
 <body>
-	<form id="helloForm" jsfc="h:form">
-		<h2>
-			#{UserNumberBean.response}
-		</h2>
-		<img id="waveImage" src="wave.med.gif" />
-		<input jsfc="h:commandButton" type="submit" id="back" value="Back" action="success"/>
-	</form>
+
+<ui:composition template="/template.xhtml">
+
+  <ui:define name="title">
+    #{NumberBean.message}
+  </ui:define>
+  
+  <ui:define name="body">
+    <form jsfc="h:form">
+    <input jsfc="h:commandButton" type="submit" id="back" value="Back" action="success"/>
+    </form>
+  </ui:define>
+  
+</ui:composition>
+
 </body>
 </html>
