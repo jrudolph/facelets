@@ -12,6 +12,15 @@ You MUST have the following:
    http://myfaces.apache.org
 
 
+Legal
+==========================================
+Facelets is allowed to release versions of the JavaServer Faces RI and API
+in binary format, under the CDDL License Agreement.
+
+For licensing questions and available source code, go to:
+https://javaserverfaces.dev.java.net
+
+
 Building Facelets
 ==========================================
 
