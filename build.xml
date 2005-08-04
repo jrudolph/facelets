@@ -58,7 +58,48 @@
       <srcfiles dir="src" includes="**/*.java" />
     </uptodate>
   </target>
-
+  
+  <!-- ========================= Macros ================================= -->
+  <macrodef name="compile">
+    <attribute name="src"/>
+	<attribute name="dest"/>
+	<sequential>
+      <javac srcdir="@{src}"
+            destdir="@{dest}"
+              debug="${compile.debug}"
+        deprecation="${compile.deprecation}"
+           optimize="${compile.optimize}"
+             source="${compile.source}"
+             target="${compile.target}">
+        <classpath refid="compile.classpath"/>
+      </javac>
+	</sequential>
+  </macrodef>
+  
+  <macrodef name="makewar">
+    <attribute name="root"/>
+    <attribute name="destfile"/>
+    <element name="morefiles" optional="true"/>
+    <sequential>
+	  <antcall target="dist"/>
+      <dirname property="@{destfile}.parent" file="@{destfile}"/>
+      <mkdir dir="${@{destfile}.parent}"/>
+	  <mkdir dir="build/@{root}/build"/>
+	  <compile src="@{root}/src" dest="build/@{root}/build"/>
+      <war destfile="@{destfile}"
+           webxml="@{root}/web/WEB-INF/web.xml">
+		<fileset dir="@{root}/web/">
+		  <exclude name="@{root}/web/WEB-INF/web.xml"/>
+		</fileset>
+        <lib dir="${lib}">
+          <exclude name="servlet-api.jar"/>
+          <exclude name="j2ee.jar"/>
+        </lib>
+		<classes dir="build/@{root}/build"/>
+        <lib file="${dist}/${jar}"/>
+      </war>
+    </sequential>
+  </macrodef>
 
   <!-- ======================= Static Files ============================== -->
   <target name="static" depends="prepare">
@@ -77,15 +118,7 @@
    description="Compile API classes (Default)">
                                                                                 
     <!-- Java classes -->
-    <javac srcdir="src/java"
-          destdir="${build}/classes"
-            debug="${compile.debug}"
-      deprecation="${compile.deprecation}"
-         optimize="${compile.optimize}"
-           source="${compile.source}"
-           target="${compile.target}">
-      <classpath refid="compile.classpath"/>
-    </javac>
+    <compile src="src/java" dest="${build}/classes"/>
 
     <copy todir="${build}/classes">
       <fileset dir="src/etc">
@@ -164,15 +197,23 @@
   <!-- ========================= Create Release ========================= -->
   <target name="release" depends="clean, dependencies, doc, dist">
     <mkdir dir="${release}/facelets-${release.version}"/>
-    <copy todir="${release}/facelets-${release.version}">
+	<ant target="-build-demo" antfile="demo/numberguess/build.xml"/>
+	<ant target="-build-demo" antfile="demo/hangman/build.xml"/>
+	<ant target="-build-demo" antfile="demo/starterkit/build.xml"/>
+    <copy todir="${release}/facelets-${release.version}" includeEmptyDirs="false">
        <fileset dir="${dist}"/>
     </copy>
     <mkdir dir="${release}/facelets-${release.version}/lib"/>
-    <copy file="${lib}/el-api.jar" todir="${release}/facelets-${release.version}/lib"/>
-    <copy file="${lib}/el-ri.jar" todir="${release}/facelets-${release.version}/lib"/>
+	<copy todir="${release}/facelets-${release.version}/lib">
+      <fileset dir="${lib}">
+        <exclude name="servlet-api.jar"/>
+		<exclude name="j2ee.jar"/>
+      </fileset>
+    </copy>
     <copy file="README.TXT" todir="${release}/facelets-${release.version}"/>
-    <copy file="build.sample.properties" todir="${release}/facelets-${release.version}"/>
-    <copy file="build.xml" todir="${release}/facelets-${release.version}"/>
+	<copy file="LICENSE.TXT" todir="${release}/facelets-${release.version}"/>
+    <!-- <copy file="build.sample.properties" todir="${release}/facelets-${release.version}"/>
+    <copy file="build.xml" todir="${release}/facelets-${release.version}"/> -->
     <zip destfile="facelets-${release.version}.zip" basedir="${release}" />
   </target>
 
