@@ -1,14 +1,8 @@
-# $Id: WordList.txt,v 1.2 2005/08/04 05:22:21 jhook Exp $
+# $Id: WordList.txt,v 1.1 2005/08/04 05:22:23 jhook Exp $
 #
 # One word per line.  Case and whitespace is ignored.  Comments
 # are lines that begin with hash.  Blank lines are ignored.
 # The UI is configured for max word length of eight.
 
 component
-facelets
-appfuse
-boston
-minnesota
-oracle
-javaone
 
