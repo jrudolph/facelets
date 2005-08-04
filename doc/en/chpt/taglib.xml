@@ -103,7 +103,7 @@
 		  <sect2 id="taglib-available-ui">
 			<title>Templating Library</title>
 			<para>
-				TODO (link to full section)
+				You can read all about the cool templating features in Facelets in <xref linkend="template"/>.
 			</para>
 		  </sect2>
 		  
@@ -117,7 +117,10 @@
 		  <sect2 id="taglib-available-adf">
 			<title>Oracle ADF Faces</title>
 			<para>
-				TODO
+				Oracle ADF Faces will be unofficially supported by Facelets.  This work is not being done by Oracle but by independent contributions.
+			</para>
+			<para>
+				
 			</para>
 		  </sect2>
 		  

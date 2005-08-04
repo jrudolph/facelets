@@ -73,6 +73,12 @@
 						<entry>true</entry>
 					</row>
 					<row>
+						<entry>facelets.BUFFER_SIZE</entry>
+						<entry>-1</entry>
+						<entry>The buffer size to set on the response when the <literal>ResponseWriter</literal> is generated.  By default the value is -1, which will not assign a buffer size on the response.  This should be increased if you are using development mode in order to guarantee that the response isn't partially rendered when an error is generated.</entry>
+						<entry>8192</entry>
+					</row>
+					<row>
 						<entry>facelets.REFRESH_PERIOD</entry>
 						<entry>2</entry>
 						<entry>When a page is requested, what interval in <literal>seconds</literal> should the compiler check for changes.  If you don't want the compiler to check for changes once the page is compiled, then use a value of <literal>-1</literal>. Setting a low refresh period helps during development to be able to edit pages in a running application.</entry>

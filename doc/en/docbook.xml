@@ -96,7 +96,7 @@
     <preface id="guide" revision="1">
 		<title>Documentation Guide</title>
 		<para>
-			<xref linkend="guide"/>To get a jump start on development, this guide covers varying degrees of depth.  Please follow these steps:
+			To get a jump start on development, this guide covers varying degrees of depth.  Please follow these steps:
 		</para>
 		<itemizedlist>
 			<listitem>

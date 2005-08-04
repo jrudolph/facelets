@@ -1,5 +1,23 @@
 <chapter id="dev">
     <title>Extending Facelets</title>
+    
+    <sect1 id="dev-tag">
+		<title>Tag Development Overview</title>
+		<para>
+			Facelets use stateless <literal>TagHandlers</literal> to coordinate tree creation.  <literal>TagHandlers</literal> are not like JSP tags in that Facelets builds a static/stateless tree of <literal>TagHandlers</literal> shared by all requests.  For more information on how Facelets coordinates view creation, see <xref linkend="architecture-views"/>.
+		</para>
+		<para>
+			Foundation classes, such as those included in <xref linkend="dev-meta"/>, will take care of the knowing when to apply state and build up the component tree for a given request.  If you are writing your own <literal>TagHandler</literal>, you can use the <literal>ComponentSupport.isNew(UIComponent)</literal> to determine if it's okay for you to modify the newly created <literal>UIComponent</literal>.
+		</para>
+		<programlisting><![CDATA[public void apply(FaceletContext ctx, UIComponent parent) {
+  if (ComponentSupport.isNew(parent)) {
+    // okay to apply new state information to component
+  }
+}]]></programlisting>
+		<para>
+			For JSTL-like functionality, it's up to you if you want to use the <literal>ComponentSupport.isNew(UIComponent)</literal> method to determine behavior.  But again, if you use the foundation handlers in <xref linkend="dev-meta"/>, these checks will be take care of for you.
+		</para>		
+    </sect1>
 	
 	<sect1 id="dev-taghandler">
 		<title>Custom TagHandlers</title>
