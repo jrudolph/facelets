@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<faces-config xmlns="http://java.sun.com/xml/ns/j2ee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-facesconfig_1_2.xsd"
+    version="1.2">
+			
+  <!-- from project setup -->
+  <application>
+    <view-handler>
+      com.sun.facelets.FaceletViewHandler
+    </view-handler>    
+  </application>
+  
+  <!-- our NumberBean we created before
+  <managed-bean>
+    <managed-bean-name>NumberBean</managed-bean-name>
+    <managed-bean-class>tutorial.NumberBean</managed-bean-class>
+    <managed-bean-scope>session</managed-bean-scope>
+    <managed-property>
+      <property-name>min</property-name>
+      <value>1</value>
+    </managed-property>
+    <managed-property>
+      <property-name>max</property-name>
+      <value>10</value>
+    </managed-property>
+  </managed-bean> -->
+  
+  <!-- going from guess.xhtml to response.xhtml
+  <navigation-rule>
+    <from-view-id>/guess.xhtml</from-view-id>
+    <navigation-case>
+      <from-outcome>success</from-outcome>
+      <to-view-id>/response.xhtml</to-view-id>
+    </navigation-case>
+  </navigation-rule> -->
+
+  <!-- going from response.xhtml to guess.xhtml
+  <navigation-rule>
+    <from-view-id>/response.xhtml</from-view-id>
+    <navigation-case>
+        <from-outcome>success</from-outcome>
+      <to-view-id>/guess.xhtml</to-view-id>
+    </navigation-case>
+  </navigation-rule> -->
+
+</faces-config>
