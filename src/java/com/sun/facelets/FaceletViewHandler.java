@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -54,7 +55,7 @@ import com.sun.facelets.util.FacesAPI;
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.31 2005/08/03 22:55:08 jhook Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.32 2005/08/04 00:10:40 jhook Exp $
  */
 public class FaceletViewHandler extends ViewHandler {
 
@@ -285,18 +286,7 @@ public class FaceletViewHandler extends ViewHandler {
     }
 
     public UIViewRoot restoreView(FacesContext context, String viewId) {
-        UIViewRoot root = null;
-        try {
-            root = this.parent.restoreView(context, viewId);
-        } catch (Exception e) {
-            log.log(Level.WARNING, "Error Restoring View: " + viewId, e);
-        }
-        if (root != null) {
-            log.fine("View Restored: " + root.getViewId());
-        } else {
-            log.fine("Unable to restore View");
-        }
-        return root;
+        return this.parent.restoreView(context, viewId);
     }
 
     /*
