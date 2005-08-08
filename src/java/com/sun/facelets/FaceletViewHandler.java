@@ -47,6 +47,7 @@ import com.sun.facelets.compiler.Compiler;
 import com.sun.facelets.compiler.SAXCompiler;
 import com.sun.facelets.compiler.TagLibraryConfig;
 import com.sun.facelets.impl.DefaultFaceletFactory;
+import com.sun.facelets.tag.TagDecorator;
 import com.sun.facelets.tag.TagLibrary;
 import com.sun.facelets.util.DevTools;
 import com.sun.facelets.util.FacesAPI;
@@ -55,7 +56,7 @@ import com.sun.facelets.util.FacesAPI;
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.32 2005/08/04 00:10:40 jhook Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.33 2005/08/08 03:44:54 jhook Exp $
  */
 public class FaceletViewHandler extends ViewHandler {
 
@@ -97,6 +98,8 @@ public class FaceletViewHandler extends ViewHandler {
     public final static String PARAM_VIEW_MAPPINGS = "facelets.VIEW_MAPPINGS";
 
     public final static String PARAM_LIBRARIES = "facelets.LIBRARIES";
+    
+    public final static String PARAM_DECORATORS = "facelets.DECORATORS";
 
     public final static String PARAM_DEVELOPMENT = "facelets.DEVELOPMENT";
     
@@ -258,6 +261,8 @@ public class FaceletViewHandler extends ViewHandler {
     protected void initializeCompiler(Compiler c) {
         FacesContext ctx = FacesContext.getCurrentInstance();
         ExternalContext ext = ctx.getExternalContext();
+        
+        // load libraries
         String libParam = ext.getInitParameter(PARAM_LIBRARIES);
         if (libParam != null) {
             libParam = libParam.trim();
@@ -279,6 +284,26 @@ public class FaceletViewHandler extends ViewHandler {
                 }
             }
         }
+        
+        // load decorators
+        String decParam = ext.getInitParameter(PARAM_DECORATORS);
+        if (decParam != null) {
+            decParam = decParam.trim();
+            String[] decs = decParam.split(";");
+            TagDecorator decObj;
+            for (int i = 0; i < decs.length; i++) {
+                try {
+                    decObj = (TagDecorator) Class.forName(decs[i]).newInstance();
+                    c.addTagDecorator(decObj);
+                    log.fine("Successfully Loaded Decorator: " + decs[i]);
+                } catch (Exception e) {
+                    log.log(Level.SEVERE, "Error Loading Decorator: " + decs[i],
+                            e);
+                }
+            }
+        }
+        
+        // skip params?
         String skipParam = ext.getInitParameter(PARAM_SKIP_COMMENTS);
         if (skipParam != null && "false".equals(skipParam)) {
             c.setTrimmingComments(false);

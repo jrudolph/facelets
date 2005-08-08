@@ -67,6 +67,12 @@
 						<entry>/WEB-INF/facelets/foo.taglib.xml; /WEB-INF/facelets/bar.taglib.xml</entry>
 					</row>
 					<row>
+						<entry>facelets.DECORATORS</entry>
+						<entry></entry>
+						<entry>A semicolon (<literal>;</literal>) delimitted list of class names of type <literal>com.sun.facelets.tag.TagDecorator</literal>, with a no-argument constructor.  These decorators will be loaded when the first request hits the <literal>FaceletViewHandler</literal> for page compilation.</entry>
+						<entry>com.sun.facelets.tag.jsf.html.HtmlDecorator</entry>
+					</row>
+					<row>
 						<entry>facelets.DEVELOPMENT</entry>
 						<entry>false</entry>
 						<entry>Setting this to true will cause the <literal>FaceletViewHandler</literal> to print out debug information in an easy to use screen when an error occurs during the rendering process.</entry>

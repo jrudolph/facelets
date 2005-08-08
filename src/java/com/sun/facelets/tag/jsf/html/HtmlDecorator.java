@@ -22,7 +22,7 @@ import com.sun.facelets.tag.TagDecorator;
 
 /**
  * @author Jacob Hookom
- * @version $Id: HtmlDecorator.java,v 1.1 2005/07/27 04:33:09 jhook Exp $
+ * @version $Id: HtmlDecorator.java,v 1.2 2005/08/08 03:44:55 jhook Exp $
  */
 public final class HtmlDecorator implements TagDecorator {
 
@@ -35,7 +35,6 @@ public final class HtmlDecorator implements TagDecorator {
      */
     public HtmlDecorator() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
     /*
