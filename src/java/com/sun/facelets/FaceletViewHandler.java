@@ -56,7 +56,7 @@ import com.sun.facelets.util.FacesAPI;
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.33 2005/08/08 03:44:54 jhook Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.34 2005/08/09 04:44:08 jhook Exp $
  */
 public class FaceletViewHandler extends ViewHandler {
 
@@ -338,14 +338,14 @@ public class FaceletViewHandler extends ViewHandler {
         // get our content type
         String contentType = (String) extContext.getRequestHeaderMap().get(
                 "Accept");
-        if (contentType == null) {
+        if (contentType == null || -1 != contentType.indexOf("*/*")) {
             contentType = "text/html";
         }
 
         // get the encoding
         String encoding = request.getCharacterEncoding();
         if (encoding == null) {
-            encoding = "UTF-8";
+            encoding = "ISO-8859-1";
         }
 
         // Create a dummy ResponseWriter with a bogus writer,
@@ -355,13 +355,14 @@ public class FaceletViewHandler extends ViewHandler {
         // TODO This needs to be changed back from null once
         // MyFaces corrects the bug in their RenderKit
         ResponseWriter writer = renderKit.createResponseWriter(
-                NullWriter.Instance, "text/html", encoding);
+                NullWriter.Instance, contentType, encoding);
 
         contentType = writer.getContentType();
         encoding = writer.getCharacterEncoding();
 
         // apply them to the response
-        response.setContentType(contentType + "; charset = " + encoding);
+        response.setContentType(contentType);
+        response.setCharacterEncoding(encoding);
 
         // Now, clone with the real writer
         writer = writer.cloneWithWriter(response.getWriter());
