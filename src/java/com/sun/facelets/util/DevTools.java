@@ -31,9 +31,13 @@ public final class DevTools {
     
     private final static String TS = "&lt;";
     
-    private static final String TEMPLATE = "META-INF/rsc/facelet-dev-error.xml";
+    private static final String ERROR_TEMPLATE = "META-INF/rsc/facelet-dev-error.xml";
     
-    private static String[] parts;
+    private static String[] ERROR_PARTS;
+    
+    private static final String DEBUG_TEMPLATE = "META-INF/rsc/facelet-dev-debug.xml";
+    
+    private static String[] DEBUG_PARTS;
 
     public DevTools() {
         super();
@@ -41,51 +45,80 @@ public final class DevTools {
     
     public static void main(String[] argv) throws Exception {
         DevTools.init();
-        System.out.println(parts.length);
     }
     
     private static void init() throws IOException {
-        if (parts == null) {
-            InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(TEMPLATE);
-            if (is == null) {
-                throw new FileNotFoundException(TEMPLATE);
-            }
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            byte[] buff = new byte[512];
-            int read;
-            while ((read = is.read(buff)) != -1) {
-                baos.write(buff, 0, read);
-            }
-            String str = baos.toString();
-            parts = str.split("@@");
+        if (ERROR_PARTS == null) {
+            ERROR_PARTS = splitTemplate(ERROR_TEMPLATE);
         }
+        
+        if (DEBUG_PARTS == null) {
+            DEBUG_PARTS = splitTemplate(DEBUG_TEMPLATE);
+        }
+    }
+    
+    private static String[] splitTemplate(String rsc) throws IOException {
+        InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream(rsc);
+        if (is == null) {
+            throw new FileNotFoundException(rsc);
+        }
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        byte[] buff = new byte[512];
+        int read;
+        while ((read = is.read(buff)) != -1) {
+            baos.write(buff, 0, read);
+        }
+        String str = baos.toString();
+        return str.split("@@");
     }
     
     public static void debugHtml(PrintWriter writer, FacesContext faces, Exception e) throws IOException {
         init();
         Date now = new Date();
-        for (int i = 0; i < parts.length; i++) {
-            if ("message".equals(parts[i])) {
+        for (int i = 0; i < ERROR_PARTS.length; i++) {
+            if ("message".equals(ERROR_PARTS[i])) {
                 String msg = e.getMessage();
                 if (msg != null) {
                     writer.write(msg.replaceAll("<", TS));
                 } else {
                     writer.write(e.getClass().getName());
                 }
-            } else if ("trace".equals(parts[i])) {
-                StringWriter str = new StringWriter(256);
-                PrintWriter pstr = new PrintWriter(str);
-                e.printStackTrace(pstr);
-                pstr.close();
-                writer.write(str.toString().replaceAll("<", TS));
-            } else if ("now".equals(parts[i])) {
+            } else if ("trace".equals(ERROR_PARTS[i])) {
+                writeException(writer, e);
+            } else if ("now".equals(ERROR_PARTS[i])) {
                 writer.write(DateFormat.getDateTimeInstance().format(now));
-            } else if ("tree".equals(parts[i])) {
+            } else if ("tree".equals(ERROR_PARTS[i])) {
                 writeComponent(writer, faces.getViewRoot());
-            } else if ("vars".equals(parts[i])) {
+            } else if ("vars".equals(ERROR_PARTS[i])) {
                 writeVariables(writer, faces);
             } else {
-                writer.write(parts[i]);
+                writer.write(ERROR_PARTS[i]);
+            }
+        }
+    }
+    
+    private static void writeException(PrintWriter writer, Exception e) throws IOException {
+        StringWriter str = new StringWriter(256);
+        PrintWriter pstr = new PrintWriter(str);
+        e.printStackTrace(pstr);
+        pstr.close();
+        writer.write(str.toString().replaceAll("<", TS));
+    }
+    
+    public static void debugHtml(PrintWriter writer, FacesContext faces) throws IOException {
+        init();
+        Date now = new Date();
+        for (int i = 0; i < DEBUG_PARTS.length; i++) {
+            if ("message".equals(DEBUG_PARTS[i])) {
+                writer.write(faces.getViewRoot().getViewId());
+            } else if ("now".equals(DEBUG_PARTS[i])) {
+                writer.write(DateFormat.getDateTimeInstance().format(now));
+            } else if ("tree".equals(DEBUG_PARTS[i])) {
+                writeComponent(writer, faces.getViewRoot());
+            } else if ("vars".equals(DEBUG_PARTS[i])) {
+                writeVariables(writer, faces);
+            } else {
+                writer.write(DEBUG_PARTS[i]);
             }
         }
     }
