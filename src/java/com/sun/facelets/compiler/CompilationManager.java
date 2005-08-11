@@ -27,6 +27,7 @@ import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagAttributeException;
 import com.sun.facelets.tag.TagAttributes;
 import com.sun.facelets.tag.TagDecorator;
+import com.sun.facelets.tag.TagException;
 import com.sun.facelets.tag.TagLibrary;
 import com.sun.facelets.tag.ui.ComponentRefHandler;
 import com.sun.facelets.tag.ui.CompositionHandler;
@@ -39,7 +40,7 @@ import com.sun.facelets.tag.ui.UILibrary;
  * @see com.sun.facelets.compiler.Compiler
  * 
  * @author Jacob Hookom
- * @version $Id: CompilationManager.java,v 1.9 2005/07/31 22:28:48 jhook Exp $
+ * @version $Id: CompilationManager.java,v 1.10 2005/08/11 18:07:43 jhook Exp $
  */
 final class CompilationManager {
 
@@ -151,6 +152,8 @@ final class CompilationManager {
             this.units.push(new RemoveUnit());
         } else if (this.tagLibrary.containsTagHandler(qname[0], qname[1])) {
             this.startUnit(new TagUnit(this.tagLibrary, qname[0], qname[1], t, this.nextTagId()));
+        } else if (this.tagLibrary.containsNamespace(qname[0])) {
+            throw new TagException(orig, "Tag Library supports namespace: "+qname[0]+", but no tag was defined for name: "+qname[1]);
         } else {
             TextUnit unit;
             if (this.currentUnit() instanceof TextUnit) {
