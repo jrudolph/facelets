@@ -49,20 +49,12 @@
         </sect2>
         <sect2 id="taglib-use-unresolved">
 			<title>Unresolved Namespaces</title>
-
 			<para>
-				If there is a namespace that is
-				unresolved and/or the tag's name is not
-				found in any library, then it is treated
-				as regular text.  If your tag or
-				component isn't showing up in your
-				rendered page, check the source of page
-				and see if the tag was simply ignored.
-				This usually means you either misspelled
-				the tag's name or you are using the
-				wrong namespace for your library.
+				If there is a tag in your document under a namespace (such as XHTML) that isn't specified in a Tag Library, then Facelets will treat that tag as a simple text fragment and optimize it for tree creation.  If the namespace is known, but the element's name isn't included in the tag library, then an exception will be thrown which will tell you what file and line caused the problem.
 			</para>
-
+			<para>
+				If your tag or component isn't showing up in your rendered page, check the source of page and see if the tag was simply ignored. This usually means you are using the wrong namespace for your library.
+			</para>
         </sect2>
 	</sect1>
     
