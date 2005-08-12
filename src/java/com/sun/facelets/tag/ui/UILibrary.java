@@ -19,7 +19,7 @@ import com.sun.facelets.tag.AbstractTagLibrary;
 
 /**
  * @author Jacob Hookom
- * @version $Id: UILibrary.java,v 1.4 2005/07/30 21:36:13 jhook Exp $
+ * @version $Id: UILibrary.java,v 1.5 2005/08/12 07:04:49 jhook Exp $
  */
 public final class UILibrary extends AbstractTagLibrary {
 
@@ -45,5 +45,7 @@ public final class UILibrary extends AbstractTagLibrary {
         this.addTagHandler("param", ParamHandler.class);
 
         this.addTagHandler("decorate", DecorateHandler.class);
+        
+        this.addComponent("debug", UIDebug.COMPONENT_TYPE, null);
     }
 }

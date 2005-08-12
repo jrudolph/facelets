@@ -49,6 +49,7 @@ import com.sun.facelets.compiler.TagLibraryConfig;
 import com.sun.facelets.impl.DefaultFaceletFactory;
 import com.sun.facelets.tag.TagDecorator;
 import com.sun.facelets.tag.TagLibrary;
+import com.sun.facelets.tag.ui.UIDebug;
 import com.sun.facelets.util.DevTools;
 import com.sun.facelets.util.FacesAPI;
 
@@ -56,7 +57,7 @@ import com.sun.facelets.util.FacesAPI;
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.34 2005/08/09 04:44:08 jhook Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.35 2005/08/12 07:04:48 jhook Exp $
  */
 public class FaceletViewHandler extends ViewHandler {
 
@@ -311,6 +312,9 @@ public class FaceletViewHandler extends ViewHandler {
     }
 
     public UIViewRoot restoreView(FacesContext context, String viewId) {
+        if (UIDebug.debugRequest(context)) {
+            return new UIViewRoot();
+        }
         return this.parent.restoreView(context, viewId);
     }
 
@@ -386,7 +390,12 @@ public class FaceletViewHandler extends ViewHandler {
         Facelet f = factory.getFacelet(viewToRender.getViewId());
 
         // populate UIViewRoot
+        long time = System.currentTimeMillis();
         f.apply(context, viewToRender);
+        time = System.currentTimeMillis() - time;
+        if (log.isLoggable(Level.FINE)) {
+            log.fine("Took "+time+"ms to build view: "+viewToRender.getViewId());
+        }
     }
 
     public void renderView(FacesContext context, UIViewRoot viewToRender)
@@ -420,6 +429,8 @@ public class FaceletViewHandler extends ViewHandler {
             // setup writer and assign it to the context
             ResponseWriter writer = this.createResponseWriter(context);
             context.setResponseWriter(writer);
+            
+            long time = System.currentTimeMillis();
 
             // render the view to the response
             writer.startDocument();
@@ -432,6 +443,11 @@ public class FaceletViewHandler extends ViewHandler {
             
             // finish writing
             writer.close();
+            
+            time = System.currentTimeMillis() - time;
+            if (log.isLoggable(Level.FINE)) {
+                log.fine("Took "+time+"ms to render view: "+viewToRender.getViewId());
+            }
             
         } catch (FileNotFoundException fnfe) {
             this.handleFaceletNotFound(context, viewToRender.getViewId());
@@ -456,7 +472,8 @@ public class FaceletViewHandler extends ViewHandler {
             HttpServletResponse httpResp = (HttpServletResponse) resp;
             httpResp.reset();
             httpResp.setContentType("text/html; charset=UTF-8");
-            PrintWriter w = httpResp.getWriter();
+            Writer w = httpResp.getWriter();
+            log.severe("Took Type: "+w.getClass().getName());
             DevTools.debugHtml(w, context, e);
             w.flush();
             context.responseComplete();
@@ -577,6 +594,9 @@ public class FaceletViewHandler extends ViewHandler {
     }
 
     public UIViewRoot createView(FacesContext context, String viewId) {
+        if (UIDebug.debugRequest(context)) {
+            return new UIViewRoot();
+        }
         return this.parent.createView(context, viewId);
     }
 

@@ -9,4 +9,8 @@
 		<component-type>facelets.ui.ComponentRef</component-type>
 		<component-class>com.sun.facelets.tag.ui.ComponentRef</component-class>
 	</component>
+	<component>
+		<component-type>facelets.ui.Debug</component-type>
+		<component-class>com.sun.facelets.tag.ui.UIDebug</component-class>
+	</component>
 </faces-config>

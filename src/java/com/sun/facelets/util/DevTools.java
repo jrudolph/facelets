@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.lang.reflect.Method;
 import java.text.DateFormat;
 import java.util.Arrays;
@@ -18,6 +19,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.logging.Logger;
 
 import javax.el.Expression;
 import javax.faces.component.UIComponent;
@@ -72,7 +74,7 @@ public final class DevTools {
         return str.split("@@");
     }
     
-    public static void debugHtml(PrintWriter writer, FacesContext faces, Exception e) throws IOException {
+    public static void debugHtml(Writer writer, FacesContext faces, Exception e) throws IOException {
         init();
         Date now = new Date();
         for (int i = 0; i < ERROR_PARTS.length; i++) {
@@ -97,7 +99,7 @@ public final class DevTools {
         }
     }
     
-    private static void writeException(PrintWriter writer, Exception e) throws IOException {
+    private static void writeException(Writer writer, Exception e) throws IOException {
         StringWriter str = new StringWriter(256);
         PrintWriter pstr = new PrintWriter(str);
         e.printStackTrace(pstr);
@@ -105,7 +107,7 @@ public final class DevTools {
         writer.write(str.toString().replaceAll("<", TS));
     }
     
-    public static void debugHtml(PrintWriter writer, FacesContext faces) throws IOException {
+    public static void debugHtml(Writer writer, FacesContext faces) throws IOException {
         init();
         Date now = new Date();
         for (int i = 0; i < DEBUG_PARTS.length; i++) {
@@ -113,7 +115,7 @@ public final class DevTools {
                 writer.write(faces.getViewRoot().getViewId());
             } else if ("now".equals(DEBUG_PARTS[i])) {
                 writer.write(DateFormat.getDateTimeInstance().format(now));
-            } else if ("tree".equals(DEBUG_PARTS[i])) {
+            } else if ("tree".equals(DEBUG_PARTS[i])) {            
                 writeComponent(writer, faces.getViewRoot());
             } else if ("vars".equals(DEBUG_PARTS[i])) {
                 writeVariables(writer, faces);
@@ -123,7 +125,7 @@ public final class DevTools {
         }
     }
     
-    private static void writeVariables(PrintWriter writer, FacesContext faces) throws IOException {
+    private static void writeVariables(Writer writer, FacesContext faces) throws IOException {
         ExternalContext ctx = faces.getExternalContext();
         writeVariables(writer, ctx.getRequestParameterMap(), "Request Parameters");
         writeVariables(writer, ctx.getRequestMap(), "Request Attributes");
@@ -133,7 +135,7 @@ public final class DevTools {
         writeVariables(writer, ctx.getApplicationMap(), "Application Attributes");
     }
     
-    private static void writeVariables(PrintWriter writer, Map vars, String caption) throws IOException {
+    private static void writeVariables(Writer writer, Map vars, String caption) throws IOException {
         writer.write("<table><caption>");
         writer.write(caption);
         writer.write("</caption><thead><tr><th style=\"width: 10%; \">Name</th><th style=\"width: 90%; \">Value</th></tr></thead><tbody>");
@@ -161,7 +163,7 @@ public final class DevTools {
         writer.write("</tbody></table>");
     }
     
-    private static void writeComponent(PrintWriter writer, UIComponent c) throws IOException {
+    private static void writeComponent(Writer writer, UIComponent c) throws IOException {
         writer.write("<dl><dt");
         if (isText(c)) {
             writer.write(" class=\"uicText\"");
@@ -199,7 +201,7 @@ public final class DevTools {
         writer.write("</dl>");
     }
     
-    private static void writeEnd(PrintWriter writer, UIComponent c) {
+    private static void writeEnd(Writer writer, UIComponent c) throws IOException {
         if (!isText(c)) {
             writer.write(TS);
             writer.write('/');
@@ -210,7 +212,7 @@ public final class DevTools {
     
     private final static String[] IGNORE = new String[] { "parent", "rendererType" };
     
-    private static void writeAttributes(PrintWriter writer, UIComponent c) {
+    private static void writeAttributes(Writer writer, UIComponent c) {
         try {
             BeanInfo info = Introspector.getBeanInfo(c.getClass());
             PropertyDescriptor[] pd = info.getPropertyDescriptors();
@@ -251,7 +253,7 @@ public final class DevTools {
         }
     }
     
-    private static void writeStart(PrintWriter writer, UIComponent c, boolean children) {
+    private static void writeStart(Writer writer, UIComponent c, boolean children) throws IOException {
         if (isText(c)) {
             String str = c.toString().trim();
             writer.write(str.replaceAll("<", TS));
