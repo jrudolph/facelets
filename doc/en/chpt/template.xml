@@ -172,6 +172,45 @@ Text after will be removed.]]></programlisting>
 		</para>
 	</sect1>
 	
+	<sect1 id="template-debug">
+		<title><![CDATA[<ui:debug/>]]></title>
+		<table>
+			<title>Debug Tag Attributes</title>
+			<tgroup cols="4">
+				<thead>
+					<row>
+						<entry>Attribute</entry>
+						<entry>Required?</entry>
+						<entry>Description</entry>
+						<entry>Example</entry>
+					</row>
+				</thead>
+				<tbody>
+					<row>
+						<entry>hotkey</entry>
+						<entry>false</entry>
+						<entry>The hot key to use in combination with 'CTRL' + 'SHIFT' to launch the debug window.  By default, when the <literal>debug</literal> tag is used, you may launch the debug window with 'CTRL' + 'SHIFT' + 'D'.  This value cannot be an EL expression.</entry>
+						<entry>d</entry>
+					</row>
+				</tbody>
+			</tgroup>
+		</table>
+		<para>
+			The <literal>debug</literal> tag will capture the component tree and variables when it is encoded, storing the data for retrieval later.  You may launch the debug window at any time from your browser by pressing 'CTRL' + 'SHIFT' + 'D' (by default).
+		</para>
+		<programlisting><![CDATA[...
+  <ui:debug hotkey="d" rendered="#{initParam.debugMode}"/>
+ </body>
+</html>
+...]]></programlisting>
+		<para>
+			In the above example, we use the hot key 'd' to launch the debug window.  Creating debug output on every request adds some overhead, so you can use the <literal>UIComponent</literal> <literal>rendered</literal> property to turn debugging on or off based on some expression.  In this example, debugging is backed by an entry in the <literal>web.xml</literal>.
+		</para>
+		<para>
+			The <literal>debug</literal> tag doesn't need to be used with the <literal>facelet.DEVELOPMENT</literal> parameter.  The best place to put this tag is in your site's main template where it can be enabled/disabled across your whole application.  If your application uses multiple windows, you might want to assign different hot keys to each one.
+		</para>
+	</sect1>
+	
 	<sect1 id="templating-decorate">
 		<title><![CDATA[<ui:decorate/>]]></title>
 		<table>
