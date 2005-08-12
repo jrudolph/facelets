@@ -58,7 +58,7 @@ class UILeaf extends UIComponent {
         return this.getId();
     }
 
-    protected String getContainerClientId(FacesContext arg0) {
+    public String getContainerClientId(FacesContext arg0) {
         return null;
     }
 
