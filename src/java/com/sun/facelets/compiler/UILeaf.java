@@ -37,6 +37,8 @@ class UILeaf extends UIComponent {
     public Map getAttributes() {
         return Collections.EMPTY_MAP;
     }
+    
+    private UIComponent parent;
 
     public ValueBinding getValueBinding(String binding) {
         return null;
@@ -75,11 +77,11 @@ class UILeaf extends UIComponent {
     }
 
     public UIComponent getParent() {
-        return null;
+        return this.parent;
     }
 
     public void setParent(UIComponent parent) {
-        // do nothing
+        this.parent = parent;
     }
 
     public boolean isRendered() {

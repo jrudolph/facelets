@@ -12,17 +12,17 @@ import com.sun.facelets.FaceletException;
 import com.sun.facelets.FaceletHandler;
 
 final class UILiteralTextHandler implements FaceletHandler {
-
-    private final UILiteralText text;
+    
+    protected final String txtString;
     
     public UILiteralTextHandler(String txtString) {
-        this.text = new UILiteralText(txtString);
+        this.txtString = txtString;
     }
 
     public void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
         if (parent != null) {
-            parent.getChildren().add(this.text);
+            parent.getChildren().add(new UILiteralText(this.txtString));
         }
     }
 }
