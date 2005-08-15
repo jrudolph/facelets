@@ -41,7 +41,7 @@ import com.sun.facelets.tag.jsf.ValidatorConfig;
  * Base class for defining TagLibraries in Java
  * 
  * @author Jacob Hookom
- * @version $Id: AbstractTagLibrary.java,v 1.6 2005/08/15 03:56:51 jhook Exp $
+ * @version $Id: AbstractTagLibrary.java,v 1.7 2005/08/15 19:36:13 jhook Exp $
  */
 public abstract class AbstractTagLibrary implements TagLibrary {
 
@@ -91,7 +91,7 @@ public abstract class AbstractTagLibrary implements TagLibrary {
             return this.parent.getTag();
         }
         public String getTagId() {
-            return this.getTagId();
+            return this.parent.getTagId();
         }
     }
     
@@ -453,7 +453,7 @@ public abstract class AbstractTagLibrary implements TagLibrary {
      *            TagHandler type that takes in a ValidatorConfig
      */
     protected final void addValidator(String name, String validatorId, Class type) {
-        this.factories.put(name, new ValidatorHandlerFactory(validatorId));
+        this.factories.put(name, new UserValidatorHandlerFactory(validatorId, type));
     }
 
     /**

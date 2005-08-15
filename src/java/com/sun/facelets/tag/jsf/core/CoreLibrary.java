@@ -16,6 +16,8 @@
 package com.sun.facelets.tag.jsf.core;
 
 import javax.faces.component.UIOutput;
+import javax.faces.convert.DateTimeConverter;
+import javax.faces.convert.NumberConverter;
 import javax.faces.validator.DoubleRangeValidator;
 import javax.faces.validator.LengthValidator;
 import javax.faces.validator.LongRangeValidator;
@@ -28,7 +30,7 @@ import com.sun.facelets.tag.AbstractTagLibrary;
  * documentation</a>.
  * 
  * @author Jacob Hookom
- * @version $Id: CoreLibrary.java,v 1.3 2005/08/15 03:56:53 jhook Exp $
+ * @version $Id: CoreLibrary.java,v 1.4 2005/08/15 19:36:13 jhook Exp $
  */
 public final class CoreLibrary extends AbstractTagLibrary {
 
@@ -43,11 +45,11 @@ public final class CoreLibrary extends AbstractTagLibrary {
 
         this.addTagHandler("attribute", AttributeHandler.class);
 
-        this.addTagHandler("convertDateTime", ConvertDateTimeHandler.class);
+        this.addConverter("convertDateTime", DateTimeConverter.CONVERTER_ID, ConvertDateTimeHandler.class);
 
-        this.addTagHandler("convertNumber", ConvertNumberHandler.class);
+        this.addConverter("convertNumber", NumberConverter.CONVERTER_ID, ConvertNumberHandler.class);
 
-        this.addTagHandler("converter", ConvertDelegateHandler.class);
+        this.addConverter("converter", null, ConvertDelegateHandler.class);
 
         this.addTagHandler("facet", FacetHandler.class);
 
@@ -69,7 +71,7 @@ public final class CoreLibrary extends AbstractTagLibrary {
 
         //this.addTagHandler("validateLongRange", ValidateLongRangeHandler.class);
 
-        this.addTagHandler("validator", ValidateDelegateHandler.class);
+        this.addValidator("validator", null, ValidateDelegateHandler.class);
 
         this.addTagHandler("valueChangeListener",
                 ValueChangeListenerHandler.class);
