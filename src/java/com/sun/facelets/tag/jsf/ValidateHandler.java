@@ -40,15 +40,27 @@ import com.sun.facelets.tag.MetaRuleset;
  * that it wasn't restored from an existing tree.
  * 
  * @author Jacob Hookom
- * @version $Id: ValidateHandler.java,v 1.1 2005/07/27 04:33:03 jhook Exp $
+ * @version $Id: ValidateHandler.java,v 1.2 2005/08/15 03:56:52 jhook Exp $
  */
-public abstract class ValidateHandler extends MetaTagHandler {
+public class ValidateHandler extends MetaTagHandler {
 
     private final TagAttribute binding;
+    
+    private String validatorId;
 
+    /**
+     * 
+     * @param config
+     * @deprecated
+     */
     public ValidateHandler(TagConfig config) {
         super(config);
         this.binding = this.getAttribute("binding");
+    }
+    
+    public ValidateHandler(ValidatorConfig config) {
+        this((TagConfig) config);
+        this.validatorId = config.getValidatorId();
     }
 
     /**
@@ -96,7 +108,15 @@ public abstract class ValidateHandler extends MetaTagHandler {
      *            FaceletContext to use
      * @return a new Validator instance
      */
-    protected abstract Validator createValidator(FaceletContext ctx);
+    protected Validator createValidator(FaceletContext ctx) {
+        if (this.validatorId == null) {
+            throw new TagException(
+                    this.tag,
+                    "Default behavior invoked of requiring a validator-id passed in the constructor, must override ValidateHandler(ValidatorConfig)");
+        }
+        return ctx.getFacesContext().getApplication().createValidator(
+                this.validatorId);
+    }
 
     protected MetaRuleset createMetaRuleset(Class type) {
         return super.createMetaRuleset(type).ignore("binding");

@@ -27,9 +27,9 @@ import com.sun.facelets.FaceletException;
 import com.sun.facelets.tag.MetaRuleset;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagAttributeException;
-import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.jsf.ComponentSupport;
 import com.sun.facelets.tag.jsf.ConvertHandler;
+import com.sun.facelets.tag.jsf.ConverterConfig;
 
 /**
  * Register a DateTimeConverter instance on the UIComponent associated with the
@@ -38,7 +38,7 @@ import com.sun.facelets.tag.jsf.ConvertHandler;
  * documentation</a>.
  * 
  * @author Jacob Hookom
- * @version $Id: ConvertDateTimeHandler.java,v 1.1 2005/07/27 04:33:05 jhook Exp $
+ * @version $Id: ConvertDateTimeHandler.java,v 1.2 2005/08/15 03:56:53 jhook Exp $
  */
 public final class ConvertDateTimeHandler extends ConvertHandler {
 
@@ -57,7 +57,7 @@ public final class ConvertDateTimeHandler extends ConvertHandler {
     /**
      * @param config
      */
-    public ConvertDateTimeHandler(TagConfig config) {
+    public ConvertDateTimeHandler(ConverterConfig config) {
         super(config);
         this.dateStyle = this.getAttribute("dateStyle");
         this.locale = this.getAttribute("locale");

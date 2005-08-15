@@ -33,16 +33,68 @@ import com.sun.facelets.FaceletHandler;
 import com.sun.facelets.tag.jsf.ComponentConfig;
 import com.sun.facelets.tag.jsf.ComponentHandler;
 import com.sun.facelets.tag.jsf.ConvertHandler;
+import com.sun.facelets.tag.jsf.ConverterConfig;
 import com.sun.facelets.tag.jsf.ValidateHandler;
+import com.sun.facelets.tag.jsf.ValidatorConfig;
 
 /**
  * Base class for defining TagLibraries in Java
  * 
  * @author Jacob Hookom
- * @version $Id: AbstractTagLibrary.java,v 1.5 2005/07/27 04:32:50 jhook Exp $
+ * @version $Id: AbstractTagLibrary.java,v 1.6 2005/08/15 03:56:51 jhook Exp $
  */
 public abstract class AbstractTagLibrary implements TagLibrary {
 
+    private static class ValidatorConfigWrapper implements ValidatorConfig {
+
+        private final TagConfig parent;
+        private final String validatorId;
+        
+        public ValidatorConfigWrapper(TagConfig parent, String validatorId) {
+            this.parent = parent;
+            this.validatorId = validatorId;
+        }
+        
+        public String getValidatorId() {
+            return this.validatorId;
+        }
+
+        public FaceletHandler getNextHandler() {
+            return this.parent.getNextHandler();
+        }
+
+        public Tag getTag() {
+            return this.parent.getTag();
+        }
+
+        public String getTagId() {
+            return this.parent.getTagId();
+        }  
+    }
+    
+    private static class ConverterConfigWrapper implements ConverterConfig {
+        private final TagConfig parent;
+        private final String converterId;
+        
+        public ConverterConfigWrapper(TagConfig parent, String converterId) {
+            this.parent = parent;
+            this.converterId = converterId;
+        }
+        
+        public String getConverterId() {
+            return this.converterId;
+        }
+        public FaceletHandler getNextHandler() {
+            return this.parent.getNextHandler();
+        }
+        public Tag getTag() {
+            return this.parent.getTag();
+        }
+        public String getTagId() {
+            return this.getTagId();
+        }
+    }
+    
     private static class HandlerFactory implements TagHandlerFactory {
         private final static Class[] CONSTRUCTOR_SIG = new Class[] { TagConfig.class };
 
@@ -185,7 +237,7 @@ public abstract class AbstractTagLibrary implements TagLibrary {
             } catch (InvocationTargetException e) {
                 throw new FaceletException(e.getCause().getMessage(), e.getCause().getCause());
             } catch (Exception e) {
-                throw new FaceletException("Error Instantiating TagHandler: "+this.type.getName(), e);
+                throw new FaceletException("Error Instantiating ComponentHandler: "+this.type.getName(), e);
             }
         }
     }
@@ -200,12 +252,7 @@ public abstract class AbstractTagLibrary implements TagLibrary {
 
         public TagHandler createHandler(TagConfig cfg) throws FacesException,
                 ELException {
-            return new ValidateHandler(cfg) {
-                protected Validator createValidator(FaceletContext ctx) {
-                    return ctx.getFacesContext().getApplication()
-                            .createValidator(validatorId);
-                }
-            };
+            return new ValidateHandler(new ValidatorConfigWrapper(cfg, this.validatorId));
         }
     }
 
@@ -219,15 +266,82 @@ public abstract class AbstractTagLibrary implements TagLibrary {
 
         public TagHandler createHandler(TagConfig cfg) throws FacesException,
                 ELException {
-            return new ConvertHandler(cfg) {
-                protected Converter createConverter(FaceletContext ctx) {
-                    return ctx.getFacesContext().getApplication()
-                            .createConverter(converterId);
-                }
-            };
+            return new ConvertHandler(new ConverterConfigWrapper(cfg, this.converterId));
         }
     }
 
+    private static class UserConverterHandlerFactory implements TagHandlerFactory {
+        private final static Class[] CONS_SIG = new Class[] { ConverterConfig.class };
+        
+        protected final String converterId;
+        
+        protected final Class type;
+
+        protected final Constructor constructor;
+        
+        public UserConverterHandlerFactory(String converterId, Class type) {
+            this.converterId = converterId;
+            this.type = type;
+            try {
+                this.constructor = this.type.getConstructor(CONS_SIG);
+            } catch (Exception e) {
+                throw new FaceletException(
+                        "Must have a Constructor that takes in a ConverterConfig",
+                        e);
+            }
+        }
+        
+        public TagHandler createHandler(TagConfig cfg) throws FacesException,
+        ELException {
+            try {
+                ConverterConfig ccfg = new ConverterConfigWrapper(cfg,
+                        this.converterId);
+                return (TagHandler) this.constructor
+                        .newInstance(new Object[] { ccfg });
+            } catch (InvocationTargetException e) {
+                throw new FaceletException(e.getCause().getMessage(), e.getCause().getCause());
+            } catch (Exception e) {
+                throw new FaceletException("Error Instantiating ConverterHandler: "+this.type.getName(), e);
+            }
+        }
+    }
+    
+    private static class UserValidatorHandlerFactory implements TagHandlerFactory {
+        private final static Class[] CONS_SIG = new Class[] { ValidatorConfig.class };
+        
+        protected final String validatorId;
+        
+        protected final Class type;
+
+        protected final Constructor constructor;
+        
+        public UserValidatorHandlerFactory(String validatorId, Class type) {
+            this.validatorId = validatorId;
+            this.type = type;
+            try {
+                this.constructor = this.type.getConstructor(CONS_SIG);
+            } catch (Exception e) {
+                throw new FaceletException(
+                        "Must have a Constructor that takes in a ConverterConfig",
+                        e);
+            }
+        }
+        
+        public TagHandler createHandler(TagConfig cfg) throws FacesException,
+        ELException {
+            try {
+                ValidatorConfig ccfg = new ValidatorConfigWrapper(cfg,
+                        this.validatorId);
+                return (TagHandler) this.constructor
+                        .newInstance(new Object[] { ccfg });
+            } catch (InvocationTargetException e) {
+                throw new FaceletException(e.getCause().getMessage(), e.getCause().getCause());
+            } catch (Exception e) {
+                throw new FaceletException("Error Instantiating ValidatorHandler: "+this.type.getName(), e);
+            }
+        }
+    }
+    
     private final Map factories;
 
     private final String namespace;
@@ -284,7 +398,7 @@ public abstract class AbstractTagLibrary implements TagLibrary {
      * Add a ConvertHandler for the specified converterId
      * 
      * @see ConvertHandler
-     * @see javax.faces.application.Application#createComponent(java.lang.String)
+     * @see javax.faces.application.Application#createConverter(java.lang.String)
      * @param name
      *            name to use, "foo" would be &lt;my:foo />
      * @param converterId
@@ -292,6 +406,23 @@ public abstract class AbstractTagLibrary implements TagLibrary {
      */
     protected final void addConverter(String name, String converterId) {
         this.factories.put(name, new ConverterHandlerFactory(converterId));
+    }
+    
+    /**
+     * Add a ConvertHandler for the specified converterId of a TagHandler type
+     * 
+     * @see ConvertHandler
+     * @see ConverterConfig
+     * @see javax.faces.application.Application#createConverter(java.lang.String)
+     * @param name
+     *            name to use, "foo" would be &lt;my:foo />
+     * @param converterId
+     *            id to pass to Application instance
+     * @param type
+     *            TagHandler type that takes in a ConverterConfig
+     */
+    protected final void addConverter(String name, String converterId, Class type) {
+        this.factories.put(name, new UserConverterHandlerFactory(converterId, type));
     }
 
     /**
@@ -305,6 +436,23 @@ public abstract class AbstractTagLibrary implements TagLibrary {
      *            id to pass to Application instance
      */
     protected final void addValidator(String name, String validatorId) {
+        this.factories.put(name, new ValidatorHandlerFactory(validatorId));
+    }
+    
+    /**
+     * Add a ValidateHandler for the specified validatorId
+     * 
+     * @see ValidateHandler
+     * @see ValidatorConfig
+     * @see javax.faces.application.Application#createValidator(java.lang.String)
+     * @param name
+     *            name to use, "foo" would be &lt;my:foo />
+     * @param validatorId
+     *            id to pass to Application instance
+     * @param type
+     *            TagHandler type that takes in a ValidatorConfig
+     */
+    protected final void addValidator(String name, String validatorId, Class type) {
         this.factories.put(name, new ValidatorHandlerFactory(validatorId));
     }
 

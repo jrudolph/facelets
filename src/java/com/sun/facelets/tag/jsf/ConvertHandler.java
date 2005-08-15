@@ -44,18 +44,27 @@ import com.sun.facelets.tag.MetaRuleset;
  * @see javax.faces.convert.Converter
  * @see javax.faces.component.ValueHolder
  * @author Jacob Hookom
- * @version $Id: ConvertHandler.java,v 1.1 2005/07/27 04:33:03 jhook Exp $
+ * @version $Id: ConvertHandler.java,v 1.2 2005/08/15 03:56:52 jhook Exp $
  */
-public abstract class ConvertHandler extends MetaTagHandler {
+public class ConvertHandler extends MetaTagHandler {
 
     private final TagAttribute binding;
+    
+    private String converterId;
 
     /**
      * @param config
+     * @deprecated
      */
     public ConvertHandler(TagConfig config) {
         super(config);
         this.binding = this.getAttribute("binding");
+        this.converterId = null;
+    }
+    
+    public ConvertHandler(ConverterConfig config) {
+        this((TagConfig) config);
+        this.converterId = config.getConverterId();
     }
 
     /**
@@ -122,7 +131,14 @@ public abstract class ConvertHandler extends MetaTagHandler {
      *            FaceletContext to use
      * @return Converter instance, cannot be null
      */
-    protected abstract Converter createConverter(FaceletContext ctx);
+    protected Converter createConverter(FaceletContext ctx) {
+        if (this.converterId == null) {
+            throw new TagException(
+                    this.tag,
+                    "Default behavior invoked of requiring a converter-id passed in the constructor, must override ConvertHandler(ConverterConfig)");
+        }
+        return ctx.getFacesContext().getApplication().createConverter(this.converterId);
+    }
 
     protected MetaRuleset createMetaRuleset(Class type) {
         return super.createMetaRuleset(type).ignore("binding");

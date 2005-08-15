@@ -17,7 +17,6 @@ package com.sun.facelets;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -25,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -57,7 +55,7 @@ import com.sun.facelets.util.FacesAPI;
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.36 2005/08/13 03:55:09 jhook Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.37 2005/08/15 03:56:55 jhook Exp $
  */
 public class FaceletViewHandler extends ViewHandler {
 

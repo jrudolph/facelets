@@ -19,9 +19,9 @@ import javax.faces.validator.Validator;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.tag.TagAttribute;
-import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.MetaRuleset;
 import com.sun.facelets.tag.jsf.ValidateHandler;
+import com.sun.facelets.tag.jsf.ValidatorConfig;
 
 /**
  * Register a named Validator instance on the UIComponent associated with the
@@ -30,13 +30,13 @@ import com.sun.facelets.tag.jsf.ValidateHandler;
  * documentation</a>.
  * 
  * @author Jacob Hookom
- * @version $Id: ValidateDelegateHandler.java,v 1.1 2005/07/27 04:33:06 jhook Exp $
+ * @version $Id: ValidateDelegateHandler.java,v 1.2 2005/08/15 03:56:53 jhook Exp $
  */
 public final class ValidateDelegateHandler extends ValidateHandler {
 
     private final TagAttribute validatorId;
 
-    public ValidateDelegateHandler(TagConfig config) {
+    public ValidateDelegateHandler(ValidatorConfig config) {
         super(config);
         this.validatorId = this.getRequiredAttribute("validatorId");
     }

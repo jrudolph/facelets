@@ -22,9 +22,9 @@ import javax.faces.convert.Converter;
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
 import com.sun.facelets.tag.TagAttribute;
-import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.MetaRuleset;
 import com.sun.facelets.tag.jsf.ConvertHandler;
+import com.sun.facelets.tag.jsf.ConverterConfig;
 
 /**
  * Register a named Converter instance on the UIComponent associated with the
@@ -33,7 +33,7 @@ import com.sun.facelets.tag.jsf.ConvertHandler;
  * documentation</a>.
  * 
  * @author Jacob Hookom
- * @version $Id: ConvertDelegateHandler.java,v 1.1 2005/07/27 04:33:05 jhook Exp $
+ * @version $Id: ConvertDelegateHandler.java,v 1.2 2005/08/15 03:56:53 jhook Exp $
  */
 public final class ConvertDelegateHandler extends ConvertHandler {
 
@@ -42,7 +42,7 @@ public final class ConvertDelegateHandler extends ConvertHandler {
     /**
      * @param config
      */
-    public ConvertDelegateHandler(TagConfig config) {
+    public ConvertDelegateHandler(ConverterConfig config) {
         super(config);
         this.converterId = this.getRequiredAttribute("converterId");
     }
