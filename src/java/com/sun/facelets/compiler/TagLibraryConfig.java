@@ -45,7 +45,7 @@ import com.sun.facelets.util.Classpath;
  * {@link java.net.URL URL} source.
  * 
  * @author Jacob Hookom
- * @version $Id: TagLibraryConfig.java,v 1.5 2005/07/25 02:26:50 jhook Exp $
+ * @version $Id: TagLibraryConfig.java,v 1.6 2005/08/15 04:53:43 adamwiner Exp $
  */
 public final class TagLibraryConfig {
 
@@ -64,10 +64,25 @@ public final class TagLibraryConfig {
             this.addConverter(name, id);
         }
 
+        public void putConverter(String name, String id, Class handlerClass) {
+            ParameterCheck.notNull("name", name);
+            ParameterCheck.notNull("id", id);
+            ParameterCheck.notNull("handlerClass", handlerClass);
+            this.addConverter(name, id, handlerClass);
+        }
+
+
         public void putValidator(String name, String id) {
             ParameterCheck.notNull("name", name);
             ParameterCheck.notNull("id", id);
             this.addValidator(name, id);
+        }
+
+        public void putValidator(String name, String id, Class handlerClass) {
+            ParameterCheck.notNull("name", name);
+            ParameterCheck.notNull("id", id);
+            ParameterCheck.notNull("handlerClass", handlerClass);
+            this.addValidator(name, id, handlerClass);
         }
 
         public void putTagHandler(String name, Class type) {
@@ -76,12 +91,21 @@ public final class TagLibraryConfig {
             this.addTagHandler(name, type);
         }
 
-        public void putComponent(String name, String componentId,
-                String rendererId) {
+        public void putComponent(String name, String componentType,
+                String rendererType) {
             ParameterCheck.notNull("name", name);
-            ParameterCheck.notNull("componentId", componentId);
-            this.addComponent(name, componentId, rendererId);
+            ParameterCheck.notNull("componentType", componentType);
+            this.addComponent(name, componentType, rendererType);
         }
+
+        public void putComponent(String name, String componentType,
+                String rendererType, Class handlerClass) {
+            ParameterCheck.notNull("name", name);
+            ParameterCheck.notNull("componentType", componentType);
+            ParameterCheck.notNull("handlerClass", handlerClass);
+            this.addComponent(name, componentType, rendererType, handlerClass);
+        }
+
 
         public void putUserTag(String name, URL source) {
             ParameterCheck.notNull("name", name);
@@ -117,6 +141,8 @@ public final class TagLibraryConfig {
         
         private String functionName;
         
+        private Class handlerClass;
+
         private Class functionClass;
         
         private String functionSignature;
@@ -170,23 +196,53 @@ public final class TagLibraryConfig {
                     
                     TagLibraryImpl impl = (TagLibraryImpl) this.library;
                     
-                    if ("handler-class".equals(qName)) {
+                    if ("tag".equals(qName)) {
+                        if (this.handlerClass != null) {
+                            impl.putTagHandler(this.tagName, this.handlerClass);
+                        }
+                    }
+                    else if ("handler-class".equals(qName)) {
                         String cName = this.captureBuffer();
-                        Class c = this.createClass(TagHandler.class, cName);
-                        impl.putTagHandler(this.tagName, c);
+                        this.handlerClass = this.createClass(
+                                                  TagHandler.class, cName);
                     }
                     else if ("component".equals(qName)) {
-                        impl.putComponent(this.tagName,
-                                          this.componentType,
-                                          this.rendererType);
+                        if (this.handlerClass != null) {
+                            impl.putComponent(this.tagName,
+                                              this.componentType,
+                                              this.rendererType,
+                                              this.handlerClass);
+                            this.handlerClass = null;
+                        }
+                        else {
+                            impl.putComponent(this.tagName,
+                                              this.componentType,
+                                              this.rendererType);
+                        }
                     }
                     else if ("converter-id".equals(qName)) {
-                        impl.putConverter(this.tagName,
-                                          this.captureBuffer());
+                        if (this.handlerClass != null) {
+                            impl.putConverter(this.tagName,
+                                              this.captureBuffer(),
+                                              handlerClass);
+                            this.handlerClass = null;
+                        }
+                        else {
+                            impl.putConverter(this.tagName,
+                                              this.captureBuffer());
+                        }
                     }
                     else if ("validator-id".equals(qName)) {
-                        impl.putValidator(this.tagName,
-                                          this.captureBuffer());
+                        if (this.handlerClass != null) {
+                            impl.putValidator(this.tagName,
+                                              this.captureBuffer(),
+                                              handlerClass);
+                            this.handlerClass = null;
+                        }
+                        else {
+                            impl.putValidator(this.tagName,
+                                              this.captureBuffer());
+                        }
                     }
                     else  if ("source".equals(qName)) {
                         String path = this.captureBuffer();
