@@ -5,6 +5,7 @@ public final class Employee {
     private String firstName;
     private String lastName;
     private long id;
+    private boolean management;
     
     public Employee() {
         super();
@@ -32,6 +33,14 @@ public final class Employee {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
+    }
+
+    public boolean isManagement() {
+        return management;
+    }
+
+    public void setManagement(boolean management) {
+        this.management = management;
     }
 
 }

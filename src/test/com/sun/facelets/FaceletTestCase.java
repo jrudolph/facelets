@@ -145,9 +145,11 @@ public abstract class FaceletTestCase extends TestCase {
             this.factoryLifecycle = (LifecycleFactory) FactoryFinder
                     .getFactory(FactoryFinder.LIFECYCLE_FACTORY);
 
+            /*
             Application application = this.factoryApplication.getApplication();
             application.setViewHandler(new FaceletViewHandler(application
                     .getViewHandler()));
+            */
         }
     }
 
