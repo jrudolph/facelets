@@ -36,7 +36,7 @@ import com.sun.facelets.tag.TagHandler;
 
 /**
  * @author Jacob Hookom
- * @version $Id: ForEachHandler.java,v 1.2 2005/07/20 06:37:09 jhook Exp $
+ * @version $Id: ForEachHandler.java,v 1.3 2005/08/17 03:52:57 jhook Exp $
  */
 public final class ForEachHandler extends TagHandler {
 
@@ -144,7 +144,7 @@ public final class ForEachHandler extends TagHandler {
                             if (t || srcVE == null) {
                                 ctx.setAttribute(v, value);
                             } else {
-                                ve = this.getVarExpr(srcVE, src, value, i);
+                                ve = this.getVarExpr(srcVE, src, value, i - 1);
                                 vars.setVariable(v, ve);
                             }
                         }
