@@ -1,5 +1,8 @@
 package com.sun.facelets.tag.jstl.core;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.faces.component.UIComponent;
@@ -35,6 +38,27 @@ public final class JstlCoreTestCase extends FaceletTestCase {
         at.apply(faces, root);
         c = root.findComponent("form");
         assertNull("form is not null", c);
+    }
+    
+    public void testForEach() throws Exception {
+        FacesContext faces = FacesContext.getCurrentInstance();
+        Map session = faces.getExternalContext().getSessionMap();
+        Collection c = new ArrayList();
+        for (int i = 0; i < 10; i++) {
+            c.add("" + i);
+        }
+        session.put("list", c);
+        Map m = new HashMap();
+        for (int i = 0; i < 10; i++) {
+            m.put("" + i, "" + i);
+        }
+        
+        FaceletFactory f = FaceletFactory.getInstance();
+        Facelet at = f.getFacelet("forEach.xml");
+        
+        UIViewRoot root = faces.getViewRoot();
+        at.apply(faces, root);
+        System.out.println(root);
     }
 
 }
