@@ -55,7 +55,7 @@ import com.sun.facelets.util.FacesAPI;
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.37 2005/08/15 03:56:55 jhook Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.38 2005/08/23 23:08:14 jhook Exp $
  */
 public class FaceletViewHandler extends ViewHandler {
 
@@ -368,8 +368,10 @@ public class FaceletViewHandler extends ViewHandler {
         encoding = writer.getCharacterEncoding();
 
         // apply them to the response
-        response.setContentType(contentType);
-        response.setCharacterEncoding(encoding);
+        response.setContentType(contentType + "; charset=" + encoding);
+        
+        // removed 2005.8.23 to comply with J2EE 1.3
+        //response.setCharacterEncoding(encoding);
 
         // Now, clone with the real writer
         writer = writer.cloneWithWriter(response.getWriter());
