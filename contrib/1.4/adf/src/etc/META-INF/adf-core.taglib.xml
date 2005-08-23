@@ -1,0 +1,706 @@
+<?xml version="1.0"?>
+<!DOCTYPE facelet-taglib PUBLIC
+  "-//Sun Microsystems, Inc.//DTD Facelet Taglib 1.0//EN"
+  "http://java.sun.com/dtd/facelet-taglib_1_0.dtd">
+<facelet-taglib xmlns="http://java.sun.com/JSF/Facelet">
+  <namespace>http://xmlns.oracle.com/adf/faces</namespace>
+
+  <tag>
+    <tag-name>selectInputText</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreSelectInputText</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>regionDef</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreRegionDef</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>panelPage</tag-name>
+    <component>
+      <component-type>oracle.adf.CorePanelPage</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>menuBar</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreMenuBar</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>menuList</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreMenuList</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>selectInputDate</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreSelectInputDate</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>panelLabelAndMessage</tag-name>
+    <component>
+      <component-type>oracle.adf.CorePanelLabelAndMessage</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>selectOneListbox</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreSelectOneListbox</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>tree</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreTree</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>panelGroup</tag-name>
+    <component>
+      <component-type>oracle.adf.CorePanelGroup</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>iterator</tag-name>
+    <component>
+      <component-type>oracle.adf.Iterator</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>panelPartialRoot</tag-name>
+    <component>
+      <component-type>oracle.adf.CorePanelPartialRoot</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>document</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreDocument</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>resetButton</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreResetButton</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>importScript</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreImportScript</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>menuPath</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreMenuPath</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>selectManyShuttle</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreSelectManyShuttle</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>objectSpacer</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreObjectSpacer</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>objectIcon</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreObjectIcon</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>form</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreForm</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>menuChoice</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreMenuChoice</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>selectInputColor</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreSelectInputColor</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>selectBooleanCheckbox</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreSelectBooleanCheckbox</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>selectItem</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreSelectItem</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>table</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreTable</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>panelHeader</tag-name>
+    <component>
+      <component-type>oracle.adf.CorePanelHeader</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>selectOneRadio</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreSelectOneRadio</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>message</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreMessage</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>messages</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreMessages</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>showOnePanel</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreShowOnePanel</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>tableSelectOne</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreTableSelectOne</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>panelList</tag-name>
+    <component>
+      <component-type>oracle.adf.CorePanelList</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>selectOrderShuttle</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreSelectOrderShuttle</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>processTrain</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreProcessTrain</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>tableSelectMany</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreTableSelectMany</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>subform</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreSubform</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>inputFile</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreInputFile</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>panelForm</tag-name>
+    <component>
+      <component-type>oracle.adf.CorePanelForm</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>showOneRadio</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreShowOneRadio</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>switcher</tag-name>
+    <component>
+      <component-type>oracle.adf.Switcher</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>menuTabs</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreMenuTabs</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>selectOneChoice</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreSelectOneChoice</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>commandLink</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreCommandLink</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>panelTip</tag-name>
+    <component>
+      <component-type>oracle.adf.CorePanelTip</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>panelButtonBar</tag-name>
+    <component>
+      <component-type>oracle.adf.CorePanelButtonBar</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>showOneTab</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreShowOneTab</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>panelBox</tag-name>
+    <component>
+      <component-type>oracle.adf.CorePanelBox</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>panelSideBar</tag-name>
+    <component>
+      <component-type>oracle.adf.CorePanelSideBar</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>page</tag-name>
+    <component>
+      <component-type>oracle.adf.CorePage</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>singleStepButtonBar</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreSingleStepButtonBar</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>treeTable</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreTreeTable</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>selectManyListbox</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreSelectManyListbox</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>panelPageHeader</tag-name>
+    <component>
+      <component-type>oracle.adf.CorePanelPageHeader</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>progressIndicator</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreProgressIndicator</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>commandButton</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreCommandButton</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>outputText</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreOutputText</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>menuTree</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreMenuTree</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>selectRangeChoiceBar</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreSelectRangeChoiceBar</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>goLink</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreGoLink</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>objectLegend</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreObjectLegend</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>goMenuItem</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreGoMenuItem</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>outputFormatted</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreOutputFormatted</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>objectImage</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreObjectImage</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>inputHidden</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreInputHidden</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>commandMenuItem</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreCommandMenuItem</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>chooseDate</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreChooseDate</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>showDetail</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreShowDetail</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>panelBorder</tag-name>
+    <component>
+      <component-type>oracle.adf.CorePanelBorder</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>selectBooleanRadio</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreSelectBooleanRadio</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>menuButtons</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreMenuButtons</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>objectSeparator</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreObjectSeparator</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>outputLabel</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreOutputLabel</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>goButton</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreGoButton</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>column</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreColumn</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>showDetailItem</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreShowDetailItem</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>showOneChoice</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreShowOneChoice</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>chooseColor</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreChooseColor</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>inputText</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreInputText</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>processChoiceBar</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreProcessChoiceBar</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>showDetailHeader</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreShowDetailHeader</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>objectMedia</tag-name>
+    <component>
+      <component-type>oracle.adf.CoreObjectMedia</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>poll</tag-name>
+    <component>
+      <component-type>oracle.adf.CorePoll</component-type>
+      <handler-class>com.sun.facelets.oracle.adf.AdfComponentHandler</handler-class>
+    </component>
+  </tag>
+
+  <tag>
+    <tag-name>convertColor</tag-name>
+    <converter>
+      <converter-id>oracle.adf.Color</converter-id>
+    </converter>
+  </tag>
+
+  <tag>
+    <tag-name>convertDateTime</tag-name>
+    <converter>
+      <converter-id>oracle.adf.DateTime</converter-id>
+    </converter>
+  </tag>
+
+  <tag>
+    <tag-name>convertNumber</tag-name>
+    <converter>
+      <converter-id>oracle.adf.Number</converter-id>
+    </converter>
+  </tag>
+
+  <tag>
+    <tag-name>validateByteLength</tag-name>
+    <validator>
+      <validator-id>oracle.adf.ByteLength</validator-id>
+    </validator>
+  </tag>
+
+  <tag>
+    <tag-name>validateDateTimeRange</tag-name>
+    <validator>
+      <validator-id>oracle.adf.DateTimeRange</validator-id>
+    </validator>
+  </tag>
+
+
+  <tag>
+    <tag-name>validateRegExp</tag-name>
+    <validator>
+      <validator-id>oracle.adf.RegExp</validator-id>
+    </validator> 
+  </tag>
+</facelet-taglib>

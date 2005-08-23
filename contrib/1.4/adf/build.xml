@@ -1,0 +1,74 @@
+<project name="ADFFacelets" default="jar" basedir=".">
+
+  <property name="build"               value="build"/>
+  <property name="dist"                value="dist"/>
+  <property name="jar"                 value="adf-facelets.jar"/>
+  <property name="facelets.home"       value="../../.."/>
+  <property name="compile.debug"       value="true"/>
+  <property name="compile.deprecation" value="false"/>
+  <property name="compile.source"      value="1.4"/>
+  <property name="compile.target"      value="1.4"/>
+
+  <path id="compile.classpath">
+    <pathelement location="${build.home}/classes"/>
+    <fileset dir="${facelets.home}/lib" includes="*.jar"/>
+    <fileset dir="${facelets.home}/dist" includes="*.jar"/>
+  </path>
+
+  <target name="clean"
+   description="Clean previous build results">
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
+    <delete file="${jar}"/>
+  </target>
+
+  <target name="prepare">
+                                                                                
+    <!-- "Build" Hierarchy -->
+    <mkdir dir="${build}"/>
+    <mkdir dir="${build}/classes"/>
+
+    <!-- "Dist" Hierarchy -->
+    <mkdir dir="${dist}"/>
+
+    <uptodate property="docs.uptodate" targetfile="${build}/docs/api/index.html">
+      <srcfiles dir="src" includes="**/*.java" />
+    </uptodate>
+  </target>
+  
+  <target name="jar" depends="compile"
+          description="Create jar">
+                                                                                
+    <!-- Create JAR file -->
+    <jar jarfile="${dist}/${jar}"
+         basedir="${build}/classes">
+
+    </jar>
+  </target>
+
+  <target name="compile" depends="prepare"
+          description="Compile API classes (Default)">
+    <javac srcdir="src/java"
+           destdir="${build}/classes"
+           debug="${compile.debug}"
+           deprecation="${compile.deprecation}"
+           source="${compile.source}"
+           target="${compile.target}">
+        <classpath refid="compile.classpath"/>
+    </javac>
+
+    <copy todir="${build}/classes">
+      <fileset dir="src/etc">
+        <include name="**/*.xml"/>
+      </fileset>
+    </copy>
+
+  </target>
+
+
+  <target name="dist" depends="prepare,compile,jar"
+   description="Create binary distribution">
+  </target>
+
+
+</project>
