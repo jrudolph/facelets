@@ -169,7 +169,9 @@
     <!-- Create JAR file -->
     <jar jarfile="${dist}/${jar}"
          basedir="${build}/classes">
-
+      <manifest>
+        <attribute name="Implementation-Version" value="${release.version}"/>
+      </manifest>
     </jar>
   </target>
  
