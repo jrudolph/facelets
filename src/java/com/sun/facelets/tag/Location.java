@@ -1,5 +1,4 @@
 /**
- * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * Licensed under the Common Development and Distribution License,
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,7 +21,7 @@ package com.sun.facelets.tag;
  * @see com.sun.facelets.tag.Tag
  * @see com.sun.facelets.tag.TagAttribute
  * @author Jacob Hookom
- * @version $Id: Location.java,v 1.2 2005/07/20 06:37:07 jhook Exp $
+ * @version $Id: Location.java,v 1.3 2005/08/24 04:38:47 jhook Exp $
  */
 public final class Location {
 

@@ -1,5 +1,4 @@
 /**
- * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * Licensed under the Common Development and Distribution License,
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -29,7 +28,7 @@ import com.sun.facelets.el.TagValueExpression;
  * Representation of a Tag's attribute in a Facelet File
  * 
  * @author Jacob Hookom
- * @version $Id: TagAttribute.java,v 1.5 2005/07/20 06:37:07 jhook Exp $
+ * @version $Id: TagAttribute.java,v 1.6 2005/08/24 04:38:48 jhook Exp $
  */
 public final class TagAttribute {
 

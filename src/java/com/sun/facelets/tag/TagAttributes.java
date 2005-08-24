@@ -1,5 +1,4 @@
 /**
- * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * Licensed under the Common Development and Distribution License,
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -27,7 +26,7 @@ import java.util.Set;
  * @see com.sun.facelets.tag.Tag
  * @see com.sun.facelets.tag.TagAttribute
  * @author Jacob Hookom
- * @version $Id: TagAttributes.java,v 1.1 2005/05/21 17:54:39 jhook Exp $
+ * @version $Id: TagAttributes.java,v 1.2 2005/08/24 04:38:48 jhook Exp $
  */
 public final class TagAttributes {
     private final static TagAttribute[] EMPTY = new TagAttribute[0];

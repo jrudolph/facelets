@@ -1,5 +1,4 @@
 /**
- * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * Licensed under the Common Development and Distribution License,
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -28,7 +27,7 @@ import javax.el.VariableMapper;
  * VariableMapper if the Map doesn't contain the ValueExpression requested.
  * 
  * @author Jacob Hookom
- * @version $Id: VariableMapperWrapper.java,v 1.1 2005/05/21 17:54:53 jhook Exp $
+ * @version $Id: VariableMapperWrapper.java,v 1.2 2005/08/24 04:38:57 jhook Exp $
  */
 public final class VariableMapperWrapper extends VariableMapper {
 

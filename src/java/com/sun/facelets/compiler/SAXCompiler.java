@@ -1,5 +1,4 @@
 /**
- * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * Licensed under the Common Development and Distribution License,
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -47,7 +46,7 @@ import com.sun.facelets.tag.TagAttributes;
  * @see com.sun.facelets.compiler.Compiler
  * 
  * @author Jacob Hookom
- * @version $Id: SAXCompiler.java,v 1.3 2005/07/31 22:28:48 jhook Exp $
+ * @version $Id: SAXCompiler.java,v 1.4 2005/08/24 04:38:54 jhook Exp $
  */
 public final class SAXCompiler extends Compiler {
 

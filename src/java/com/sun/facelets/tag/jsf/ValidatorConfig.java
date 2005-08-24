@@ -1,5 +1,4 @@
 /**
- * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * Licensed under the Common Development and Distribution License,
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,7 +21,7 @@ import com.sun.facelets.tag.TagConfig;
  * 
  * @see com.sun.facelets.tag.jsf.ValidateHandler
  * @author Jacob Hookom
- * @version $Id: ValidatorConfig.java,v 1.1 2005/08/15 03:56:52 jhook Exp $
+ * @version $Id: ValidatorConfig.java,v 1.2 2005/08/24 04:38:51 jhook Exp $
  */
 public interface ValidatorConfig extends TagConfig {
 

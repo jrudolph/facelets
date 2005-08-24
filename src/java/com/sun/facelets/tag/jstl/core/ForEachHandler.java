@@ -1,5 +1,4 @@
 /**
- * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * Licensed under the Common Development and Distribution License,
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -36,7 +35,7 @@ import com.sun.facelets.tag.TagHandler;
 
 /**
  * @author Jacob Hookom
- * @version $Id: ForEachHandler.java,v 1.3 2005/08/17 03:52:57 jhook Exp $
+ * @version $Id: ForEachHandler.java,v 1.4 2005/08/24 04:38:52 jhook Exp $
  */
 public final class ForEachHandler extends TagHandler {
 

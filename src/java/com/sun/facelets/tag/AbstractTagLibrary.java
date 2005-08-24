@@ -1,5 +1,4 @@
 /**
- * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * Licensed under the Common Development and Distribution License,
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -41,7 +40,7 @@ import com.sun.facelets.tag.jsf.ValidatorConfig;
  * Base class for defining TagLibraries in Java
  * 
  * @author Jacob Hookom
- * @version $Id: AbstractTagLibrary.java,v 1.7 2005/08/15 19:36:13 jhook Exp $
+ * @version $Id: AbstractTagLibrary.java,v 1.8 2005/08/24 04:38:46 jhook Exp $
  */
 public abstract class AbstractTagLibrary implements TagLibrary {
 

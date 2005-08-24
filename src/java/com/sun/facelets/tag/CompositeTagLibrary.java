@@ -1,5 +1,4 @@
 /**
- * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * Licensed under the Common Development and Distribution License,
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -27,7 +26,7 @@ import com.sun.facelets.util.ParameterCheck;
  * children handles the requested method.
  * 
  * @author Jacob Hookom
- * @version $Id: CompositeTagLibrary.java,v 1.2 2005/07/23 21:16:24 jhook Exp $
+ * @version $Id: CompositeTagLibrary.java,v 1.3 2005/08/24 04:38:47 jhook Exp $
  */
 public final class CompositeTagLibrary implements TagLibrary {
 

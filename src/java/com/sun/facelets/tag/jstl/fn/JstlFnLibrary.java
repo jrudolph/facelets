@@ -1,5 +1,4 @@
 /**
- * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * Licensed under the Common Development and Distribution License,
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -30,7 +29,7 @@ import com.sun.facelets.tag.TagLibrary;
  * Library for JSTL Functions
  * 
  * @author Jacob Hookom
- * @version $Id: JstlFnLibrary.java,v 1.1 2005/07/18 08:25:40 jhook Exp $
+ * @version $Id: JstlFnLibrary.java,v 1.2 2005/08/24 04:38:59 jhook Exp $
  */
 public class JstlFnLibrary implements TagLibrary {
 

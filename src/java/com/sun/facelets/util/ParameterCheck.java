@@ -1,5 +1,4 @@
 /**
- * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * Licensed under the Common Development and Distribution License,
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,7 +16,7 @@ package com.sun.facelets.util;
 
 /**
  * @author Jacob Hookom
- * @version $Id: ParameterCheck.java,v 1.1 2005/07/23 21:16:23 jhook Exp $
+ * @version $Id: ParameterCheck.java,v 1.2 2005/08/24 04:38:53 jhook Exp $
  */
 public final class ParameterCheck {
 

@@ -6,8 +6,11 @@
 <body>
 
 <ui:composition>
-<c:forEach var="i" items="#{list}">A#{i}</c:forEach>
-<c:forEach var="i" begin="2" items="#{list}">B#{i}</c:forEach>
+<c:forEach var="i" items="#{list}">
+	<c:if test="#{i != '5'}">
+		<h:inputText value="#{i}"/>
+	</c:if>
+</c:forEach>
 </ui:composition>
 
 

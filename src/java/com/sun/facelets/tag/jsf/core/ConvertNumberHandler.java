@@ -1,5 +1,4 @@
 /**
- * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * Licensed under the Common Development and Distribution License,
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -35,7 +34,7 @@ import com.sun.facelets.tag.jsf.ConverterConfig;
  * documentation</a>.
  * 
  * @author Jacob Hookom
- * @version $Id: ConvertNumberHandler.java,v 1.2 2005/08/15 03:56:53 jhook Exp $
+ * @version $Id: ConvertNumberHandler.java,v 1.3 2005/08/24 04:38:49 jhook Exp $
  */
 public final class ConvertNumberHandler extends ConvertHandler {
 

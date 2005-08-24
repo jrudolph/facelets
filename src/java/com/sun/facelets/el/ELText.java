@@ -1,5 +1,4 @@
 /**
- * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * Licensed under the Common Development and Distribution License,
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -30,7 +29,7 @@ import javax.el.ValueExpression;
  * parser accepts either <code>${..}</code> or <code>#{..}</code>.
  * 
  * @author Jacob Hookom
- * @version $Id: ELText.java,v 1.2 2005/07/20 05:27:46 jhook Exp $
+ * @version $Id: ELText.java,v 1.3 2005/08/24 04:38:57 jhook Exp $
  */
 public class ELText {
 

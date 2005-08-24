@@ -1,5 +1,4 @@
 /**
- * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * Licensed under the Common Development and Distribution License,
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -25,7 +24,7 @@ import javax.faces.component.UIComponent;
  * A participant in UIComponent tree building
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletHandler.java,v 1.1 2005/05/21 17:55:00 jhook Exp $
+ * @version $Id: FaceletHandler.java,v 1.2 2005/08/24 04:38:59 jhook Exp $
  */
 public interface FaceletHandler {
 

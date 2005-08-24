@@ -1,5 +1,4 @@
 /**
- * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * Licensed under the Common Development and Distribution License,
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -42,7 +41,7 @@ import com.sun.facelets.util.FacesAPI;
  * A Compiler instance may handle compiling multiple sources
  * 
  * @author Jacob Hookom
- * @version $Id: Compiler.java,v 1.10 2005/08/02 05:02:04 jhook Exp $
+ * @version $Id: Compiler.java,v 1.11 2005/08/24 04:38:54 jhook Exp $
  */
 public abstract class Compiler {
 

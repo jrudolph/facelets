@@ -1,5 +1,4 @@
 /**
- * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * Licensed under the Common Development and Distribution License,
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -23,7 +22,7 @@ import javax.faces.FacesException;
  * A library of Tags associated with one or more namespaces.
  * 
  * @author Jacob Hookom
- * @version $Id: TagLibrary.java,v 1.1 2005/05/21 17:54:40 jhook Exp $
+ * @version $Id: TagLibrary.java,v 1.2 2005/08/24 04:38:48 jhook Exp $
  */
 public interface TagLibrary {
 

@@ -1,5 +1,4 @@
 /**
- * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * Licensed under the Common Development and Distribution License,
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -45,7 +44,7 @@ import com.sun.facelets.util.Classpath;
  * {@link java.net.URL URL} source.
  * 
  * @author Jacob Hookom
- * @version $Id: TagLibraryConfig.java,v 1.6 2005/08/15 04:53:43 adamwiner Exp $
+ * @version $Id: TagLibraryConfig.java,v 1.7 2005/08/24 04:38:54 jhook Exp $
  */
 public final class TagLibraryConfig {
 

@@ -1,5 +1,4 @@
 /**
- * Copyright 2005 Sun Microsystems, Inc. All rights reserved.
  * Licensed under the Common Development and Distribution License,
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -31,7 +30,7 @@ import javax.faces.context.FacesContext;
  * Context representative of a single request from a Facelet
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletContext.java,v 1.3 2005/07/20 05:00:28 jhook Exp $
+ * @version $Id: FaceletContext.java,v 1.4 2005/08/24 04:38:58 jhook Exp $
  */
 public abstract class FaceletContext extends ELContext {
 
