@@ -35,7 +35,7 @@ import com.sun.facelets.tag.ui.TemplateManager;
  * sets them on the FaceletContext before including the targeted Facelet file.
  * 
  * @author Jacob Hookom
- * @version $Id: UserTagHandler.java,v 1.4 2005/08/24 04:38:48 jhook Exp $
+ * @version $Id: UserTagHandler.java,v 1.5 2005/08/25 14:15:24 jhook Exp $
  */
 final class UserTagHandler extends TagHandler implements TemplateClient {
 
@@ -66,20 +66,26 @@ final class UserTagHandler extends TagHandler implements TemplateClient {
             throws IOException, FacesException, FaceletException, ELException {
         VariableMapper orig = ctx.getVariableMapper();
         TemplateManager mngr = TemplateManager.getInstance(ctx);
-        try {
-            if (this.vars.length > 0) {
-                VariableMapper varMapper = new VariableMapperWrapper(orig);
-                ctx.setVariableMapper(varMapper);
-                for (int i = 0; i < this.vars.length; i++) {
-                    varMapper.setVariable(this.vars[i].getLocalName(),
-                            this.vars[i].getValueExpression(ctx, Object.class));
-                }
+        
+        // setup a variable map
+        if (this.vars.length > 0) {
+            VariableMapper varMapper = new VariableMapperWrapper(orig);
+            for (int i = 0; i < this.vars.length; i++) {
+                varMapper.setVariable(this.vars[i].getLocalName(), this.vars[i]
+                        .getValueExpression(ctx, Object.class));
             }
+            ctx.setVariableMapper(varMapper);
+        }
+        
+        // eval include
+        try {
             mngr.pushClient(this);
             ctx.includeFacelet(parent, this.location);
         } catch (FileNotFoundException e) {
             throw new TagException(this.tag, e.getMessage());
         } finally {
+            
+            // make sure we undo our changes
             mngr.popClient();
             ctx.setVariableMapper(orig);
         }
