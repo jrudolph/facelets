@@ -703,4 +703,9 @@
       <validator-id>oracle.adf.RegExp</validator-id>
     </validator> 
   </tag>
+
+  <tag>
+    <tag-name>setActionListener</tag-name>
+    <handler-class>com.sun.facelets.oracle.adf.SetActionListenerTag</handler-class>
+  </tag>
 </facelet-taglib>
