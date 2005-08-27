@@ -33,7 +33,7 @@ import com.sun.facelets.util.FastWriter;
 
 /**
  * @author Jacob Hookom
- * @version $Id: UIDebug.java,v 1.2 2005/08/24 04:38:56 jhook Exp $
+ * @version $Id: UIDebug.java,v 1.3 2005/08/27 18:36:15 jhook Exp $
  */
 public final class UIDebug extends UIComponentBase {
 
@@ -41,7 +41,7 @@ public final class UIDebug extends UIComponentBase {
     public final static String COMPONENT_FAMILY = "facelets";
     private static long nextId = System.currentTimeMillis();
     private final static String KEY = "facelets.ui.DebugOutput";
-    public final static String DEFAULT_HOTKEY = "d";
+    public final static String DEFAULT_HOTKEY = "D";
     private String hotkey = DEFAULT_HOTKEY;
     
     public UIDebug() {
