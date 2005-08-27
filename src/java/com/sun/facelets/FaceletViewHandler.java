@@ -54,7 +54,7 @@ import com.sun.facelets.util.FacesAPI;
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.39 2005/08/24 04:38:59 jhook Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.40 2005/08/27 15:36:09 jhook Exp $
  */
 public class FaceletViewHandler extends ViewHandler {
 
@@ -106,6 +106,8 @@ public class FaceletViewHandler extends ViewHandler {
     public final static String PARAM_BUFFER_SIZE = "facelets.BUFFER_SIZE";
 
     protected final static String STATE_KEY = "com.sun.facelets.VIEW_STATE";
+    
+    protected final static Object STATE_NULL = new Object();
 
     private final ViewHandler parent;
 
@@ -579,16 +581,21 @@ public class FaceletViewHandler extends ViewHandler {
     }
 
     public void writeState(FacesContext context) throws IOException {
-        StateManager stateMgr = context.getApplication().getStateManager();
-        ExternalContext extContext = context.getExternalContext();
-        Object state = extContext.getRequestMap().get(STATE_KEY);
-        if (state == null) {
-            state = stateMgr.saveSerializedView(context);
-            extContext.getRequestMap().put(STATE_KEY, state);
-        }
-        if (stateMgr.isSavingStateInClient(context)
-                || FacesAPI.getVersion() >= 12) {
-            stateMgr.writeState(context, (StateManager.SerializedView) state);
+        if (handledByFacelets(context.getViewRoot())) {
+            StateManager stateMgr = context.getApplication().getStateManager();
+            ExternalContext extContext = context.getExternalContext();
+            Object state = extContext.getRequestMap().get(STATE_KEY);
+            if (state == null) {
+                state = stateMgr.saveSerializedView(context);
+                if (state == null) {
+                    state = STATE_NULL;
+                }
+                extContext.getRequestMap().put(STATE_KEY, state);
+            }
+            if (stateMgr.isSavingStateInClient(context) || FacesAPI.getVersion() >= 12) {
+                stateMgr.writeState(context,
+                        (StateManager.SerializedView) state);
+            }
         }
     }
 
