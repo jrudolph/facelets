@@ -54,7 +54,7 @@ import com.sun.facelets.util.FacesAPI;
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.40 2005/08/27 15:36:09 jhook Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.41 2005/08/27 15:44:41 jhook Exp $
  */
 public class FaceletViewHandler extends ViewHandler {
 
@@ -596,6 +596,8 @@ public class FaceletViewHandler extends ViewHandler {
                 stateMgr.writeState(context,
                         (StateManager.SerializedView) state);
             }
+        } else {
+            this.parent.writeState(context);
         }
     }
 
