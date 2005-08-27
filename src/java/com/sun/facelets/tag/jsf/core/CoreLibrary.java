@@ -15,6 +15,9 @@
 package com.sun.facelets.tag.jsf.core;
 
 import javax.faces.component.UIOutput;
+import javax.faces.component.UIParameter;
+import javax.faces.component.UISelectItem;
+import javax.faces.component.UISelectItems;
 import javax.faces.convert.DateTimeConverter;
 import javax.faces.convert.NumberConverter;
 import javax.faces.validator.DoubleRangeValidator;
@@ -29,7 +32,7 @@ import com.sun.facelets.tag.AbstractTagLibrary;
  * documentation</a>.
  * 
  * @author Jacob Hookom
- * @version $Id: CoreLibrary.java,v 1.5 2005/08/24 04:38:49 jhook Exp $
+ * @version $Id: CoreLibrary.java,v 1.6 2005/08/27 15:35:29 jhook Exp $
  */
 public final class CoreLibrary extends AbstractTagLibrary {
 
@@ -54,21 +57,17 @@ public final class CoreLibrary extends AbstractTagLibrary {
 
         this.addTagHandler("loadBundle", LoadBundleHandler.class);
 
-        this.addComponent("param", "javax.faces.Parameter", null);
+        this.addComponent("param", UIParameter.COMPONENT_TYPE, null);
 
-        this.addComponent("selectItem", "javax.faces.SelectItem", null);
+        this.addComponent("selectItem", UISelectItem.COMPONENT_TYPE, null);
 
-        this.addComponent("selectItems", "javax.faces.SelectItems", null);
+        this.addComponent("selectItems", UISelectItems.COMPONENT_TYPE, null);
         
         this.addValidator("validateLength", LengthValidator.VALIDATOR_ID);
         
         this.addValidator("validateLongRange", LongRangeValidator.VALIDATOR_ID);
         
         this.addValidator("validateDoubleRange", DoubleRangeValidator.VALIDATOR_ID);
-        
-        //this.addTagHandler("validateLength", ValidateLengthHandler.class);
-
-        //this.addTagHandler("validateLongRange", ValidateLongRangeHandler.class);
 
         this.addValidator("validator", null, ValidateDelegateHandler.class);
 
