@@ -14,11 +14,17 @@
 
 package com.sun.facelets.impl;
 
+import java.io.Externalizable;
 import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.logging.Level;
@@ -40,13 +46,13 @@ import com.sun.facelets.tag.jsf.ComponentSupport;
  * Default Facelet implementation.
  * 
  * @author Jacob Hookom
- * @version $Id: DefaultFacelet.java,v 1.5 2005/08/29 02:56:37 jhook Exp $
+ * @version $Id: DefaultFacelet.java,v 1.6 2005/08/29 03:34:16 jhook Exp $
  */
 final class DefaultFacelet extends Facelet {
 
     private final Logger log = Logger.getLogger("facelets.facelet");
 
-    private final static String APPLIED_KEY = "com.sun.facelets.APPLIED_TIME.";
+    private final static String APPLIED_KEY = "com.sun.facelets.APPLIED";
 
     private final String alias;
 
@@ -84,36 +90,86 @@ final class DefaultFacelet extends Facelet {
             throws IOException, FacesException, FaceletException, ELException {
         DefaultFaceletContext ctx = new DefaultFaceletContext(facesContext,
                 this);
-        //this.refresh(parent);
+        this.refresh(parent);
         ComponentSupport.markForDeletion(parent);
         this.root.apply(ctx, parent);
         ComponentSupport.finalizeForDeletion(parent);
+        this.markApplied(parent);
     }
 
-    private final void refresh(UIComponent parent) {
+    private final void refresh(UIComponent c) {
         if (this.refreshPeriod > 0) {
-            Long tm = (Long) parent.getAttributes().get(APPLIED_KEY);
 
-            // if applied earlier than this was created
-            if (tm != null && tm.longValue() < this.createTime) {
-                if (log.isLoggable(Level.INFO)) {
-                    DateFormat df = SimpleDateFormat.getTimeInstance();
-                    log.info("Facelet[" + this.alias + "] was modified @ "
-                            + df.format(new Date(this.createTime))
-                            + ", flushing children applied @ "
-                            + df.format(new Date(tm.longValue())));
+            // finally remove any children marked as deleted
+            int sz = c.getChildCount();
+            if (sz > 0) {
+                UIComponent cc = null;
+                List cl = c.getChildren();
+                ApplyToken token;
+                while (--sz >= 0) {
+                    cc = (UIComponent) cl.get(sz);
+                    if (!cc.isTransient()) {
+                        token = (ApplyToken) cc.getAttributes().get(APPLIED_KEY);
+                        if (token != null && token.time < this.createTime
+                                && token.alias.equals(this.alias)) {
+                            if (log.isLoggable(Level.INFO)) {
+                                DateFormat df = SimpleDateFormat.getTimeInstance();
+                                log.info("Facelet[" + this.alias
+                                        + "] was modified @ "
+                                        + df.format(new Date(this.createTime))
+                                        + ", flushing component applied @ "
+                                        + df.format(new Date(token.time)));
+                            }
+                            cl.remove(sz);
+                        }
+                    }
                 }
-                parent.getChildren().clear();
-                parent.getFacets().clear();
             }
 
-            tm = new Long(System.currentTimeMillis() + this.refreshPeriod);
-            if (log.isLoggable(Level.FINE)) {
-                log.fine("Setting Component Apply Time @ "
-                        + SimpleDateFormat.getTimeInstance().format(
-                                new Date(tm.longValue())));
+            // remove any facets marked as deleted
+            if (c.getFacets().size() > 0) {
+                Collection col = c.getFacets().values();
+                UIComponent fc;
+                ApplyToken token;
+                for (Iterator itr = col.iterator(); itr.hasNext();) {
+                    fc = (UIComponent) itr.next();
+                    if (!fc.isTransient()) {
+                        token = (ApplyToken) fc.getAttributes().get(APPLIED_KEY);
+                        if (token != null && token.time < this.createTime
+                                && token.alias.equals(this.alias)) {
+                            if (log.isLoggable(Level.INFO)) {
+                                DateFormat df = SimpleDateFormat.getTimeInstance();
+                                log.info("Facelet[" + this.alias
+                                        + "] was modified @ "
+                                        + df.format(new Date(this.createTime))
+                                        + ", flushing component applied @ "
+                                        + df.format(new Date(token.time)));
+                            }
+                            itr.remove();
+                        }
+                    }
+                }
             }
-            parent.getAttributes().put(APPLIED_KEY, tm);
+        }
+    }
+
+    private final void markApplied(UIComponent parent) {
+        if (this.refreshPeriod > 0) {
+            Iterator itr = parent.getFacetsAndChildren();
+            UIComponent c;
+            Map attr;
+            ApplyToken token = new ApplyToken(this.alias, System
+                    .currentTimeMillis()
+                    + this.refreshPeriod);
+            while (itr.hasNext()) {
+                c = (UIComponent) itr.next();
+                if (!c.isTransient()) {
+                    attr = c.getAttributes();
+                    if (!attr.containsKey(APPLIED_KEY)) {
+                        attr.put(APPLIED_KEY, token);
+                    }
+                }
+            }
         }
     }
 
@@ -188,8 +244,9 @@ final class DefaultFacelet extends Facelet {
      */
     private void include(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
-        //this.refresh(parent);
+        this.refresh(parent);
         this.root.apply(ctx, parent);
+        this.markApplied(parent);
     }
 
     /**
@@ -237,4 +294,28 @@ final class DefaultFacelet extends Facelet {
         f.include(ctx, parent);
     }
 
+    private static class ApplyToken implements Externalizable {
+        public String alias;
+
+        public long time;
+
+        public ApplyToken() {
+        }
+
+        public ApplyToken(String alias, long time) {
+            this.alias = alias;
+            this.time = time;
+        }
+
+        public void readExternal(ObjectInput in) throws IOException,
+                ClassNotFoundException {
+            this.alias = in.readUTF();
+            this.time = in.readLong();
+        }
+
+        public void writeExternal(ObjectOutput out) throws IOException {
+            out.writeUTF(this.alias);
+            out.writeLong(this.time);
+        }
+    }
 }
