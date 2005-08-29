@@ -32,7 +32,7 @@ import com.sun.facelets.tag.TagAttributeException;
 /**
  * 
  * @author Jacob Hookom
- * @version $Id: ComponentSupport.java,v 1.2 2005/08/24 04:38:51 jhook Exp $
+ * @version $Id: ComponentSupport.java,v 1.3 2005/08/29 03:33:54 jhook Exp $
  */
 public final class ComponentSupport {
 
@@ -57,7 +57,7 @@ public final class ComponentSupport {
             while (--sz >= 0) {
                 cc = (UIComponent) cl.get(sz);
                 if (cc.getAttributes().containsKey(MARK_DELETED)) {
-                    cl.remove(cc);
+                    cl.remove(sz);
                 }
             }
         }
