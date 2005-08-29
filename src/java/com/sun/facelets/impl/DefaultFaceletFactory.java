@@ -37,7 +37,7 @@ import com.sun.facelets.util.ParameterCheck;
  * Default FaceletFactory implementation.
  * 
  * @author Jacob Hookom
- * @version $Id: DefaultFaceletFactory.java,v 1.2 2005/08/24 04:38:58 jhook Exp $
+ * @version $Id: DefaultFaceletFactory.java,v 1.3 2005/08/29 01:53:41 jhook Exp $
  */
 public final class DefaultFaceletFactory extends FaceletFactory {
 
@@ -197,5 +197,9 @@ public final class DefaultFaceletFactory extends FaceletFactory {
      */
     public Compiler getCompiler() {
         return this.compiler;
+    }
+
+    public long getRefreshPeriod() {
+        return refreshPeriod;
     }
 }

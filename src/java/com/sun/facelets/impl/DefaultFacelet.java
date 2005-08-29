@@ -35,10 +35,12 @@ import com.sun.facelets.tag.jsf.ComponentSupport;
  * Default Facelet implementation.
  * 
  * @author Jacob Hookom
- * @version $Id: DefaultFacelet.java,v 1.2 2005/08/24 04:38:58 jhook Exp $
+ * @version $Id: DefaultFacelet.java,v 1.3 2005/08/29 01:53:41 jhook Exp $
  */
 final class DefaultFacelet extends Facelet {
 
+    private final static String APPLIED_KEY = "com.sun.facelets.APPLIED_TIME";
+    
     private final String alias;
 
     private final ExpressionFactory elFactory;
@@ -72,9 +74,24 @@ final class DefaultFacelet extends Facelet {
             throws IOException, FacesException, FaceletException, ELException {
         DefaultFaceletContext ctx = new DefaultFaceletContext(facesContext,
                 this);
+        this.refresh(parent);
         ComponentSupport.markForDeletion(parent);
         this.root.apply(ctx, parent);
         ComponentSupport.finalizeForDeletion(parent);
+    }
+    
+    private final void refresh(UIComponent parent) {
+        if (this.factory.getRefreshPeriod() > 0) {
+            Long tm = (Long) parent.getAttributes().get(APPLIED_KEY);
+
+            // if applied earlier than this was created
+            if (tm != null && tm.longValue() < this.createTime) {
+                parent.getChildren().clear();
+            }
+
+            parent.getAttributes().put(APPLIED_KEY,
+                    new Long(System.currentTimeMillis()));
+        }
     }
 
     /**
@@ -148,11 +165,7 @@ final class DefaultFacelet extends Facelet {
      */
     private void include(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
-        // should we reset the context?
-        // FaceletContext nCtx = new
-        // DefaultFaceletContext(ctx.getFacesContext(), this);
-        // nCtx.setFunctionMapper(ctx.getFunctionMapper());
-        // nCtx.setVariableMapper(ctx.getVariableMapper());
+        this.refresh(parent);
         this.root.apply(ctx, parent);
     }
 
