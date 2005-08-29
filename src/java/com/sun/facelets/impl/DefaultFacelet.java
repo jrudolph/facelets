@@ -16,8 +16,13 @@ package com.sun.facelets.impl;
 
 import java.io.IOException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.el.ELException;
 import javax.el.ExpressionFactory;
@@ -35,12 +40,14 @@ import com.sun.facelets.tag.jsf.ComponentSupport;
  * Default Facelet implementation.
  * 
  * @author Jacob Hookom
- * @version $Id: DefaultFacelet.java,v 1.3 2005/08/29 01:53:41 jhook Exp $
+ * @version $Id: DefaultFacelet.java,v 1.4 2005/08/29 02:34:01 jhook Exp $
  */
 final class DefaultFacelet extends Facelet {
 
+    private final Logger log = Logger.getLogger("facelets.facelet");
+
     private final static String APPLIED_KEY = "com.sun.facelets.APPLIED_TIME";
-    
+
     private final String alias;
 
     private final ExpressionFactory elFactory;
@@ -48,6 +55,8 @@ final class DefaultFacelet extends Facelet {
     private final DefaultFaceletFactory factory;
 
     private final long createTime;
+
+    private final long refreshPeriod;
 
     private final Map relativePaths;
 
@@ -63,6 +72,7 @@ final class DefaultFacelet extends Facelet {
         this.root = root;
         this.alias = alias;
         this.createTime = System.currentTimeMillis();
+        this.refreshPeriod = this.factory.getRefreshPeriod();
         this.relativePaths = new WeakHashMap();
     }
 
@@ -79,18 +89,30 @@ final class DefaultFacelet extends Facelet {
         this.root.apply(ctx, parent);
         ComponentSupport.finalizeForDeletion(parent);
     }
-    
+
     private final void refresh(UIComponent parent) {
-        if (this.factory.getRefreshPeriod() > 0) {
+        if (this.refreshPeriod > 0) {
             Long tm = (Long) parent.getAttributes().get(APPLIED_KEY);
 
             // if applied earlier than this was created
             if (tm != null && tm.longValue() < this.createTime) {
+                if (log.isLoggable(Level.INFO)) {
+                    DateFormat df = SimpleDateFormat.getTimeInstance();
+                    log.info("Facelet[" + this.alias + "] was modified @ "
+                            + df.format(new Date(this.createTime))
+                            + ", flushing children applied @ "
+                            + df.format(new Date(tm.longValue())));
+                }
                 parent.getChildren().clear();
             }
 
-            parent.getAttributes().put(APPLIED_KEY,
-                    new Long(System.currentTimeMillis()));
+            tm = new Long(System.currentTimeMillis() + this.refreshPeriod);
+            if (log.isLoggable(Level.FINE)) {
+                log.fine("Setting Component Apply Time @ "
+                        + SimpleDateFormat.getTimeInstance().format(
+                                new Date(tm.longValue())));
+            }
+            parent.getAttributes().put(APPLIED_KEY, tm);
         }
     }
 
