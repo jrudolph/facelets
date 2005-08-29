@@ -40,13 +40,13 @@ import com.sun.facelets.tag.jsf.ComponentSupport;
  * Default Facelet implementation.
  * 
  * @author Jacob Hookom
- * @version $Id: DefaultFacelet.java,v 1.4 2005/08/29 02:34:01 jhook Exp $
+ * @version $Id: DefaultFacelet.java,v 1.5 2005/08/29 02:56:37 jhook Exp $
  */
 final class DefaultFacelet extends Facelet {
 
     private final Logger log = Logger.getLogger("facelets.facelet");
 
-    private final static String APPLIED_KEY = "com.sun.facelets.APPLIED_TIME";
+    private final static String APPLIED_KEY = "com.sun.facelets.APPLIED_TIME.";
 
     private final String alias;
 
@@ -84,7 +84,7 @@ final class DefaultFacelet extends Facelet {
             throws IOException, FacesException, FaceletException, ELException {
         DefaultFaceletContext ctx = new DefaultFaceletContext(facesContext,
                 this);
-        this.refresh(parent);
+        //this.refresh(parent);
         ComponentSupport.markForDeletion(parent);
         this.root.apply(ctx, parent);
         ComponentSupport.finalizeForDeletion(parent);
@@ -104,6 +104,7 @@ final class DefaultFacelet extends Facelet {
                             + df.format(new Date(tm.longValue())));
                 }
                 parent.getChildren().clear();
+                parent.getFacets().clear();
             }
 
             tm = new Long(System.currentTimeMillis() + this.refreshPeriod);
@@ -187,7 +188,7 @@ final class DefaultFacelet extends Facelet {
      */
     private void include(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
-        this.refresh(parent);
+        //this.refresh(parent);
         this.root.apply(ctx, parent);
     }
 
