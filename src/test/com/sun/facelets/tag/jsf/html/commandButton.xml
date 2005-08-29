@@ -6,6 +6,9 @@
 <body>
 
 <ui:composition>
+<script type="text/javascript">
+var something = 'This is <strong>html</strong>.';
+</script>
 <h:form id="form">
 	<h:commandButton id="button" action="test" rendered="#{true}">
 		<f:param name="foo" value="bar"/>
