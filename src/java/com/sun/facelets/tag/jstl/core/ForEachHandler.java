@@ -35,7 +35,7 @@ import com.sun.facelets.tag.TagHandler;
 
 /**
  * @author Jacob Hookom
- * @version $Id: ForEachHandler.java,v 1.4 2005/08/24 04:38:52 jhook Exp $
+ * @version $Id: ForEachHandler.java,v 1.5 2005/08/30 00:59:39 jhook Exp $
  */
 public final class ForEachHandler extends TagHandler {
 
@@ -113,7 +113,11 @@ public final class ForEachHandler extends TagHandler {
             srcVE = this.items.getValueExpression(ctx, Object.class);
             src = srcVE.getValue(ctx);
         } else {
-            src = new byte[e - s];
+            byte[] b = new byte[e - s];
+            for (int i = 1; i < b.length + 1; i++) {
+                b[i] = (byte) i;
+            }
+            src = b;
         }
         if (src != null) {
             Iterator itr = this.toIterator(src);
