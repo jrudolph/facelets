@@ -54,7 +54,7 @@ import com.sun.facelets.util.FacesAPI;
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.42 2005/08/31 13:48:37 jhook Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.43 2005/08/31 13:49:01 jhook Exp $
  */
 public class FaceletViewHandler extends ViewHandler {
 
@@ -624,7 +624,7 @@ public class FaceletViewHandler extends ViewHandler {
         return this.parent.getResourceURL(context, path);
     }
 
-    static protected class NullWriter extends Writer {
+    protected static class NullWriter extends Writer {
 
         static final NullWriter Instance = new NullWriter();
 
