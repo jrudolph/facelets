@@ -15,7 +15,6 @@
 package com.sun.facelets.tag;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -26,7 +25,7 @@ import com.sun.facelets.FaceletHandler;
  * document.
  * 
  * @author Jacob Hookom
- * @version $Id: TagHandler.java,v 1.4 2005/08/24 04:38:48 jhook Exp $
+ * @version $Id: TagHandler.java,v 1.5 2005/09/02 19:25:57 jhook Exp $
  */
 public abstract class TagHandler implements FaceletHandler {
 
@@ -81,20 +80,18 @@ public abstract class TagHandler implements FaceletHandler {
      * @return iterator over instances of FaceletHandlers of the matching type
      */
     protected final Iterator findNextByType(Class type) {
-        List list = new ArrayList();
-        findHandlersByTypeHelper(list, this.nextHandler, type);
-        return Collections.unmodifiableCollection(list).iterator();
-    }
-    
-    private static final void findHandlersByTypeHelper(List found, FaceletHandler root, Class type) {
-        if (type.isAssignableFrom(root.getClass())) {
-            found.add(root);
-        } else if (root instanceof CompositeFaceletHandler) {
-            FaceletHandler[] h = ((CompositeFaceletHandler) root).getHandlers();
+        List found = new ArrayList();
+        if (type.isAssignableFrom(this.nextHandler.getClass())) {
+            found.add(this.nextHandler);
+        } else if (this.nextHandler instanceof CompositeFaceletHandler) {
+            FaceletHandler[] h = ((CompositeFaceletHandler) this.nextHandler).getHandlers();
             for (int i = 0; i < h.length; i++) {
-                findHandlersByTypeHelper(found, h[i], type);
+                if (type.isAssignableFrom(h[i].getClass())) {
+                    found.add(h[i]);
+                }
             }
         }
+        return found.iterator();
     }
 
     public String toString() {

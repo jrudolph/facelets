@@ -6,6 +6,8 @@
 
 <ui:composition template="/template.xml">
 
+  <ui:param name="test" value="#{foo.bar}"/>
+
   <ui:define name="title">
     New Title
   </ui:define>

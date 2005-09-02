@@ -15,19 +15,23 @@
 package com.sun.facelets.tag.ui;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.el.ELException;
+import javax.el.VariableMapper;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
 import com.sun.facelets.FaceletHandler;
+import com.sun.facelets.el.VariableMapperWrapper;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagAttributeException;
 import com.sun.facelets.tag.TagConfig;
@@ -35,7 +39,7 @@ import com.sun.facelets.tag.TagHandler;
 
 /**
  * @author Jacob Hookom
- * @version $Id: DecorateHandler.java,v 1.7 2005/08/24 04:38:55 jhook Exp $
+ * @version $Id: DecorateHandler.java,v 1.8 2005/09/02 19:25:57 jhook Exp $
  */
 public final class DecorateHandler extends TagHandler implements TemplateClient {
 
@@ -44,6 +48,8 @@ public final class DecorateHandler extends TagHandler implements TemplateClient 
     private final TagAttribute template;
 
     private final Map handlers;
+    
+    private final ParamHandler[] params;
 
     /**
      * @param config
@@ -52,15 +58,28 @@ public final class DecorateHandler extends TagHandler implements TemplateClient 
         super(config);
         this.template = this.getRequiredAttribute("template");
         this.handlers = new HashMap();
-        
+
         Iterator itr = this.findNextByType(DefineHandler.class);
         DefineHandler d = null;
         while (itr.hasNext()) {
             d = (DefineHandler) itr.next();
             this.handlers.put(d.getName(), d);
             if (log.isLoggable(Level.FINE)) {
-                log.fine(tag + " found Define["+d.getName()+"]");
+                log.fine(tag + " found Define[" + d.getName() + "]");
             }
+        }
+        List paramC = new ArrayList();
+        itr = this.findNextByType(ParamHandler.class);
+        while (itr.hasNext()) {
+            paramC.add(itr.next());
+        }
+        if (paramC.size() > 0) {
+            this.params = new ParamHandler[paramC.size()];
+            for (int i = 0; i < this.params.length; i++) {
+                this.params[i] = (ParamHandler) paramC.get(i);
+            }
+        } else {
+            this.params = null;
         }
     }
 
@@ -72,11 +91,22 @@ public final class DecorateHandler extends TagHandler implements TemplateClient 
      */
     public void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
+        VariableMapper orig = ctx.getVariableMapper();
+        if (this.params != null) {
+            VariableMapper vm = new VariableMapperWrapper(orig);
+            for (int i = 0; i < this.params.length; i++) {
+                vm.setVariable(this.params[i].getName().getValue(ctx),
+                        this.params[i].getValue().getValueExpression(ctx,
+                                Object.class));
+            }
+            ctx.setVariableMapper(vm);
+        }
         TemplateManager mngr = TemplateManager.getInstance(ctx);
         mngr.pushClient(this);
         try {
             ctx.includeFacelet(parent, this.template.getValue(ctx));
         } finally {
+            ctx.setVariableMapper(orig);
             mngr.popClient();
         }
     }
