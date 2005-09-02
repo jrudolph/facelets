@@ -44,4 +44,8 @@ final class UILiteralTextHandler implements FaceletHandler, TextHandler {
     public String getText() {
         return this.txtString;
     }
+
+    public String getText(FaceletContext ctx) {
+        return this.txtString;
+    }
 }

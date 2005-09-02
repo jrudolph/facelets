@@ -15,6 +15,8 @@
 package com.sun.facelets.compiler;
 
 import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 
 import javax.el.ELException;
 import javax.faces.FacesException;
@@ -25,20 +27,24 @@ import com.sun.facelets.FaceletException;
 import com.sun.facelets.FaceletHandler;
 import com.sun.facelets.el.ELText;
 import com.sun.facelets.tag.TextHandler;
+import com.sun.facelets.util.FastWriter;
 
 /**
  * @author Jacob Hookom
- * @version $Id: UITextHandler.java,v 1.6 2005/09/02 04:45:49 jhook Exp $
+ * @version $Id: UITextHandler.java,v 1.7 2005/09/02 18:00:41 jhook Exp $
  */
 final class UITextHandler implements FaceletHandler, TextHandler {
 
     private final ELText txt;
     
     private final String alias;
+    
+    private final int length;
 
     public UITextHandler(String alias, ELText txt) {
         this.alias = alias;
         this.txt = txt;
+        this.length = txt.toString().length();
     }
 
     public void apply(FaceletContext ctx, UIComponent parent)
@@ -59,5 +65,15 @@ final class UITextHandler implements FaceletHandler, TextHandler {
 
     public String getText() {
         return this.txt.toString();
+    }
+
+    public String getText(FaceletContext ctx) {
+        Writer writer = new FastWriter(this.length);
+        try {
+            this.txt.apply(ctx.getExpressionFactory(), ctx).write(writer, ctx);
+        } catch (IOException e) {
+            throw new ELException(this.alias + ": "+ e.getMessage(), e.getCause());
+        }
+        return writer.toString();
     }
 }

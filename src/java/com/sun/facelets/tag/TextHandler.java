@@ -13,12 +13,28 @@
  */
 package com.sun.facelets.tag;
 
+import com.sun.facelets.FaceletContext;
+
 /**
+ * A mixin' interface that allows other code to identify FaceletHandlers
+ * that may provide text (String) content.
+ * 
  * @author Jacob Hookom
- *
+ * 
  */
 public interface TextHandler {
 
+    /**
+     * Return the literal String value of the contained text
+     * @return
+     */
     public String getText();
+    
+    /**
+     * Evaluate the literal String value against EL of the contained text
+     * @param ctx
+     * @return
+     */
+    public String getText(FaceletContext ctx);
     
 }
