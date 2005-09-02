@@ -27,7 +27,7 @@ import javax.faces.el.MethodNotFoundException;
  * For legacy ActionSources
  * 
  * @author Jacob Hookom
- * @version $Id: LegacyMethodBinding.java,v 1.5 2005/08/24 04:38:57 jhook Exp $
+ * @version $Id: LegacyMethodBinding.java,v 1.6 2005/09/02 03:30:03 adamwiner Exp $
  * @deprecated
  */
 public final class LegacyMethodBinding extends
@@ -72,5 +72,9 @@ public final class LegacyMethodBinding extends
         } catch (ELException e) {
             throw new EvaluationException(e.getMessage(), e.getCause());
         }
+    }
+
+    public String getExpressionString() {
+        return m.getExpressionString();
     }
 }
