@@ -24,8 +24,9 @@ import javax.faces.FacesException;
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
 import com.sun.facelets.FaceletHandler;
+import com.sun.facelets.tag.TextHandler;
 
-final class UILiteralTextHandler implements FaceletHandler {
+final class UILiteralTextHandler implements FaceletHandler, TextHandler {
     
     protected final String txtString;
     
@@ -38,5 +39,9 @@ final class UILiteralTextHandler implements FaceletHandler {
         if (parent != null) {
             parent.getChildren().add(new UILiteralText(this.txtString));
         }
+    }
+
+    public String getText() {
+        return this.txtString;
     }
 }

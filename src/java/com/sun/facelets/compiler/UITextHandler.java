@@ -24,12 +24,13 @@ import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
 import com.sun.facelets.FaceletHandler;
 import com.sun.facelets.el.ELText;
+import com.sun.facelets.tag.TextHandler;
 
 /**
  * @author Jacob Hookom
- * @version $Id: UITextHandler.java,v 1.5 2005/08/24 04:38:55 jhook Exp $
+ * @version $Id: UITextHandler.java,v 1.6 2005/09/02 04:45:49 jhook Exp $
  */
-final class UITextHandler implements FaceletHandler {
+final class UITextHandler implements FaceletHandler, TextHandler {
 
     private final ELText txt;
     
@@ -53,6 +54,10 @@ final class UITextHandler implements FaceletHandler {
     }
 
     public String toString() {
+        return this.txt.toString();
+    }
+
+    public String getText() {
         return this.txt.toString();
     }
 }
