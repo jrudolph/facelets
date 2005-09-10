@@ -19,33 +19,22 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.el.ELException;
-import javax.el.MethodExpression;
 import javax.el.ValueExpression;
 import javax.faces.FacesException;
 import javax.faces.application.Application;
 import javax.faces.component.ActionSource;
-import javax.faces.component.ActionSource2;
 import javax.faces.component.EditableValueHolder;
 import javax.faces.component.UIComponent;
 import javax.faces.component.ValueHolder;
 import javax.faces.context.FacesContext;
-import javax.faces.convert.Converter;
 import javax.faces.el.ValueBinding;
-import javax.faces.event.ActionEvent;
-import javax.faces.event.MethodExpressionActionListener;
-import javax.faces.event.MethodExpressionValueChangeListener;
-import javax.faces.event.ValueChangeEvent;
-import javax.faces.validator.MethodExpressionValidator;
 
 import com.sun.facelets.FaceletContext;
-import com.sun.facelets.el.ELAdaptor;
 import com.sun.facelets.el.LegacyMethodBinding;
 import com.sun.facelets.el.LegacyValueBinding;
 import com.sun.facelets.tag.MetaTagHandler;
 import com.sun.facelets.tag.TagAttribute;
-import com.sun.facelets.tag.Metadata;
 import com.sun.facelets.tag.TagException;
-import com.sun.facelets.tag.TagHandler;
 import com.sun.facelets.tag.MetaRuleset;
 import com.sun.facelets.tag.TagPointer;
 import com.sun.facelets.util.FacesAPI;
@@ -55,7 +44,7 @@ import com.sun.facelets.util.FacesAPI;
  * golden hammer for wiring UIComponents to Facelets.
  * 
  * @author Jacob Hookom
- * @version $Id: ComponentHandler.java,v 1.4.2.1 2005/09/10 05:42:10 jhook Exp $
+ * @version $Id: ComponentHandler.java,v 1.4.2.2 2005/09/10 06:12:48 jhook Exp $
  */
 public class ComponentHandler extends MetaTagHandler {
 
