@@ -16,13 +16,14 @@ package com.sun.facelets.compiler;
 
 import com.sun.facelets.FaceletHandler;
 import com.sun.facelets.tag.Tag;
+import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.TagLibrary;
 
 /**
  * 
  * @author Jacob Hookom
- * @version $Id: TagUnit.java,v 1.6 2005/08/24 04:38:54 jhook Exp $
+ * @version $Id: TagUnit.java,v 1.6.2.1 2005/09/10 05:42:12 jhook Exp $
  */
 class TagUnit extends CompilationUnit implements TagConfig {
 
@@ -41,7 +42,15 @@ class TagUnit extends CompilationUnit implements TagConfig {
         this.tag = tag;
         this.namespace = namespace;
         this.name = name;
-        this.id = id;
+        this.id = determineTagId(id, tag);
+    }
+    
+    private final static String determineTagId(String id, Tag tag) {
+        TagAttribute attr = tag.getAttributes().get("id");
+        if (attr != null && attr.isLiteral()) {
+            return attr.getValue();
+        }
+        return id;
     }
 
     public FaceletHandler createFaceletHandler() {

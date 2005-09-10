@@ -47,6 +47,7 @@ import com.sun.facelets.tag.Metadata;
 import com.sun.facelets.tag.TagException;
 import com.sun.facelets.tag.TagHandler;
 import com.sun.facelets.tag.MetaRuleset;
+import com.sun.facelets.tag.TagPointer;
 import com.sun.facelets.util.FacesAPI;
 
 /**
@@ -54,13 +55,13 @@ import com.sun.facelets.util.FacesAPI;
  * golden hammer for wiring UIComponents to Facelets.
  * 
  * @author Jacob Hookom
- * @version $Id: ComponentHandler.java,v 1.4 2005/08/29 02:33:27 jhook Exp $
+ * @version $Id: ComponentHandler.java,v 1.4.2.1 2005/09/10 05:42:10 jhook Exp $
  */
 public class ComponentHandler extends MetaTagHandler {
 
     private final static Logger log = Logger
             .getLogger("facelets.tag.component");
-    
+
     private final TagAttribute binding;
 
     private final String componentType;
@@ -126,20 +127,24 @@ public class ComponentHandler extends MetaTagHandler {
             componentFound = true;
             // mark all children for cleaning
             if (log.isLoggable(Level.FINE)) {
-                log.fine(this.tag
-                        + " Component["+id+"] Found, marking children for cleanup");
+                log.fine(this.tag + " Component[" + id
+                        + "] Found, marking children for cleanup");
             }
             ComponentSupport.markForDeletion(c);
         } else {
             c = this.createComponent(ctx);
             if (log.isLoggable(Level.FINE)) {
-                log.fine(this.tag + " Component["+id+"] Created: "
+                log.fine(this.tag + " Component[" + id + "] Created: "
                         + c.getClass().getName());
             }
             this.setAttributes(ctx, c);
             c.setId(id);
             if (this.rendererType != null) {
                 c.setRendererType(this.rendererType);
+            }
+            if (!c.isTransient()) {
+                c.getAttributes().put(TagPointer.ATTR_NAME,
+                        this.getTagPointer());
             }
         }
 
@@ -222,28 +227,28 @@ public class ComponentHandler extends MetaTagHandler {
 
     protected MetaRuleset createMetaRuleset(Class type) {
         MetaRuleset m = super.createMetaRuleset(type);
-        
+
         // ignore standard component attributes
         m.ignore("binding").ignore("id");
-        
+
         // add auto wiring for attributes
         m.addRule(ComponentRule.Instance);
-        
+
         // if it's an ActionSource
         if (ActionSource.class.isAssignableFrom(type)) {
             m.addRule(ActionSourceRule.Instance);
         }
-        
+
         // if it's a ValueHolder
         if (ValueHolder.class.isAssignableFrom(type)) {
             m.addRule(ValueHolderRule.Instance);
-            
+
             // if it's an EditableValueHolder
             if (EditableValueHolder.class.isAssignableFrom(type)) {
                 m.addRule(EditableValueHolderRule.Instance);
             }
         }
-        
+
         return m;
     }
 }

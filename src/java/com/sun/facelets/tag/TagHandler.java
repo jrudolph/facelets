@@ -25,7 +25,7 @@ import com.sun.facelets.FaceletHandler;
  * document.
  * 
  * @author Jacob Hookom
- * @version $Id: TagHandler.java,v 1.5 2005/09/02 19:25:57 jhook Exp $
+ * @version $Id: TagHandler.java,v 1.5.2.1 2005/09/10 05:42:10 jhook Exp $
  */
 public abstract class TagHandler implements FaceletHandler {
 
@@ -33,12 +33,16 @@ public abstract class TagHandler implements FaceletHandler {
 
     protected final Tag tag;
 
+    private final TagPointer ptrTag;
+
     protected final FaceletHandler nextHandler;
 
     public TagHandler(TagConfig config) {
         this.tagId = config.getTagId();
         this.tag = config.getTag();
         this.nextHandler = config.getNextHandler();
+        this.ptrTag = new TagPointer(this.tag.getLocation().getPath(),
+                this.tagId, System.currentTimeMillis());
     }
 
     /**
@@ -70,13 +74,14 @@ public abstract class TagHandler implements FaceletHandler {
         }
         return attr;
     }
-    
+
     /**
-     * Searches child handlers, starting at the 'nextHandler' for all
-     * instances of the passed type.  This process will stop searching
-     * a branch if an instance is found.
+     * Searches child handlers, starting at the 'nextHandler' for all instances
+     * of the passed type. This process will stop searching a branch if an
+     * instance is found.
      * 
-     * @param type Class type to search for
+     * @param type
+     *            Class type to search for
      * @return iterator over instances of FaceletHandlers of the matching type
      */
     protected final Iterator findNextByType(Class type) {
@@ -84,7 +89,8 @@ public abstract class TagHandler implements FaceletHandler {
         if (type.isAssignableFrom(this.nextHandler.getClass())) {
             found.add(this.nextHandler);
         } else if (this.nextHandler instanceof CompositeFaceletHandler) {
-            FaceletHandler[] h = ((CompositeFaceletHandler) this.nextHandler).getHandlers();
+            FaceletHandler[] h = ((CompositeFaceletHandler) this.nextHandler)
+                    .getHandlers();
             for (int i = 0; i < h.length; i++) {
                 if (type.isAssignableFrom(h[i].getClass())) {
                     found.add(h[i]);
@@ -92,6 +98,10 @@ public abstract class TagHandler implements FaceletHandler {
             }
         }
         return found.iterator();
+    }
+    
+    protected TagPointer getTagPointer() {
+        return this.ptrTag;
     }
 
     public String toString() {
