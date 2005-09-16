@@ -49,7 +49,7 @@ class UILeaf extends UIComponent {
     private final static Map facets = attributes;
 
     public Map getAttributes() {
-        return Collections.EMPTY_MAP;
+        return this.attributes;
     }
     
     private UIComponent parent;
