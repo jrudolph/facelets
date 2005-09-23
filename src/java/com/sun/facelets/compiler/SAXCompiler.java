@@ -46,7 +46,7 @@ import com.sun.facelets.tag.TagAttributes;
  * @see com.sun.facelets.compiler.Compiler
  * 
  * @author Jacob Hookom
- * @version $Id: SAXCompiler.java,v 1.6 2005/09/23 03:58:07 jhook Exp $
+ * @version $Id: SAXCompiler.java,v 1.7 2005/09/23 03:59:23 jhook Exp $
  */
 public final class SAXCompiler extends Compiler {
 
@@ -164,9 +164,11 @@ public final class SAXCompiler extends Compiler {
                 StringBuffer sb = new StringBuffer(64);
                 sb.append("<!DOCTYPE ").append(name);
                 if (publicId != null) {
-                    sb.append(" PUBLIC \"").append(publicId).append("\"")
-                            .append(" \"").append(systemId).append("\"");
-                } else {
+                    sb.append(" PUBLIC \"").append(publicId).append("\"");
+                    if (systemId != null) {
+                        sb.append(" \"").append(systemId).append("\"");
+                    }
+                } else if (systemId != null) {
                     sb.append(" SYSTEM \"").append(systemId).append("\"");
                 }
                 sb.append(" >\n");
@@ -189,10 +191,12 @@ public final class SAXCompiler extends Compiler {
             this.unit.pushNamespace(prefix, uri);
         }
 
-        public void processingInstruction(String target, String data) throws SAXException {
+        public void processingInstruction(String target, String data)
+                throws SAXException {
             if (this.inDocument) {
                 StringBuffer sb = new StringBuffer(64);
-                sb.append("<?").append(target).append(' ').append(data).append("?>\n");
+                sb.append("<?").append(target).append(' ').append(data).append(
+                        "?>\n");
                 this.unit.writeText(sb.toString());
             }
         }
@@ -226,8 +230,9 @@ public final class SAXCompiler extends Compiler {
         }
         return mngr.createFaceletHandler();
     }
-    
-    protected static final void writeXmlDecl(URL src, CompilationManager mngr) throws IOException {
+
+    protected static final void writeXmlDecl(URL src, CompilationManager mngr)
+            throws IOException {
         InputStream is = null;
         try {
             is = src.openStream();
@@ -242,7 +247,7 @@ public final class SAXCompiler extends Compiler {
                     }
                 }
             }
-            
+
         } finally {
             if (is != null) {
                 is.close();
