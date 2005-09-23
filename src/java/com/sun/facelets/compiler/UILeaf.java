@@ -23,6 +23,7 @@ import java.util.Map;
 
 import javax.el.ValueExpression;
 import javax.faces.component.UIComponent;
+import javax.faces.component.UIComponentBase;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 import javax.faces.el.ValueBinding;
@@ -33,7 +34,7 @@ import javax.faces.render.Renderer;
 
 import com.sun.facelets.el.ELText;
 
-class UILeaf extends UIComponent {
+class UILeaf extends UIComponentBase {
 
     private final static Map attributes = new HashMap(){
     
@@ -70,24 +71,8 @@ class UILeaf extends UIComponent {
         // do nothing
     }
 
-    public String getClientId(FacesContext ctx) {
-        return this.getId();
-    }
-
-    public String getContainerClientId(FacesContext arg0) {
-        return null;
-    }
-
     public String getFamily() {
         return "facelets.LiteralText";
-    }
-
-    public String getId() {
-        return FacesContext.getCurrentInstance().getViewRoot().createUniqueId();
-    }
-
-    public void setId(String id) {
-        // do nothing
     }
 
     public UIComponent getParent() {
