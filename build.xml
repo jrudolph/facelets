@@ -195,7 +195,6 @@
          
   </target>
 
-
   <!-- ========================= Create Release ========================= -->
   <target name="release" depends="clean, dependencies, doc, dist">
     <mkdir dir="${release}/facelets-${release.version}"/>

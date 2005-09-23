@@ -109,7 +109,7 @@
 		  <sect2 id="taglib-available-adf">
 			<title>Oracle ADF Faces</title>
 			<para>
-				Oracle ADF Faces will be unofficially supported by Facelets.  This work is being done by independent contributions after the EA19 release of ADF Faces.
+				Oracle ADF Faces is unofficially supported by Facelets.  This work is being done by independent contributions and is available from the Facelet's home page under documents and files.
 			</para>
 		  </sect2>
 		  
