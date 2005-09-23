@@ -1,0 +1,9 @@
+<project name="test" default="-build-demo" basedir="../../">
+  <import file="../../build.xml"/>
+  <target name="-build-demo">
+  	<makewar destfile="dist/portlet.war" root="demo/portlet"/>
+  </target>
+</project>
+
+
+ 
