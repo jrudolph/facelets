@@ -39,7 +39,7 @@ import javax.faces.el.VariableResolver;
  * 
  * 
  * @author Jacob Hookom
- * @version $Id: LegacyELContext.java,v 1.6 2005/08/24 04:38:57 jhook Exp $
+ * @version $Id: LegacyELContext.java,v 1.7 2005/09/26 00:38:51 jhook Exp $
  * @deprecated
  */
 public final class LegacyELContext extends ELContext {
@@ -73,6 +73,10 @@ public final class LegacyELContext extends ELContext {
 
     public VariableMapper getVariableMapper() {
         return this.variables;
+    }
+    
+    public FacesContext getFacesContext() {
+        return this.faces;
     }
 
     private final class LegacyELResolver extends ELResolver {

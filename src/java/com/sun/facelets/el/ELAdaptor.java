@@ -29,7 +29,7 @@ import com.sun.facelets.util.FacesAPI;
  * 
  * 
  * @author Jacob Hookom
- * @version $Id: ELAdaptor.java,v 1.6 2005/08/24 04:38:57 jhook Exp $
+ * @version $Id: ELAdaptor.java,v 1.7 2005/09/26 00:38:51 jhook Exp $
  */
 public final class ELAdaptor {
 
@@ -54,8 +54,8 @@ public final class ELAdaptor {
             return faces.getELContext();
         } else {
             Map request = faces.getExternalContext().getRequestMap();
-            ELContext ctx = (ELContext) request.get(LEGACY_ELCONTEXT_KEY);
-            if (ctx == null) {
+            LegacyELContext ctx = (LegacyELContext) request.get(LEGACY_ELCONTEXT_KEY);
+            if (ctx == null || ctx.getFacesContext() != faces) {
                 ctx = new LegacyELContext(faces);
                 request.put(LEGACY_ELCONTEXT_KEY, ctx);
             }
