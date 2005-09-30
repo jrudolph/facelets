@@ -26,7 +26,7 @@ import com.sun.facelets.el.ELText;
 
 /**
  * @author Jacob Hookom
- * @version $Id: UIText.java,v 1.5 2005/08/24 04:38:55 jhook Exp $
+ * @version $Id: UIText.java,v 1.6 2005/09/30 22:20:55 jhook Exp $
  */
 final class UIText extends UILeaf {
 
@@ -47,8 +47,10 @@ final class UIText extends UILeaf {
         ResponseWriter out = context.getResponseWriter();
         try {
             txt.write(out, ELAdaptor.getELContext(context));
-        } catch (Exception e) {
+        } catch (ELException e) {
             throw new ELException(this.alias + ": " + e.getMessage(), e.getCause());
+        } catch (Exception e) {
+            throw new ELException(this.alias + ": " + e.getMessage(), e);
         }
     }
 
