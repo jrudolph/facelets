@@ -10,6 +10,13 @@ public final class Employee {
     public Employee() {
         super();
     }
+    
+    public Employee(long id, String lastName, String firstName, boolean management) {
+        this.id = id;
+        this.lastName = lastName;
+        this.firstName = firstName;
+        this.management = management;
+    }
 
     public String getFirstName() {
         return firstName;
