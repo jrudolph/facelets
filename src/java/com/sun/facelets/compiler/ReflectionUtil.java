@@ -52,7 +52,7 @@ class ReflectionUtil {
                 c = Class.forName(nc, true, Thread.currentThread().getContextClassLoader());
                 c = Array.newInstance(c, 0).getClass();
             } else {
-                c = Class.forName(name);
+                c = Class.forName(name, true, Thread.currentThread().getContextClassLoader());
             }
         }
         return c;
