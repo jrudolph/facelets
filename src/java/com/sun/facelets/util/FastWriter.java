@@ -19,7 +19,7 @@ import java.io.Writer;
 
 /**
  * @author Jacob Hookom
- * @version $Id: FastWriter.java,v 1.2 2005/08/24 04:38:53 jhook Exp $
+ * @version $Id: FastWriter.java,v 1.3 2005/10/06 13:40:55 jhook Exp $
  */
 public final class FastWriter extends Writer {
     
@@ -75,6 +75,10 @@ public final class FastWriter extends Writer {
 
     public void write(String str) throws IOException {
         this.write(str.toCharArray(), 0, str.length());
+    }
+    
+    public void reset() {
+        this.size = 0;
     }
 
     public String toString() {
