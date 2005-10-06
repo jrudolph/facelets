@@ -25,10 +25,11 @@
 
 
   <path id="compile.classpath">
-    <pathelement location="${build.home}/classes"/>
+    <pathelement location="${build}/classes"/>
     <fileset dir="lib" includes="*.jar"/>
     <pathelement location="${jsf-api.jar}"/>
     <pathelement location="${servlet-api.jar}" />
+    <pathelement location="${}"/>
   </path>
 
 
@@ -94,6 +95,8 @@
         <lib dir="${lib}">
           <exclude name="servlet-api.jar"/>
           <exclude name="j2ee.jar"/>
+          <exclude name="portlet.jar"/>
+	  <exclude name="myfaces-impl.jar"/>
         </lib>
 		<classes dir="build/@{root}/build"/>
         <lib file="${dist}/${jar}"/>
@@ -201,6 +204,7 @@
 	<ant target="-build-demo" antfile="demo/numberguess/build.xml"/>
 	<ant target="-build-demo" antfile="demo/hangman/build.xml"/>
 	<ant target="-build-demo" antfile="demo/starterkit/build.xml"/>
+	<ant target="-build-demo" antfile="demo/portlet/build.xml"/>
     <copy todir="${release}/facelets-${release.version}" includeEmptyDirs="false">
        <fileset dir="${dist}"/>
     </copy>
@@ -212,9 +216,7 @@
       </fileset>
     </copy>
     <copy file="README.TXT" todir="${release}/facelets-${release.version}"/>
-	<copy file="LICENSE.TXT" todir="${release}/facelets-${release.version}"/>
-    <!-- <copy file="build.sample.properties" todir="${release}/facelets-${release.version}"/>
-    <copy file="build.xml" todir="${release}/facelets-${release.version}"/> -->
+    <copy file="LICENSE.TXT" todir="${release}/facelets-${release.version}"/>
     <zip destfile="facelets-${release.version}.zip" basedir="${release}" />
   </target>
 
