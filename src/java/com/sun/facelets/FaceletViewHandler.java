@@ -54,7 +54,7 @@ import com.sun.facelets.util.FacesAPI;
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.43 2005/08/31 13:49:01 jhook Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.44 2005/10/09 22:59:57 jhook Exp $
  */
 public class FaceletViewHandler extends ViewHandler {
 
@@ -272,7 +272,7 @@ public class FaceletViewHandler extends ViewHandler {
             TagLibrary libObj;
             for (int i = 0; i < libs.length; i++) {
                 try {
-                    src = ext.getResource(libs[i]);
+                    src = ext.getResource(libs[i].trim());
                     if (src == null) {
                         throw new FileNotFoundException(libs[i]);
                     }
