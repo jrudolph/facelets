@@ -14,12 +14,14 @@
 
 package com.sun.facelets.tag.jstl.core;
 
+import java.util.Map;
+
 import javax.el.ELContext;
 import javax.el.ValueExpression;
 
 /**
  * @author Jacob Hookom
- * @version $Id: MappedValueExpression.java,v 1.3 2005/08/24 04:38:52 jhook Exp $
+ * @version $Id: MappedValueExpression.java,v 1.4 2005/10/19 06:39:30 jhook Exp $
  */
 public final class MappedValueExpression extends ValueExpression {
 
@@ -35,9 +37,9 @@ public final class MappedValueExpression extends ValueExpression {
     /**
      * 
      */
-    public MappedValueExpression(ValueExpression orig, Object key) {
+    public MappedValueExpression(ValueExpression orig, Map.Entry entry) {
         this.orig = orig;
-        this.key = key;
+        this.key = entry.getKey();
     }
 
     /*

@@ -35,7 +35,7 @@ import com.sun.facelets.tag.TagHandler;
 
 /**
  * @author Jacob Hookom
- * @version $Id: ForEachHandler.java,v 1.6 2005/08/31 13:14:11 jhook Exp $
+ * @version $Id: ForEachHandler.java,v 1.7 2005/10/19 06:39:29 jhook Exp $
  */
 public final class ForEachHandler extends TagHandler {
 
@@ -227,8 +227,8 @@ public final class ForEachHandler extends TagHandler {
             Object value, int i) {
         if (src instanceof Collection || src.getClass().isArray()) {
             return new IndexedValueExpression(ve, i);
-        } else if (src instanceof Map) {
-            return new MappedValueExpression(ve, value);
+        } else if (src instanceof Map && value instanceof Map.Entry) {
+            return new MappedValueExpression(ve, (Map.Entry) value);
         }
         throw new IllegalStateException("Cannot create VE for: " + src);
     }
@@ -253,7 +253,7 @@ public final class ForEachHandler extends TagHandler {
         } else if (src instanceof Collection) {
             return ((Collection) src).iterator();
         } else if (src instanceof Map) {
-            return ((Map) src).keySet().iterator();
+            return ((Map) src).entrySet().iterator();
         } else if (src.getClass().isArray()) {
             return new ArrayIterator(src);
         } else {
