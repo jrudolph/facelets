@@ -35,9 +35,9 @@
 ...]]></programlisting>
 				<programlisting><![CDATA[<!-- template client document -->
 ...
-<c:composition template="template.xhtml">
+<ui:composition template="template.xhtml">
   I'm in the spin cycle <h:outputText value="#{random.name}"/>!
-</c:composition>
+</ui:composition>
 ...]]></programlisting>
 			</sect2>
 			
@@ -51,7 +51,7 @@
 			<sect2 id="template-detail-deep">
 				<title>Multi-Level Templating</title>
 				<para>
-					Template use my go multiple levels deep.  This means that a template client may use a template which in turn may use a template, which may also use a template, and then it may use yet another template... you get the picture.
+					Template use may go multiple levels deep.  This means that a template client may use a template which in turn may use a template, which may also use a template, and then it may use yet another template... you get the picture.
 				</para>
 				<para>
 					Templating is backed by the a <literal>TemplateManager</literal> that has a stack of <literal>TemplateClient</literal> instances.  Tags like <literal><![CDATA[<ui:composition>]]></literal> implement <literal>TemplateClient</literal>.  When a template is being evaluated and comes upon a <literal><![CDATA[<ui:insert/>]]></literal> tag, it will ask the <literal>TemplateManager</literal> for a <literal>TemplateClient</literal> that either has a match for the tag's name attribute, or the top-most <literal>TemplateClient</literal> on the stack.

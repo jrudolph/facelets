@@ -21,6 +21,9 @@
           <othercredit><firstname>Ed</firstname>
           <surname>Burns</surname><contrib>Editing and bug
           fixes</contrib></othercredit>
+          
+          <othercredit><firstname>Hiroshi</firstname>
+          <surname>Iwatani</surname><contrib>Editing</contrib></othercredit>
 
         </authorgroup>
         <title>Facelets - JavaServer Faces View Definition Framework</title>

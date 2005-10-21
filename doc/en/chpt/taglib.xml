@@ -403,7 +403,7 @@
 				The <literal>function</literal> element is a top level entity like the <literal>tag</literal> element.  You need to specify both the class type and the method signature that Facelets should use.  All class names in the signature must be fully qualified, with the exception of primitives such as <literal>int</literal> or <literal>boolean</literal>.
 			</para>
 			<para>
-				In this example, you would be able to reference this function with a namespace prefix in your document, such as <literal>#{my:reverse(employee.name}}</literal>.  See <xref linkend="taglib-function"/> for more information on function use in your pages.
+				In this example, you would be able to reference this function with a namespace prefix in your document, such as <literal>#{my:reverse{employee.name}}</literal>.  See <xref linkend="taglib-function"/> for more information on function use in your pages.
 			</para>
         </sect2>
         
