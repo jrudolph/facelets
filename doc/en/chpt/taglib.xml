@@ -181,9 +181,9 @@
 <!ELEMENT component (component-type,renderer-type?)>
 <!ELEMENT component-type (#PCDATA)>
 <!ELEMENT renderer-type (#PCDATA)>
-<!ELEMENT converter (converter-id)>
+<!ELEMENT converter (converter-id, handler-class?)>
 <!ELEMENT converter-id (#PCDATA)>
-<!ELEMENT validator (validator-id)>
+<!ELEMENT validator (validator-id, handler-class?)>
 <!ELEMENT validator-id (#PCDATA)>
 <!ELEMENT source (#PCDATA)>
 <!ELEMENT function (function-name,function-class,function-signature)>
@@ -318,7 +318,7 @@
 			<programlisting><![CDATA[<faces-config>
   <validator>
     <validator-id>faces.validator.Email</validator-id>
-    <validator-class>com.mycompany.jsf.validate.EmailValidator</validator-class>
+    <handler-class>com.mycompany.jsf.validate.EmailValidator</handler-class>
   </validator>
 </faces-config>]]></programlisting>
         </sect2>
@@ -343,7 +343,7 @@
 			<programlisting><![CDATA[<faces-config>
   <converter>
     <converter-id>faces.convert.Money</converter-id>
-    <converter-class>com.mycompany.jsf.convert.ConvertMoney</converter-class>
+    <handler-class>com.mycompany.jsf.convert.ConvertMoney</handler-class>
   </converter>
 </faces-config>]]></programlisting>
         </sect2>
