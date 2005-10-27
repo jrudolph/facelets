@@ -54,7 +54,7 @@ import com.sun.facelets.util.FacesAPI;
  * golden hammer for wiring UIComponents to Facelets.
  * 
  * @author Jacob Hookom
- * @version $Id: ComponentHandler.java,v 1.4 2005/08/29 02:33:27 jhook Exp $
+ * @version $Id: ComponentHandler.java,v 1.5 2005/10/27 04:54:50 jhook Exp $
  */
 public class ComponentHandler extends MetaTagHandler {
 
@@ -141,6 +141,9 @@ public class ComponentHandler extends MetaTagHandler {
             if (this.rendererType != null) {
                 c.setRendererType(this.rendererType);
             }
+            
+            // hook method
+            this.onComponentCreated(ctx, c, parent);
         }
 
         // first allow c to get populated
@@ -245,5 +248,19 @@ public class ComponentHandler extends MetaTagHandler {
         }
         
         return m;
+    }
+    
+    /**
+     * A hook method for allowing developers to do additional processing once Facelets
+     * creates the component.  The 'setAttributes' method is still perferred, but this
+     * method will provide the parent UIComponent before it's been added to the tree and
+     * before any children have been added to the newly created UIComponent.
+     * 
+     * @param ctx
+     * @param c
+     * @param parent
+     */
+    protected void onComponentCreated(FaceletContext ctx, UIComponent c, UIComponent parent) {
+        // do nothing
     }
 }
