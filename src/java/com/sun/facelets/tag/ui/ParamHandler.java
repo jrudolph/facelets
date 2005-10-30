@@ -29,9 +29,9 @@ import com.sun.facelets.tag.TagHandler;
 
 /**
  * @author Jacob Hookom
- * @version $Id: ParamHandler.java,v 1.4 2005/09/02 19:25:57 jhook Exp $
+ * @version $Id: ParamHandler.java,v 1.5 2005/10/30 01:35:51 jhook Exp $
  */
-public final class ParamHandler extends TagHandler {
+public class ParamHandler extends TagHandler {
 
     private final TagAttribute name;
 
@@ -58,14 +58,6 @@ public final class ParamHandler extends TagHandler {
         ValueExpression valueVE = this.value.getValueExpression(ctx,
                 Object.class);
         ctx.getVariableMapper().setVariable(nameStr, valueVE);
-    }
-
-    public TagAttribute getName() {
-        return name;
-    }
-
-    public TagAttribute getValue() {
-        return value;
     }
 
 }

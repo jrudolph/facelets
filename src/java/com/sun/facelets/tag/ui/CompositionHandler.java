@@ -40,7 +40,7 @@ import com.sun.facelets.tag.TagHandler;
 
 /**
  * @author Jacob Hookom
- * @version $Id: CompositionHandler.java,v 1.7 2005/09/02 19:25:56 jhook Exp $
+ * @version $Id: CompositionHandler.java,v 1.8 2005/10/30 01:35:50 jhook Exp $
  */
 public final class CompositionHandler extends TagHandler implements
         TemplateClient {
@@ -103,12 +103,10 @@ public final class CompositionHandler extends TagHandler implements
             VariableMapper orig = ctx.getVariableMapper();
             if (this.params != null) {
                 VariableMapper vm = new VariableMapperWrapper(orig);
-                for (int i = 0; i < this.params.length; i++) {
-                    vm.setVariable(this.params[i].getName().getValue(ctx),
-                            this.params[i].getValue().getValueExpression(ctx,
-                                    Object.class));
-                }
                 ctx.setVariableMapper(vm);
+                for (int i = 0; i < this.params.length; i++) {
+                    this.params[i].apply(ctx, parent);
+                }
             }
             TemplateManager mngr = TemplateManager.getInstance(ctx);
             mngr.pushClient(this);
