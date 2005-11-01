@@ -44,7 +44,7 @@ import com.sun.facelets.util.Classpath;
  * {@link java.net.URL URL} source.
  * 
  * @author Jacob Hookom
- * @version $Id: TagLibraryConfig.java,v 1.7 2005/08/24 04:38:54 jhook Exp $
+ * @version $Id: TagLibraryConfig.java,v 1.8 2005/11/01 03:04:26 jhook Exp $
  */
 public final class TagLibraryConfig {
 
@@ -348,6 +348,7 @@ public final class TagLibraryConfig {
             this.buffer.setLength(0);
             if ("tag".equals(qName)) {
                 this.componentClassName = null;
+                this.handlerClass = null;
                 this.componentType = null;
                 this.rendererType = null;
                 this.tagName = null;
