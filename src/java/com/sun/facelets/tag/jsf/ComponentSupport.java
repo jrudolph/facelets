@@ -32,11 +32,12 @@ import com.sun.facelets.tag.TagAttributeException;
 /**
  * 
  * @author Jacob Hookom
- * @version $Id: ComponentSupport.java,v 1.3 2005/08/29 03:33:54 jhook Exp $
+ * @version $Id: ComponentSupport.java,v 1.4 2005/11/01 07:11:36 jhook Exp $
  */
 public final class ComponentSupport {
 
     private final static String MARK_DELETED = "com.sun.facelets.MARK_DELETED";
+    public final static String MARK_CREATED = "com.sun.facelets.MARK_ID";
     
     /**
      * Used in conjunction with markForDeletion where any UIComponent marked
@@ -93,6 +94,29 @@ public final class ComponentSupport {
             while (--sz >= 0) {
                 c = (UIComponent) cl.get(sz);
                 if (id.equals(c.getId())) {
+                    return c;
+                }
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * By TagId, find Child
+     * @param parent
+     * @param id
+     * @return
+     */
+    public static final UIComponent findChildByTagId(UIComponent parent, String id) {
+        int sz = parent.getChildCount();
+        if (sz > 0) {
+            UIComponent c = null;
+            List cl = parent.getChildren();
+            String cid = null;
+            while (--sz >= 0) {
+                c = (UIComponent) cl.get(sz);
+                cid = (String) c.getAttributes().get(MARK_CREATED);
+                if (id.equals(cid)) {
                     return c;
                 }
             }
@@ -180,7 +204,9 @@ public final class ComponentSupport {
             List cl = c.getChildren();
             while (--sz >= 0) {
                 cc = (UIComponent) cl.get(sz);
-                cc.getAttributes().put(MARK_DELETED, Boolean.TRUE);
+                if (cc.getAttributes().containsKey(MARK_CREATED)) {
+                    cc.getAttributes().put(MARK_DELETED, Boolean.TRUE);
+                }
             }
         }
 
@@ -190,7 +216,9 @@ public final class ComponentSupport {
             UIComponent fc;
             for (Iterator itr = col.iterator(); itr.hasNext();) {
                 fc = (UIComponent) itr.next();
-                fc.getAttributes().put(MARK_DELETED, Boolean.TRUE);
+                if (fc.getAttributes().containsKey(MARK_CREATED)) {
+                    fc.getAttributes().put(MARK_DELETED, Boolean.TRUE);
+                }
             }
         }
     }
