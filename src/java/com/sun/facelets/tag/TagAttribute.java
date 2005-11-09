@@ -28,7 +28,7 @@ import com.sun.facelets.el.TagValueExpression;
  * Representation of a Tag's attribute in a Facelet File
  * 
  * @author Jacob Hookom
- * @version $Id: TagAttribute.java,v 1.6 2005/08/24 04:38:48 jhook Exp $
+ * @version $Id: TagAttribute.java,v 1.7 2005/11/09 03:49:18 jhook Exp $
  */
 public final class TagAttribute {
 
@@ -74,7 +74,7 @@ public final class TagAttribute {
      */
     public boolean getBoolean(FaceletContext ctx) {
         if (this.literal) {
-            return Boolean.getBoolean(this.value);
+            return Boolean.valueOf(this.value).booleanValue();
         } else {
             return ((Boolean) this.getObject(ctx, Boolean.class))
                     .booleanValue();
