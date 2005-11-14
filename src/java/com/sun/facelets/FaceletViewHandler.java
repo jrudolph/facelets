@@ -54,7 +54,7 @@ import com.sun.facelets.util.FacesAPI;
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.44 2005/10/09 22:59:57 jhook Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.44.4.1 2005/11/14 07:01:51 jhook Exp $
  */
 public class FaceletViewHandler extends ViewHandler {
 
@@ -113,11 +113,11 @@ public class FaceletViewHandler extends ViewHandler {
 
     private boolean developmentMode = false;
 
-    private boolean initialized = false;
-
     private int bufferSize;
 
     private String defaultSuffix;
+    
+    private FaceletFactory faceletFactory;
 
     // Array of viewId extensions that should be handled by Facelets
     private String[] extensionsArray;
@@ -173,18 +173,15 @@ public class FaceletViewHandler extends ViewHandler {
      */
     protected void initialize(FacesContext context) {
         synchronized (this) {
-            if (!this.initialized) {
+            if (this.faceletFactory == null) {
                 log.fine("Initializing");
                 Compiler c = this.createCompiler();
                 this.initializeCompiler(c);
-                FaceletFactory f = this.createFaceletFactory(c);
-                FaceletFactory.setInstance(f);
-
+                this.faceletFactory = this.createFaceletFactory(c);
+                
                 this.initializeMappings(context);
                 this.initializeMode(context);
                 this.initializeBuffer(context);
-
-                this.initialized = true;
 
                 log.fine("Initialization Successful");
             }
@@ -392,8 +389,13 @@ public class FaceletViewHandler extends ViewHandler {
         }
 
         // grab our FaceletFactory and create a Facelet
-        FaceletFactory factory = FaceletFactory.getInstance();
-        Facelet f = factory.getFacelet(viewToRender.getViewId());
+        Facelet f = null;
+        FaceletFactory.setInstance(this.faceletFactory);
+        try {
+            f = this.faceletFactory.getFacelet(viewToRender.getViewId());
+        } finally {
+            FaceletFactory.setInstance(null);
+        }
 
         // populate UIViewRoot
         long time = System.currentTimeMillis();
@@ -409,7 +411,7 @@ public class FaceletViewHandler extends ViewHandler {
             throws IOException, FacesException {
 
         // lazy initialize so we have a FacesContext to use
-        if (!this.initialized) {
+        if (this.faceletFactory == null) {
             this.initialize(context);
         }
 
