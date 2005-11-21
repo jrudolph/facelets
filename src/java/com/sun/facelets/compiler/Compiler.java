@@ -34,6 +34,7 @@ import com.sun.facelets.tag.CompositeTagDecorator;
 import com.sun.facelets.tag.CompositeTagLibrary;
 import com.sun.facelets.tag.TagDecorator;
 import com.sun.facelets.tag.TagLibrary;
+import com.sun.facelets.tag.ui.UILibrary;
 import com.sun.facelets.util.ParameterCheck;
 import com.sun.facelets.util.FacesAPI;
 
@@ -41,7 +42,7 @@ import com.sun.facelets.util.FacesAPI;
  * A Compiler instance may handle compiling multiple sources
  * 
  * @author Jacob Hookom
- * @version $Id: Compiler.java,v 1.11 2005/08/24 04:38:54 jhook Exp $
+ * @version $Id: Compiler.java,v 1.11.6.1 2005/11/21 04:29:52 jhook Exp $
  */
 public abstract class Compiler {
 
@@ -84,6 +85,11 @@ public abstract class Compiler {
         try {
             TagLibraryConfig cfg = new TagLibraryConfig();
             cfg.loadImplicit(this);
+            
+            if (!this.createTagLibrary().containsNamespace(UILibrary.Namespace)) {
+                log.severe("Missing Built-in Tag Libraries! Make sure they are included within the META-INF directory of Facelets' Jar");
+            }
+            
         } catch (IOException e) {
             log.log(Level.SEVERE, "Compiler Initialization Error", e);
         } finally {

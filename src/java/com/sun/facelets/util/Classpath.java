@@ -27,7 +27,8 @@ import java.util.jar.JarFile;
 
 /**
  * @author Jacob Hookom
- * @version $Id: Classpath.java,v 1.2 2005/08/24 04:38:53 jhook Exp $
+ * @author Roland Huss
+ * @version $Id: Classpath.java,v 1.2.6.1 2005/11/21 04:29:50 jhook Exp $
  */
 public final class Classpath {
 
@@ -49,12 +50,17 @@ public final class Classpath {
         Set all = new HashSet();
         URL url;
         URLConnection conn;
+        JarFile jarFile;
         while (e.hasMoreElements()) {
             url = (URL) e.nextElement();
             conn = url.openConnection();
             if (conn instanceof JarURLConnection) {
-                searchJar(cl, all, ((JarURLConnection) conn).getJarFile(),
-                        prefix, suffix);
+                jarFile = ((JarURLConnection) conn).getJarFile();
+            } else {
+                jarFile = getAlternativeJarFile(url);
+            }
+            if (jarFile != null) {
+                searchJar(cl, all, jarFile, prefix, suffix);
             } else {
                 searchDir(all, new File(url.getFile()), suffix);
             }
@@ -78,6 +84,19 @@ public final class Classpath {
                 }
             }
         }
+    }
+
+    private static JarFile getAlternativeJarFile(URL url) throws IOException {
+        String urlFile = url.getFile();
+        int separatorIndex = urlFile.indexOf("!/");
+        if (separatorIndex != -1) {
+            String jarFileUrl = urlFile.substring(0, separatorIndex);
+            if (jarFileUrl.startsWith("file:")) {
+                jarFileUrl = jarFileUrl.substring("file:".length());
+            }
+            return new JarFile(jarFileUrl);
+        }
+        return null;
     }
 
     private static void searchJar(ClassLoader cl, Set result, JarFile file,
