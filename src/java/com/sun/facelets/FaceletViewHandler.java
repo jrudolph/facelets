@@ -49,12 +49,13 @@ import com.sun.facelets.tag.TagLibrary;
 import com.sun.facelets.tag.ui.UIDebug;
 import com.sun.facelets.util.DevTools;
 import com.sun.facelets.util.FacesAPI;
+import com.sun.facelets.util.Resource;
 
 /**
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.44.4.1 2005/11/14 07:01:51 jhook Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.44.4.2 2005/11/21 12:48:09 jhook Exp $
  */
 public class FaceletViewHandler extends ViewHandler {
 
@@ -245,8 +246,8 @@ public class FaceletViewHandler extends ViewHandler {
         }
         log.fine("Using Refresh Period: " + refreshPeriod + " sec");
         try {
-            return new DefaultFaceletFactory(c, ctx.getExternalContext()
-                    .getResource("/"), refreshPeriod);
+            return new DefaultFaceletFactory(c,
+                    Resource.getResourceUrl(ctx,"/"), refreshPeriod);
         } catch (MalformedURLException e) {
             throw new FaceletException("Error Creating FaceletFactory", e);
         }
