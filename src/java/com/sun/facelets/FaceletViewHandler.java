@@ -20,6 +20,7 @@ import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
@@ -49,13 +50,14 @@ import com.sun.facelets.tag.TagLibrary;
 import com.sun.facelets.tag.ui.UIDebug;
 import com.sun.facelets.util.DevTools;
 import com.sun.facelets.util.FacesAPI;
+import com.sun.facelets.util.FastWriter;
 import com.sun.facelets.util.Resource;
 
 /**
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.44.4.2 2005/11/21 12:48:09 jhook Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.44.4.3 2005/11/27 01:22:55 jhook Exp $
  */
 public class FaceletViewHandler extends ViewHandler {
 
@@ -106,9 +108,11 @@ public class FaceletViewHandler extends ViewHandler {
 
     public final static String PARAM_BUFFER_SIZE = "facelets.BUFFER_SIZE";
 
-    protected final static String STATE_KEY = "com.sun.facelets.VIEW_STATE";
+    private final static String STATE_KEY = "~facelets.VIEW_STATE~";
     
-    protected final static Object STATE_NULL = new Object();
+    private final static int STATE_KEY_LEN = STATE_KEY.length();
+    
+    private final static Object STATE_NULL = new Object();
 
     private final ViewHandler parent;
 
@@ -325,7 +329,7 @@ public class FaceletViewHandler extends ViewHandler {
     protected ViewHandler getWrapped() {
         return this.parent;
     }
-
+    
     protected ResponseWriter createResponseWriter(FacesContext context)
             throws IOException, FacesException {
         ExternalContext extContext = context.getExternalContext();
@@ -350,18 +354,12 @@ public class FaceletViewHandler extends ViewHandler {
 
         // get the encoding
         String encoding = request.getCharacterEncoding();
-        if (encoding == null) {
-            encoding = "ISO-8859-1";
-        }
 
         // Create a dummy ResponseWriter with a bogus writer,
         // so we can figure out what content type the ReponseWriter
         // is really going to ask for
-
-        // TODO This needs to be changed back from null once
-        // MyFaces corrects the bug in their RenderKit
         ResponseWriter writer = renderKit.createResponseWriter(
-                NullWriter.Instance, contentType, encoding);
+                NullWriter.Instance, null, encoding);
 
         contentType = writer.getContentType();
         encoding = writer.getCharacterEncoding();
@@ -437,7 +435,9 @@ public class FaceletViewHandler extends ViewHandler {
             this.buildView(context, viewToRender);
 
             // setup writer and assign it to the context
-            ResponseWriter writer = this.createResponseWriter(context);
+            ResponseWriter origWriter = this.createResponseWriter(context);
+            FastWriter stateWriter = new FastWriter(this.bufferSize != -1 ? this.bufferSize : 512);
+            ResponseWriter writer = origWriter.cloneWithWriter(stateWriter);
             context.setResponseWriter(writer);
 
             long time = System.currentTimeMillis();
@@ -453,6 +453,29 @@ public class FaceletViewHandler extends ViewHandler {
 
             // finish writing
             writer.close();
+            
+            // save state
+            StateManager stateMgr = context.getApplication().getStateManager();
+            Object stateObj = stateMgr.saveSerializedView(context);
+            
+            // flush to origWriter
+            String content = stateWriter.toString();
+            if ((stateMgr.isSavingStateInClient(context) || FacesAPI.getVersion() >= 12)) {
+                stateWriter.reset();
+                stateMgr.writeState(context, (StateManager.SerializedView) stateObj);
+                String stateStr = stateWriter.toString();
+                int start = 0;
+                int end = content.indexOf(STATE_KEY, start);
+                while (end != -1) {
+                    origWriter.write(content, start, end - start);
+                    origWriter.write(stateStr);
+                    start = end + STATE_KEY_LEN;
+                    end = content.indexOf(STATE_KEY, start);
+                }
+                origWriter.write(content, start, content.length() - start);
+            } else {
+                origWriter.write(content);
+            }
 
             time = System.currentTimeMillis() - time;
             if (log.isLoggable(Level.FINE)) {
@@ -586,18 +609,8 @@ public class FaceletViewHandler extends ViewHandler {
     public void writeState(FacesContext context) throws IOException {
         if (handledByFacelets(context.getViewRoot())) {
             StateManager stateMgr = context.getApplication().getStateManager();
-            ExternalContext extContext = context.getExternalContext();
-            Object state = extContext.getRequestMap().get(STATE_KEY);
-            if (state == null) {
-                state = stateMgr.saveSerializedView(context);
-                if (state == null) {
-                    state = STATE_NULL;
-                }
-                extContext.getRequestMap().put(STATE_KEY, state);
-            }
             if (stateMgr.isSavingStateInClient(context) || FacesAPI.getVersion() >= 12) {
-                stateMgr.writeState(context,
-                        (StateManager.SerializedView) state);
+                context.getResponseWriter().write(STATE_KEY);
             }
         } else {
             this.parent.writeState(context);
