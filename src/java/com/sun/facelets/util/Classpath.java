@@ -28,7 +28,7 @@ import java.util.jar.JarFile;
 /**
  * @author Jacob Hookom
  * @author Roland Huss
- * @version $Id: Classpath.java,v 1.2.6.1 2005/11/21 04:29:50 jhook Exp $
+ * @version $Id: Classpath.java,v 1.2.6.2 2005/11/29 05:24:29 adamwiner Exp $
  */
 public final class Classpath {
 
@@ -86,11 +86,26 @@ public final class Classpath {
         }
     }
 
+    /** For URLs to JARs that do not use JarURLConnection - allowed by
+     * the servlet spec - attempt to produce a JarFile object all the same.
+     * Known servlet engines that function like this include Weblogic
+     * and OC4J.
+     * This is not a full solution, since an unpacked WAR or EAR will not
+     * have JAR "files" as such.
+     */
     private static JarFile getAlternativeJarFile(URL url) throws IOException {
         String urlFile = url.getFile();
+        // Trim off any suffix - which is prefixed by "!/" on Weblogic
         int separatorIndex = urlFile.indexOf("!/");
+
+        // OK, didn't find that.  Try the less safe "!", used on OC4J
+        if (separatorIndex == -1) {
+          separatorIndex = urlFile.indexOf('!');
+        }
+
         if (separatorIndex != -1) {
             String jarFileUrl = urlFile.substring(0, separatorIndex);
+            // And trim off any "file:" prefix.
             if (jarFileUrl.startsWith("file:")) {
                 jarFileUrl = jarFileUrl.substring("file:".length());
             }
