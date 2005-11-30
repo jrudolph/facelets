@@ -32,12 +32,13 @@ import com.sun.facelets.FaceletFactory;
 import com.sun.facelets.FaceletHandler;
 import com.sun.facelets.compiler.Compiler;
 import com.sun.facelets.util.ParameterCheck;
+import com.sun.facelets.util.Resource;
 
 /**
  * Default FaceletFactory implementation.
  * 
  * @author Jacob Hookom
- * @version $Id: DefaultFaceletFactory.java,v 1.3 2005/08/29 01:53:41 jhook Exp $
+ * @version $Id: DefaultFaceletFactory.java,v 1.4 2005/11/30 23:36:39 jhook Exp $
  */
 public final class DefaultFaceletFactory extends FaceletFactory {
 
@@ -104,8 +105,7 @@ public final class DefaultFaceletFactory extends FaceletFactory {
      */
     public URL resolveURL(URL source, String path) throws IOException {
         if (path.startsWith("/")) {
-            URL url = FacesContext.getCurrentInstance().getExternalContext()
-                    .getResource(path);
+            URL url = Resource.getResourceUrl(FacesContext.getCurrentInstance(),path);
             if (url == null) {
                 throw new FileNotFoundException(path
                         + " Not Found in ExternalContext as a Resource");

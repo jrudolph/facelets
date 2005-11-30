@@ -24,11 +24,11 @@ import javax.faces.FacesException;
  * underlying implementation.
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletFactory.java,v 1.2 2005/08/24 04:38:58 jhook Exp $
+ * @version $Id: FaceletFactory.java,v 1.3 2005/11/30 23:36:39 jhook Exp $
  */
 public abstract class FaceletFactory {
 
-    private static FaceletFactory Instance = null;
+    private static ThreadLocal Instance = new ThreadLocal();
 
     /**
      * Return a Facelet instance as specified by the file at the passed URI.
@@ -49,7 +49,7 @@ public abstract class FaceletFactory {
      * @param factory
      */
     public static final void setInstance(FaceletFactory factory) {
-        Instance = factory;
+        Instance.set(factory);
     }
 
     /**
@@ -58,6 +58,6 @@ public abstract class FaceletFactory {
      * @return
      */
     public static final FaceletFactory getInstance() {
-        return Instance;
+        return (FaceletFactory) Instance.get();
     }
 }

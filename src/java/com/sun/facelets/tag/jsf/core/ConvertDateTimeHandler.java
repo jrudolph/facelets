@@ -37,7 +37,7 @@ import com.sun.facelets.tag.jsf.ConverterConfig;
  * documentation</a>.
  * 
  * @author Jacob Hookom
- * @version $Id: ConvertDateTimeHandler.java,v 1.3 2005/08/24 04:38:49 jhook Exp $
+ * @version $Id: ConvertDateTimeHandler.java,v 1.4 2005/11/30 23:36:38 jhook Exp $
  */
 public final class ConvertDateTimeHandler extends ConvertHandler {
 
@@ -90,7 +90,7 @@ public final class ConvertDateTimeHandler extends ConvertHandler {
             c.setLocale(ComponentSupport.getLocale(ctx, this.locale));
         }
         if (this.pattern != null) {
-            c.setPattern(this.pattern.getValue());
+            c.setPattern(this.pattern.getValue(ctx));
         } else {
             if (this.type != null) {
                 c.setType(this.type.getValue(ctx));
