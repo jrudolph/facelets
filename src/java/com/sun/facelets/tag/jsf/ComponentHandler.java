@@ -54,7 +54,7 @@ import com.sun.facelets.util.FacesAPI;
  * golden hammer for wiring UIComponents to Facelets.
  * 
  * @author Jacob Hookom
- * @version $Id: ComponentHandler.java,v 1.8 2005/11/30 23:36:38 jhook Exp $
+ * @version $Id: ComponentHandler.java,v 1.9 2005/12/04 21:34:31 jhook Exp $
  */
 public class ComponentHandler extends MetaTagHandler {
 
@@ -255,6 +255,8 @@ public class ComponentHandler extends MetaTagHandler {
             
             // if it's an EditableValueHolder
             if (EditableValueHolder.class.isAssignableFrom(type)) {
+                m.ignore("submittedValue");
+                m.ignore("valid");
                 m.addRule(EditableValueHolderRule.Instance);
             }
         }
