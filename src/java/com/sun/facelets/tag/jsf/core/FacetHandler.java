@@ -35,7 +35,7 @@ import com.sun.facelets.tag.TagHandler;
  * documentation</a>.
  * 
  * @author Jacob Hookom
- * @version $Id: FacetHandler.java,v 1.2 2005/08/24 04:38:49 jhook Exp $
+ * @version $Id: FacetHandler.java,v 1.2.6.1 2005/12/04 21:00:03 jhook Exp $
  */
 public final class FacetHandler extends TagHandler {
 
@@ -56,7 +56,7 @@ public final class FacetHandler extends TagHandler {
 
     public FacetHandler(TagConfig config) {
         super(config);
-        this.name = this.getAttribute("name");
+        this.name = this.getRequiredAttribute("name");
     }
 
     /* (non-Javadoc)
