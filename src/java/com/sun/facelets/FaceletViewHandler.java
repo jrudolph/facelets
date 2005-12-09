@@ -57,7 +57,7 @@ import com.sun.facelets.util.Resource;
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.45 2005/11/30 23:36:40 jhook Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.46 2005/12/09 13:30:32 jhook Exp $
  */
 public class FaceletViewHandler extends ViewHandler {
 
@@ -363,6 +363,14 @@ public class FaceletViewHandler extends ViewHandler {
 
         contentType = writer.getContentType();
         encoding = writer.getCharacterEncoding();
+        
+        // safety check
+        if (contentType == null) {
+            contentType = "text/html";
+            if (log.isLoggable(Level.WARNING)) {
+                log.warning("ResponseWriter created had a null ContentType, defaulting to text/html");
+            }
+        }
 
         // apply them to the response
         response.setContentType(contentType + "; charset=" + encoding);
@@ -436,7 +444,7 @@ public class FaceletViewHandler extends ViewHandler {
 
             // setup writer and assign it to the context
             ResponseWriter origWriter = this.createResponseWriter(context);
-            FastWriter stateWriter = new FastWriter(this.bufferSize != -1 ? this.bufferSize : 512);
+            FastWriter stateWriter = new FastWriter(this.bufferSize != -1 ? this.bufferSize : 1024);
             ResponseWriter writer = origWriter.cloneWithWriter(stateWriter);
             context.setResponseWriter(writer);
 
@@ -453,6 +461,11 @@ public class FaceletViewHandler extends ViewHandler {
 
             // finish writing
             writer.close();
+            
+            // remove transients for older versions
+            if (FacesAPI.getVersion() < 12) {
+                removeTransient(viewToRender);
+            }
             
             // save state
             StateManager stateMgr = context.getApplication().getStateManager();
@@ -487,11 +500,6 @@ public class FaceletViewHandler extends ViewHandler {
             this.handleFaceletNotFound(context, viewToRender.getViewId());
         } catch (Exception e) {
             this.handleRenderException(context, e);
-        }
-
-        // remove transients for older versions
-        if (FacesAPI.getVersion() < 12) {
-            removeTransient(viewToRender);
         }
     }
 
