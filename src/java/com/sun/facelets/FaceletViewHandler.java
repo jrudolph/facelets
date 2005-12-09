@@ -57,7 +57,7 @@ import com.sun.facelets.util.Resource;
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.47 2005/12/09 13:51:36 jhook Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.48 2005/12/09 14:18:06 jhook Exp $
  */
 public class FaceletViewHandler extends ViewHandler {
 
@@ -360,8 +360,14 @@ public class FaceletViewHandler extends ViewHandler {
         // safety check
         if (contentType == null) {
             contentType = "text/html";
-            if (log.isLoggable(Level.WARNING)) {
-                log.warning("ResponseWriter created had a null ContentType, defaulting to text/html");
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("ResponseWriter created had a null ContentType, defaulting to text/html");
+            }
+        }
+        if (encoding == null) {
+            encoding = "UTF-8";
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("ResponseWriter created had a null CharacterEncoding, defaulting to UTF-8");
             }
         }
 
