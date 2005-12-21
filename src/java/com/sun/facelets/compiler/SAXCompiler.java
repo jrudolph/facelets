@@ -46,7 +46,7 @@ import com.sun.facelets.tag.TagAttributes;
  * @see com.sun.facelets.compiler.Compiler
  * 
  * @author Jacob Hookom
- * @version $Id: SAXCompiler.java,v 1.7 2005/09/23 03:59:23 jhook Exp $
+ * @version $Id: SAXCompiler.java,v 1.8 2005/12/21 05:51:03 jhook Exp $
  */
 public final class SAXCompiler extends Compiler {
 
@@ -136,12 +136,13 @@ public final class SAXCompiler extends Compiler {
 
         public InputSource resolveEntity(String publicId, String systemId)
                 throws SAXException {
+            String dtd = "default.dtd";
             if ("-//W3C//DTD XHTML 1.0 Transitional//EN".equals(publicId)) {
-                URL url = Thread.currentThread().getContextClassLoader()
-                        .getResource("xhtml1-transitional.dtd");
-                return new InputSource(url.toExternalForm());
+                dtd = "xhtml1-transitional.dtd";
             }
-            return null;
+            URL url = Thread.currentThread().getContextClassLoader()
+                    .getResource(dtd);
+            return new InputSource(url.toExternalForm());
         }
 
         public void setDocumentLocator(Locator locator) {

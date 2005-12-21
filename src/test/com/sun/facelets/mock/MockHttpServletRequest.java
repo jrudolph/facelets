@@ -44,7 +44,7 @@ import javax.servlet.http.HttpSession;
 /**
  * 
  * @author Jacob Hookom
- * @version $Id: MockHttpServletRequest.java,v 1.1 2005/07/18 08:25:42 jhook Exp $
+ * @version $Id: MockHttpServletRequest.java,v 1.2 2005/12/21 05:51:05 jhook Exp $
  */
 public class MockHttpServletRequest implements HttpServletRequest {
 
@@ -304,6 +304,10 @@ public class MockHttpServletRequest implements HttpServletRequest {
             return p.split(",");
         }
         return null;
+    }
+    
+    public void setParameter(String name, String value) {
+    	this.param.put(name, value);
     }
 
     public Map getParameterMap() {

@@ -48,11 +48,11 @@ public abstract class FaceletTestCase extends TestCase {
 
     private final URI base = this.getContext();
 
-    private MockServletContext servletContext;
+    protected MockServletContext servletContext;
 
-    private MockHttpServletRequest servletRequest;
+    protected MockHttpServletRequest servletRequest;
 
-    private MockHttpServletResponse servletResponse;
+    protected MockHttpServletResponse servletResponse;
 
     private ApplicationFactory factoryApplication;
 
