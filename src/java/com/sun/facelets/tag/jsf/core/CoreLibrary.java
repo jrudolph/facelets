@@ -32,7 +32,7 @@ import com.sun.facelets.tag.AbstractTagLibrary;
  * documentation</a>.
  * 
  * @author Jacob Hookom
- * @version $Id: CoreLibrary.java,v 1.6 2005/08/27 15:35:29 jhook Exp $
+ * @version $Id: CoreLibrary.java,v 1.7 2005/12/23 08:06:55 jhook Exp $
  */
 public final class CoreLibrary extends AbstractTagLibrary {
 
@@ -62,6 +62,8 @@ public final class CoreLibrary extends AbstractTagLibrary {
         this.addComponent("selectItem", UISelectItem.COMPONENT_TYPE, null);
 
         this.addComponent("selectItems", UISelectItems.COMPONENT_TYPE, null);
+        
+        this.addComponent("subview", "javax.faces.NamingContainer", null);
         
         this.addValidator("validateLength", LengthValidator.VALIDATOR_ID);
         
