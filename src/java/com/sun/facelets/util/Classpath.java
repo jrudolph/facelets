@@ -28,7 +28,7 @@ import java.util.jar.JarFile;
 /**
  * @author Jacob Hookom
  * @author Roland Huss
- * @version $Id: Classpath.java,v 1.3 2005/11/30 23:36:37 jhook Exp $
+ * @version $Id: Classpath.java,v 1.4 2006/01/07 15:32:07 jhook Exp $
  */
 public final class Classpath {
 
@@ -80,7 +80,8 @@ public final class Classpath {
                 if (fc[i].isDirectory()) {
                     searchDir(result, fc[i], suffix);
                 } else if (path.endsWith(suffix)) {
-                    result.add(new URL("file:/" + path));
+                    //result.add(new URL("file:/" + path));
+                    result.add(fc[i].toURL());
                 }
             }
         }

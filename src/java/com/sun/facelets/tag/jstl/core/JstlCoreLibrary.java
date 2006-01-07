@@ -18,7 +18,7 @@ import com.sun.facelets.tag.AbstractTagLibrary;
 
 /**
  * @author Jacob Hookom
- * @version $Id: JstlCoreLibrary.java,v 1.3 2005/08/24 04:38:52 jhook Exp $
+ * @version $Id: JstlCoreLibrary.java,v 1.4 2006/01/07 15:32:07 jhook Exp $
  */
 public final class JstlCoreLibrary extends AbstractTagLibrary {
 
@@ -40,6 +40,8 @@ public final class JstlCoreLibrary extends AbstractTagLibrary {
         this.addTagHandler("when", ChooseWhenHandler.class);
         
         this.addTagHandler("otherwise", ChooseOtherwiseHandler.class);
+        
+        this.addTagHandler("set", SetHandler.class);
     }
 
 }

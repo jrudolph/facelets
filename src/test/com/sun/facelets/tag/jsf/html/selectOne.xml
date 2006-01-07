@@ -14,7 +14,7 @@
         <option jsfc="f:selectItem" itemValue="12" itemLabel="12"/>
     </select>
     <input jsfc="h:commandButton" value="Test Submit" action="#{test.testAction}" type="submit"/>
-   
+   	&eacute;
     <p>
         <span jsfc="h:messages"/>
     </p>
