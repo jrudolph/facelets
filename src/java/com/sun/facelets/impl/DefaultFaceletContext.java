@@ -44,7 +44,7 @@ import com.sun.facelets.el.ELAdaptor;
  * directive.
  * 
  * @author Jacob Hookom
- * @version $Id: DefaultFaceletContext.java,v 1.2 2005/08/24 04:38:58 jhook Exp $
+ * @version $Id: DefaultFaceletContext.java,v 1.3 2006/01/11 05:40:57 jhook Exp $
  */
 final class DefaultFaceletContext extends FaceletContext {
 
@@ -52,7 +52,7 @@ final class DefaultFaceletContext extends FaceletContext {
 
     private final ELContext ctx;
 
-    private final DefaultFacelet facelet;
+    private DefaultFacelet facelet;
 
     private VariableMapper varMapper;
 
@@ -220,5 +220,13 @@ final class DefaultFaceletContext extends FaceletContext {
 
     public ELResolver getELResolver() {
         return this.ctx.getELResolver();
+    }
+
+    public DefaultFacelet getFacelet() {
+        return facelet;
+    }
+
+    public void setFacelet(DefaultFacelet facelet) {
+        this.facelet = facelet;
     }
 }

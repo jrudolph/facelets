@@ -38,7 +38,7 @@ import com.sun.facelets.util.Resource;
  * Default FaceletFactory implementation.
  * 
  * @author Jacob Hookom
- * @version $Id: DefaultFaceletFactory.java,v 1.4 2005/11/30 23:36:39 jhook Exp $
+ * @version $Id: DefaultFaceletFactory.java,v 1.5 2006/01/11 05:40:57 jhook Exp $
  */
 public final class DefaultFaceletFactory extends FaceletFactory {
 
@@ -51,13 +51,13 @@ public final class DefaultFaceletFactory extends FaceletFactory {
     private final Map relativeLocations;
 
     private final URL location;
-    
+
     private final long refreshPeriod;
 
     public DefaultFaceletFactory(Compiler compiler, URL url) {
         this(compiler, url, -1);
     }
-    
+
     public DefaultFaceletFactory(Compiler compiler, URL url, long refreshPeriod) {
         ParameterCheck.notNull("compiler", compiler);
         ParameterCheck.notNull("url", url);
@@ -105,7 +105,8 @@ public final class DefaultFaceletFactory extends FaceletFactory {
      */
     public URL resolveURL(URL source, String path) throws IOException {
         if (path.startsWith("/")) {
-            URL url = Resource.getResourceUrl(FacesContext.getCurrentInstance(),path);
+            URL url = Resource.getResourceUrl(
+                    FacesContext.getCurrentInstance(), path);
             if (url == null) {
                 throw new FileNotFoundException(path
                         + " Not Found in ExternalContext as a Resource");
@@ -184,10 +185,17 @@ public final class DefaultFaceletFactory extends FaceletFactory {
         }
         String alias = "/"
                 + url.getFile().replaceFirst(this.location.getFile(), "");
-        FaceletHandler h = this.compiler.compile(url, alias);
-        DefaultFacelet f = new DefaultFacelet(this, this.compiler
-                .createExpressionFactory(), url, alias, h);
-        return f;
+        try {
+            FaceletHandler h = this.compiler.compile(url, alias);
+            DefaultFacelet f = new DefaultFacelet(this, this.compiler
+                    .createExpressionFactory(), url, alias, h);
+            return f;
+        } catch (FileNotFoundException fnfe) {
+            if (log.isLoggable(Level.WARNING)) {
+                log.warning(alias + " not found at " + url.toExternalForm());
+            }
+            throw fnfe;
+        }
     }
 
     /**

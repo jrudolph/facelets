@@ -27,6 +27,7 @@ import javax.faces.component.ActionSource;
 import javax.faces.component.ActionSource2;
 import javax.faces.component.EditableValueHolder;
 import javax.faces.component.UIComponent;
+import javax.faces.component.UIViewRoot;
 import javax.faces.component.ValueHolder;
 import javax.faces.context.FacesContext;
 import javax.faces.convert.Converter;
@@ -54,7 +55,7 @@ import com.sun.facelets.util.FacesAPI;
  * golden hammer for wiring UIComponents to Facelets.
  * 
  * @author Jacob Hookom
- * @version $Id: ComponentHandler.java,v 1.11 2005/12/23 08:06:54 jhook Exp $
+ * @version $Id: ComponentHandler.java,v 1.12 2006/01/11 05:40:56 jhook Exp $
  */
 public class ComponentHandler extends MetaTagHandler {
 
@@ -144,11 +145,12 @@ public class ComponentHandler extends MetaTagHandler {
             // assign our unique id
             if (this.id != null) {
                 c.setId(ctx.generateUniqueId(this.id.getValue(ctx)));
+            } else {
+                UIViewRoot root = ComponentSupport.getViewRoot(ctx, parent);
+                if (root != null) {
+                    c.setId(root.createUniqueId());
+                }
             }
-            //else {
-                // use the one from above
-            //    c.setId(id);
-            //}
             
             if (this.rendererType != null) {
                 c.setRendererType(this.rendererType);

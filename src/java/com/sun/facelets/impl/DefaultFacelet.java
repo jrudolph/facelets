@@ -46,7 +46,7 @@ import com.sun.facelets.tag.jsf.ComponentSupport;
  * Default Facelet implementation.
  * 
  * @author Jacob Hookom
- * @version $Id: DefaultFacelet.java,v 1.6 2005/08/29 03:34:16 jhook Exp $
+ * @version $Id: DefaultFacelet.java,v 1.7 2006/01/11 05:40:57 jhook Exp $
  */
 final class DefaultFacelet extends Facelet {
 
@@ -242,10 +242,16 @@ final class DefaultFacelet extends Facelet {
      * @throws FaceletException
      * @throws ELException
      */
-    private void include(FaceletContext ctx, UIComponent parent)
+    private void include(DefaultFaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
         this.refresh(parent);
-        this.root.apply(ctx, parent);
+        DefaultFacelet f = ctx.getFacelet();
+        try {
+            ctx.setFacelet(this);
+            this.root.apply(ctx, parent);
+        } finally {
+            ctx.setFacelet(f);
+        }
         this.markApplied(parent);
     }
 
@@ -267,7 +273,7 @@ final class DefaultFacelet extends Facelet {
      * @throws FaceletException
      * @throws ELException
      */
-    public void include(FaceletContext ctx, UIComponent parent, String path)
+    public void include(DefaultFaceletContext ctx, UIComponent parent, String path)
             throws IOException, FacesException, FaceletException, ELException {
         URL url = this.getRelativePath(path);
         this.include(ctx, parent, url);
@@ -288,7 +294,7 @@ final class DefaultFacelet extends Facelet {
      * @throws FaceletException
      * @throws ELException
      */
-    public void include(FaceletContext ctx, UIComponent parent, URL url)
+    public void include(DefaultFaceletContext ctx, UIComponent parent, URL url)
             throws IOException, FacesException, FaceletException, ELException {
         DefaultFacelet f = (DefaultFacelet) this.factory.getFacelet(url);
         f.include(ctx, parent);
