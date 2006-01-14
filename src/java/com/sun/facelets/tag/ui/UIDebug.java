@@ -14,11 +14,7 @@
 
 package com.sun.facelets.tag.ui;
 
-import java.io.BufferedWriter;
-import java.io.CharArrayWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -33,7 +29,7 @@ import com.sun.facelets.util.FastWriter;
 
 /**
  * @author Jacob Hookom
- * @version $Id: UIDebug.java,v 1.3 2005/08/27 18:36:15 jhook Exp $
+ * @version $Id: UIDebug.java,v 1.4 2006/01/14 06:46:16 jhook Exp $
  */
 public final class UIDebug extends UIComponentBase {
 

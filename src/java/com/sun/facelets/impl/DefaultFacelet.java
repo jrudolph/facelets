@@ -46,7 +46,7 @@ import com.sun.facelets.tag.jsf.ComponentSupport;
  * Default Facelet implementation.
  * 
  * @author Jacob Hookom
- * @version $Id: DefaultFacelet.java,v 1.7 2006/01/11 05:40:57 jhook Exp $
+ * @version $Id: DefaultFacelet.java,v 1.8 2006/01/14 06:46:16 jhook Exp $
  */
 final class DefaultFacelet extends Facelet {
 
@@ -245,13 +245,7 @@ final class DefaultFacelet extends Facelet {
     private void include(DefaultFaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
         this.refresh(parent);
-        DefaultFacelet f = ctx.getFacelet();
-        try {
-            ctx.setFacelet(this);
-            this.root.apply(ctx, parent);
-        } finally {
-            ctx.setFacelet(f);
-        }
+        this.root.apply(new DefaultFaceletContext(ctx, this), parent);
         this.markApplied(parent);
     }
 

@@ -30,7 +30,7 @@ import javax.faces.context.FacesContext;
  * Context representative of a single request from a Facelet
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletContext.java,v 1.4 2005/08/24 04:38:58 jhook Exp $
+ * @version $Id: FaceletContext.java,v 1.5 2006/01/14 06:46:17 jhook Exp $
  */
 public abstract class FaceletContext extends ELContext {
 
@@ -114,4 +114,32 @@ public abstract class FaceletContext extends ELContext {
      */
     public abstract void includeFacelet(UIComponent parent, URL absolutePath)
             throws IOException, FaceletException, FacesException, ELException;
+    
+    /**
+     * Push the passed TemplateClient onto the stack for Definition Resolution
+     * @param client
+     * @see TemplateClient
+     */
+    public abstract void pushClient(TemplateClient client);
+    
+    /**
+     * Pop the last added TemplateClient
+     * @see TemplateClient
+     */
+    public abstract void popClient();
+    
+    /**
+     * This method will walk through the TemplateClient stack to resolve and
+     * apply the definition for the passed name.
+     * If it's been resolved and applied, this method will return true.
+     * 
+     * @param parent the UIComponent to apply to
+     * @param name name or null of the definition you want to apply
+     * @return true if successfully applied, otherwise false
+     * @throws IOException
+     * @throws FaceletException
+     * @throws FacesException
+     * @throws ELException
+     */
+    public abstract boolean includeDefinition(UIComponent parent, String name) throws IOException, FaceletException, FacesException, ELException ;
 }

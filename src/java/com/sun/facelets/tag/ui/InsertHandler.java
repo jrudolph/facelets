@@ -30,7 +30,7 @@ import com.sun.facelets.tag.TagHandler;
 
 /**
  * @author Jacob Hookom
- * @version $Id: InsertHandler.java,v 1.4 2005/08/24 04:38:55 jhook Exp $
+ * @version $Id: InsertHandler.java,v 1.5 2006/01/14 06:46:15 jhook Exp $
  */
 public final class InsertHandler extends TagHandler {
 
@@ -60,11 +60,7 @@ public final class InsertHandler extends TagHandler {
      */
     public void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
-        TemplateManager mngr = TemplateManager.getInstance(ctx);
-        FaceletHandler next = mngr.getHandler(ctx, this.name);
-        if (next != null) {
-            next.apply(ctx, parent);
-        } else {
+        if (!ctx.includeDefinition(parent, this.name)) {
             this.nextHandler.apply(ctx, parent);
         }
     }

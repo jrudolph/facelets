@@ -28,7 +28,7 @@ import java.util.jar.JarFile;
 /**
  * @author Jacob Hookom
  * @author Roland Huss
- * @version $Id: Classpath.java,v 1.4 2006/01/07 15:32:07 jhook Exp $
+ * @version $Id: Classpath.java,v 1.5 2006/01/14 06:46:14 jhook Exp $
  */
 public final class Classpath {
 
@@ -54,6 +54,8 @@ public final class Classpath {
         while (e.hasMoreElements()) {
             url = (URL) e.nextElement();
             conn = url.openConnection();
+            conn.setUseCaches(false);
+            conn.setDefaultUseCaches(false);
             if (conn instanceof JarURLConnection) {
                 jarFile = ((JarURLConnection) conn).getJarFile();
             } else {

@@ -26,16 +26,15 @@ import javax.faces.component.UIComponent;
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
 import com.sun.facelets.FaceletHandler;
+import com.sun.facelets.TemplateClient;
 import com.sun.facelets.el.VariableMapperWrapper;
-import com.sun.facelets.tag.ui.TemplateClient;
-import com.sun.facelets.tag.ui.TemplateManager;
 
 /**
  * A Tag that is specified in a FaceletFile. Takes all attributes specified and
  * sets them on the FaceletContext before including the targeted Facelet file.
  * 
  * @author Jacob Hookom
- * @version $Id: UserTagHandler.java,v 1.5 2005/08/25 14:15:24 jhook Exp $
+ * @version $Id: UserTagHandler.java,v 1.6 2006/01/14 06:46:18 jhook Exp $
  */
 final class UserTagHandler extends TagHandler implements TemplateClient {
 
@@ -65,7 +64,6 @@ final class UserTagHandler extends TagHandler implements TemplateClient {
     public void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
         VariableMapper orig = ctx.getVariableMapper();
-        TemplateManager mngr = TemplateManager.getInstance(ctx);
         
         // setup a variable map
         if (this.vars.length > 0) {
@@ -79,20 +77,24 @@ final class UserTagHandler extends TagHandler implements TemplateClient {
         
         // eval include
         try {
-            mngr.pushClient(this);
+            ctx.pushClient(this);
             ctx.includeFacelet(parent, this.location);
         } catch (FileNotFoundException e) {
             throw new TagException(this.tag, e.getMessage());
         } finally {
             
             // make sure we undo our changes
-            mngr.popClient();
+            ctx.popClient();
             ctx.setVariableMapper(orig);
         }
     }
 
-    public FaceletHandler getHandler(FaceletContext ctx, String name) {
-        return (name == null) ? this.nextHandler : null;
+    public boolean apply(FaceletContext ctx, UIComponent parent, String name) throws IOException, FacesException, FaceletException, ELException {
+        if (name == null) {
+            this.nextHandler.apply(ctx, parent);
+            return true;
+        }
+        return false;
     }
 
 }

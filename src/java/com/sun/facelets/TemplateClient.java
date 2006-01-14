@@ -12,23 +12,21 @@
  * permissions and limitations under the License.
  */
 
-package com.sun.facelets.tag.ui;
+package com.sun.facelets;
 
-import com.sun.facelets.FaceletContext;
-import com.sun.facelets.FaceletHandler;
+import java.io.IOException;
+
+import javax.el.ELException;
+import javax.faces.FacesException;
+import javax.faces.component.UIComponent;
+
 
 /**
  * @author Jacob Hookom
- * @version $Id: TemplateClient.java,v 1.4 2005/08/24 04:38:56 jhook Exp $
+ * @version $Id: TemplateClient.java,v 1.1 2006/01/14 06:46:17 jhook Exp $
  */
 public interface TemplateClient {
-    
-    /**
-     * Nullsafe resolver of templates, if none is found, return null
-     * 
-     * @param ctx
-     * @param name
-     * @return
-     */
-    public FaceletHandler getHandler(FaceletContext ctx, String name);
+
+    public boolean apply(FaceletContext ctx, UIComponent parent, String name)
+            throws IOException, FacesException, FaceletException, ELException;;
 }

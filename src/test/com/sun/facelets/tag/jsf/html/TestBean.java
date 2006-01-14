@@ -17,4 +17,8 @@ public class TestBean {
         log.info("test action called ");
         return "runFasta";
     }
+    
+    public String method() {
+        return "Hello World!";
+    }
 }

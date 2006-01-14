@@ -16,7 +16,6 @@ package com.sun.facelets.tag.ui;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -32,15 +31,15 @@ import javax.faces.component.UIComponent;
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
 import com.sun.facelets.FaceletHandler;
+import com.sun.facelets.TemplateClient;
 import com.sun.facelets.el.VariableMapperWrapper;
 import com.sun.facelets.tag.TagAttribute;
-import com.sun.facelets.tag.TagAttributeException;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.TagHandler;
 
 /**
  * @author Jacob Hookom
- * @version $Id: CompositionHandler.java,v 1.8 2005/10/30 01:35:50 jhook Exp $
+ * @version $Id: CompositionHandler.java,v 1.9 2006/01/14 06:46:15 jhook Exp $
  */
 public final class CompositionHandler extends TagHandler implements
         TemplateClient {
@@ -108,12 +107,12 @@ public final class CompositionHandler extends TagHandler implements
                     this.params[i].apply(ctx, parent);
                 }
             }
-            TemplateManager mngr = TemplateManager.getInstance(ctx);
-            mngr.pushClient(this);
+
+            ctx.pushClient(this);
             try {
                 ctx.includeFacelet(parent, this.template.getValue(ctx));
             } finally {
-                mngr.popClient();
+                ctx.popClient();
                 ctx.setVariableMapper(orig);
             }
         } else {
@@ -121,11 +120,19 @@ public final class CompositionHandler extends TagHandler implements
         }
     }
 
-    public FaceletHandler getHandler(FaceletContext ctx, String name) {
+    public boolean apply(FaceletContext ctx, UIComponent parent, String name)
+            throws IOException, FacesException, FaceletException, ELException {
         if (name != null) {
-            return (FaceletHandler) this.handlers.get(name);
+            FaceletHandler handler = (FaceletHandler) this.handlers.get(name);
+            if (handler != null) {
+                handler.apply(ctx, parent);
+                return true;
+            } else {
+                return false;
+            }
         } else {
-            return this.nextHandler;
+            this.nextHandler.apply(ctx, parent);
+            return true;
         }
     }
 

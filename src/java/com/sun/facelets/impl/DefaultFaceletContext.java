@@ -16,7 +16,9 @@ package com.sun.facelets.impl;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.el.ELContext;
@@ -32,6 +34,7 @@ import javax.faces.context.FacesContext;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
+import com.sun.facelets.TemplateClient;
 import com.sun.facelets.el.DefaultVariableMapper;
 import com.sun.facelets.el.ELAdaptor;
 
@@ -44,7 +47,7 @@ import com.sun.facelets.el.ELAdaptor;
  * directive.
  * 
  * @author Jacob Hookom
- * @version $Id: DefaultFaceletContext.java,v 1.3 2006/01/11 05:40:57 jhook Exp $
+ * @version $Id: DefaultFaceletContext.java,v 1.4 2006/01/14 06:46:16 jhook Exp $
  */
 final class DefaultFaceletContext extends FaceletContext {
 
@@ -52,7 +55,7 @@ final class DefaultFaceletContext extends FaceletContext {
 
     private final ELContext ctx;
 
-    private DefaultFacelet facelet;
+    private final DefaultFacelet facelet;
 
     private VariableMapper varMapper;
 
@@ -60,9 +63,21 @@ final class DefaultFaceletContext extends FaceletContext {
 
     private final Map ids;
 
+    public DefaultFaceletContext(DefaultFaceletContext ctx,
+            DefaultFacelet facelet) {
+        this.ctx = ctx.ctx;
+        this.facelet = facelet;
+        this.clients = ctx.clients;
+        this.faces = ctx.faces;
+        this.fnMapper = ctx.fnMapper;
+        this.ids = ctx.ids;
+        this.varMapper = ctx.varMapper;
+    }
+
     public DefaultFaceletContext(FacesContext faces, DefaultFacelet facelet) {
         this.ctx = ELAdaptor.getELContext(faces);
         this.ids = new HashMap();
+        this.clients = new ArrayList(2);
         this.faces = faces;
         this.facelet = facelet;
         this.varMapper = this.ctx.getVariableMapper();
@@ -222,11 +237,32 @@ final class DefaultFaceletContext extends FaceletContext {
         return this.ctx.getELResolver();
     }
 
-    public DefaultFacelet getFacelet() {
-        return facelet;
+    private final List clients;
+
+    public void popClient() {
+        if (!this.clients.isEmpty()) {
+            this.clients.remove(this.clients.size() - 1);
+        }
     }
 
-    public void setFacelet(DefaultFacelet facelet) {
-        this.facelet = facelet;
+    public void pushClient(final TemplateClient client) {
+        this.clients.add(new TemplateClient() {
+            public boolean apply(FaceletContext ctx, UIComponent parent,
+                    String name) throws IOException, FacesException,
+                    FaceletException, ELException {
+                return client.apply(new DefaultFaceletContext(
+                        (DefaultFaceletContext) ctx, facelet), parent, name);
+            }
+        });
+    }
+
+    public boolean includeDefinition(UIComponent parent, String name)
+            throws IOException, FaceletException, FacesException, ELException {
+        boolean found = false;
+        for (int i = this.clients.size() - 1; found == false && i >= 0; i--) {
+            found = ((TemplateClient) this.clients.get(i)).apply(this, parent,
+                    name);
+        }
+        return found;
     }
 }
