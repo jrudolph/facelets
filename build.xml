@@ -12,8 +12,8 @@
   <property name="compile.debug"       value="true"/>
   <property name="compile.deprecation" value="false"/>
   <property name="compile.optimize"    value="true"/>
-  <property name="compile.source"      value="1.4"/>
-  <property name="compile.target"      value="1.4"/>
+  <property name="compile.source"      value="1.5"/>
+  <property name="compile.target"      value="1.5"/>
   <property name="build"               value="build"/>
   <property name="dist"                value="dist"/>
   <property name="lib"                 value="lib"/>
@@ -96,7 +96,7 @@
           <exclude name="servlet-api.jar"/>
           <exclude name="j2ee.jar"/>
           <exclude name="portlet.jar"/>
-	  <exclude name="myfaces-impl.jar"/>
+	  <exclude name="myfaces-all.jar"/>
         </lib>
 		<classes dir="build/@{root}/build"/>
         <lib file="${dist}/${jar}"/>
