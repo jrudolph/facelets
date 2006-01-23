@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Untitled Document</title>
+<script type="text/javascript" src="js/prototype.js"> </script>
+<script type="text/javascript" src="js/avatar.js"> </script>
+<script type="text/javascript">
+
+//function test() {
+	//new Avatar.Observer('aForm','aButton aSubmit');
+	new Avatar.Command('aButton', { render: ['aForm:test32','aForm:test456'] });
+	new Avatar.Command('aButton2');
+	new Avatar.Command('test363', { render: 'aForm:test32' });
+//}
+</script>
+
+<style type="text/css">
+<!--
+span {
+	font-size: 10px;
+	background-color: #CCCCCC;
+	margin: 4px;
+	padding: 4px;
+	border: 1px solid #666666;
+}
+-->
+</style>
+</head>
+
+<body>
+<div><span id="foo">A</span><span id="bar">B</span><span id="door">C</span></div>
+<div>
+<form id="aForm" name="aForm" action="response.xml">
+	<input type="text" id="aForm:_id0" name="aForm:_id0" />
+	<input type="hidden" id="aForm:_id1" name="aForm:_id1" value="someHidden"/>
+	<input type="password" id="aForm:_id2" name="aForm:_id2" value="somePassword"/>
+	<select id="aForm:_id3" name="aForm:_id3"><option value="first">first</option><option value="second">second</option></select>
+	<input type="submit" id="aForm:_id4" name="aForm:_id4" value="someSubmit"/>
+	<input type="checkbox" id="aForm:_id5" name="aForm:_id5" value="checkBoxA" checked/>
+	<input type="checkbox" id="aForm:_id5" name="aForm:_id5" value="checkBoxB" checked/>
+	<p/>
+	<input type="button" id="aButton" name="aButton"  value="CLICK TO TEST"/>
+	<input type="submit" id="aSubmit" name="aSubmit" onclick="$('aForm:_id0').value = 'PARAM A'" value="BLOCKED"/>
+	<input type="submit" id="aSubmit2" name="aSubmit2" onclick="$('aForm:_id0').value = 'PARAM B'" value="PASSTHROUGH"/>
+	<p/>
+	<input type="button" id="aButton2" name="aButton2" value="CLICK TO TEST"/>
+	<p/>
+	<a id="test363" href="#">TEST LINK</a>
+</form>
+</div>
+</body>
+</html>

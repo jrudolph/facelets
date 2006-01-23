@@ -1,0 +1,12 @@
+<avatar-response>
+	<view-state><input id="javax.faces.VIEW_STATE" name="javax.faces.VIEW_STATE" value="434234234234234234234243"/></view-state>
+	<render id="foo">
+		<span id="foo" class="red">hey dudes</span>
+	</render>
+	<render id="bar">
+		<span id="bar">hey dudes bar</span>
+	</render>
+	<render id="door">
+		<span id="door">hey dudes door</span>
+	</render>
+</avatar-response>
