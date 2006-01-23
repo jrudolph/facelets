@@ -1,3 +1,4 @@
+ 
 /* Object Extensions
  ***********************************************************/
 Object.extend(String.prototype, {
@@ -68,7 +69,7 @@ var Avatar = {
 function $Form(src) {
 	if (src) {
 		var form = $(src);
-		while (form && form.tagName != 'form') {
+		while (form && form.tagName.toLowerCase() != 'form') {
 			if (form.form) return form.form;
 			form = form.parentNode;
 		}
