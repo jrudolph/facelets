@@ -34,18 +34,31 @@ span {
 <div>
 <form id="aForm" name="aForm" action="response.xml">
 	<input type="text" id="aForm:_id0" name="aForm:_id0" />
-	<input type="hidden" id="aForm:_id1" name="aForm:_id1" value="someHidden"/>
-	<input type="password" id="aForm:_id2" name="aForm:_id2" value="somePassword"/>
-	<select id="aForm:_id3" name="aForm:_id3"><option value="first">first</option><option value="second">second</option></select>
-	<input type="submit" id="aForm:_id4" name="aForm:_id4" value="someSubmit"/>
-	<input type="checkbox" id="aForm:_id5" name="aForm:_id5" value="checkBoxA" checked/>
-	<input type="checkbox" id="aForm:_id5" name="aForm:_id5" value="checkBoxB" checked/>
+	<input type="hidden" id="aForm:_id1" name="aForm:_id1" 
+               value="someHidden"/>
+	<input type="password" id="aForm:_id2" name="aForm:_id2" 
+               value="somePassword"/>
+	<select id="aForm:_id3" name="aForm:_id3">
+          <option value="first">first</option>
+          <option value="second">second</option>
+        </select>
+	<input type="submit" id="aForm:_id4" name="aForm:_id4" 
+               value="someSubmit"/>
+	<input type="checkbox" id="aForm:_id5" name="aForm:_id5" 
+               value="checkBoxA" checked/>
+	<input type="checkbox" id="aForm:_id5" name="aForm:_id5" 
+               value="checkBoxB" checked/>
 	<p/>
-	<input type="button" id="aButton" name="aButton"  value="CLICK TO TEST"/>
-	<input type="submit" id="aSubmit" name="aSubmit" onclick="$('aForm:_id0').value = 'PARAM A'" value="BLOCKED"/>
-	<input type="submit" id="aSubmit2" name="aSubmit2" onclick="$('aForm:_id0').value = 'PARAM B'" value="PASSTHROUGH"/>
+	<input type="button" id="aButton" name="aButton"  
+               value="CLICK TO TEST"/>
+	<input type="submit" id="aSubmit" name="aSubmit" 
+               onclick="$('aForm:_id0').value = 'PARAM A'" value="BLOCKED"/>
+	<input type="submit" id="aSubmit2" name="aSubmit2" 
+               onclick="$('aForm:_id0').value = 'PARAM B'" 
+               value="PASSTHROUGH"/>
 	<p/>
-	<input type="button" id="aButton2" name="aButton2" value="CLICK TO TEST"/>
+	<input type="button" id="aButton2" name="aButton2" 
+               value="CLICK TO TEST"/>
 	<p/>
 	<a id="test363" href="#">TEST LINK</a>
 </form>
