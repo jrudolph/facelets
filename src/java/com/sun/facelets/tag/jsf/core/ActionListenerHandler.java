@@ -40,7 +40,7 @@ import com.sun.facelets.tag.TagHandler;
  * @see javax.faces.event.ActionListener
  * @see javax.faces.component.ActionSource
  * @author Jacob Hookom
- * @version $Id: ActionListenerHandler.java,v 1.2 2005/08/24 04:38:49 jhook Exp $
+ * @version $Id: ActionListenerHandler.java,v 1.3 2006/02/23 02:54:52 jhook Exp $
  */
 public final class ActionListenerHandler extends TagHandler {
 
@@ -56,7 +56,7 @@ public final class ActionListenerHandler extends TagHandler {
     public ActionListenerHandler(TagConfig config) {
         super(config);
         this.binding = this.getAttribute("binding");
-        this.type = this.getRequiredAttribute("type");
+        this.type = this.getAttribute("type");
         if (type != null) {
             if (!type.isLiteral()) {
                 throw new TagAttributeException(this.tag, this.type, "Must be literal");
