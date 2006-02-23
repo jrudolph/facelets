@@ -57,7 +57,7 @@ import com.sun.facelets.util.Resource;
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.48 2005/12/09 14:18:06 jhook Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.49 2006/02/23 02:45:10 jhook Exp $
  */
 public class FaceletViewHandler extends ViewHandler {
 
@@ -505,16 +505,27 @@ public class FaceletViewHandler extends ViewHandler {
     protected void handleRenderException(FacesContext context, Exception e)
             throws IOException, ELException, FacesException {
         Object resp = context.getExternalContext().getResponse();
+        
+        // always log
+        if (log.isLoggable(Level.SEVERE)) {
+            UIViewRoot root = context.getViewRoot();
+            StringBuffer sb = new StringBuffer(64);
+            sb.append("Error Rendering View");
+            if (root != null) {
+                sb.append('[');
+                sb.append(root.getViewId());
+                sb.append(']');
+            }
+            log.log(Level.SEVERE, sb.toString(), e);
+        }
+        
+        // handle dev response
         if (this.developmentMode && !context.getResponseComplete()
                 && resp instanceof HttpServletResponse) {
-            if (log.isLoggable(Level.SEVERE)) {
-                log.log(Level.SEVERE, "Error Rendering View", e);
-            }
             HttpServletResponse httpResp = (HttpServletResponse) resp;
             httpResp.reset();
             httpResp.setContentType("text/html; charset=UTF-8");
             Writer w = httpResp.getWriter();
-            log.severe("Took Type: " + w.getClass().getName());
             DevTools.debugHtml(w, context, e);
             w.flush();
             context.responseComplete();
