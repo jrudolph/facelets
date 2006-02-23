@@ -93,7 +93,7 @@
 			</tgroup>
 		</table>
 		<para>
-			The <literal>component</literal> tag and the <literal>composition</literal> tag behave exactly the same, except the <literal>component</literal> tag will insert a new <literal>UIComponent</literal> instance into the tree as the root of all the child components/fragments it has.
+			The <literal>component</literal> tag and the <literal>composition</literal> tag (below) behave exactly the same, except the <literal>component</literal> tag will insert a new <literal>UIComponent</literal> instance into the tree as the root of all the child components/fragments it has.
 		</para>
 		<programlisting><![CDATA[Text before will be removed.
 <ui:component binding="#{backingBean.menu}">
@@ -397,7 +397,7 @@ The Text below will be used.]]></programlisting>
 			</tgroup>
 		</table>
 		<para>
-			The <literal>insert</literal> tag is used within your templates to declare spots of replacable data.
+			The <literal>insert</literal> tag is used within your templates to declare spots of replaceable data.
 		</para>
 		<programlisting><![CDATA[<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
@@ -414,7 +414,7 @@ The Text below will be used.]]></programlisting>
 </body>
 </html>]]></programlisting>
 		<para>
-			As you can see, these <literal>insert</literal> tags include default content.  If the template client doesn't specify content for the specified name, it's own default content is used in tree creation.
+			As you can see, these <literal>insert</literal> tags indicate to the Facelets compiler where to insert content from the template client.  If the template client doesn't specify content for the specified name, then the body of the ui:insert tag in the template is used.
 		</para>
 	</sect1>
 	
@@ -448,7 +448,7 @@ The Text below will be used.]]></programlisting>
 			</tgroup>
 		</table>
 		<para>
-			Because Facelets uses the new EL specification, there's no need to do a bunch of tricks to pass variables between components, things now just work.  This means tag like Apache MyFaces' <literal><![CDATA[<x:aliasBean/>]]></literal> aren't necessary.
+			From reading about Facelets templating, you've probably become familiar with passing fragments of content between pages.  With the <literal>param</literal> tag, you can pass objects as variables instead of just fragments of content.  You can use the <literal>param</literal> tag wherever a <literal>define</literal> tag is used within <literal>composition</literal> or <literal>decorate</literal> tags, in addition to passing objects to an <literal>include</literal> tag.
 		</para>
 		<programlisting><![CDATA[<span id="leftNav">
   <ui:include src="/WEB-INF/siteNav.xhtml">
@@ -457,7 +457,7 @@ The Text below will be used.]]></programlisting>
   </ui:include>
 </span>]]></programlisting>
 		<para>
-			In the above example, when <literal>siteNav.xhtml</literal> is used, it will have <literal>user</literal> and <literal>page</literal> variables available in EL.
+			In the above example, when <literal>siteNav.xhtml</literal> is used, it will have <literal>user</literal> and <literal>page</literal> variables available for use which will reference the the <literal>currentUser</literal> object and the <literal>home</literal> string literal.
 		</para>
 	</sect1>
 	
