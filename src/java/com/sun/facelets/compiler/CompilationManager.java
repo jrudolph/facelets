@@ -39,7 +39,7 @@ import com.sun.facelets.tag.ui.UILibrary;
  * @see com.sun.facelets.compiler.Compiler
  * 
  * @author Jacob Hookom
- * @version $Id: CompilationManager.java,v 1.11 2005/08/24 04:38:53 jhook Exp $
+ * @version $Id: CompilationManager.java,v 1.12 2006/02/27 00:24:13 jhook Exp $
  */
 final class CompilationManager {
 
@@ -119,7 +119,7 @@ final class CompilationManager {
     }
 
     private String nextTagId() {
-        return "_tagId" + (this.tagId++);
+        return this.alias + "#" + (this.tagId++);
     }
 
     public void pushTag(Tag orig) {
