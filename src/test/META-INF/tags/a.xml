@@ -1,0 +1,6 @@
+<ui:composition xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html">
+    <h:outputText value=":Start a(#{test}):"/>
+    <ui:insert/>
+    <h:outputText value=":End a(#{test}):"/>
+</ui:composition>

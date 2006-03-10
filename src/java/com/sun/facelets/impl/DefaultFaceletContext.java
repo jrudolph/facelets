@@ -50,7 +50,7 @@ import com.sun.facelets.el.ELAdaptor;
  * directive.
  * 
  * @author Jacob Hookom
- * @version $Id: DefaultFaceletContext.java,v 1.4.4.1 2006/03/10 05:59:06 jhook Exp $
+ * @version $Id: DefaultFaceletContext.java,v 1.4.4.2 2006/03/10 16:39:46 jhook Exp $
  */
 final class DefaultFaceletContext extends FaceletContext {
 
@@ -81,7 +81,7 @@ final class DefaultFaceletContext extends FaceletContext {
     public DefaultFaceletContext(FacesContext faces, DefaultFacelet facelet) {
         this.ctx = ELAdaptor.getELContext(faces);
         this.ids = new HashMap();
-        this.clients = new LinkedList();
+        this.clients = new ArrayList(2);
         this.faces = faces;
         this.facelet = facelet;
         this.varMapper = this.ctx.getVariableMapper();
@@ -265,21 +265,22 @@ final class DefaultFaceletContext extends FaceletContext {
         TemplateClient client;
         String localName = (name != null) ? name : "_NULL_";
         
-        if (this.name == null || !this.name.equals(localName)) {
+        //if (this.name == null || !this.name.equals(localName)) {
             this.name = localName;
             for (int i = this.clients.size() - 1; found == false && i >= 0; i--) {
                 client = ((TemplateClient) this.clients.get(i));
                 if (client.equals(this.facelet)) break;
                 found = client.apply(this, parent, name);
             }
-        } else {
-            this.name = localName;
-            for (int i = 0; found == false && i < this.clients.size(); i++) {
-                client = ((TemplateClient) this.clients.get(i));
-                if (client.equals(this.facelet)) break;
-                found = client.apply(this, parent, name);
-            }
-        }
+//        } else {
+//            this.name = localName;
+//            System.out.println("["+this.facelet.getAlias()+"] "+this.clients.indexOf(this.facelet));
+//            for (int i = 0; found == false && i < this.clients.size(); i++) {
+//                client = ((TemplateClient) this.clients.get(i));
+//                if (client.equals(this.facelet)) break;
+//                found = client.apply(this, parent, name);
+//            }
+//        }
         
         this.name = null;
         
@@ -304,7 +305,7 @@ final class DefaultFaceletContext extends FaceletContext {
         }
 
         public boolean equals(Object o) {
-            System.out.println(this.owner.getAlias() + " == " + ((DefaultFacelet) o).getAlias());
+            //System.out.println(this.owner.getAlias() + " == " + ((DefaultFacelet) o).getAlias());
             return this.owner == o;
         }
     }

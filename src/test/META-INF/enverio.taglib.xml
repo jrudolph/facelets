@@ -13,4 +13,12 @@
 		<tag-name>span</tag-name>
 		<source>tags/component.xml</source>
 	</tag>
+	<tag>
+		<tag-name>a</tag-name>
+		<source>tags/a.xml</source>
+	</tag>
+	<tag>
+		<tag-name>b</tag-name>
+		<source>tags/b.xml</source>
+	</tag>
 </facelet-taglib>
