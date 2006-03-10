@@ -30,7 +30,7 @@ import javax.faces.context.FacesContext;
  * Context representative of a single request from a Facelet
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletContext.java,v 1.5 2006/01/14 06:46:17 jhook Exp $
+ * @version $Id: FaceletContext.java,v 1.5.4.1 2006/03/10 05:59:06 jhook Exp $
  */
 public abstract class FaceletContext extends ELContext {
 
@@ -126,7 +126,10 @@ public abstract class FaceletContext extends ELContext {
      * Pop the last added TemplateClient
      * @see TemplateClient
      */
-    public abstract void popClient();
+    public abstract void popClient(TemplateClient client);
+    
+    
+    public abstract void extendClient(TemplateClient client);
     
     /**
      * This method will walk through the TemplateClient stack to resolve and

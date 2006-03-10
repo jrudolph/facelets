@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -32,8 +33,10 @@ import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 
+import com.sun.facelets.Facelet;
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
+import com.sun.facelets.FaceletHandler;
 import com.sun.facelets.TemplateClient;
 import com.sun.facelets.el.DefaultVariableMapper;
 import com.sun.facelets.el.ELAdaptor;
@@ -47,7 +50,7 @@ import com.sun.facelets.el.ELAdaptor;
  * directive.
  * 
  * @author Jacob Hookom
- * @version $Id: DefaultFaceletContext.java,v 1.4 2006/01/14 06:46:16 jhook Exp $
+ * @version $Id: DefaultFaceletContext.java,v 1.4.4.1 2006/03/10 05:59:06 jhook Exp $
  */
 final class DefaultFaceletContext extends FaceletContext {
 
@@ -72,12 +75,13 @@ final class DefaultFaceletContext extends FaceletContext {
         this.fnMapper = ctx.fnMapper;
         this.ids = ctx.ids;
         this.varMapper = ctx.varMapper;
+        this.name = ctx.name;
     }
 
     public DefaultFaceletContext(FacesContext faces, DefaultFacelet facelet) {
         this.ctx = ELAdaptor.getELContext(faces);
         this.ids = new HashMap();
-        this.clients = new ArrayList(2);
+        this.clients = new LinkedList();
         this.faces = faces;
         this.facelet = facelet;
         this.varMapper = this.ctx.getVariableMapper();
@@ -239,30 +243,69 @@ final class DefaultFaceletContext extends FaceletContext {
 
     private final List clients;
 
-    public void popClient() {
+    public void popClient(TemplateClient client) {
         if (!this.clients.isEmpty()) {
-            this.clients.remove(this.clients.size() - 1);
+            this.clients.remove(client);
         }
     }
 
     public void pushClient(final TemplateClient client) {
-        this.clients.add(new TemplateClient() {
-            public boolean apply(FaceletContext ctx, UIComponent parent,
-                    String name) throws IOException, FacesException,
-                    FaceletException, ELException {
-                return client.apply(new DefaultFaceletContext(
-                        (DefaultFaceletContext) ctx, facelet), parent, name);
-            }
-        });
+        this.clients.add(new TemplateClientMomento(this.facelet, client));
     }
 
+    public void extendClient(final TemplateClient client) {
+        this.clients.add(0, new TemplateClientMomento(this.facelet, client));
+    }
+
+    private String name;
+    
     public boolean includeDefinition(UIComponent parent, String name)
             throws IOException, FaceletException, FacesException, ELException {
         boolean found = false;
-        for (int i = this.clients.size() - 1; found == false && i >= 0; i--) {
-            found = ((TemplateClient) this.clients.get(i)).apply(this, parent,
-                    name);
+        TemplateClient client;
+        String localName = (name != null) ? name : "_NULL_";
+        
+        if (this.name == null || !this.name.equals(localName)) {
+            this.name = localName;
+            for (int i = this.clients.size() - 1; found == false && i >= 0; i--) {
+                client = ((TemplateClient) this.clients.get(i));
+                if (client.equals(this.facelet)) break;
+                found = client.apply(this, parent, name);
+            }
+        } else {
+            this.name = localName;
+            for (int i = 0; found == false && i < this.clients.size(); i++) {
+                client = ((TemplateClient) this.clients.get(i));
+                if (client.equals(this.facelet)) break;
+                found = client.apply(this, parent, name);
+            }
         }
+        
+        this.name = null;
+        
         return found;
+    }
+
+    private final static class TemplateClientMomento implements TemplateClient {
+        private final DefaultFacelet owner;
+
+        private final TemplateClient target;
+
+        public TemplateClientMomento(DefaultFacelet owner, TemplateClient target) {
+            this.owner = owner;
+            this.target = target;
+        }
+
+        public boolean apply(FaceletContext ctx, UIComponent parent, String name)
+                throws IOException, FacesException, FaceletException,
+                ELException {
+            return this.target.apply(new DefaultFaceletContext(
+                    (DefaultFaceletContext) ctx, this.owner), parent, name);
+        }
+
+        public boolean equals(Object o) {
+            System.out.println(this.owner.getAlias() + " == " + ((DefaultFacelet) o).getAlias());
+            return this.owner == o;
+        }
     }
 }

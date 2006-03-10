@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -57,7 +58,7 @@ import com.sun.facelets.util.Resource;
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.49 2006/02/23 02:45:10 jhook Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.49.2.1 2006/03/10 05:59:06 jhook Exp $
  */
 public class FaceletViewHandler extends ViewHandler {
 
@@ -343,7 +344,7 @@ public class FaceletViewHandler extends ViewHandler {
         }
 
         // get our content type
-        String contentType = null;
+        String contentType = request.getContentType();
 
         // get the encoding
         String encoding = request.getCharacterEncoding();
@@ -352,10 +353,16 @@ public class FaceletViewHandler extends ViewHandler {
         // so we can figure out what content type the ReponseWriter
         // is really going to ask for
         ResponseWriter writer = renderKit.createResponseWriter(
-                NullWriter.Instance, null, encoding);
+                NullWriter.Instance, contentType, encoding);
 
         contentType = writer.getContentType();
         encoding = writer.getCharacterEncoding();
+        
+        // see if we need to override it
+        Map m = context.getViewRoot().getAttributes();
+        if (m.containsKey("contentType")) {
+            contentType = (String) m.get("contentType");
+        }
         
         // safety check
         if (contentType == null) {

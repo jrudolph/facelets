@@ -42,7 +42,7 @@ import com.sun.facelets.util.FacesAPI;
  * A Compiler instance may handle compiling multiple sources
  * 
  * @author Jacob Hookom
- * @version $Id: Compiler.java,v 1.13 2005/12/21 05:51:03 jhook Exp $
+ * @version $Id: Compiler.java,v 1.13.4.1 2006/03/10 05:59:05 jhook Exp $
  */
 public abstract class Compiler {
 
@@ -125,7 +125,7 @@ public abstract class Compiler {
 
     public final ExpressionFactory createExpressionFactory() {
         ExpressionFactory el = null;
-        if (FacesAPI.getVersion() >= 12) {
+        if (FacesAPI.getVersion() >= 12 && !this.features.containsKey(EXPRESSION_FACTORY)) {
             try {
                 el = FacesContext.getCurrentInstance().getApplication()
                         .getExpressionFactory();
