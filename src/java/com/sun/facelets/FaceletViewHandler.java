@@ -58,7 +58,7 @@ import com.sun.facelets.util.Resource;
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.49.2.1 2006/03/10 05:59:06 jhook Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.49.2.2 2006/03/10 15:33:11 jhook Exp $
  */
 public class FaceletViewHandler extends ViewHandler {
 
@@ -344,7 +344,7 @@ public class FaceletViewHandler extends ViewHandler {
         }
 
         // get our content type
-        String contentType = request.getContentType();
+        String contentType = null;
 
         // get the encoding
         String encoding = request.getCharacterEncoding();
