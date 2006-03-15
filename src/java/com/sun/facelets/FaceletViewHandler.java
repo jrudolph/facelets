@@ -58,7 +58,7 @@ import com.sun.facelets.util.Resource;
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.49.2.2 2006/03/10 15:33:11 jhook Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.49.2.3 2006/03/15 21:15:59 jhook Exp $
  */
 public class FaceletViewHandler extends ViewHandler {
 
@@ -362,6 +362,9 @@ public class FaceletViewHandler extends ViewHandler {
         Map m = context.getViewRoot().getAttributes();
         if (m.containsKey("contentType")) {
             contentType = (String) m.get("contentType");
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("UIViewRoot specified alternate contentType '"+contentType+"'");
+            }
         }
         
         // safety check

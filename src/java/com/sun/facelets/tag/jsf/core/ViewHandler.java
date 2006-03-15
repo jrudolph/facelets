@@ -15,6 +15,7 @@
 package com.sun.facelets.tag.jsf.core;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import javax.el.ELException;
 import javax.el.MethodExpression;
@@ -37,7 +38,7 @@ import com.sun.facelets.tag.jsf.ComponentSupport;
  * documentation</a>.
  * 
  * @author Jacob Hookom
- * @version $Id: ViewHandler.java,v 1.2.8.2 2006/03/15 19:31:46 jhook Exp $
+ * @version $Id: ViewHandler.java,v 1.2.8.3 2006/03/15 21:15:59 jhook Exp $
  */
 public final class ViewHandler extends TagHandler {
 
