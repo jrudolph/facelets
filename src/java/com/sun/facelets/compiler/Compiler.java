@@ -42,7 +42,7 @@ import com.sun.facelets.util.FacesAPI;
  * A Compiler instance may handle compiling multiple sources
  * 
  * @author Jacob Hookom
- * @version $Id: Compiler.java,v 1.13.4.1 2006/03/10 05:59:05 jhook Exp $
+ * @version $Id: Compiler.java,v 1.13.4.2 2006/03/15 19:31:45 jhook Exp $
  */
 public abstract class Compiler {
 
@@ -74,8 +74,7 @@ public abstract class Compiler {
      * 
      */
     public Compiler() {
-        this.features.put(EXPRESSION_FACTORY,
-                "com.sun.el.ExpressionFactoryImpl");
+        
     }
 
     private synchronized void initialize() {
@@ -125,7 +124,8 @@ public abstract class Compiler {
 
     public final ExpressionFactory createExpressionFactory() {
         ExpressionFactory el = null;
-        if (FacesAPI.getVersion() >= 12 && !this.features.containsKey(EXPRESSION_FACTORY)) {
+        el = (ExpressionFactory) this.featureInstance(EXPRESSION_FACTORY);
+        if (el == null && FacesAPI.getVersion() >= 12) {
             try {
                 el = FacesContext.getCurrentInstance().getApplication()
                         .getExpressionFactory();
@@ -138,6 +138,7 @@ public abstract class Compiler {
             }
         }
         if (el == null) {
+            this.features.put(EXPRESSION_FACTORY, "com.sun.el.ExpressionFactoryImpl");
             el = (ExpressionFactory) this.featureInstance(EXPRESSION_FACTORY);
         }
         return el;
@@ -147,7 +148,7 @@ public abstract class Compiler {
         String type = (String) this.features.get(name);
         if (type != null) {
             try {
-                return Class.forName(type).newInstance();
+                return Class.forName(type, true, Thread.currentThread().getContextClassLoader()).newInstance();
             } catch (Throwable t) {
                 throw new FaceletException("Could not instantiate feature["
                         + name + "]: " + type);

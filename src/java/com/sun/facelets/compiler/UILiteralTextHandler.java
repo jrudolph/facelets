@@ -25,6 +25,7 @@ import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
 import com.sun.facelets.FaceletHandler;
 import com.sun.facelets.tag.TextHandler;
+import com.sun.facelets.tag.jsf.ComponentSupport;
 
 final class UILiteralTextHandler implements FaceletHandler, TextHandler {
     
@@ -37,7 +38,9 @@ final class UILiteralTextHandler implements FaceletHandler, TextHandler {
     public void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
         if (parent != null) {
-            parent.getChildren().add(new UILiteralText(this.txtString));
+            UIComponent c = new UILiteralText(this.txtString);
+            c.setId(ComponentSupport.getViewRoot(ctx, parent).createUniqueId());
+            parent.getChildren().add(c);
         }
     }
 

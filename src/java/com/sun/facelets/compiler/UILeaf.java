@@ -35,8 +35,8 @@ import javax.faces.render.Renderer;
 import com.sun.facelets.el.ELText;
 
 class UILeaf extends UIComponentBase {
-
-    private final static Map attributes = new HashMap(){
+    
+    private final static Map facets = new HashMap(){
     
         public void putAll(Map map) {
             // do nothing
@@ -46,12 +46,6 @@ class UILeaf extends UIComponentBase {
             return null;
         }
     };
-    
-    private final static Map facets = attributes;
-
-    public Map getAttributes() {
-        return this.attributes;
-    }
     
     private UIComponent parent;
 

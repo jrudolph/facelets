@@ -27,11 +27,12 @@ import com.sun.facelets.FaceletException;
 import com.sun.facelets.FaceletHandler;
 import com.sun.facelets.el.ELText;
 import com.sun.facelets.tag.TextHandler;
+import com.sun.facelets.tag.jsf.ComponentSupport;
 import com.sun.facelets.util.FastWriter;
 
 /**
  * @author Jacob Hookom
- * @version $Id: UITextHandler.java,v 1.7 2005/09/02 18:00:41 jhook Exp $
+ * @version $Id: UITextHandler.java,v 1.7.8.1 2006/03/15 19:31:46 jhook Exp $
  */
 final class UITextHandler implements FaceletHandler, TextHandler {
 
@@ -52,7 +53,10 @@ final class UITextHandler implements FaceletHandler, TextHandler {
         if (parent != null) {
             try {
                 ELText nt = this.txt.apply(ctx.getExpressionFactory(), ctx);
-                parent.getChildren().add(new UIText(this.alias, nt));
+                UIComponent c = new UIText(this.alias, nt);
+                c.setId(ComponentSupport.getViewRoot(ctx, parent).createUniqueId());
+                //c.getAttributes().put(ComponentSupport.MARK_CREATED, ctx.generateUniqueId(this.tagId));
+                parent.getChildren().add(c);
             } catch (Exception e) {
                 throw new ELException(this.alias + ": "+ e.getMessage(), e.getCause());
             }

@@ -22,14 +22,13 @@ import javax.el.ValueExpression;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 
-import com.sun.el.ExpressionFactoryImpl;
 import com.sun.facelets.util.FacesAPI;
 
 /**
  * 
  * 
  * @author Jacob Hookom
- * @version $Id: ELAdaptor.java,v 1.7 2005/09/26 00:38:51 jhook Exp $
+ * @version $Id: ELAdaptor.java,v 1.7.6.1 2006/03/15 19:31:46 jhook Exp $
  */
 public final class ELAdaptor {
 
@@ -39,14 +38,6 @@ public final class ELAdaptor {
     
     public ELAdaptor() {
         super();
-    }
-    
-    public final static ExpressionFactory createExpressionFactory(FacesContext faces) {
-        if (ELSUPPORT) {
-            return faces.getApplication().getExpressionFactory();
-        } else {
-            return new ExpressionFactoryImpl();
-        }
     }
     
     public final static ELContext getELContext(FacesContext faces) {
