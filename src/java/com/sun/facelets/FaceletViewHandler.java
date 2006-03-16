@@ -58,7 +58,7 @@ import com.sun.facelets.util.Resource;
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.49.2.3 2006/03/15 21:15:59 jhook Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.49.2.4 2006/03/16 00:17:09 adamwiner Exp $
  */
 public class FaceletViewHandler extends ViewHandler {
 
@@ -107,6 +107,9 @@ public class FaceletViewHandler extends ViewHandler {
 
     public final static String PARAM_DEVELOPMENT = "facelets.DEVELOPMENT";
 
+    public final static String PARAM_BUILD_BEFORE_RESTORE = 
+                                        "facelets.BUILD_BEFORE_RESTORE";
+
     public final static String PARAM_BUFFER_SIZE = "facelets.BUFFER_SIZE";
 
     private final static String STATE_KEY = "~facelets.VIEW_STATE~";
@@ -118,6 +121,8 @@ public class FaceletViewHandler extends ViewHandler {
     private final ViewHandler parent;
 
     private boolean developmentMode = false;
+
+    private boolean buildBeforeRestore = false;
 
     private int bufferSize;
 
@@ -197,7 +202,10 @@ public class FaceletViewHandler extends ViewHandler {
     private void initializeMode(FacesContext context) {
         ExternalContext external = context.getExternalContext();
         String param = external.getInitParameter(PARAM_DEVELOPMENT);
-        this.developmentMode = (param != null && "true".equals(param));
+        this.developmentMode = "true".equals(param);
+
+        String restoreMode = external.getInitParameter(PARAM_BUILD_BEFORE_RESTORE);
+        this.buildBeforeRestore = "true".equals(restoreMode);
     }
 
     private void initializeBuffer(FacesContext context) {
@@ -319,7 +327,34 @@ public class FaceletViewHandler extends ViewHandler {
         if (UIDebug.debugRequest(context)) {
             return new UIViewRoot();
         }
-        return this.parent.restoreView(context, viewId);
+
+        if (!this.buildBeforeRestore ||
+            !handledByFacelets(viewId)) {
+            return this.parent.restoreView(context, viewId);
+        }
+
+        if (this.faceletFactory == null) {
+            this.initialize(context);
+        }
+        
+        ViewHandler outerViewHandler =
+            context.getApplication().getViewHandler();
+        String renderKitId =
+            outerViewHandler.calculateRenderKitId(context);
+
+        // =-=AEW Need to check if this is actually an initial request...
+        // How to do so for JSF 1.1 vs. JSF 1.2???
+        UIViewRoot viewRoot = createView(context, viewId);
+        context.setViewRoot(viewRoot);
+        try {
+            this.buildView(context, viewRoot);
+        } catch (IOException ioe) {
+            log.log(Level.SEVERE, "Error Building View", ioe);
+        }
+        context.getApplication().getStateManager().restoreView(context,
+                                                               viewId,
+                                                               renderKitId);
+        return viewRoot;
     }
 
     /*
@@ -437,7 +472,7 @@ public class FaceletViewHandler extends ViewHandler {
         }
 
         // if facelets is not supposed to handle this request
-        if (!handledByFacelets(viewToRender)) {
+        if (!handledByFacelets(viewToRender.getViewId())) {
             this.parent.renderView(context, viewToRender);
             return;
         }
@@ -448,8 +483,17 @@ public class FaceletViewHandler extends ViewHandler {
         }
 
         try {
-            // build view
-            this.buildView(context, viewToRender);
+            // build view - but not if we're in "buildBeforeRestore"
+            // land and we've already got a populated view.  Note
+            // that this optimizations breaks if there's a "c:if" in
+            // the page that toggles as a result of request processing -
+            // should that be handled?  Or
+            // is this optimization simply so minor that it should just
+            // be trimmed altogether?
+            if (!this.buildBeforeRestore ||
+                viewToRender.getChildren().isEmpty()) {
+                this.buildView(context, viewToRender);
+            }
 
             // setup writer and assign it to the context
             ResponseWriter origWriter = this.createResponseWriter(context);
@@ -482,6 +526,7 @@ public class FaceletViewHandler extends ViewHandler {
             
             // flush to origWriter
             String content = stateWriter.toString();
+
             if ((stateMgr.isSavingStateInClient(context) || FacesAPI.getVersion() >= 12)) {
                 stateWriter.reset();
                 stateMgr.writeState(context, (StateManager.SerializedView) stateObj);
@@ -579,14 +624,12 @@ public class FaceletViewHandler extends ViewHandler {
     /**
      * Determine if Facelets needs to handle this request.
      */
-    private boolean handledByFacelets(UIViewRoot viewToRender) {
+    private boolean handledByFacelets(String viewId) {
         // If there's no extensions array or prefixes array, then
         // just make Facelets handle everything
         if ((extensionsArray == null) && (prefixesArray == null)) {
             return true;
         }
-
-        String viewId = viewToRender.getViewId();
 
         if (extensionsArray != null) {
             for (int i = 0; i < extensionsArray.length; i++) {
@@ -635,7 +678,7 @@ public class FaceletViewHandler extends ViewHandler {
     }
 
     public void writeState(FacesContext context) throws IOException {
-        if (handledByFacelets(context.getViewRoot())) {
+        if (handledByFacelets(context.getViewRoot().getViewId())) {
             StateManager stateMgr = context.getApplication().getStateManager();
             if (stateMgr.isSavingStateInClient(context) || FacesAPI.getVersion() >= 12) {
                 context.getResponseWriter().write(STATE_KEY);

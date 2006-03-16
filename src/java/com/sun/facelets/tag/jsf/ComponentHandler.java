@@ -55,7 +55,7 @@ import com.sun.facelets.util.FacesAPI;
  * golden hammer for wiring UIComponents to Facelets.
  * 
  * @author Jacob Hookom
- * @version $Id: ComponentHandler.java,v 1.12 2006/01/11 05:40:56 jhook Exp $
+ * @version $Id: ComponentHandler.java,v 1.12.4.1 2006/03/16 00:17:09 adamwiner Exp $
  */
 public class ComponentHandler extends MetaTagHandler {
 
@@ -169,6 +169,9 @@ public class ComponentHandler extends MetaTagHandler {
             parent.getChildren().remove(c);
         }
         
+
+        this.onComponentPopulated(ctx, c, parent);
+
         // add to the tree afterwards
         // this allows children to determine if it's
         // been part of the tree or not yet
@@ -278,6 +281,10 @@ public class ComponentHandler extends MetaTagHandler {
      * @param parent
      */
     protected void onComponentCreated(FaceletContext ctx, UIComponent c, UIComponent parent) {
+        // do nothing
+    }
+
+    protected void onComponentPopulated(FaceletContext ctx, UIComponent c, UIComponent parent) {
         // do nothing
     }
 }
