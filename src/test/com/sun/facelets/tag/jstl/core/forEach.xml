@@ -11,9 +11,8 @@
 		<h:inputText value="#{i}"/>
 	</c:if>
 </c:forEach>
-<c:forEach var="i" begin="1" end="10">
-#{i}
-</c:forEach>
+
+<c:forEach var="i" begin="1" end="10">#{i}</c:forEach>
 </ui:composition>
 
 
