@@ -14,25 +14,36 @@
 
 package com.sun.facelets.compiler;
 
+
 import java.io.IOException;
+import java.util.List;
+
+import javax.el.ELContext;
+import javax.el.ExpressionFactory;
+import javax.el.ELException;
 
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
-final class UILiteralText extends UILeaf {
-    
-    private final String text;
-    
-    public UILiteralText(String text) {
-        this.text = text;
+import com.sun.facelets.el.ELAdaptor;
+import com.sun.facelets.el.ELText;
+
+class StartElementInstruction implements Instruction {
+    private final String element;
+
+    public StartElementInstruction(String element) {
+        this.element = element;
     }
 
-    public void encodeBegin(FacesContext faces) throws IOException {
-        ResponseWriter writer = faces.getResponseWriter();
-        writer.write(this.text);
-    }
-    public String toString() {
-        return this.text;
+    public void write(FacesContext context) throws IOException {
+        context.getResponseWriter().startElement(this.element, null);
     }
 
+    public Instruction apply(ExpressionFactory factory, ELContext ctx) {
+        return this;
+    }
+
+    public boolean isLiteral() {
+        return true;
+    }
 }

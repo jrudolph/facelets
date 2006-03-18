@@ -24,12 +24,14 @@ import javax.el.ELException;
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
 
+import com.sun.facelets.util.FastWriter;
+
 /**
  * Handles parsing EL Strings in accordance with the EL-API Specification. The
  * parser accepts either <code>${..}</code> or <code>#{..}</code>.
  * 
  * @author Jacob Hookom
- * @version $Id: ELText.java,v 1.3 2005/08/24 04:38:57 jhook Exp $
+ * @version $Id: ELText.java,v 1.3.8.1 2006/03/18 23:29:16 adamwiner Exp $
  */
 public class ELText {
 
@@ -98,6 +100,14 @@ public class ELText {
             }
         }
 
+        public String toString(ELContext ctx) {
+            StringBuffer sb = new StringBuffer();
+            for (int i = 0; i < this.txt.length; i++) {
+                sb.append(this.txt[i].toString(ctx));
+            }
+            return sb.toString();
+        }
+
         public String toString() {
             StringBuffer sb = new StringBuffer();
             for (int i = 0; i < this.txt.length; i++) {
@@ -143,6 +153,15 @@ public class ELText {
             if (v != null) {
                 out.write((String) v);
             }
+        }
+
+        public String toString(ELContext ctx) throws ELException {
+            Object v = this.ve.getValue(ctx);
+            if (v != null) {
+              return v.toString();
+            }
+            
+            return null;
         }
     }
 
@@ -190,6 +209,24 @@ public class ELText {
     public void write(Writer out, ELContext ctx) throws ELException,
             IOException {
         out.write(this.literal);
+    }
+
+    /**
+     * Evaluates the ELText to a String
+     * 
+     * @param ctx
+     *            current ELContext state
+     * @throws ELException
+     * @return the evaluated String
+     */
+    public String toString(ELContext ctx) throws ELException {
+        // Optimized in subclasses
+        Writer out = new FastWriter();
+        try {
+            write(out, ctx);
+        } catch (IOException ioe) { }
+
+        return out.toString();
     }
 
     public String toString() {

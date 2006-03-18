@@ -31,11 +31,13 @@ import com.sun.facelets.tag.TagException;
 /**
  * 
  * @author Jacob Hookom
- * @version $Id: TextUnit.java,v 1.8 2005/08/24 04:38:54 jhook Exp $
+ * @version $Id: TextUnit.java,v 1.8.8.1 2006/03/18 23:29:15 adamwiner Exp $
  */
 final class TextUnit extends CompilationUnit {
 
     private final StringBuffer buffer;
+
+    private final List instructionBuffer;
 
     private final Stack tags;
 
@@ -48,6 +50,7 @@ final class TextUnit extends CompilationUnit {
     public TextUnit(String alias) {
         this.alias = alias;
         this.buffer = new StringBuffer(256);
+        this.instructionBuffer = new ArrayList();
         this.tags = new Stack();
         this.children = new ArrayList();
         this.startTagOpen = false;
@@ -78,7 +81,23 @@ final class TextUnit extends CompilationUnit {
 
     public void write(String text) {
         this.finishStartTag();
+        ELText txt = ELText.parse(text);
+        if (txt != null) {
+            if (txt.isLiteral()) {
+                this.instructionBuffer.add(new LiteralTextInstruction(txt.toString()));
+            } else {
+                this.instructionBuffer.add(new TextInstruction(this.alias, txt));
+            }
+        }
+
         this.buffer.append(text);
+    }
+
+    public void writeComment(String text) {
+        this.finishStartTag();
+
+        this.instructionBuffer.add(new CommentInstruction(text));
+        this.buffer.append("<!--" + text + "-->");
     }
 
     public void startTag(Tag tag) {
@@ -92,11 +111,25 @@ final class TextUnit extends CompilationUnit {
         // write it out
         this.buffer.append('<');
         this.buffer.append(tag.getQName());
+
+        this.instructionBuffer.add(new StartElementInstruction(tag.getQName()));
+
         TagAttribute[] attrs = tag.getAttributes().getAll();
         if (attrs.length > 0) {
             for (int i = 0; i < attrs.length; i++) {
-                this.buffer.append(' ').append(attrs[i].getQName()).append(
-                        "=\"").append(attrs[i].getValue()).append("\"");
+                String qname = attrs[i].getQName();
+                String value = attrs[i].getValue();
+                this.buffer.append(' ').append(qname).append(
+                        "=\"").append(value).append("\"");
+                
+                ELText txt = ELText.parse(value);
+                if (txt != null) {
+                    if (txt.isLiteral()) {
+                        this.instructionBuffer.add(new LiteralAttributeInstruction(qname, txt.toString()));
+                    } else {
+                        this.instructionBuffer.add(new AttributeInstruction(this.alias, qname, txt));
+                    }
+                }
             }
         }
 
@@ -113,6 +146,9 @@ final class TextUnit extends CompilationUnit {
 
     public void endTag() {
         Tag tag = (Tag) this.tags.pop();
+
+        this.instructionBuffer.add(new EndElementInstruction(tag.getQName()));
+
         if (this.startTagOpen) {
             this.buffer.append("/>");
             this.startTagOpen = false;
@@ -140,7 +176,10 @@ final class TextUnit extends CompilationUnit {
                     try {
                         ELText txt = ELText.parse(s);
                         if (txt != null) {
-                            if (txt.isLiteral()) {
+                            if (true) {
+                              List instructionClone = new ArrayList(this.instructionBuffer);
+                              this.children.add(new UIInstructionHandler(this.alias, instructionClone, txt));
+                            } else if (txt.isLiteral()) {
                                 this.children.add(new UILiteralTextHandler(txt.toString()));
                             } else {
                                 this.children.add(new UITextHandler(this.alias, txt));
@@ -156,6 +195,7 @@ final class TextUnit extends CompilationUnit {
                     }
                 }
             }
+            this.instructionBuffer.clear();
             this.buffer.setLength(0);
         }
     }

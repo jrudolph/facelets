@@ -15,24 +15,30 @@
 package com.sun.facelets.compiler;
 
 import java.io.IOException;
+import java.util.List;
+
+import javax.el.ELContext;
+import javax.el.ExpressionFactory;
 
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
-final class UILiteralText extends UILeaf {
-    
+class CommentInstruction implements Instruction {
     private final String text;
-    
-    public UILiteralText(String text) {
+
+    public CommentInstruction(String text) {
         this.text = text;
     }
 
-    public void encodeBegin(FacesContext faces) throws IOException {
-        ResponseWriter writer = faces.getResponseWriter();
-        writer.write(this.text);
-    }
-    public String toString() {
-        return this.text;
+    public void write(FacesContext context) throws IOException {
+        context.getResponseWriter().writeComment(this.text);
     }
 
+    public Instruction apply(ExpressionFactory factory, ELContext ctx) {
+        return this;
+    }
+
+    public boolean isLiteral() {
+        return true;
+    }
 }

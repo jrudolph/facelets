@@ -16,23 +16,13 @@ package com.sun.facelets.compiler;
 
 import java.io.IOException;
 
+import javax.el.ELContext;
+import javax.el.ExpressionFactory;
+
 import javax.faces.context.FacesContext;
-import javax.faces.context.ResponseWriter;
 
-final class UILiteralText extends UILeaf {
-    
-    private final String text;
-    
-    public UILiteralText(String text) {
-        this.text = text;
-    }
-
-    public void encodeBegin(FacesContext faces) throws IOException {
-        ResponseWriter writer = faces.getResponseWriter();
-        writer.write(this.text);
-    }
-    public String toString() {
-        return this.text;
-    }
-
+interface Instruction {
+    public void write(FacesContext context) throws IOException;
+    public Instruction apply(ExpressionFactory factory, ELContext ctx);
+    public boolean isLiteral();
 }

@@ -15,24 +15,29 @@
 package com.sun.facelets.compiler;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.faces.context.FacesContext;
-import javax.faces.context.ResponseWriter;
 
-final class UILiteralText extends UILeaf {
+final class UIInstructions extends UILeaf {
     
-    private final String text;
+    private final List instructions;
     
-    public UILiteralText(String text) {
-        this.text = text;
+    public UIInstructions(List instructions) {
+        this.instructions = instructions;
     }
 
-    public void encodeBegin(FacesContext faces) throws IOException {
-        ResponseWriter writer = faces.getResponseWriter();
-        writer.write(this.text);
+    public void encodeBegin(FacesContext context) throws IOException {
+        int size = this.instructions.size();
+        for (int i = 0; i < size; i++) {
+            Instruction instruction = (Instruction) this.instructions.get(i);
+            instruction.write(context);
+        }
     }
+
     public String toString() {
-        return this.text;
+        // TODO - good toString() impl.
+        return "UIInstructions[" + instructions + "]";
     }
 
 }
