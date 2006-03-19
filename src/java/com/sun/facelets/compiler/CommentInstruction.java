@@ -23,7 +23,7 @@ import javax.el.ExpressionFactory;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
-class CommentInstruction implements Instruction {
+final class CommentInstruction implements Instruction {
     private final String text;
 
     public CommentInstruction(String text) {

@@ -28,7 +28,7 @@ import javax.faces.context.ResponseWriter;
 import com.sun.facelets.el.ELAdaptor;
 import com.sun.facelets.el.ELText;
 
-class StartElementInstruction implements Instruction {
+final class StartElementInstruction implements Instruction {
     private final String element;
 
     public StartElementInstruction(String element) {

@@ -24,7 +24,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
 
-class LiteralAttributeInstruction implements Instruction {
+final class LiteralAttributeInstruction implements Instruction {
     private final String attr;
 
     private final String text;

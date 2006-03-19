@@ -28,7 +28,7 @@ import javax.faces.context.ResponseWriter;
 import com.sun.facelets.el.ELAdaptor;
 import com.sun.facelets.el.ELText;
 
-class TextInstruction implements Instruction {
+final class TextInstruction implements Instruction {
     private final ELText txt;
     
     private final String alias;

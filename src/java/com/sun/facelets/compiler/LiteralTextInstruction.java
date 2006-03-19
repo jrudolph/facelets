@@ -23,7 +23,7 @@ import javax.faces.context.ResponseWriter;
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
 
-class LiteralTextInstruction implements Instruction {
+final class LiteralTextInstruction implements Instruction {
     private final char[] text;
     private final int len;
 

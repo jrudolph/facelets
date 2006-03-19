@@ -6,7 +6,7 @@ import javax.el.ELContext;
 import javax.el.ExpressionFactory;
 import javax.faces.context.FacesContext;
 
-class XMLInstruction implements Instruction {
+final class XMLInstruction implements Instruction {
 
     private final char[] instruction;
     private final int len;
