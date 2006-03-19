@@ -15,6 +15,7 @@
 package com.sun.facelets.el;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +32,7 @@ import com.sun.facelets.util.FastWriter;
  * parser accepts either <code>${..}</code> or <code>#{..}</code>.
  * 
  * @author Jacob Hookom
- * @version $Id: ELText.java,v 1.3.8.1 2006/03/18 23:29:16 adamwiner Exp $
+ * @version $Id: ELText.java,v 1.3.8.2 2006/03/19 04:54:14 jhook Exp $
  */
 public class ELText {
 
@@ -220,13 +221,7 @@ public class ELText {
      * @return the evaluated String
      */
     public String toString(ELContext ctx) throws ELException {
-        // Optimized in subclasses
-        Writer out = new FastWriter();
-        try {
-            write(out, ctx);
-        } catch (IOException ioe) { }
-
-        return out.toString();
+        return this.literal;
     }
 
     public String toString() {
