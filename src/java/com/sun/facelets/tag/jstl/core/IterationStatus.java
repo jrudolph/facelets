@@ -18,7 +18,7 @@ import java.io.Serializable;
 
 /**
  * @author Jacob Hookom
- * @version $Id: IterationStatus.java,v 1.2 2005/08/24 04:38:52 jhook Exp $
+ * @version $Id: IterationStatus.java,v 1.3 2006/03/19 03:11:35 jhook Exp $
  */
 public final class IterationStatus implements Serializable {
 
@@ -28,36 +28,42 @@ public final class IterationStatus implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private final int index;
+    
+    private final boolean first;
+    
+    private final boolean last;
 
-    private final int begin;
+    private final Integer begin;
 
-    private final int end;
+    private final Integer end;
 
-    private final int step;
+    private final Integer step;
 
     /**
      * 
      */
-    public IterationStatus(int index, int begin, int end, int step) {
+    public IterationStatus(boolean first, boolean last, int index, Integer begin, Integer end, Integer step) {
         this.index = index;
         this.begin = begin;
         this.end = end;
         this.step = step;
+        this.first = first;
+        this.last = last;
     }
 
     public boolean isFirst() {
-        return index == begin;
+        return this.first;
     }
 
     public boolean isLast() {
-        return index == end;
+        return this.last;
     }
 
-    public int getBegin() {
+    public Integer getBegin() {
         return begin;
     }
 
-    public int getEnd() {
+    public Integer getEnd() {
         return end;
     }
 
@@ -65,7 +71,7 @@ public final class IterationStatus implements Serializable {
         return index;
     }
 
-    public int getStep() {
+    public Integer getStep() {
         return step;
     }
 

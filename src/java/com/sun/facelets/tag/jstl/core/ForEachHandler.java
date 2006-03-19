@@ -35,7 +35,8 @@ import com.sun.facelets.tag.TagHandler;
 
 /**
  * @author Jacob Hookom
- * @version $Id: ForEachHandler.java,v 1.7 2005/10/19 06:39:29 jhook Exp $
+ * @author Andrew Robinson
+ * @version $Id: ForEachHandler.java,v 1.8 2006/03/19 03:11:34 jhook Exp $
  */
 public final class ForEachHandler extends TagHandler {
 
@@ -103,9 +104,14 @@ public final class ForEachHandler extends TagHandler {
 
     public void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
+        
         int s = this.getBegin(ctx);
         int e = this.getEnd(ctx);
         int m = this.getStep(ctx);
+        Integer sO = this.begin != null ? new Integer(s) : null;
+        Integer eO = this.end != null ? new Integer(e) : null;
+        Integer mO = this.step != null ? new Integer(m) : null;
+        
         boolean t = this.getTransient(ctx);
         Object src = null;
         ValueExpression srcVE = null;
@@ -113,16 +119,16 @@ public final class ForEachHandler extends TagHandler {
             srcVE = this.items.getValueExpression(ctx, Object.class);
             src = srcVE.getValue(ctx);
         } else {
-            byte[] b = new byte[e - s + 1];
-            for (int i = 1; i < b.length + 1; i++) {
-                b[i - 1] = (byte) i;
+            byte[] b = new byte[e + 1];
+            for (int i = 0; i < b.length; i++) {
+                b[i] = (byte) i;
             }
             src = b;
         }
         if (src != null) {
             Iterator itr = this.toIterator(src);
             if (itr != null) {
-                int i = 1;
+                int i = 0;
 
                 // move to start
                 while (i < s && itr.hasNext()) {
@@ -139,6 +145,7 @@ public final class ForEachHandler extends TagHandler {
                 int mi = 0;
                 Object value = null;
                 try {
+                    boolean first = true;
                     while (i <= e && itr.hasNext()) {
                         value = itr.next();
 
@@ -147,15 +154,14 @@ public final class ForEachHandler extends TagHandler {
                             if (t || srcVE == null) {
                                 ctx.setAttribute(v, value);
                             } else {
-                                ve = this.getVarExpr(srcVE, src, value, i - 1);
+                                ve = this.getVarExpr(srcVE, src, value, i);
                                 vars.setVariable(v, ve);
                             }
                         }
 
                         // set the varStatus
                         if (vs != null) {
-                            IterationStatus itrS = new IterationStatus(i, s, e,
-                                    m);
+                            IterationStatus itrS = new IterationStatus(first, !itr.hasNext(),i, sO, eO, mO);
                             if (t || srcVE == null) {
                                 ctx.setAttribute(vs, itrS);
                             } else {
@@ -175,6 +181,8 @@ public final class ForEachHandler extends TagHandler {
                             i++;
                         }
                         i++;
+                        
+                        first = false;
                     }
                 } finally {
                     if (v != null) {
