@@ -40,6 +40,7 @@ import javax.faces.context.ResponseWriter;
 import javax.faces.render.RenderKit;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.sun.facelets.compiler.Compiler;
@@ -58,7 +59,7 @@ import com.sun.facelets.util.Resource;
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.49.2.4 2006/03/16 00:17:09 adamwiner Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.49.2.5 2006/03/19 23:11:46 adamwiner Exp $
  */
 public class FaceletViewHandler extends ViewHandler {
 
@@ -336,14 +337,22 @@ public class FaceletViewHandler extends ViewHandler {
         if (this.faceletFactory == null) {
             this.initialize(context);
         }
-        
+
+        // In JSF 1.2, restoreView() will only be called on postback.
+        // But in JSF 1.1, it will be called for an initial request too,
+        // in which case we must return null in order to fall through
+        // to createView()
+        if (FacesAPI.getVersion() < 12) {
+            if (!isPostback11(context)) {
+                return null;
+            }
+        }
+
         ViewHandler outerViewHandler =
             context.getApplication().getViewHandler();
         String renderKitId =
             outerViewHandler.calculateRenderKitId(context);
 
-        // =-=AEW Need to check if this is actually an initial request...
-        // How to do so for JSF 1.1 vs. JSF 1.2???
         UIViewRoot viewRoot = createView(context, viewId);
         context.setViewRoot(viewRoot);
         try {
@@ -709,6 +718,33 @@ public class FaceletViewHandler extends ViewHandler {
 
     public String getResourceURL(FacesContext context, String path) {
         return this.parent.getResourceURL(context, path);
+    }
+
+    /**
+     *  Try to guess if this is a postback request.  In JSF 1.2,
+     * this method is not needed, since ResponseStateManager can
+     * identify postbacks.  We use a simple heuristic:  for
+     * HttpServletRequests, "POST" and "PUT" are postbacks.  For
+     * anything that isn't an HttpServletRequest, just guess that
+     * if there's a request parameter, it's probably a postback.
+     */
+    static private boolean isPostback11(FacesContext context) {
+        Object reqObject = context.getExternalContext().getRequest();
+        if (reqObject instanceof HttpServletRequest) {
+            HttpServletRequest request = (HttpServletRequest) reqObject;
+            
+            String method = request.getMethod();
+            
+            // Is this a POST or PUT request?
+            if ("POST".equals(method) || "PUT".equals(method)) {
+                return true;
+            }
+
+            return false;
+        } else {
+            Map paramMap = context.getExternalContext().getRequestParameterMap();
+            return !paramMap.isEmpty();
+        }
     }
 
     protected static class NullWriter extends Writer {
