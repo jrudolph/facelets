@@ -17,6 +17,7 @@ package com.sun.facelets;
 
 import java.io.FileNotFoundException;
 import java.io.OutputStream;
+import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -28,11 +29,13 @@ import javax.faces.application.ApplicationFactory;
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
 import javax.faces.context.FacesContextFactory;
+import javax.faces.context.ResponseWriter;
 import javax.faces.lifecycle.LifecycleFactory;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import com.sun.facelets.compiler.Compiler;
 import com.sun.facelets.compiler.SAXCompiler;
 import com.sun.facelets.impl.DefaultFaceletFactory;
 import com.sun.facelets.mock.MockHttpServletResponse;
@@ -61,14 +64,6 @@ public abstract class FaceletTestCase extends TestCase {
     private LifecycleFactory factoryLifecycle;
 
     private boolean initialized = false;
-
-    public FaceletTestCase() {
-        super();
-    }
-
-    public FaceletTestCase(String name) {
-        super(name);
-    }
 
     protected URI getContext() {
         try {
@@ -118,11 +113,15 @@ public abstract class FaceletTestCase extends TestCase {
                         .getLifecycle(LifecycleFactory.DEFAULT_LIFECYCLE));
         
         
-        
-        FaceletFactory factory = new DefaultFaceletFactory(new SAXCompiler(), context.toURL());
+        Compiler c = new SAXCompiler();
+        //c.setTrimmingWhitespace(true);
+        FaceletFactory factory = new DefaultFaceletFactory(c, context.toURL());
         FaceletFactory.setInstance(factory);
         
         faces.setViewRoot(faces.getApplication().getViewHandler().createView(faces, "/test"));
+        
+        ResponseWriter rw = faces.getRenderKit().createResponseWriter(new StringWriter(), null, null);
+        faces.setResponseWriter(rw);
     }
     
     public void setRequest(String method, String path, OutputStream os) {
