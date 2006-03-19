@@ -35,7 +35,8 @@ import com.sun.facelets.tag.TagHandler;
 
 /**
  * @author Jacob Hookom
- * @version $Id: ForEachHandler.java,v 1.7.6.2 2006/03/17 04:21:23 jhook Exp $
+ * @author Andrew Robinson
+ * @version $Id: ForEachHandler.java,v 1.7.6.3 2006/03/19 02:37:01 jhook Exp $
  */
 public final class ForEachHandler extends TagHandler {
 
@@ -103,9 +104,14 @@ public final class ForEachHandler extends TagHandler {
 
     public void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
+        
         int s = this.getBegin(ctx);
         int e = this.getEnd(ctx);
         int m = this.getStep(ctx);
+        Integer sO = this.begin != null ? new Integer(s) : null;
+        Integer eO = this.end != null ? new Integer(e) : null;
+        Integer mO = this.step != null ? new Integer(m) : null;
+        
         boolean t = this.getTransient(ctx);
         Object src = null;
         ValueExpression srcVE = null;
@@ -139,6 +145,7 @@ public final class ForEachHandler extends TagHandler {
                 int mi = 0;
                 Object value = null;
                 try {
+                    boolean first = true;
                     while (i <= e && itr.hasNext()) {
                         value = itr.next();
 
@@ -154,8 +161,7 @@ public final class ForEachHandler extends TagHandler {
 
                         // set the varStatus
                         if (vs != null) {
-                            IterationStatus itrS = new IterationStatus(i, s, e,
-                                    m);
+                            IterationStatus itrS = new IterationStatus(first, !itr.hasNext(),i, sO, eO, mO);
                             if (t || srcVE == null) {
                                 ctx.setAttribute(vs, itrS);
                             } else {
@@ -175,6 +181,8 @@ public final class ForEachHandler extends TagHandler {
                             i++;
                         }
                         i++;
+                        
+                        first = false;
                     }
                 } finally {
                     if (v != null) {

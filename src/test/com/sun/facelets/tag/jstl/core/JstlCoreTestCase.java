@@ -47,7 +47,7 @@ public final class JstlCoreTestCase extends FaceletTestCase {
         Map session = faces.getExternalContext().getSessionMap();
         Collection c = new ArrayList();
         for (int i = 0; i < 10; i++) {
-            c.add("" + i);
+            c.add(new Character((char)('A' + i)));
         }
         session.put("list", c);
         Map m = new HashMap();

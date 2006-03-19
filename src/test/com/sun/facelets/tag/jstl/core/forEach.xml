@@ -12,7 +12,8 @@
 	</c:if>
 </c:forEach>
 
-<c:forEach var="i" begin="1" end="10">#{i}</c:forEach>
+<c:forEach var="i" varStatus="s" begin="1" end="10">
+#{i} = #{s.first}/#{s.last}</c:forEach>
 </ui:composition>
 
 
