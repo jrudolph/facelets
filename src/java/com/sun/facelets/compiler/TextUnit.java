@@ -31,7 +31,7 @@ import com.sun.facelets.tag.TagException;
 /**
  * 
  * @author Jacob Hookom
- * @version $Id: TextUnit.java,v 1.8.8.1 2006/03/18 23:29:15 adamwiner Exp $
+ * @version $Id: TextUnit.java,v 1.8.8.2 2006/03/19 04:15:09 jhook Exp $
  */
 final class TextUnit extends CompilationUnit {
 
@@ -177,8 +177,9 @@ final class TextUnit extends CompilationUnit {
                         ELText txt = ELText.parse(s);
                         if (txt != null) {
                             if (true) {
-                              List instructionClone = new ArrayList(this.instructionBuffer);
-                              this.children.add(new UIInstructionHandler(this.alias, instructionClone, txt));
+                              int size = this.instructionBuffer.size();
+                              Instruction[] instructions = (Instruction[]) this.instructionBuffer.toArray(new Instruction[size]);
+                              this.children.add(new UIInstructionHandler(this.alias, instructions, txt));
                             } else if (txt.isLiteral()) {
                                 this.children.add(new UILiteralTextHandler(txt.toString()));
                             } else {

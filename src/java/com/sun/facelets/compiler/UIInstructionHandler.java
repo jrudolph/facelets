@@ -34,30 +34,30 @@ import com.sun.facelets.util.FastWriter;
 
 /**
  * @author Jacob Hookom
- * @version $Id: UIInstructionHandler.java,v 1.1.2.1 2006/03/18 23:29:15 adamwiner Exp $
+ * @version $Id: UIInstructionHandler.java,v 1.1.2.2 2006/03/19 04:15:09 jhook Exp $
  */
 final class UIInstructionHandler implements FaceletHandler, TextHandler {
     private final String alias;
 
     private final ELText txt;
     
-    private final List instructions;
+    private final Instruction[] instructions;
 
     private final int length;
   
     private final boolean literal;
 
-    public UIInstructionHandler(String alias, List instructions, ELText txt) {
+    public UIInstructionHandler(String alias, Instruction[] instructions, ELText txt) {
         this.alias = alias;
         this.instructions = instructions;
         this.txt = txt;
         this.length = txt.toString().length();
 
         boolean literal = true;
-        int size = instructions.size();
+        int size = instructions.length;
 
         for (int i = 0; i < size; i++) {
-            Instruction ins = (Instruction) this.instructions.get(i);
+            Instruction ins = (Instruction) this.instructions[i];
             if (!ins.isLiteral()) {
                 literal = false;
                 break;
@@ -70,18 +70,18 @@ final class UIInstructionHandler implements FaceletHandler, TextHandler {
     public void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
         if (parent != null) {
-            List applied;
+            Instruction[] applied;
             if (this.literal) {
                 applied = this.instructions;
             } else {
-                int size = this.instructions.size();
-                applied = new ArrayList(size);
+                int size = this.instructions.length;
+                applied = new Instruction[size];
                 // Create a new list with all of the necessary applied
                 // instructions
+                Instruction ins;
                 for (int i = 0; i < size; i++) {
-                    Instruction ins = (Instruction) this.instructions.get(i);
-                    Instruction nins = ins.apply(ctx.getExpressionFactory(), ctx);
-                    applied.add(nins);
+                    ins = this.instructions[i];
+                    applied[i] = ins.apply(ctx.getExpressionFactory(), ctx);
                 }
             }
 

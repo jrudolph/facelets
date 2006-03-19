@@ -15,29 +15,29 @@
 package com.sun.facelets.compiler;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.faces.context.FacesContext;
 
 final class UIInstructions extends UILeaf {
     
-    private final List instructions;
+    private final Instruction[] instructions;
     
-    public UIInstructions(List instructions) {
+    public UIInstructions(Instruction[] instructions) {
         this.instructions = instructions;
     }
 
     public void encodeBegin(FacesContext context) throws IOException {
-        int size = this.instructions.size();
+        int size = this.instructions.length;
         for (int i = 0; i < size; i++) {
-            Instruction instruction = (Instruction) this.instructions.get(i);
-            instruction.write(context);
+            this.instructions[i].write(context);
         }
     }
 
     public String toString() {
         // TODO - good toString() impl.
-        return "UIInstructions[" + instructions + "]";
+        return "UIInstructions[" + Arrays.asList(instructions) + "]";
     }
 
 }
