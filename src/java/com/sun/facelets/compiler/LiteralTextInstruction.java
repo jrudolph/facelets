@@ -24,14 +24,16 @@ import javax.el.ELContext;
 import javax.el.ExpressionFactory;
 
 class LiteralTextInstruction implements Instruction {
-    private final String text;
+    private final char[] text;
+    private final int len;
 
     public LiteralTextInstruction(String text) {
-        this.text = text;
+        this.text = text.toCharArray();
+        this.len = this.text.length;
     }
 
     public void write(FacesContext context) throws IOException {
-        context.getResponseWriter().writeText(this.text, null);
+        context.getResponseWriter().writeText(this.text, 0, len);
     }
 
     public Instruction apply(ExpressionFactory factory, ELContext ctx) {
