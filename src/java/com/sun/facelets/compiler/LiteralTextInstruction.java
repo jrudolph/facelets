@@ -31,7 +31,7 @@ class LiteralTextInstruction implements Instruction {
     }
 
     public void write(FacesContext context) throws IOException {
-        context.getResponseWriter().write(this.text);
+        context.getResponseWriter().writeText(this.text, null);
     }
 
     public Instruction apply(ExpressionFactory factory, ELContext ctx) {
