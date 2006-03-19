@@ -42,7 +42,7 @@ import com.sun.facelets.util.FacesAPI;
  * A Compiler instance may handle compiling multiple sources
  * 
  * @author Jacob Hookom
- * @version $Id: Compiler.java,v 1.13.4.2 2006/03/15 19:31:45 jhook Exp $
+ * @version $Id: Compiler.java,v 1.13.4.3 2006/03/19 05:34:16 jhook Exp $
  */
 public abstract class Compiler {
 
@@ -60,7 +60,7 @@ public abstract class Compiler {
 
     private boolean trimmingWhitespace = false;
 
-    private boolean trimmingComments = true;
+    private boolean trimmingComments = false;
 
     private final List libraries = new ArrayList();
 
