@@ -39,7 +39,7 @@ import com.sun.facelets.tag.ui.UILibrary;
  * @see com.sun.facelets.compiler.Compiler
  * 
  * @author Jacob Hookom
- * @version $Id: CompilationManager.java,v 1.12.2.1 2006/03/18 23:29:12 adamwiner Exp $
+ * @version $Id: CompilationManager.java,v 1.12.2.2 2006/03/19 05:49:41 jhook Exp $
  */
 final class CompilationManager {
 
@@ -83,6 +83,26 @@ final class CompilationManager {
         // our compilationunit stack
         this.units = new Stack();
         this.units.push(new CompilationUnit());
+    }
+    
+    public void writeInstruction(String value) {
+        if (this.finished) {
+            return;
+        }
+
+        // don't carelessly add empty tags
+        if (value.length() == 0) {
+            return;
+        }
+
+        TextUnit unit;
+        if (this.currentUnit() instanceof TextUnit) {
+            unit = (TextUnit) this.currentUnit();
+        } else {
+            unit = new TextUnit(this.alias);
+            this.startUnit(unit);
+        }
+        unit.writeInstruction(value);
     }
 
     public void writeText(String value) {
