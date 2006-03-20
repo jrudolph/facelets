@@ -15,33 +15,28 @@
 package com.sun.facelets.compiler;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
 
 import javax.faces.context.FacesContext;
-import javax.faces.context.ResponseWriter;
 
-import com.sun.facelets.el.ELText;
+final class LiteralCommentInstruction implements Instruction {
+    private final String text;
 
-final class CommentInstruction implements Instruction {
-    private final ELText text;
-
-    public CommentInstruction(ELText text) {
+    public LiteralCommentInstruction(String text) {
         this.text = text;
     }
 
     public void write(FacesContext context) throws IOException {
-        context.getResponseWriter().writeComment(this.text.toString(context.getELContext()));
+        context.getResponseWriter().writeComment(this.text);
     }
 
     public Instruction apply(ExpressionFactory factory, ELContext ctx) {
-        ELText t = this.text.apply(factory, ctx);
-        return new CommentInstruction(t);
+        return this;
     }
 
     public boolean isLiteral() {
-        return false;
+        return true;
     }
 }
