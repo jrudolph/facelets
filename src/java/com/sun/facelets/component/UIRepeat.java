@@ -260,6 +260,8 @@ public class UIRepeat extends UIComponentBase implements NamingContainer {
             SavedState ss = (SavedState) this.getChildState().get(clientId);
             if (ss != null) {
                 ss.apply(evh);
+            } else {
+                NullState.apply(evh);
             }
         }
 
@@ -401,7 +403,9 @@ public class UIRepeat extends UIComponentBase implements NamingContainer {
     }
 
     public void processDecodes(FacesContext faces) {
+        this.setDataModel(null);
         this.process(faces, PhaseId.APPLY_REQUEST_VALUES);
+        super.decode(faces);
     }
 
     public void processUpdates(FacesContext faces) {
@@ -411,9 +415,11 @@ public class UIRepeat extends UIComponentBase implements NamingContainer {
     public void processValidators(FacesContext faces) {
         this.process(faces, PhaseId.PROCESS_VALIDATIONS);
     }
+    
+    private final static SavedState NullState = new SavedState();
 
     // from RI
-    private final class SavedState implements Serializable {
+    private final static class SavedState implements Serializable {
 
         private Object submittedValue;
 
@@ -562,6 +568,7 @@ public class UIRepeat extends UIComponentBase implements NamingContainer {
         if (!isRendered()) {
             return;
         }
+        this.setDataModel(null);
         this.process(faces, PhaseId.RENDER_RESPONSE);
     }
 
