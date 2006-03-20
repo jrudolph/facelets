@@ -49,6 +49,7 @@ import com.sun.facelets.compiler.TagLibraryConfig;
 import com.sun.facelets.impl.DefaultFaceletFactory;
 import com.sun.facelets.tag.TagDecorator;
 import com.sun.facelets.tag.TagLibrary;
+import com.sun.facelets.tag.jsf.ComponentSupport;
 import com.sun.facelets.tag.ui.UIDebug;
 import com.sun.facelets.util.DevTools;
 import com.sun.facelets.util.FacesAPI;
@@ -59,7 +60,7 @@ import com.sun.facelets.util.Resource;
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.49.2.5 2006/03/19 23:11:46 adamwiner Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.49.2.6 2006/03/20 07:22:00 jhook Exp $
  */
 public class FaceletViewHandler extends ViewHandler {
 
@@ -517,7 +518,7 @@ public class FaceletViewHandler extends ViewHandler {
             if (FacesAPI.getVersion() >= 12) {
                 viewToRender.encodeAll(context);
             } else {
-                encodeRecursive(context, viewToRender);
+                ComponentSupport.encodeRecursive(context, viewToRender);
             }
             writer.endDocument();
 
@@ -610,23 +611,6 @@ public class FaceletViewHandler extends ViewHandler {
             HttpServletResponse respHttp = (HttpServletResponse) respObj;
             respHttp.sendError(HttpServletResponse.SC_NOT_FOUND, actualId);
             context.responseComplete();
-        }
-    }
-
-    protected final static void encodeRecursive(FacesContext context,
-            UIComponent viewToRender) throws IOException, FacesException {
-        if (viewToRender.isRendered()) {
-            viewToRender.encodeBegin(context);
-            if (viewToRender.getRendersChildren()) {
-                viewToRender.encodeChildren(context);
-            } else if (viewToRender.getChildCount() > 0) {
-                Iterator kids = viewToRender.getChildren().iterator();
-                while (kids.hasNext()) {
-                    UIComponent kid = (UIComponent) kids.next();
-                    encodeRecursive(context, kid);
-                }
-            }
-            viewToRender.encodeEnd(context);
         }
     }
 

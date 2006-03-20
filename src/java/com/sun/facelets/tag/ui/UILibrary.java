@@ -14,11 +14,12 @@
 
 package com.sun.facelets.tag.ui;
 
+import com.sun.facelets.component.UIRepeat;
 import com.sun.facelets.tag.AbstractTagLibrary;
 
 /**
  * @author Jacob Hookom
- * @version $Id: UILibrary.java,v 1.6 2005/08/24 04:38:56 jhook Exp $
+ * @version $Id: UILibrary.java,v 1.6.8.1 2006/03/20 07:22:02 jhook Exp $
  */
 public final class UILibrary extends AbstractTagLibrary {
 
@@ -44,6 +45,8 @@ public final class UILibrary extends AbstractTagLibrary {
         this.addTagHandler("param", ParamHandler.class);
 
         this.addTagHandler("decorate", DecorateHandler.class);
+        
+        this.addComponent("repeat", UIRepeat.COMPONENT_TYPE, null, RepeatHandler.class);
         
         this.addComponent("debug", UIDebug.COMPONENT_TYPE, null);
     }

@@ -30,7 +30,7 @@ import com.sun.facelets.util.FacesAPI;
 /**
  * 
  * @author Jacob Hookom
- * @version $Id: ActionSourceRule.java,v 1.2 2005/08/24 04:38:50 jhook Exp $
+ * @version $Id: ActionSourceRule.java,v 1.2.8.1 2006/03/20 07:21:59 jhook Exp $
  */
 final class ActionSourceRule extends MetaRule {
 
@@ -118,7 +118,7 @@ final class ActionSourceRule extends MetaRule {
                     .getTargetClass()) >= 12;
 
             if ("action".equals(name)) {
-                if (elSupport) {
+                if (elSupport && meta.isTargetInstanceOf(ActionSource2.class)) {
                     return new ActionMapper2(attribute);
                 } else {
                     return new ActionMapper(attribute);
