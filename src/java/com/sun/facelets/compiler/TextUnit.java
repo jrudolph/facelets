@@ -31,7 +31,7 @@ import com.sun.facelets.tag.TagException;
 /**
  * 
  * @author Jacob Hookom
- * @version $Id: TextUnit.java,v 1.8.8.6 2006/03/21 03:46:10 jhook Exp $
+ * @version $Id: TextUnit.java,v 1.8.8.7 2006/03/21 14:41:31 jhook Exp $
  */
 final class TextUnit extends CompilationUnit {
 
@@ -60,7 +60,7 @@ final class TextUnit extends CompilationUnit {
     }
 
     public FaceletHandler createFaceletHandler() {
-        this.flushBufferToConfig(false);
+        this.flushBufferToConfig(true);
 
         if (this.children.size() == 0) {
             return LEAF;
@@ -83,22 +83,30 @@ final class TextUnit extends CompilationUnit {
     }
 
     private void addInstruction(Instruction instruction) {
-        this.flushTextBuffer();
+        this.flushTextBuffer(false);
         this.instructionBuffer.add(instruction);
     }
-    
-    private void flushTextBuffer() {
+
+    private void flushTextBuffer(boolean child) {
         if (this.textBuffer.length() > 0) {
-            ELText txt = ELText.parse(this.textBuffer.toString());
-            if (txt != null) {
-                if (txt.isLiteral()) {
-                    this.instructionBuffer.add(new LiteralTextInstruction(txt
-                            .toString()));
-                } else {
-                    this.instructionBuffer
-                            .add(new TextInstruction(this.alias, txt));
+            String s = this.textBuffer.toString();
+
+            if (child) {
+                s = trimRight(s);
+            }
+            if (s.length() > 0) {
+                ELText txt = ELText.parse(s);
+                if (txt != null) {
+                    if (txt.isLiteral()) {
+                        this.instructionBuffer.add(new LiteralTextInstruction(
+                                txt.toString()));
+                    } else {
+                        this.instructionBuffer.add(new TextInstruction(
+                                this.alias, txt));
+                    }
                 }
             }
+
         }
         this.textBuffer.setLength(0);
     }
@@ -200,13 +208,14 @@ final class TextUnit extends CompilationUnit {
         // NEW IMPLEMENTATION
         if (true) {
 
-            this.flushTextBuffer();
+            this.flushTextBuffer(child);
 
             int size = this.instructionBuffer.size();
             if (size > 0) {
                 try {
                     String s = this.buffer.toString();
-                    if (child) s = trimRight(s);
+                    if (child)
+                        s = trimRight(s);
                     ELText txt = ELText.parse(s);
                     if (txt != null) {
                         Instruction[] instructions = (Instruction[]) this.instructionBuffer
@@ -215,7 +224,7 @@ final class TextUnit extends CompilationUnit {
                                 instructions, txt));
                         this.instructionBuffer.clear();
                     }
-                    
+
                 } catch (ELException e) {
                     if (this.tags.size() > 0) {
                         throw new TagException((Tag) this.tags.peek(), e
@@ -257,7 +266,7 @@ final class TextUnit extends CompilationUnit {
                     }
                 }
             }
-            
+
             // ALWAYS CLEAR FOR BOTH IMPL
             this.buffer.setLength(0);
         }
