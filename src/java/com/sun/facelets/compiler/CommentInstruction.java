@@ -23,6 +23,7 @@ import javax.el.ExpressionFactory;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
+import com.sun.facelets.el.ELAdaptor;
 import com.sun.facelets.el.ELText;
 
 final class CommentInstruction implements Instruction {
@@ -33,7 +34,8 @@ final class CommentInstruction implements Instruction {
     }
 
     public void write(FacesContext context) throws IOException {
-        context.getResponseWriter().writeComment(this.text.toString(context.getELContext()));
+        ELContext elContext = ELAdaptor.getELContext(context);
+        context.getResponseWriter().writeComment(this.text.toString(elContext));
     }
 
     public Instruction apply(ExpressionFactory factory, ELContext ctx) {
