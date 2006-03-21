@@ -46,7 +46,7 @@ import com.sun.facelets.tag.TagAttributes;
  * @see com.sun.facelets.compiler.Compiler
  * 
  * @author Jacob Hookom
- * @version $Id: SAXCompiler.java,v 1.9.4.2 2006/03/19 05:49:41 jhook Exp $
+ * @version $Id: SAXCompiler.java,v 1.9.4.3 2006/03/21 04:26:49 jhook Exp $
  */
 public final class SAXCompiler extends Compiler {
 
@@ -123,8 +123,12 @@ public final class SAXCompiler extends Compiler {
         }
 
         public void fatalError(SAXParseException e) throws SAXException {
+            if (this.locator != null) {
             throw new SAXException("Error Traced[line: "
                     + this.locator.getLineNumber() + "] " + e.getMessage());
+            } else {
+                throw e;
+            }
         }
 
         public void ignorableWhitespace(char[] ch, int start, int length)
