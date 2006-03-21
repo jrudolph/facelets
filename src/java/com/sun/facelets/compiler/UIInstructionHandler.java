@@ -33,8 +33,8 @@ import com.sun.facelets.tag.jsf.ComponentSupport;
 import com.sun.facelets.util.FastWriter;
 
 /**
- * @author Jacob Hookom
- * @version $Id: UIInstructionHandler.java,v 1.1.2.2 2006/03/19 04:15:09 jhook Exp $
+ * @author Adam Winer
+ * @version $Id: UIInstructionHandler.java,v 1.1.2.3 2006/03/21 01:16:41 jhook Exp $
  */
 final class UIInstructionHandler implements FaceletHandler, TextHandler {
     private final String alias;
