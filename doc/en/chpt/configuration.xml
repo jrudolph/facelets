@@ -90,6 +90,12 @@
 						<entry>When a page is requested, what interval in <literal>seconds</literal> should the compiler check for changes.  If you don't want the compiler to check for changes once the page is compiled, then use a value of <literal>-1</literal>. Setting a low refresh period helps during development to be able to edit pages in a running application.</entry>
 						<entry>-1</entry>
 					</row>
+                                        <row>
+						<entry>facelets.RESOURCE_RESOLVER</entry>
+						<entry>com.sun.facelets.impl.DefaultResourceResolver</entry>
+						<entry>Optionally provide an alternate ResourceResolver that will replace the default logic of allowing the FacesContext resolve the resource URL.</entry>
+						<entry>my.company.IDEResourceResolver</entry>
+					</row>
 					<row>
 						<entry>facelets.VIEW_MAPPINGS</entry>
 						<entry></entry>
