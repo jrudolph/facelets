@@ -46,7 +46,7 @@ import com.sun.facelets.tag.TagAttributes;
  * @see com.sun.facelets.compiler.Compiler
  * 
  * @author Jacob Hookom
- * @version $Id: SAXCompiler.java,v 1.9.4.5 2006/03/22 00:34:12 jhook Exp $
+ * @version $Id: SAXCompiler.java,v 1.9.4.6 2006/03/22 01:03:55 jhook Exp $
  */
 public final class SAXCompiler extends Compiler {
 
@@ -98,7 +98,7 @@ public final class SAXCompiler extends Compiler {
 
         public void endCDATA() throws SAXException {
             if (this.inDocument) {
-                this.unit.writeText("]]>");
+                this.unit.writeInstruction("]]>");
             }
         }
 
@@ -157,7 +157,7 @@ public final class SAXCompiler extends Compiler {
 
         public void startCDATA() throws SAXException {
             if (this.inDocument) {
-                this.unit.writeText("<![CDATA[");
+                this.unit.writeInstruction("<![CDATA[");
             }
         }
 
