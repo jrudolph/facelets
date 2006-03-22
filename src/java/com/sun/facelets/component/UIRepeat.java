@@ -556,8 +556,8 @@ public class UIRepeat extends UIComponentBase implements NamingContainer {
         Object[] state = new Object[6];
         state[0] = super.saveState(faces);
         state[1] = this.childState;
-        state[2] = Integer.valueOf(this.offset);
-        state[3] = Integer.valueOf(this.size);
+        state[2] = new Integer(this.offset);
+        state[3] = new Integer(this.size);
         state[4] = this.var;
         state[5] = this.value;
         return state;
