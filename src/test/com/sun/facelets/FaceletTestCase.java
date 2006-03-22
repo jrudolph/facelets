@@ -23,6 +23,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Set;
 
+import javax.faces.FacesException;
 import javax.faces.FactoryFinder;
 import javax.faces.application.Application;
 import javax.faces.application.ApplicationFactory;
@@ -38,6 +39,7 @@ import javax.servlet.ServletContextListener;
 import com.sun.facelets.compiler.Compiler;
 import com.sun.facelets.compiler.SAXCompiler;
 import com.sun.facelets.impl.DefaultFaceletFactory;
+import com.sun.facelets.impl.ResourceResolver;
 import com.sun.facelets.mock.MockHttpServletResponse;
 import com.sun.facelets.mock.MockServletContext;
 import com.sun.facelets.mock.MockHttpServletRequest;
@@ -45,7 +47,7 @@ import com.sun.faces.util.DebugUtil;
 
 import junit.framework.TestCase;
 
-public abstract class FaceletTestCase extends TestCase {
+public abstract class FaceletTestCase extends TestCase implements ResourceResolver {
 
     private final String filePath = this.getDirectory();
 
@@ -115,7 +117,7 @@ public abstract class FaceletTestCase extends TestCase {
         
         Compiler c = new SAXCompiler();
         //c.setTrimmingWhitespace(true);
-        FaceletFactory factory = new DefaultFaceletFactory(c, context.toURL());
+        FaceletFactory factory = new DefaultFaceletFactory(c, this);
         FaceletFactory.setInstance(factory);
         
         faces.setViewRoot(faces.getApplication().getViewHandler().createView(faces, "/test"));
@@ -172,6 +174,14 @@ public abstract class FaceletTestCase extends TestCase {
     protected void tearDown() throws Exception {
         super.tearDown();
         this.servletContext = null;
+    }
+
+    public URL resolveUrl(String path) {
+        try {
+            return new URL(this.getContext().toURL(), path.substring(1));
+        } catch (Exception e) {
+            throw new FacesException(e);
+        }
     }
 
 }

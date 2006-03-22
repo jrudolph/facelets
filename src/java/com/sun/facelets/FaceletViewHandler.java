@@ -47,6 +47,8 @@ import com.sun.facelets.compiler.Compiler;
 import com.sun.facelets.compiler.SAXCompiler;
 import com.sun.facelets.compiler.TagLibraryConfig;
 import com.sun.facelets.impl.DefaultFaceletFactory;
+import com.sun.facelets.impl.DefaultResourceResolver;
+import com.sun.facelets.impl.ResourceResolver;
 import com.sun.facelets.tag.TagDecorator;
 import com.sun.facelets.tag.TagLibrary;
 import com.sun.facelets.tag.jsf.ComponentSupport;
@@ -60,7 +62,8 @@ import com.sun.facelets.util.Resource;
  * ViewHandler implementation for Facelets
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletViewHandler.java,v 1.49.2.6 2006/03/20 07:22:00 jhook Exp $
+ * @version $Id: FaceletViewHandler.java,v 1.49.2.6 2006/03/20 07:22:00 jhook
+ *          Exp $
  */
 public class FaceletViewHandler extends ViewHandler {
 
@@ -80,16 +83,16 @@ public class FaceletViewHandler extends ViewHandler {
      * of either extension mappings or prefix mappings. For example:
      * 
      * <pre>
-     * 
-     *  
      *   
-     *     &lt;context-param&gt;
-     *       &lt;param-name&gt;facelets.VIEW_MAPPINGS&lt;/param-name&gt;
-     *       &lt;param-value&gt;/demos/*; *.xhtml&lt;/param-value&gt;
-     *     &lt;/context-param&gt;
      *    
-     *   
-     *  
+     *     
+     *       &lt;context-param&gt;
+     *         &lt;param-name&gt;facelets.VIEW_MAPPINGS&lt;/param-name&gt;
+     *         &lt;param-value&gt;/demos/*; *.xhtml&lt;/param-value&gt;
+     *       &lt;/context-param&gt;
+     *      
+     *     
+     *    
      * </pre>
      * 
      * would use Facelets for processing all viewIds in the "/demos" directory
@@ -109,15 +112,16 @@ public class FaceletViewHandler extends ViewHandler {
 
     public final static String PARAM_DEVELOPMENT = "facelets.DEVELOPMENT";
 
-    public final static String PARAM_BUILD_BEFORE_RESTORE = 
-                                        "facelets.BUILD_BEFORE_RESTORE";
+    public final static String PARAM_RESOURCE_RESOLVER = "facelets.RESOURCE_RESOLVER";
+
+    public final static String PARAM_BUILD_BEFORE_RESTORE = "facelets.BUILD_BEFORE_RESTORE";
 
     public final static String PARAM_BUFFER_SIZE = "facelets.BUFFER_SIZE";
 
     private final static String STATE_KEY = "~facelets.VIEW_STATE~";
-    
+
     private final static int STATE_KEY_LEN = STATE_KEY.length();
-    
+
     private final static Object STATE_NULL = new Object();
 
     private final ViewHandler parent;
@@ -129,7 +133,7 @@ public class FaceletViewHandler extends ViewHandler {
     private int bufferSize;
 
     private String defaultSuffix;
-    
+
     private FaceletFactory faceletFactory;
 
     // Array of viewId extensions that should be handled by Facelets
@@ -191,7 +195,7 @@ public class FaceletViewHandler extends ViewHandler {
                 Compiler c = this.createCompiler();
                 this.initializeCompiler(c);
                 this.faceletFactory = this.createFaceletFactory(c);
-                
+
                 this.initializeMappings(context);
                 this.initializeMode(context);
                 this.initializeBuffer(context);
@@ -206,7 +210,8 @@ public class FaceletViewHandler extends ViewHandler {
         String param = external.getInitParameter(PARAM_DEVELOPMENT);
         this.developmentMode = "true".equals(param);
 
-        String restoreMode = external.getInitParameter(PARAM_BUILD_BEFORE_RESTORE);
+        String restoreMode = external
+                .getInitParameter(PARAM_BUILD_BEFORE_RESTORE);
         this.buildBeforeRestore = "true".equals(restoreMode);
     }
 
@@ -252,6 +257,8 @@ public class FaceletViewHandler extends ViewHandler {
     }
 
     protected FaceletFactory createFaceletFactory(Compiler c) {
+        
+        // refresh period
         long refreshPeriod = DEFAULT_REFRESH_PERIOD;
         FacesContext ctx = FacesContext.getCurrentInstance();
         String userPeriod = ctx.getExternalContext().getInitParameter(
@@ -259,13 +266,24 @@ public class FaceletViewHandler extends ViewHandler {
         if (userPeriod != null && userPeriod.length() > 0) {
             refreshPeriod = Long.parseLong(userPeriod);
         }
-        log.fine("Using Refresh Period: " + refreshPeriod + " sec");
-        try {
-            return new DefaultFaceletFactory(c,
-                    Resource.getResourceUrl(ctx,"/"), refreshPeriod);
-        } catch (MalformedURLException e) {
-            throw new FaceletException("Error Creating FaceletFactory", e);
+
+        // resource resolver
+        ResourceResolver resolver = new DefaultResourceResolver();
+        String resolverName = ctx.getExternalContext().getInitParameter(
+                PARAM_RESOURCE_RESOLVER);
+        if (resolverName != null && resolverName.length() > 0) {
+            try {
+                resolver = (ResourceResolver) Class.forName(resolverName, true,
+                        Thread.currentThread().getContextClassLoader())
+                        .newInstance();
+            } catch (Exception e) {
+                throw new FacesException("Error Initializing ResourceResolver["
+                        + resolverName + "]", e);
+            }
         }
+
+        // Resource.getResourceUrl(ctx,"/")
+        return new DefaultFaceletFactory(c, resolver, refreshPeriod);
     }
 
     protected Compiler createCompiler() {
@@ -330,8 +348,7 @@ public class FaceletViewHandler extends ViewHandler {
             return new UIViewRoot();
         }
 
-        if (!this.buildBeforeRestore ||
-            !handledByFacelets(viewId)) {
+        if (!this.buildBeforeRestore || !handledByFacelets(viewId)) {
             return this.parent.restoreView(context, viewId);
         }
 
@@ -349,10 +366,9 @@ public class FaceletViewHandler extends ViewHandler {
             }
         }
 
-        ViewHandler outerViewHandler =
-            context.getApplication().getViewHandler();
-        String renderKitId =
-            outerViewHandler.calculateRenderKitId(context);
+        ViewHandler outerViewHandler = context.getApplication()
+                .getViewHandler();
+        String renderKitId = outerViewHandler.calculateRenderKitId(context);
 
         UIViewRoot viewRoot = createView(context, viewId);
         context.setViewRoot(viewRoot);
@@ -361,9 +377,8 @@ public class FaceletViewHandler extends ViewHandler {
         } catch (IOException ioe) {
             log.log(Level.SEVERE, "Error Building View", ioe);
         }
-        context.getApplication().getStateManager().restoreView(context,
-                                                               viewId,
-                                                               renderKitId);
+        context.getApplication().getStateManager().restoreView(context, viewId,
+                renderKitId);
         return viewRoot;
     }
 
@@ -375,7 +390,7 @@ public class FaceletViewHandler extends ViewHandler {
     protected ViewHandler getWrapped() {
         return this.parent;
     }
-    
+
     protected ResponseWriter createResponseWriter(FacesContext context)
             throws IOException, FacesException {
         ExternalContext extContext = context.getExternalContext();
@@ -402,35 +417,38 @@ public class FaceletViewHandler extends ViewHandler {
 
         contentType = writer.getContentType();
         encoding = writer.getCharacterEncoding();
-        
+
         // see if we need to override it
         Map m = context.getViewRoot().getAttributes();
         if (m.containsKey("contentType")) {
             contentType = (String) m.get("contentType");
             if (log.isLoggable(Level.FINEST)) {
-                log.finest("UIViewRoot specified alternate contentType '"+contentType+"'");
+                log.finest("UIViewRoot specified alternate contentType '"
+                        + contentType + "'");
             }
         }
-        
+
         // safety check
         if (contentType == null) {
             contentType = "text/html";
             if (log.isLoggable(Level.FINEST)) {
-                log.finest("ResponseWriter created had a null ContentType, defaulting to text/html");
+                log
+                        .finest("ResponseWriter created had a null ContentType, defaulting to text/html");
             }
         }
         if (encoding == null) {
             encoding = "UTF-8";
             if (log.isLoggable(Level.FINEST)) {
-                log.finest("ResponseWriter created had a null CharacterEncoding, defaulting to UTF-8");
+                log
+                        .finest("ResponseWriter created had a null CharacterEncoding, defaulting to UTF-8");
             }
         }
 
         // apply them to the response
         response.setContentType(contentType + "; charset=" + encoding);
-        
+
         // removed 2005.8.23 to comply with J2EE 1.3
-        //response.setCharacterEncoding(encoding);
+        // response.setCharacterEncoding(encoding);
 
         // Now, clone with the real writer
         writer = writer.cloneWithWriter(response.getWriter());
@@ -494,20 +512,21 @@ public class FaceletViewHandler extends ViewHandler {
 
         try {
             // build view - but not if we're in "buildBeforeRestore"
-            // land and we've already got a populated view.  Note
+            // land and we've already got a populated view. Note
             // that this optimizations breaks if there's a "c:if" in
             // the page that toggles as a result of request processing -
-            // should that be handled?  Or
+            // should that be handled? Or
             // is this optimization simply so minor that it should just
             // be trimmed altogether?
-            if (!this.buildBeforeRestore ||
-                viewToRender.getChildren().isEmpty()) {
+            if (!this.buildBeforeRestore
+                    || viewToRender.getChildren().isEmpty()) {
                 this.buildView(context, viewToRender);
             }
 
             // setup writer and assign it to the context
             ResponseWriter origWriter = this.createResponseWriter(context);
-            FastWriter stateWriter = new FastWriter(this.bufferSize != -1 ? this.bufferSize : 1024);
+            FastWriter stateWriter = new FastWriter(
+                    this.bufferSize != -1 ? this.bufferSize : 1024);
             ResponseWriter writer = origWriter.cloneWithWriter(stateWriter);
             context.setResponseWriter(writer);
 
@@ -524,22 +543,24 @@ public class FaceletViewHandler extends ViewHandler {
 
             // finish writing
             writer.close();
-            
+
             // remove transients for older versions
             if (FacesAPI.getVersion() < 12) {
                 removeTransient(viewToRender);
             }
-            
+
             // save state
             StateManager stateMgr = context.getApplication().getStateManager();
             Object stateObj = stateMgr.saveSerializedView(context);
-            
+
             // flush to origWriter
             String content = stateWriter.toString();
 
-            if ((stateMgr.isSavingStateInClient(context) || FacesAPI.getVersion() >= 12)) {
+            if ((stateMgr.isSavingStateInClient(context) || FacesAPI
+                    .getVersion() >= 12)) {
                 stateWriter.reset();
-                stateMgr.writeState(context, (StateManager.SerializedView) stateObj);
+                stateMgr.writeState(context,
+                        (StateManager.SerializedView) stateObj);
                 String stateStr = stateWriter.toString();
                 int start = 0;
                 int end = content.indexOf(STATE_KEY, start);
@@ -570,7 +591,7 @@ public class FaceletViewHandler extends ViewHandler {
     protected void handleRenderException(FacesContext context, Exception e)
             throws IOException, ELException, FacesException {
         Object resp = context.getExternalContext().getResponse();
-        
+
         // always log
         if (log.isLoggable(Level.SEVERE)) {
             UIViewRoot root = context.getViewRoot();
@@ -583,7 +604,7 @@ public class FaceletViewHandler extends ViewHandler {
             }
             log.log(Level.SEVERE, sb.toString(), e);
         }
-        
+
         // handle dev response
         if (this.developmentMode && !context.getResponseComplete()
                 && resp instanceof HttpServletResponse) {
@@ -673,7 +694,8 @@ public class FaceletViewHandler extends ViewHandler {
     public void writeState(FacesContext context) throws IOException {
         if (handledByFacelets(context.getViewRoot().getViewId())) {
             StateManager stateMgr = context.getApplication().getStateManager();
-            if (stateMgr.isSavingStateInClient(context) || FacesAPI.getVersion() >= 12) {
+            if (stateMgr.isSavingStateInClient(context)
+                    || FacesAPI.getVersion() >= 12) {
                 context.getResponseWriter().write(STATE_KEY);
             }
         } else {
@@ -705,20 +727,19 @@ public class FaceletViewHandler extends ViewHandler {
     }
 
     /**
-     *  Try to guess if this is a postback request.  In JSF 1.2,
-     * this method is not needed, since ResponseStateManager can
-     * identify postbacks.  We use a simple heuristic:  for
-     * HttpServletRequests, "POST" and "PUT" are postbacks.  For
-     * anything that isn't an HttpServletRequest, just guess that
+     * Try to guess if this is a postback request. In JSF 1.2, this method is
+     * not needed, since ResponseStateManager can identify postbacks. We use a
+     * simple heuristic: for HttpServletRequests, "POST" and "PUT" are
+     * postbacks. For anything that isn't an HttpServletRequest, just guess that
      * if there's a request parameter, it's probably a postback.
      */
     static private boolean isPostback11(FacesContext context) {
         Object reqObject = context.getExternalContext().getRequest();
         if (reqObject instanceof HttpServletRequest) {
             HttpServletRequest request = (HttpServletRequest) reqObject;
-            
+
             String method = request.getMethod();
-            
+
             // Is this a POST or PUT request?
             if ("POST".equals(method) || "PUT".equals(method)) {
                 return true;
@@ -726,7 +747,8 @@ public class FaceletViewHandler extends ViewHandler {
 
             return false;
         } else {
-            Map paramMap = context.getExternalContext().getRequestParameterMap();
+            Map paramMap = context.getExternalContext()
+                    .getRequestParameterMap();
             return !paramMap.isEmpty();
         }
     }
