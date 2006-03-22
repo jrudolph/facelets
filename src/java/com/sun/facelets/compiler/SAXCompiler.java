@@ -46,7 +46,7 @@ import com.sun.facelets.tag.TagAttributes;
  * @see com.sun.facelets.compiler.Compiler
  * 
  * @author Jacob Hookom
- * @version $Id: SAXCompiler.java,v 1.9.4.4 2006/03/22 00:24:26 jhook Exp $
+ * @version $Id: SAXCompiler.java,v 1.9.4.5 2006/03/22 00:34:12 jhook Exp $
  */
 public final class SAXCompiler extends Compiler {
 
@@ -250,7 +250,7 @@ public final class SAXCompiler extends Compiler {
                 if (s >= 0) {
                     int e = r.indexOf("?>", s);
                     if (e > 0) {
-                        mngr.writeText(r.substring(s, e + 2) + '\n');
+                        mngr.writeInstruction(r.substring(s, e + 2) + '\n');
                     }
                 }
             }
