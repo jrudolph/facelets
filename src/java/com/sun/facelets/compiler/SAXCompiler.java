@@ -46,7 +46,7 @@ import com.sun.facelets.tag.TagAttributes;
  * @see com.sun.facelets.compiler.Compiler
  * 
  * @author Jacob Hookom
- * @version $Id: SAXCompiler.java,v 1.9.4.3 2006/03/21 04:26:49 jhook Exp $
+ * @version $Id: SAXCompiler.java,v 1.9.4.4 2006/03/22 00:24:26 jhook Exp $
  */
 public final class SAXCompiler extends Compiler {
 
@@ -204,7 +204,7 @@ public final class SAXCompiler extends Compiler {
                 StringBuffer sb = new StringBuffer(64);
                 sb.append("<?").append(target).append(' ').append(data).append(
                         "?>\n");
-                this.unit.writeText(sb.toString());
+                this.unit.writeInstruction(sb.toString());
             }
         }
     }
