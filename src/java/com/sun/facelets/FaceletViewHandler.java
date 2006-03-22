@@ -338,8 +338,8 @@ public class FaceletViewHandler extends ViewHandler {
 
         // skip params?
         String skipParam = ext.getInitParameter(PARAM_SKIP_COMMENTS);
-        if (skipParam != null && "false".equals(skipParam)) {
-            c.setTrimmingComments(false);
+        if (skipParam != null && "true".equals(skipParam)) {
+            c.setTrimmingComments(true);
         }
     }
 
