@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.faces.FacesException;
+import javax.faces.application.FacesMessage;
 import javax.faces.component.EditableValueHolder;
 import javax.faces.component.NamingContainer;
 import javax.faces.component.UIComponent;
@@ -106,13 +107,8 @@ public class UIRepeat extends UIComponentBase implements NamingContainer {
     }
 
     private void resetDataModel() {
-        UIComponent parent = this.getParent();
-        while (parent != null) {
-            if (parent instanceof UIData || parent instanceof UIRepeat) {
-                this.setDataModel(null);
-                return;
-            }
-            parent = parent.getParent();
+        if (this.isNestedInIterator()) {
+            this.setDataModel(null);
         }
     }
 
@@ -250,10 +246,11 @@ public class UIRepeat extends UIComponentBase implements NamingContainer {
 
     private void restoreChildState(FacesContext faces, UIComponent c) {
         // reset id
-        c.setId(c.getId());
+        String id = c.getId();
+        c.setId(id);
 
         // hack
-        if (c instanceof EditableValueHolder && !c.isTransient()) {
+        if (c instanceof EditableValueHolder) {
             EditableValueHolder evh = (EditableValueHolder) c;
             String clientId = c.getClientId(faces);
             SavedState ss = (SavedState) this.getChildState().get(clientId);
@@ -269,6 +266,34 @@ public class UIRepeat extends UIComponentBase implements NamingContainer {
         while (itr.hasNext()) {
             restoreChildState(faces, (UIComponent) itr.next());
         }
+    }
+
+    private boolean keepSaved(FacesContext context) {
+
+        Iterator clientIds = this.getChildState().keySet().iterator();
+        while (clientIds.hasNext()) {
+            String clientId = (String) clientIds.next();
+            Iterator messages = context.getMessages(clientId);
+            while (messages.hasNext()) {
+                FacesMessage message = (FacesMessage) messages.next();
+                if (message.getSeverity()
+                        .compareTo(FacesMessage.SEVERITY_ERROR) >= 0) {
+                    return (true);
+                }
+            }
+        }
+        return (isNestedInIterator());
+    }
+    
+    private boolean isNestedInIterator() {
+        UIComponent parent = this.getParent();
+        while (parent != null) {
+            if (parent instanceof UIData || parent instanceof UIRepeat) {
+                return true;
+            }
+            parent = parent.getParent();
+        }
+        return false;
     }
 
     private void setIndex(int index) {
@@ -402,17 +427,23 @@ public class UIRepeat extends UIComponentBase implements NamingContainer {
     // }
 
     public void processDecodes(FacesContext faces) {
-        if (!this.isRendered()) return;
+        if (!this.isRendered())
+            return;
         this.setDataModel(null);
+        if (!this.keepSaved(faces)) this.childState = null;
         this.process(faces, PhaseId.APPLY_REQUEST_VALUES);
-        super.decode(faces);
+        this.decode(faces);
     }
 
     public void processUpdates(FacesContext faces) {
+        if (!this.isRendered()) return;
+        this.resetDataModel();
         this.process(faces, PhaseId.UPDATE_MODEL_VALUES);
     }
 
     public void processValidators(FacesContext faces) {
+        if (!this.isRendered()) return;
+        this.resetDataModel();
         this.process(faces, PhaseId.PROCESS_VALIDATIONS);
     }
 
@@ -534,6 +565,7 @@ public class UIRepeat extends UIComponentBase implements NamingContainer {
     public void broadcast(FacesEvent event) throws AbortProcessingException {
         if (event instanceof IndexedEvent) {
             IndexedEvent idxEvent = (IndexedEvent) event;
+            this.resetDataModel();
             int prevIndex = this.index;
             try {
                 this.setIndex(idxEvent.getIndex());
@@ -544,6 +576,8 @@ public class UIRepeat extends UIComponentBase implements NamingContainer {
             } finally {
                 this.setIndex(prevIndex);
             }
+        } else {
+            super.broadcast(event);
         }
     }
 
@@ -577,6 +611,9 @@ public class UIRepeat extends UIComponentBase implements NamingContainer {
             return;
         }
         this.setDataModel(null);
+        if (!this.keepSaved(faces)) {
+            this.childState = null;
+        }
         this.process(faces, PhaseId.RENDER_RESPONSE);
     }
 
