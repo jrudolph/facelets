@@ -363,45 +363,46 @@ public class UIRepeat extends UIComponentBase implements NamingContainer {
         }
     }
 
-//    public boolean invokeOnComponent(FacesContext faces, String clientId,
-//            ContextCallback callback) throws FacesException {
-//        String id = super.getClientId(faces);
-//        if (clientId.equals(id)) {
-//            callback.invokeContextCallback(faces, this);
-//            return true;
-//        } else if (clientId.startsWith(id)) {
-//            int prevIndex = this.index;
-//            int idxStart = clientId.indexOf(NamingContainer.SEPARATOR_CHAR, id
-//                    .length());
-//            if (idxStart != -1
-//                    && Character.isDigit(clientId.charAt(idxStart + 1))) {
-//                int idxEnd = clientId.indexOf(NamingContainer.SEPARATOR_CHAR,
-//                        idxStart);
-//                if (idxEnd != -1) {
-//                    int newIndex = Integer.parseInt(clientId.substring(
-//                            idxStart, idxEnd));
-//                    boolean found = false;
-//                    try {
-//                        this.captureOrigValue();
-//                        this.setIndex(newIndex);
-//                        if (this.isIndexAvailable()) {
-//                            found = super.invokeOnComponent(faces, clientId,
-//                                    callback);
-//                        }
-//                    } finally {
-//                        this.setIndex(prevIndex);
-//                        this.restoreOrigValue();
-//                    }
-//                    return found;
-//                }
-//            } else {
-//                return super.invokeOnComponent(faces, clientId, callback);
-//            }
-//        }
-//        return false;
-//    }
+    // public boolean invokeOnComponent(FacesContext faces, String clientId,
+    // ContextCallback callback) throws FacesException {
+    // String id = super.getClientId(faces);
+    // if (clientId.equals(id)) {
+    // callback.invokeContextCallback(faces, this);
+    // return true;
+    // } else if (clientId.startsWith(id)) {
+    // int prevIndex = this.index;
+    // int idxStart = clientId.indexOf(NamingContainer.SEPARATOR_CHAR, id
+    // .length());
+    // if (idxStart != -1
+    // && Character.isDigit(clientId.charAt(idxStart + 1))) {
+    // int idxEnd = clientId.indexOf(NamingContainer.SEPARATOR_CHAR,
+    // idxStart);
+    // if (idxEnd != -1) {
+    // int newIndex = Integer.parseInt(clientId.substring(
+    // idxStart, idxEnd));
+    // boolean found = false;
+    // try {
+    // this.captureOrigValue();
+    // this.setIndex(newIndex);
+    // if (this.isIndexAvailable()) {
+    // found = super.invokeOnComponent(faces, clientId,
+    // callback);
+    // }
+    // } finally {
+    // this.setIndex(prevIndex);
+    // this.restoreOrigValue();
+    // }
+    // return found;
+    // }
+    // } else {
+    // return super.invokeOnComponent(faces, clientId, callback);
+    // }
+    // }
+    // return false;
+    // }
 
     public void processDecodes(FacesContext faces) {
+        if (!this.isRendered()) return;
         this.setDataModel(null);
         this.process(faces, PhaseId.APPLY_REQUEST_VALUES);
         super.decode(faces);
@@ -414,7 +415,7 @@ public class UIRepeat extends UIComponentBase implements NamingContainer {
     public void processValidators(FacesContext faces) {
         this.process(faces, PhaseId.PROCESS_VALIDATIONS);
     }
-    
+
     private final static SavedState NullState = new SavedState();
 
     // from RI
@@ -493,6 +494,14 @@ public class UIRepeat extends UIComponentBase implements NamingContainer {
             super(owner);
             this.target = target;
             this.index = index;
+        }
+
+        public PhaseId getPhaseId() {
+            return (this.target.getPhaseId());
+        }
+
+        public void setPhaseId(PhaseId phaseId) {
+            this.target.setPhaseId(phaseId);
         }
 
         public boolean isAppropriateListener(FacesListener listener) {
