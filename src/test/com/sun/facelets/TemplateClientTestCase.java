@@ -26,6 +26,7 @@ public class TemplateClientTestCase extends FaceletTestCase {
         System.out.println(fw);
     }
     
+    /*
     public void testLayoutClient() throws Exception {
         FaceletFactory ff = FaceletFactory.getInstance();
         FacesContext faces = FacesContext.getCurrentInstance();
@@ -43,5 +44,6 @@ public class TemplateClientTestCase extends FaceletTestCase {
         root.encodeAll(faces);
         System.out.println(fw);
     }
+    */
 
 }
