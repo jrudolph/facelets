@@ -31,7 +31,7 @@ import com.sun.facelets.tag.TagException;
 /**
  * 
  * @author Jacob Hookom
- * @version $Id: TextUnit.java,v 1.8.8.7 2006/03/21 14:41:31 jhook Exp $
+ * @version $Id: TextUnit.java,v 1.8.8.8 2006/03/24 05:58:16 jhook Exp $
  */
 final class TextUnit extends CompilationUnit {
 
@@ -265,11 +265,11 @@ final class TextUnit extends CompilationUnit {
                         }
                     }
                 }
-            }
-
-            // ALWAYS CLEAR FOR BOTH IMPL
-            this.buffer.setLength(0);
+            }  
         }
+        
+        // ALWAYS CLEAR FOR BOTH IMPL
+        this.buffer.setLength(0);
     }
 
     public boolean isClosed() {

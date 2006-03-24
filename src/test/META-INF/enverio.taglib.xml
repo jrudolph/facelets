@@ -21,4 +21,8 @@
 		<tag-name>b</tag-name>
 		<source>tags/b.xml</source>
 	</tag>
+	<tag>
+		<tag-name>body</tag-name>
+		<source>tags/body.xml</source>
+	</tag>
 </facelet-taglib>

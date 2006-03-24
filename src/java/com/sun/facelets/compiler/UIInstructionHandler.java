@@ -34,7 +34,7 @@ import com.sun.facelets.util.FastWriter;
 
 /**
  * @author Adam Winer
- * @version $Id: UIInstructionHandler.java,v 1.1.2.3 2006/03/21 01:16:41 jhook Exp $
+ * @version $Id: UIInstructionHandler.java,v 1.1.2.4 2006/03/24 05:58:16 jhook Exp $
  */
 final class UIInstructionHandler implements FaceletHandler, TextHandler {
     private final String alias;
@@ -85,7 +85,7 @@ final class UIInstructionHandler implements FaceletHandler, TextHandler {
                 }
             }
 
-            UIComponent c = new UIInstructions(applied);
+            UIComponent c = new UIInstructions(txt, applied);
             c.setId(ComponentSupport.getViewRoot(ctx, parent).createUniqueId());
             parent.getChildren().add(c);
         }

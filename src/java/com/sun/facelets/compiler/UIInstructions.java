@@ -20,11 +20,16 @@ import java.util.List;
 
 import javax.faces.context.FacesContext;
 
+import com.sun.facelets.el.ELText;
+
 final class UIInstructions extends UILeaf {
-    
+
+    private final ELText txt;
+
     private final Instruction[] instructions;
-    
-    public UIInstructions(Instruction[] instructions) {
+
+    public UIInstructions(ELText txt, Instruction[] instructions) {
+        this.txt = txt;
         this.instructions = instructions;
     }
 
@@ -36,8 +41,8 @@ final class UIInstructions extends UILeaf {
     }
 
     public String toString() {
-        // TODO - good toString() impl.
-        return "UIInstructions[" + Arrays.asList(instructions) + "]";
+        return (this.txt != null) ? this.txt.toString() : "UIInstructions["
+                + Arrays.asList(instructions) + "]";
     }
 
 }
