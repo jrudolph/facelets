@@ -50,7 +50,7 @@ import com.sun.facelets.el.ELAdaptor;
  * directive.
  * 
  * @author Jacob Hookom
- * @version $Id: DefaultFaceletContext.java,v 1.4.4.2 2006/03/10 16:39:46 jhook Exp $
+ * @version $Id: DefaultFaceletContext.java,v 1.4.4.3 2006/03/25 01:01:53 jhook Exp $
  */
 final class DefaultFaceletContext extends FaceletContext {
 
@@ -75,7 +75,7 @@ final class DefaultFaceletContext extends FaceletContext {
         this.fnMapper = ctx.fnMapper;
         this.ids = ctx.ids;
         this.varMapper = ctx.varMapper;
-        this.name = ctx.name;
+//        this.name = ctx.name;
     }
 
     public DefaultFaceletContext(FacesContext faces, DefaultFacelet facelet) {
@@ -257,19 +257,19 @@ final class DefaultFaceletContext extends FaceletContext {
         this.clients.add(0, new TemplateClientMomento(this.facelet, client));
     }
 
-    private String name;
+    //private String name;
     
     public boolean includeDefinition(UIComponent parent, String name)
             throws IOException, FaceletException, FacesException, ELException {
         boolean found = false;
         TemplateClient client;
-        String localName = (name != null) ? name : "_NULL_";
+        //String localName = (name != null) ? name : "_NULL_";
         
         //if (this.name == null || !this.name.equals(localName)) {
-            this.name = localName;
+            //this.name = localName;
             for (int i = this.clients.size() - 1; found == false && i >= 0; i--) {
                 client = ((TemplateClient) this.clients.get(i));
-                if (client.equals(this.facelet)) break;
+                if (client.equals(this.facelet)) continue;
                 found = client.apply(this, parent, name);
             }
 //        } else {
@@ -282,7 +282,7 @@ final class DefaultFaceletContext extends FaceletContext {
 //            }
 //        }
         
-        this.name = null;
+        //this.name = null;
         
         return found;
     }
