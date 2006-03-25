@@ -12,7 +12,7 @@ public class TagTestCase extends FaceletTestCase {
         FaceletFactory ff = FaceletFactory.getInstance();
         FacesContext faces = FacesContext.getCurrentInstance();
         
-        Facelet f = ff.getFacelet("body-page.xhtml");
+        Facelet f = ff.getFacelet("userTag.xhtml");
         
         this.servletRequest.setAttribute("name", "Mr. Hookom");
         
