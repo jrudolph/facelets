@@ -24,6 +24,7 @@ import javax.el.ELContext;
 import javax.el.ELException;
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
+import javax.faces.context.ResponseWriter;
 
 import com.sun.facelets.util.FastWriter;
 
@@ -32,7 +33,7 @@ import com.sun.facelets.util.FastWriter;
  * parser accepts either <code>${..}</code> or <code>#{..}</code>.
  * 
  * @author Jacob Hookom
- * @version $Id: ELText.java,v 1.3.8.2 2006/03/19 04:54:14 jhook Exp $
+ * @version $Id: ELText.java,v 1.3.8.3 2006/03/27 05:10:29 jhook Exp $
  */
 public class ELText {
 
@@ -101,6 +102,13 @@ public class ELText {
             }
         }
 
+        public void writeText(ResponseWriter out, ELContext ctx)
+                throws ELException, IOException {
+            for (int i = 0; i < this.txt.length; i++) {
+                this.txt[i].writeText(out, ctx);
+            }
+        }
+        
         public String toString(ELContext ctx) {
             StringBuffer sb = new StringBuffer();
             for (int i = 0; i < this.txt.length; i++) {
@@ -108,6 +116,12 @@ public class ELText {
             }
             return sb.toString();
         }
+
+        /*
+         * public String toString(ELContext ctx) { StringBuffer sb = new
+         * StringBuffer(); for (int i = 0; i < this.txt.length; i++) {
+         * sb.append(this.txt[i].toString(ctx)); } return sb.toString(); }
+         */
 
         public String toString() {
             StringBuffer sb = new StringBuffer();
@@ -159,10 +173,18 @@ public class ELText {
         public String toString(ELContext ctx) throws ELException {
             Object v = this.ve.getValue(ctx);
             if (v != null) {
-              return v.toString();
+                return v.toString();
             }
-            
+
             return null;
+        }
+
+        public void writeText(ResponseWriter out, ELContext ctx)
+                throws ELException, IOException {
+            Object v = this.ve.getValue(ctx);
+            if (v != null) {
+                out.writeText((String) v, null);
+            }
         }
     }
 
@@ -210,6 +232,11 @@ public class ELText {
     public void write(Writer out, ELContext ctx) throws ELException,
             IOException {
         out.write(this.literal);
+    }
+
+    public void writeText(ResponseWriter out, ELContext ctx)
+            throws ELException, IOException {
+        out.writeText(this.literal, null);
     }
 
     /**

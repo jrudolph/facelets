@@ -31,7 +31,7 @@ import com.sun.facelets.tag.TagException;
 /**
  * 
  * @author Jacob Hookom
- * @version $Id: TextUnit.java,v 1.8.8.8 2006/03/24 05:58:16 jhook Exp $
+ * @version $Id: TextUnit.java,v 1.8.8.9 2006/03/27 05:10:31 jhook Exp $
  */
 final class TextUnit extends CompilationUnit {
 
@@ -119,7 +119,12 @@ final class TextUnit extends CompilationUnit {
 
     public void writeInstruction(String text) {
         this.finishStartTag();
-        this.addInstruction(new XMLInstruction(text));
+        ELText el = ELText.parse(text);
+        if (el.isLiteral()) {
+            this.addInstruction(new LiteralXMLInstruction(text));
+        } else {
+            this.addInstruction(new XMLInstruction(el));
+        }
         this.buffer.append(text);
     }
 

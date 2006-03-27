@@ -25,4 +25,12 @@
 		<tag-name>body</tag-name>
 		<source>tags/body.xml</source>
 	</tag>
+	<tag>
+		<tag-name>fieldGroup</tag-name>
+		<source>tags/fieldGroup.xml</source>
+	</tag>
+	<tag>
+		<tag-name>foo</tag-name>
+		<source>tags/foo.xml</source>
+	</tag>
 </facelet-taglib>

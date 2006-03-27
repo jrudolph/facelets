@@ -42,7 +42,8 @@ final class TextInstruction implements Instruction {
         ResponseWriter out = context.getResponseWriter();
         try {
             ELContext elContext = ELAdaptor.getELContext(context);
-            out.writeText(txt.toString(elContext), null);
+            txt.writeText(out, elContext);
+            //out.writeText(txt.toString(elContext), null);
         } catch (ELException e) {
             throw new ELException(this.alias + ": " + e.getMessage(), e.getCause());
         } catch (Exception e) {
