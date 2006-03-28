@@ -15,33 +15,40 @@
 package com.sun.facelets.tag.jsf.core;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 import javax.el.ELException;
-import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
-import javax.faces.component.UIComponentBase;
 
 import com.sun.facelets.FaceletContext;
-import com.sun.facelets.FaceletException;
-import com.sun.facelets.tag.TagConfig;
-import com.sun.facelets.tag.TagHandler;
+import com.sun.facelets.tag.TextHandler;
+import com.sun.facelets.tag.jsf.ComponentConfig;
+import com.sun.facelets.tag.jsf.ComponentHandler;
 
 /**
- * Handler for f:verbatim - which in Facelets is a no-op
+ * Handler for f:verbatim
  * 
- * @author Jacob Hookom
- * @version $Id: VerbatimHandler.java,v 1.1.2.1 2006/03/19 23:19:55 adamwiner Exp $
+ * @author Adam Winer
+ * @version $Id: VerbatimHandler.java,v 1.1.2.2 2006/03/28 03:25:40 adamwiner Exp $
  */
-public final class VerbatimHandler extends TagHandler {
-    public VerbatimHandler(TagConfig config) {
+public final class VerbatimHandler extends ComponentHandler {
+    public VerbatimHandler(ComponentConfig config) {
         super(config);
     }
 
-    /* (non-Javadoc)
-     * @see com.sun.facelets.FaceletHandler#apply(com.sun.facelets.FaceletContext, javax.faces.component.UIComponent)
-     */
-    public void apply(FaceletContext ctx, UIComponent parent)
-            throws IOException, FacesException, FaceletException, ELException {
-        this.nextHandler.apply(ctx, parent);
+    protected void onComponentCreated(FaceletContext ctx, UIComponent c, UIComponent parent) {
+        StringBuffer content = new StringBuffer();
+        Iterator iter = findNextByType(TextHandler.class);
+        while (iter.hasNext()) {
+            TextHandler text = (TextHandler) iter.next();
+            content.append(text.getText(ctx));
+        }
+
+        c.getAttributes().put("value", content.toString());
+        c.getAttributes().put("escape", Boolean.FALSE);
+        c.setTransient(true);
+    }
+
+    protected void applyNextHandler(FaceletContext ctx, UIComponent c) {
     }
 }
