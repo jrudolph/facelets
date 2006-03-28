@@ -39,7 +39,7 @@ import com.sun.facelets.tag.ui.UILibrary;
  * @see com.sun.facelets.compiler.Compiler
  * 
  * @author Jacob Hookom
- * @version $Id: CompilationManager.java,v 1.12.2.2 2006/03/19 05:49:41 jhook Exp $
+ * @version $Id: CompilationManager.java,v 1.12.2.3 2006/03/28 07:31:11 jhook Exp $
  */
 final class CompilationManager {
 
@@ -157,7 +157,7 @@ final class CompilationManager {
     }
 
     private String nextTagId() {
-        return this.alias + "#" + (this.tagId++);
+        return Integer.toHexString(Math.abs(this.alias.hashCode() ^ 13 * this.tagId++));
     }
 
     public void pushTag(Tag orig) {
