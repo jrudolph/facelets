@@ -55,7 +55,7 @@ import com.sun.facelets.util.FacesAPI;
  * golden hammer for wiring UIComponents to Facelets.
  * 
  * @author Jacob Hookom
- * @version $Id: ComponentHandler.java,v 1.13 2006/03/29 04:10:02 jhook Exp $
+ * @version $Id: ComponentHandler.java,v 1.14 2006/03/29 15:01:22 jhook Exp $
  */
 public class ComponentHandler extends MetaTagHandler {
 
@@ -144,7 +144,7 @@ public class ComponentHandler extends MetaTagHandler {
             
             // assign our unique id
             if (this.id != null) {
-                c.setId(ctx.generateUniqueId(this.id.getValue(ctx)));
+                c.setId(this.id.getValue(ctx));
             } else {
                 UIViewRoot root = ComponentSupport.getViewRoot(ctx, parent);
                 if (root != null) {
