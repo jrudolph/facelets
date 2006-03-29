@@ -39,7 +39,7 @@ import com.sun.facelets.tag.ui.UILibrary;
  * @see com.sun.facelets.compiler.Compiler
  * 
  * @author Jacob Hookom
- * @version $Id: CompilationManager.java,v 1.12 2006/02/27 00:24:13 jhook Exp $
+ * @version $Id: CompilationManager.java,v 1.13 2006/03/29 04:10:02 jhook Exp $
  */
 final class CompilationManager {
 
@@ -84,6 +84,26 @@ final class CompilationManager {
         this.units = new Stack();
         this.units.push(new CompilationUnit());
     }
+    
+    public void writeInstruction(String value) {
+        if (this.finished) {
+            return;
+        }
+
+        // don't carelessly add empty tags
+        if (value.length() == 0) {
+            return;
+        }
+
+        TextUnit unit;
+        if (this.currentUnit() instanceof TextUnit) {
+            unit = (TextUnit) this.currentUnit();
+        } else {
+            unit = new TextUnit(this.alias);
+            this.startUnit(unit);
+        }
+        unit.writeInstruction(value);
+    }
 
     public void writeText(String value) {
 
@@ -107,9 +127,27 @@ final class CompilationManager {
     }
 
     public void writeComment(String text) {
-        if (!this.compiler.isTrimmingComments()) {
-            this.writeText("<!-- " + text + " -->");
+        if (this.compiler.isTrimmingComments())
+            return; 
+
+        if (this.finished) {
+            return;
         }
+          
+        // don't carelessly add empty tags
+        if (text.length() == 0) {
+            return;
+        }
+          
+        TextUnit unit;
+        if (this.currentUnit() instanceof TextUnit) {
+            unit = (TextUnit) this.currentUnit();
+        } else {
+            unit = new TextUnit(this.alias);
+            this.startUnit(unit);
+        }
+          
+        unit.writeComment(text);
     }
 
     public void writeWhitespace(String text) {
@@ -119,7 +157,7 @@ final class CompilationManager {
     }
 
     private String nextTagId() {
-        return this.alias + "#" + (this.tagId++);
+        return Integer.toHexString(Math.abs(this.alias.hashCode() ^ 13 * this.tagId++));
     }
 
     public void pushTag(Tag orig) {

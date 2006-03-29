@@ -12,10 +12,13 @@
 <h1>Here is the Page Header</h1>
 
 <ui:composition template="template-client.xhtml">
-<ui:define name="title">My Client Title for ${name}<ui:insert name="title"/><e:echo msg="foobar"/></ui:define>
+<ui:define name="title">My Client Title for ${name}<ui:insert name="title"/></ui:define>
 <ui:define name="body">
 My Body
 Hello ${name}
+<e:body title="hello world">
+Hello again ${name}
+</e:body>
 </ui:define>
 </ui:composition>
 

@@ -55,7 +55,7 @@ import com.sun.facelets.util.FacesAPI;
  * golden hammer for wiring UIComponents to Facelets.
  * 
  * @author Jacob Hookom
- * @version $Id: ComponentHandler.java,v 1.12 2006/01/11 05:40:56 jhook Exp $
+ * @version $Id: ComponentHandler.java,v 1.13 2006/03/29 04:10:02 jhook Exp $
  */
 public class ComponentHandler extends MetaTagHandler {
 
@@ -148,7 +148,8 @@ public class ComponentHandler extends MetaTagHandler {
             } else {
                 UIViewRoot root = ComponentSupport.getViewRoot(ctx, parent);
                 if (root != null) {
-                    c.setId(root.createUniqueId());
+                    String uid = root.createUniqueId();
+                    c.setId(uid);
                 }
             }
             
@@ -161,7 +162,7 @@ public class ComponentHandler extends MetaTagHandler {
         }
 
         // first allow c to get populated
-        this.nextHandler.apply(ctx, c);
+        this.applyNextHandler(ctx, c);
 
         // finish cleaning up orphaned children
         if (componentFound) {
@@ -169,6 +170,9 @@ public class ComponentHandler extends MetaTagHandler {
             parent.getChildren().remove(c);
         }
         
+
+        this.onComponentPopulated(ctx, c, parent);
+
         // add to the tree afterwards
         // this allows children to determine if it's
         // been part of the tree or not yet
@@ -279,5 +283,15 @@ public class ComponentHandler extends MetaTagHandler {
      */
     protected void onComponentCreated(FaceletContext ctx, UIComponent c, UIComponent parent) {
         // do nothing
+    }
+
+    protected void onComponentPopulated(FaceletContext ctx, UIComponent c, UIComponent parent) {
+        // do nothing
+    }
+
+    protected void applyNextHandler(FaceletContext ctx, UIComponent c) 
+            throws IOException, FacesException, ELException {
+        // first allow c to get populated
+        this.nextHandler.apply(ctx, c);
     }
 }

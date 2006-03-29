@@ -14,6 +14,7 @@
 
 package com.sun.facelets.tag.jsf;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -21,8 +22,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
+import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIViewRoot;
+import javax.faces.context.FacesContext;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletHandler;
@@ -32,7 +35,7 @@ import com.sun.facelets.tag.TagAttributeException;
 /**
  * 
  * @author Jacob Hookom
- * @version $Id: ComponentSupport.java,v 1.4 2005/11/01 07:11:36 jhook Exp $
+ * @version $Id: ComponentSupport.java,v 1.5 2006/03/29 04:10:02 jhook Exp $
  */
 public final class ComponentSupport {
 
@@ -220,6 +223,23 @@ public final class ComponentSupport {
                     fc.getAttributes().put(MARK_DELETED, Boolean.TRUE);
                 }
             }
+        }
+    }
+    
+    public final static void encodeRecursive(FacesContext context,
+            UIComponent viewToRender) throws IOException, FacesException {
+        if (viewToRender.isRendered()) {
+            viewToRender.encodeBegin(context);
+            if (viewToRender.getRendersChildren()) {
+                viewToRender.encodeChildren(context);
+            } else if (viewToRender.getChildCount() > 0) {
+                Iterator kids = viewToRender.getChildren().iterator();
+                while (kids.hasNext()) {
+                    UIComponent kid = (UIComponent) kids.next();
+                    encodeRecursive(context, kid);
+                }
+            }
+            viewToRender.encodeEnd(context);
         }
     }
     

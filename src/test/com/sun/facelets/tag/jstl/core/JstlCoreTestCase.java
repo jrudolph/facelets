@@ -13,6 +13,8 @@ import com.sun.facelets.Facelet;
 import com.sun.facelets.FaceletFactory;
 import com.sun.facelets.FaceletTestCase;
 import com.sun.facelets.bean.Employee;
+import com.sun.facelets.mock.MockResponseWriter;
+import com.sun.facelets.util.FastWriter;
 
 public final class JstlCoreTestCase extends FaceletTestCase {
 
@@ -45,7 +47,7 @@ public final class JstlCoreTestCase extends FaceletTestCase {
         Map session = faces.getExternalContext().getSessionMap();
         Collection c = new ArrayList();
         for (int i = 0; i < 10; i++) {
-            c.add("" + i);
+            c.add(new Character((char)('A' + i)));
         }
         session.put("list", c);
         Map m = new HashMap();
@@ -58,7 +60,14 @@ public final class JstlCoreTestCase extends FaceletTestCase {
         
         UIViewRoot root = faces.getViewRoot();
         at.apply(faces, root);
-        System.out.println(root);
+        
+        FastWriter fw = new FastWriter();
+        MockResponseWriter mrw = new MockResponseWriter(fw);
+        faces.setResponseWriter(mrw);
+        root.encodeAll(faces);
+        System.out.println(fw);
+        
+        //System.out.println(root);
     }
 
 }

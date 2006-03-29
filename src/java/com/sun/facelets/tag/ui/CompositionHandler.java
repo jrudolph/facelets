@@ -39,7 +39,7 @@ import com.sun.facelets.tag.TagHandler;
 
 /**
  * @author Jacob Hookom
- * @version $Id: CompositionHandler.java,v 1.9 2006/01/14 06:46:15 jhook Exp $
+ * @version $Id: CompositionHandler.java,v 1.10 2006/03/29 04:10:08 jhook Exp $
  */
 public final class CompositionHandler extends TagHandler implements
         TemplateClient {
@@ -108,11 +108,11 @@ public final class CompositionHandler extends TagHandler implements
                 }
             }
 
-            ctx.pushClient(this);
+            ctx.extendClient(this);
             try {
                 ctx.includeFacelet(parent, this.template.getValue(ctx));
             } finally {
-                ctx.popClient();
+                ctx.popClient(this);
                 ctx.setVariableMapper(orig);
             }
         } else {

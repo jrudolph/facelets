@@ -32,7 +32,7 @@ import com.sun.facelets.tag.AbstractTagLibrary;
  * documentation</a>.
  * 
  * @author Jacob Hookom
- * @version $Id: CoreLibrary.java,v 1.7 2005/12/23 08:06:55 jhook Exp $
+ * @version $Id: CoreLibrary.java,v 1.8 2006/03/29 04:10:08 jhook Exp $
  */
 public final class CoreLibrary extends AbstractTagLibrary {
 
@@ -78,6 +78,7 @@ public final class CoreLibrary extends AbstractTagLibrary {
 
         this.addTagHandler("view", ViewHandler.class);
         
-        this.addComponent("verbatim", UIOutput.COMPONENT_TYPE, null);
+        this.addComponent("verbatim", "javax.faces.HtmlOutputText",
+                          "javax.faces.Text", VerbatimHandler.class);
     }
 }

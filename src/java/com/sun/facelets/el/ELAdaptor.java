@@ -22,48 +22,41 @@ import javax.el.ValueExpression;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 
-import com.sun.el.ExpressionFactoryImpl;
 import com.sun.facelets.util.FacesAPI;
 
 /**
  * 
  * 
  * @author Jacob Hookom
- * @version $Id: ELAdaptor.java,v 1.7 2005/09/26 00:38:51 jhook Exp $
+ * @version $Id: ELAdaptor.java,v 1.8 2006/03/29 04:10:10 jhook Exp $
  */
 public final class ELAdaptor {
 
     private static final boolean ELSUPPORT = (FacesAPI.getVersion() >= 12);
-    
+
     private final static String LEGACY_ELCONTEXT_KEY = "com.sun.facelets.legacy.ELCONTEXT";
-    
+
     public ELAdaptor() {
         super();
     }
-    
-    public final static ExpressionFactory createExpressionFactory(FacesContext faces) {
-        if (ELSUPPORT) {
-            return faces.getApplication().getExpressionFactory();
-        } else {
-            return new ExpressionFactoryImpl();
-        }
-    }
-    
+
     public final static ELContext getELContext(FacesContext faces) {
         if (ELSUPPORT) {
             return faces.getELContext();
         } else {
             Map request = faces.getExternalContext().getRequestMap();
-            LegacyELContext ctx = (LegacyELContext) request.get(LEGACY_ELCONTEXT_KEY);
-            if (ctx == null || ctx.getFacesContext() != faces) {
+            Object ctx = request.get(LEGACY_ELCONTEXT_KEY);
+            if (!(ctx instanceof LegacyELContext)
+                    || (((LegacyELContext) ctx).getFacesContext() != faces)) {
                 ctx = new LegacyELContext(faces);
                 request.put(LEGACY_ELCONTEXT_KEY, ctx);
             }
-            return ctx;
+            return (ELContext) ctx;
         }
     }
-    
-    public final static void setExpression(UIComponent c, String name, ValueExpression ve) {
+
+    public final static void setExpression(UIComponent c, String name,
+            ValueExpression ve) {
         if (FacesAPI.getComponentVersion(c) >= 12) {
             c.setValueExpression(name, ve);
         } else {

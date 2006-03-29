@@ -25,5 +25,25 @@ public class TemplateClientTestCase extends FaceletTestCase {
         root.encodeAll(faces);
         System.out.println(fw);
     }
+    
+   
+    public void testLayoutClient() throws Exception {
+        FaceletFactory ff = FaceletFactory.getInstance();
+        FacesContext faces = FacesContext.getCurrentInstance();
+        
+        Facelet f = ff.getFacelet("layout-client.xhtml");
+        
+        this.servletRequest.setAttribute("name", "Mr. Hookom");
+        
+        UIViewRoot root = faces.getViewRoot();
+        f.apply(faces, root);
+        
+        FastWriter fw = new FastWriter();
+        MockResponseWriter mrw = new MockResponseWriter(fw);
+        faces.setResponseWriter(mrw);
+        root.encodeAll(faces);
+        System.out.println(fw);
+    }
+   
 
 }

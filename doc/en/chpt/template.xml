@@ -480,6 +480,59 @@ The Text below will be used.]]></programlisting>
 		</para>
 	</sect1>
 	
+	<sect1 id="template-repeat">
+		<title><![CDATA[<ui:repeat/>]]></title>
+		<table>
+			<title>Repeat Tag Attributes</title>
+			<tgroup cols="4">
+				<thead>
+					<row>
+						<entry>Attribute</entry>
+						<entry>Required?</entry>
+						<entry>Description</entry>
+						<entry>Example</entry>
+					</row>
+				</thead>
+				<tbody>
+					<row>
+						<entry>value</entry>
+						<entry>true</entry>
+						<entry>Expression for the List of items to iterate over</entry>
+						<entry>#{blog.currentEntries}</entry>
+					</row>
+					<row>
+						<entry>var</entry>
+						<entry>true</entry>
+						<entry>The literal name of the variable to use while iterating</entry>
+						<entry>entry</entry>
+					</row>
+				</tbody>
+			</tgroup>
+		</table>
+		<para>
+			The <literal>repeat</literal> tag should be used in almost all cases instead of the <literal>c:forEach</literal> to iterate over content with JSF.  The <literal>repeat</literal> tag is often used in conjunction with the <literal>jsfc</literal> feature, see <xref linkend="taglib-use-jsfc"/>. 
+		</para>
+		<programlisting><![CDATA[...
+<dl>
+    <ui:repeat value="#{company.departments}" var="dept">
+    <dt>#{dept.name}</dt>
+	    <ui:repeat value="#{dept.employees}" var="emp">
+		<dd>#{emp.lastName}, #{emp.firstName}</dd>
+		</ui:repeat>
+    </ui:repeat>
+</dl>
+...]]></programlisting>
+		<para>
+			While this is a great step for JSF compositions, we can do better with the <literal>jsfc</literal> attribute where the <literal>repeat</literal> tag will provide some special behavior inclusive of the declared tag.
+		</para>
+		<programlisting><![CDATA[...
+<table>
+<tr jsfc="ui:repeat" value="#{dept.employees}" var="emp" class="#{emp.manager ? 'mngr' : 'peon'}">
+   <td>#{emp.lastName}</td><td>#{emp.firstName}</td>
+</tr>
+</table>
+...]]></programlisting>
+	</sect1>
 </chapter>
 
 

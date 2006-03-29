@@ -46,7 +46,7 @@ import com.sun.facelets.tag.TagAttributes;
  * @see com.sun.facelets.compiler.Compiler
  * 
  * @author Jacob Hookom
- * @version $Id: SAXCompiler.java,v 1.9 2006/01/08 04:36:38 jhook Exp $
+ * @version $Id: SAXCompiler.java,v 1.10 2006/03/29 04:10:04 jhook Exp $
  */
 public final class SAXCompiler extends Compiler {
 
@@ -98,7 +98,7 @@ public final class SAXCompiler extends Compiler {
 
         public void endCDATA() throws SAXException {
             if (this.inDocument) {
-                this.unit.writeText("]]>");
+                this.unit.writeInstruction("]]>");
             }
         }
 
@@ -123,8 +123,12 @@ public final class SAXCompiler extends Compiler {
         }
 
         public void fatalError(SAXParseException e) throws SAXException {
+            if (this.locator != null) {
             throw new SAXException("Error Traced[line: "
                     + this.locator.getLineNumber() + "] " + e.getMessage());
+            } else {
+                throw e;
+            }
         }
 
         public void ignorableWhitespace(char[] ch, int start, int length)
@@ -137,11 +141,11 @@ public final class SAXCompiler extends Compiler {
         public InputSource resolveEntity(String publicId, String systemId)
                 throws SAXException {
             String dtd = "default.dtd";
-            if ("-//W3C//DTD XHTML 1.0 Transitional//EN".equals(publicId)) {
+            /*if ("-//W3C//DTD XHTML 1.0 Transitional//EN".equals(publicId)) {
                 dtd = "xhtml1-transitional.dtd";
             } else if (systemId != null && systemId.startsWith("file:/")) {
                 return new InputSource(systemId);
-            }
+            }*/
             URL url = Thread.currentThread().getContextClassLoader()
                     .getResource(dtd);
             return new InputSource(url.toString());
@@ -153,7 +157,7 @@ public final class SAXCompiler extends Compiler {
 
         public void startCDATA() throws SAXException {
             if (this.inDocument) {
-                this.unit.writeText("<![CDATA[");
+                this.unit.writeInstruction("<![CDATA[");
             }
         }
 
@@ -175,7 +179,7 @@ public final class SAXCompiler extends Compiler {
                     sb.append(" SYSTEM \"").append(systemId).append("\"");
                 }
                 sb.append(" >\n");
-                this.unit.writeText(sb.toString());
+                this.unit.writeInstruction(sb.toString());
             }
             this.inDocument = false;
         }
@@ -200,7 +204,7 @@ public final class SAXCompiler extends Compiler {
                 StringBuffer sb = new StringBuffer(64);
                 sb.append("<?").append(target).append(' ').append(data).append(
                         "?>\n");
-                this.unit.writeText(sb.toString());
+                this.unit.writeInstruction(sb.toString());
             }
         }
     }
@@ -246,7 +250,7 @@ public final class SAXCompiler extends Compiler {
                 if (s >= 0) {
                     int e = r.indexOf("?>", s);
                     if (e > 0) {
-                        mngr.writeText(r.substring(s, e + 2) + '\n');
+                        mngr.writeInstruction(r.substring(s, e + 2) + '\n');
                     }
                 }
             }

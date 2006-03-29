@@ -15,6 +15,7 @@
 package com.sun.facelets.tag.jsf.core;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import javax.el.ELException;
 import javax.el.MethodExpression;
@@ -37,7 +38,7 @@ import com.sun.facelets.tag.jsf.ComponentSupport;
  * documentation</a>.
  * 
  * @author Jacob Hookom
- * @version $Id: ViewHandler.java,v 1.2 2005/08/24 04:38:50 jhook Exp $
+ * @version $Id: ViewHandler.java,v 1.3 2006/03/29 04:10:09 jhook Exp $
  */
 public final class ViewHandler extends TagHandler {
 
@@ -46,6 +47,8 @@ public final class ViewHandler extends TagHandler {
     private final TagAttribute locale;
 
     private final TagAttribute renderKitId;
+    
+    private final TagAttribute contentType;
 
     private final TagAttribute beforePhaseListener;
 
@@ -58,6 +61,7 @@ public final class ViewHandler extends TagHandler {
         super(config);
         this.locale = this.getAttribute("locale");
         this.renderKitId = this.getAttribute("renderKitId");
+        this.contentType = this.getAttribute("contentType");
         this.beforePhaseListener = this.getAttribute("beforePhaseListener");
         this.afterPhaseListener = this.getAttribute("afterPhaseListener");
     }
@@ -79,6 +83,10 @@ public final class ViewHandler extends TagHandler {
             if (this.renderKitId != null) {
                 String v = this.renderKitId.getValue(ctx);
                 root.setRenderKitId(v);
+            }
+            if (this.contentType != null) {
+                String v = this.contentType.getValue(ctx);
+                root.getAttributes().put("contentType", v);
             }
             if (this.beforePhaseListener != null) {
                 MethodExpression m = this.beforePhaseListener

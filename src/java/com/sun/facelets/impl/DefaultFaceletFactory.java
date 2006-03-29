@@ -38,7 +38,7 @@ import com.sun.facelets.util.Resource;
  * Default FaceletFactory implementation.
  * 
  * @author Jacob Hookom
- * @version $Id: DefaultFaceletFactory.java,v 1.5 2006/01/11 05:40:57 jhook Exp $
+ * @version $Id: DefaultFaceletFactory.java,v 1.6 2006/03/29 04:10:10 jhook Exp $
  */
 public final class DefaultFaceletFactory extends FaceletFactory {
 
@@ -49,23 +49,27 @@ public final class DefaultFaceletFactory extends FaceletFactory {
     private final Map facelets;
 
     private final Map relativeLocations;
-
-    private final URL location;
+    
+    private final ResourceResolver resolver;
+    
+    private final URL baseUrl;
 
     private final long refreshPeriod;
 
-    public DefaultFaceletFactory(Compiler compiler, URL url) {
-        this(compiler, url, -1);
+    public DefaultFaceletFactory(Compiler compiler, ResourceResolver resolver) throws IOException {
+        this(compiler, resolver, -1);
     }
 
-    public DefaultFaceletFactory(Compiler compiler, URL url, long refreshPeriod) {
+    public DefaultFaceletFactory(Compiler compiler, ResourceResolver resolver, long refreshPeriod) {
         ParameterCheck.notNull("compiler", compiler);
-        ParameterCheck.notNull("url", url);
+        ParameterCheck.notNull("resolver", resolver);
         this.compiler = compiler;
         this.facelets = new HashMap();
         this.relativeLocations = new HashMap();
-        this.location = url;
-        log.fine("Using Base Location: " + url);
+        this.resolver = resolver;
+        this.baseUrl = resolver.resolveUrl("/");
+        //this.location = url;
+        log.fine("Using ResourceResolver: " + resolver);
         this.refreshPeriod = (refreshPeriod > 0) ? refreshPeriod * 1000 : -1;
         log.fine("Using Refresh Period: " + this.refreshPeriod);
     }
@@ -79,7 +83,7 @@ public final class DefaultFaceletFactory extends FaceletFactory {
             FacesException, ELException {
         URL url = (URL) this.relativeLocations.get(uri);
         if (url == null) {
-            url = this.resolveURL(this.location, uri);
+            url = this.resolveURL(this.baseUrl, uri);
             if (url != null) {
                 this.relativeLocations.put(uri, url);
             } else {
@@ -105,8 +109,7 @@ public final class DefaultFaceletFactory extends FaceletFactory {
      */
     public URL resolveURL(URL source, String path) throws IOException {
         if (path.startsWith("/")) {
-            URL url = Resource.getResourceUrl(
-                    FacesContext.getCurrentInstance(), path);
+            URL url = this.resolver.resolveUrl(path);
             if (url == null) {
                 throw new FileNotFoundException(path
                         + " Not Found in ExternalContext as a Resource");
@@ -184,7 +187,7 @@ public final class DefaultFaceletFactory extends FaceletFactory {
             log.fine("Creating Facelet for: " + url);
         }
         String alias = "/"
-                + url.getFile().replaceFirst(this.location.getFile(), "");
+                + url.getFile().replaceFirst(this.baseUrl.getFile(), "");
         try {
             FaceletHandler h = this.compiler.compile(url, alias);
             DefaultFacelet f = new DefaultFacelet(this, this.compiler
