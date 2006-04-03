@@ -23,6 +23,7 @@ import javax.faces.component.UIComponent;
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
 import com.sun.facelets.FaceletHandler;
+import com.sun.facelets.TemplateClient;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagAttributeException;
 import com.sun.facelets.tag.TagConfig;
@@ -30,9 +31,9 @@ import com.sun.facelets.tag.TagHandler;
 
 /**
  * @author Jacob Hookom
- * @version $Id: InsertHandler.java,v 1.5 2006/01/14 06:46:15 jhook Exp $
+ * @version $Id: InsertHandler.java,v 1.6 2006/04/03 06:25:36 jhook Exp $
  */
-public final class InsertHandler extends TagHandler {
+public final class InsertHandler extends TagHandler implements TemplateClient {
 
     private final String name;
 
@@ -60,8 +61,24 @@ public final class InsertHandler extends TagHandler {
      */
     public void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
-        if (!ctx.includeDefinition(parent, this.name)) {
+        
+        ctx.extendClient(this);
+        boolean found = false;
+        try {
+            found = ctx.includeDefinition(parent, this.name);
+        } finally {
+            ctx.popClient(this);
+        }
+        if (!found) {
             this.nextHandler.apply(ctx, parent);
         }
+    }
+
+    public boolean apply(FaceletContext ctx, UIComponent parent, String name) throws IOException, FacesException, FaceletException, ELException {
+        if (this.name == name || this.name != null && this.name.equals(name)) {
+            this.nextHandler.apply(ctx, parent);
+            return true;
+        }
+        return false;
     }
 }
