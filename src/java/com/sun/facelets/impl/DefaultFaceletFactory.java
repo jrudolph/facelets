@@ -38,7 +38,7 @@ import com.sun.facelets.util.Resource;
  * Default FaceletFactory implementation.
  * 
  * @author Jacob Hookom
- * @version $Id: DefaultFaceletFactory.java,v 1.6 2006/03/29 04:10:10 jhook Exp $
+ * @version $Id: DefaultFaceletFactory.java,v 1.7 2006/04/04 14:34:12 jhook Exp $
  */
 public final class DefaultFaceletFactory extends FaceletFactory {
 
@@ -197,7 +197,7 @@ public final class DefaultFaceletFactory extends FaceletFactory {
             if (log.isLoggable(Level.WARNING)) {
                 log.warning(alias + " not found at " + url.toExternalForm());
             }
-            throw fnfe;
+            throw new FileNotFoundException(url.toExternalForm());
         }
     }
 
