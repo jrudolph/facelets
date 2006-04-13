@@ -347,6 +347,7 @@ public class FaceletViewHandler extends ViewHandler {
         if (UIDebug.debugRequest(context)) {
             return new UIViewRoot();
         }
+      
 
         if (!this.buildBeforeRestore || !handledByFacelets(viewId)) {
             return this.parent.restoreView(context, viewId);
@@ -395,6 +396,14 @@ public class FaceletViewHandler extends ViewHandler {
             throws IOException, FacesException {
         ExternalContext extContext = context.getExternalContext();
         RenderKit renderKit = context.getRenderKit();
+        // Avoid a cryptic NullPointerException when the renderkit ID
+        // is incorrectly set
+        if (renderKit == null) {
+          String id = context.getViewRoot().getRenderKitId();
+            throw new IllegalStateException(
+              "No render kit was available for id \"" + id + "\"");
+        }
+
         ServletRequest request = (ServletRequest) extContext.getRequest();
         ServletResponse response = (ServletResponse) extContext.getResponse();
 
@@ -510,6 +519,7 @@ public class FaceletViewHandler extends ViewHandler {
             log.fine("Rendering View: " + viewToRender.getViewId());
         }
 
+        StateWriter stateWriter = null;
         try {
             // build view - but not if we're in "buildBeforeRestore"
             // land and we've already got a populated view. Note
@@ -525,8 +535,12 @@ public class FaceletViewHandler extends ViewHandler {
 
             // setup writer and assign it to the context
             ResponseWriter origWriter = this.createResponseWriter(context);
-            FastWriter stateWriter = new FastWriter(
+            // QUESTION: should we use bufferSize?  Or, since the
+            // StateWriter usually only needs a small bit at the end,
+            // should we always use a much smaller size?
+            stateWriter = new StateWriter(origWriter,
                     this.bufferSize != -1 ? this.bufferSize : 1024);
+
             ResponseWriter writer = origWriter.cloneWithWriter(stateWriter);
             context.setResponseWriter(writer);
 
@@ -549,30 +563,38 @@ public class FaceletViewHandler extends ViewHandler {
                 removeTransient(viewToRender);
             }
 
-            // save state
             StateManager stateMgr = context.getApplication().getStateManager();
-            Object stateObj = stateMgr.saveSerializedView(context);
+            boolean writtenState = stateWriter.isStateWritten();
 
             // flush to origWriter
-            String content = stateWriter.toString();
+            if (writtenState &&
+                ((stateMgr.isSavingStateInClient(context) || 
+                  FacesAPI.getVersion() >= 12))) {
 
-            if ((stateMgr.isSavingStateInClient(context) || FacesAPI
-                    .getVersion() >= 12)) {
-                stateWriter.reset();
-                stateMgr.writeState(context,
-                        (StateManager.SerializedView) stateObj);
-                String stateStr = stateWriter.toString();
-                int start = 0;
-                int end = content.indexOf(STATE_KEY, start);
-                while (end != -1) {
-                    origWriter.write(content, start, end - start);
-                    origWriter.write(stateStr);
-                    start = end + STATE_KEY_LEN;
-                    end = content.indexOf(STATE_KEY, start);
+                String content = stateWriter.getAndResetBuffer();
+                int end = content.indexOf(STATE_KEY);
+                if (end >= 0) {
+                    // save state
+                    Object stateObj = stateMgr.saveSerializedView(context);
+                    stateMgr.writeState(context,
+                                   (StateManager.SerializedView) stateObj);
+                    String stateStr = stateWriter.getAndResetBuffer();
+                    int start = 0;
+                  
+                    while (end != -1) {
+                        origWriter.write(content, start, end - start);
+                        origWriter.write(stateStr);
+                        start = end + STATE_KEY_LEN;
+                        end = content.indexOf(STATE_KEY, start);
+                    }
+                    origWriter.write(content, start, content.length() - start);
+                } else {
+                    origWriter.write(content);
                 }
-                origWriter.write(content, start, content.length() - start);
-            } else {
-                origWriter.write(content);
+            } else if (writtenState) {
+                // Wrote state, but don't actually need to output any state;
+                // just flush the buffer
+                origWriter.write(stateWriter.getAndResetBuffer());
             }
 
             time = System.currentTimeMillis() - time;
@@ -585,6 +607,9 @@ public class FaceletViewHandler extends ViewHandler {
             this.handleFaceletNotFound(context, viewToRender.getViewId());
         } catch (Exception e) {
             this.handleRenderException(context, e);
+        } finally {
+            if (stateWriter != null)
+                stateWriter.release();
         }
     }
 
@@ -693,6 +718,9 @@ public class FaceletViewHandler extends ViewHandler {
 
     public void writeState(FacesContext context) throws IOException {
         if (handledByFacelets(context.getViewRoot().getViewId())) {
+            // Tell the StateWriter that we're about to write state
+            StateWriter.getCurrentInstance().writingState();
+
             StateManager stateMgr = context.getApplication().getStateManager();
             if (stateMgr.isSavingStateInClient(context)
                     || FacesAPI.getVersion() >= 12) {
