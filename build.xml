@@ -12,8 +12,8 @@
   <property name="compile.debug"       value="true"/>
   <property name="compile.deprecation" value="false"/>
   <property name="compile.optimize"    value="true"/>
-  <property name="compile.source"      value="1.4"/>
-  <property name="compile.target"      value="1.4"/>
+  <property name="compile.source"      value="1.5"/>
+  <property name="compile.target"      value="1.5"/>
   <property name="build"               value="build"/>
   <property name="dist"                value="dist"/>
   <property name="lib"                 value="lib"/>
@@ -205,6 +205,7 @@
 	<ant target="-build-demo" antfile="demo/hangman/build.xml"/>
 	<ant target="-build-demo" antfile="demo/starterkit/build.xml"/>
 	<ant target="-build-demo" antfile="demo/portlet/build.xml"/>
+	<ant target="-build-demo" antfile="demo/j1/build.xml"/>
     <copy todir="${release}/facelets-${release.version}" includeEmptyDirs="false">
        <fileset dir="${dist}"/>
     </copy>

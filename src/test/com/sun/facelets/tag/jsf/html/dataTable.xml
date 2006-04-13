@@ -8,9 +8,7 @@
 <ui:composition>
 <h:dataTable value="#{company.departments}" var="dept">
   <h:column>
-     <f:facet name="header">
-       <h:outputText value="#{dept.name}"/>
-     </f:facet>
+     <f:facet name="header">Department Name</f:facet>
      <h:outputText value="#{dept.name}"/>
   </h:column>
 </h:dataTable>

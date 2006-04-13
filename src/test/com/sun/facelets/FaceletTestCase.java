@@ -47,7 +47,8 @@ import com.sun.faces.util.DebugUtil;
 
 import junit.framework.TestCase;
 
-public abstract class FaceletTestCase extends TestCase implements ResourceResolver {
+public abstract class FaceletTestCase extends TestCase implements
+        ResourceResolver {
 
     private final String filePath = this.getDirectory();
 
@@ -94,7 +95,8 @@ public abstract class FaceletTestCase extends TestCase implements ResourceResolv
 
     private String getDirectory() {
         return this.getClass().getName().substring(0,
-                this.getClass().getName().lastIndexOf('.')).replace('.', '/') + "/";
+                this.getClass().getName().lastIndexOf('.')).replace('.', '/')
+                + "/";
     }
 
     protected void setUp() throws Exception {
@@ -109,26 +111,28 @@ public abstract class FaceletTestCase extends TestCase implements ResourceResolv
         // initialize Faces
         this.initFaces();
 
-        FacesContext faces = this.factoryFacesContext.getFacesContext(this.servletContext,
-                this.servletRequest, this.servletResponse,
+        FacesContext faces = this.factoryFacesContext.getFacesContext(
+                this.servletContext, this.servletRequest, this.servletResponse,
                 this.factoryLifecycle
                         .getLifecycle(LifecycleFactory.DEFAULT_LIFECYCLE));
-        
-        
+
         Compiler c = new SAXCompiler();
-        //c.setTrimmingWhitespace(true);
+        // c.setTrimmingWhitespace(true);
         FaceletFactory factory = new DefaultFaceletFactory(c, this);
         FaceletFactory.setInstance(factory);
-        
-        faces.setViewRoot(faces.getApplication().getViewHandler().createView(faces, "/test"));
-        
-        ResponseWriter rw = faces.getRenderKit().createResponseWriter(new StringWriter(), null, null);
+
+        faces.setViewRoot(faces.getApplication().getViewHandler().createView(
+                faces, "/test"));
+
+        ResponseWriter rw = faces.getRenderKit().createResponseWriter(
+                new StringWriter(), null, null);
         faces.setResponseWriter(rw);
     }
-    
+
     public void setRequest(String method, String path, OutputStream os) {
-        this.servletRequest = new MockHttpServletRequest(this.servletContext, method, path);
-        //this.servletResponse = new MockHttpServletResponse(os);
+        this.servletRequest = new MockHttpServletRequest(this.servletContext,
+                method, path);
+        // this.servletResponse = new MockHttpServletResponse(os);
         this.factoryFacesContext.getFacesContext(this.servletContext,
                 this.servletRequest, this.servletResponse,
                 this.factoryLifecycle
@@ -146,11 +150,9 @@ public abstract class FaceletTestCase extends TestCase implements ResourceResolv
             this.factoryLifecycle = (LifecycleFactory) FactoryFinder
                     .getFactory(FactoryFinder.LIFECYCLE_FACTORY);
 
-            /*
             Application application = this.factoryApplication.getApplication();
             application.setViewHandler(new FaceletViewHandler(application
                     .getViewHandler()));
-            */
         }
     }
 

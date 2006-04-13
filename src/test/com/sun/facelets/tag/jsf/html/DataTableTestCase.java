@@ -7,6 +7,7 @@ import javax.faces.context.ResponseWriter;
 import com.sun.facelets.Facelet;
 import com.sun.facelets.FaceletFactory;
 import com.sun.facelets.FaceletTestCase;
+import com.sun.facelets.Facelets;
 import com.sun.facelets.bean.Example;
 import com.sun.facelets.util.FastWriter;
 
@@ -21,6 +22,8 @@ Facelet f = FaceletFactory.getInstance().getFacelet("dataTable.xml");
         
         UIViewRoot root = faces.getViewRoot();
         f.apply(faces, root);
+        
+        Facelets.encode("j_id0:0:j_id3");
         
         FastWriter fw = new FastWriter();
         ResponseWriter rw = faces.getResponseWriter();

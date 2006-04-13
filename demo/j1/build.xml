@@ -1,0 +1,9 @@
+<project name="test" default="-build-demo" basedir="../../">
+  <import file="../../build.xml"/>
+  <target name="-build-demo">
+  	<makewar destfile="dist/j1.war" root="demo/j1"/>
+  </target>
+</project>
+
+
+ 
