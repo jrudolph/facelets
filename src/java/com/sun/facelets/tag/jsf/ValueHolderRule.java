@@ -29,7 +29,7 @@ import com.sun.facelets.util.FacesAPI;
 /**
  * 
  * @author Jacob Hookom
- * @version $Id: ValueHolderRule.java,v 1.2 2005/08/24 04:38:51 jhook Exp $
+ * @version $Id: ValueHolderRule.java,v 1.3 2006/05/03 04:03:36 jhook Exp $
  */
 final class ValueHolderRule extends MetaRule {
 
@@ -56,8 +56,23 @@ final class ValueHolderRule extends MetaRule {
         }
 
         public void applyMetadata(FaceletContext ctx, Object instance) {
-            ((ValueHolder) instance).setConverter((Converter) this.attr
-                    .getObject(ctx, Converter.class));
+            ((UIComponent) instance).setValueBinding("converter",
+                    new LegacyValueBinding(attr.getValueExpression(ctx,
+                            Converter.class)));
+        }
+    }
+
+    final static class DynamicConverterMetadata2 extends Metadata {
+
+        private final TagAttribute attr;
+
+        public DynamicConverterMetadata2(TagAttribute attr) {
+            this.attr = attr;
+        }
+
+        public void applyMetadata(FaceletContext ctx, Object instance) {
+            ((UIComponent) instance).setValueExpression("converter", attr
+                    .getValueExpression(ctx, Converter.class));
         }
     }
 
@@ -113,7 +128,11 @@ final class ValueHolderRule extends MetaRule {
                 if (attribute.isLiteral()) {
                     return new LiteralConverterMetadata(attribute.getValue());
                 } else {
-                    return new DynamicConverterMetadata(attribute);
+                    if (FacesAPI.getComponentVersion(meta.getTargetClass()) >= 12) {
+                        return new DynamicConverterMetadata2(attribute);
+                    } else {
+                        return new DynamicConverterMetadata(attribute);
+                    }
                 }
             }
 
