@@ -44,7 +44,7 @@ import com.sun.facelets.util.Classpath;
  * {@link java.net.URL URL} source.
  * 
  * @author Jacob Hookom
- * @version $Id: TagLibraryConfig.java,v 1.8 2005/11/01 03:04:26 jhook Exp $
+ * @version $Id: TagLibraryConfig.java,v 1.9 2006/05/03 05:18:10 jhook Exp $
  */
 public final class TagLibraryConfig {
 
@@ -386,12 +386,13 @@ public final class TagLibraryConfig {
 
     public static TagLibrary create(URL url) throws IOException {
         InputStream is = null;
+        TagLibrary t = null;
         try {
             is = url.openStream();
             LibraryHandler handler = new LibraryHandler(url);
             SAXParser parser = createSAXParser(handler);
             parser.parse(is, handler);
-            return handler.getLibrary();
+            t = handler.getLibrary();
         } catch (SAXException e) {
           IOException ioe =
             new IOException("Error parsing [" + url + "]: ");
@@ -406,6 +407,7 @@ public final class TagLibraryConfig {
             if (is != null)
                 is.close();
         }
+        return t;
     }
 
     public void loadImplicit(Compiler compiler) throws IOException {
