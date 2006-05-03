@@ -311,7 +311,7 @@
 <!ELEMENT tag (tag-name,(handler-class|component|converter|validator|source))>
 <!ELEMENT tag-name (#PCDATA)>
 <!ELEMENT handler-class (#PCDATA)>
-<!ELEMENT component (component-type,renderer-type?)>
+<!ELEMENT component (component-type,renderer-type?,handler-class?)>
 <!ELEMENT component-type (#PCDATA)>
 <!ELEMENT renderer-type (#PCDATA)>
 <!ELEMENT converter (converter-id, handler-class?)>

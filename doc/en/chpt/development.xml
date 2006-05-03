@@ -162,8 +162,18 @@
 
 }]]></programlisting>
 				<para>
-					In this example, we override the <literal>createMetaRuleset(Class)</literal> to alias wiring <literal>class</literal> attributes to the <literal>styleClass</literal> JavaBean property.
+					In this example, we override the <literal>createMetaRuleset(Class)</literal> to alias wiring <literal>class</literal> attributes to the <literal>styleClass</literal> JavaBean property.  To add your custom component to your tag library, do the following:
 				</para>
+				<programlisting><![CDATA[...
+<tag>
+  <tag-name>custom</tag-name>
+  <component>
+    <component-type>com.company.Component</component-type>
+    <renderer-type>com.company.OptionalRenderer</renderer-type>
+    <handler-class>com.company.HtmlComponentHandler</handler-class>
+  </component>
+</tag>
+...]]></programlisting>
 			</sect2>
 			<sect2 id="dev-meta-validator">
 				<title>Custom ValidateHandlers</title>

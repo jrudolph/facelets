@@ -552,7 +552,7 @@ This text below will also not be displayed.
 &lt;!ELEMENT tag (tag-name,(handler-class|component|converter|validator|source))&gt;
 &lt;!ELEMENT tag-name (#PCDATA)&gt;
 &lt;!ELEMENT handler-class (#PCDATA)&gt;
-&lt;!ELEMENT component (component-type,renderer-type?)&gt;
+&lt;!ELEMENT component (component-type,renderer-type?,handler-class?)&gt;
 &lt;!ELEMENT component-type (#PCDATA)&gt;
 &lt;!ELEMENT renderer-type (#PCDATA)&gt;
 &lt;!ELEMENT converter (converter-id, handler-class?)&gt;
@@ -1024,8 +1024,17 @@ facelet.apply(faces, faces.getViewRoot());
   }
 
 }</pre><p>
-					In this example, we override the <code class="literal">createMetaRuleset(Class)</code> to alias wiring <code class="literal">class</code> attributes to the <code class="literal">styleClass</code> JavaBean property.
-				</p></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="dev-meta-validator" />7.3.2. Custom ValidateHandlers</h3></div></div><div /></div><p>
+					In this example, we override the <code class="literal">createMetaRuleset(Class)</code> to alias wiring <code class="literal">class</code> attributes to the <code class="literal">styleClass</code> JavaBean property.  To add your custom component to your tag library, do the following:
+				</p><pre class="programlisting">...
+&lt;tag&gt;
+  &lt;tag-name&gt;custom&lt;/tag-name&gt;
+  &lt;component&gt;
+    &lt;component-type&gt;com.company.Component&lt;/component-type&gt;
+    &lt;renderer-type&gt;com.company.OptionalRenderer&lt;/renderer-type&gt;
+    &lt;handler-class&gt;com.company.HtmlComponentHandler&lt;/handler-class&gt;
+  &lt;/component&gt;
+&lt;/tag&gt;
+...</pre></div><div class="sect2" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="dev-meta-validator" />7.3.2. Custom ValidateHandlers</h3></div></div><div /></div><p>
 					In the previous example, Facelets will automatically wire <code class="literal">UIComponent</code> JavaBean properties and expressions to a given instance.  The bonus is that <code class="literal">MetaTagHandler</code> will set attributes on any instance of <code class="literal">Object</code>.  This opens the doors for working with things like <code class="literal">Validators</code> by extending <code class="literal">com.sun.facelets.tag.jsf.ValidateHandler</code>:
 				</p><pre class="programlisting">public final class ValidateDelegateHandler extends ValidateHandler {
 
@@ -1103,4 +1112,4 @@ facelet.apply(faces, faces.getViewRoot());
 			To add your custom <code class="literal">TagDecorator</code> to your Facelets project, you may extend the <code class="literal">FaceletViewHandler</code> and override the compiler initialization methods to add your <code class="literal">TagDecorator</code> to the passed <code class="literal">Compiler</code> instance.
 		</p></div></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a id="building" />Chapter 8. Building Facelets</h2></div></div><div /></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="building-ant" />8.1. Using Ant</h2></div></div><div /></div><p>
 			Facelets uses new features in 1.6.5, such as macros.
-		</p><div class="table"><a id="N10D73" /><p class="title"><b>Table 8.1. Ant Targets</b></p><table xmlns="" summary="Ant Targets" border="1"><colgroup><col /><col /></colgroup><thead><tr><th>Name</th><th>Description</th></tr></thead><tbody><tr><td>compile</td><td>Just compiles the Facelets code base, requires JSF 1.2 API</td></tr><tr><td>javadoc</td><td>Generates JavaDocs for the API</td></tr><tr><td>doc</td><td>Generates this developer documentation</td></tr><tr><td>jar</td><td>Compiles, then Jars</td></tr><tr><td>dist</td><td>Does the jar'ing and prepares/populates the dist directory</td></tr><tr><td>clean</td><td>Cleans or resets the project</td></tr></tbody></table></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="building-ide" />8.2. IDE Integration</h2></div></div><div /></div><div class="table"><a id="N10DA1" /><p class="title"><b>Table 8.2. Available IDEs</b></p><table xmlns="" summary="Available IDEs" border="1"><colgroup><col /><col /><col /></colgroup><thead><tr><th>Name</th><th>Vendor</th><th>Link</th></tr></thead><tbody><tr><td>Exadel Studio</td><td>Exadel</td><td>http://www.exadel.com/products_products1.htm</td></tr></tbody></table></div></div></div></div></body></html>
+		</p><div class="table"><a id="N10D76" /><p class="title"><b>Table 8.1. Ant Targets</b></p><table xmlns="" summary="Ant Targets" border="1"><colgroup><col /><col /></colgroup><thead><tr><th>Name</th><th>Description</th></tr></thead><tbody><tr><td>compile</td><td>Just compiles the Facelets code base, requires JSF 1.2 API</td></tr><tr><td>javadoc</td><td>Generates JavaDocs for the API</td></tr><tr><td>doc</td><td>Generates this developer documentation</td></tr><tr><td>jar</td><td>Compiles, then Jars</td></tr><tr><td>dist</td><td>Does the jar'ing and prepares/populates the dist directory</td></tr><tr><td>clean</td><td>Cleans or resets the project</td></tr></tbody></table></div></div><div class="sect1" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="building-ide" />8.2. IDE Integration</h2></div></div><div /></div><div class="table"><a id="N10DA4" /><p class="title"><b>Table 8.2. Available IDEs</b></p><table xmlns="" summary="Available IDEs" border="1"><colgroup><col /><col /><col /></colgroup><thead><tr><th>Name</th><th>Vendor</th><th>Link</th></tr></thead><tbody><tr><td>Exadel Studio</td><td>Exadel</td><td>http://www.exadel.com/products_products1.htm</td></tr></tbody></table></div></div></div></div></body></html>
