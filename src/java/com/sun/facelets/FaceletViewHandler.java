@@ -543,6 +543,12 @@ public class FaceletViewHandler extends ViewHandler {
 
             ResponseWriter writer = origWriter.cloneWithWriter(stateWriter);
             context.setResponseWriter(writer);
+            
+            // force creation of session if saving state there
+            StateManager stateMgr = context.getApplication().getStateManager();
+            if (!stateMgr.isSavingStateInClient(context)) {
+                context.getExternalContext().getSession(true);
+            }
 
             long time = System.currentTimeMillis();
 
@@ -563,7 +569,6 @@ public class FaceletViewHandler extends ViewHandler {
                 removeTransient(viewToRender);
             }
 
-            StateManager stateMgr = context.getApplication().getStateManager();
             boolean writtenState = stateWriter.isStateWritten();
 
             // flush to origWriter
