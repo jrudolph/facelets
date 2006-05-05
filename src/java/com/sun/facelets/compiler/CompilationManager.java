@@ -21,6 +21,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.sun.facelets.FaceletHandler;
+import com.sun.facelets.config.FaceletConfig;
 import com.sun.facelets.tag.Tag;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagAttributeException;
@@ -39,13 +40,13 @@ import com.sun.facelets.tag.ui.UILibrary;
  * @see com.sun.facelets.compiler.Compiler
  * 
  * @author Jacob Hookom
- * @version $Id: CompilationManager.java,v 1.13 2006/03/29 04:10:02 jhook Exp $
+ * @version $Id: CompilationManager.java,v 1.13.2.1 2006/05/05 06:49:47 jhook Exp $
  */
 final class CompilationManager {
 
     private final static Logger log = Logger.getLogger("facelets.compiler");
 
-    private final Compiler compiler;
+    private final FaceletConfig config;
 
     private final TagLibrary tagLibrary;
 
@@ -61,15 +62,15 @@ final class CompilationManager {
     
     private final String alias;
 
-    public CompilationManager(String alias, Compiler compiler) {
+    public CompilationManager(String alias, FaceletConfig config) {
         
         // this is our alias
         this.alias = alias;
 
         // grab compiler state
-        this.compiler = compiler;
-        this.tagDecorator = compiler.createTagDecorator();
-        this.tagLibrary = compiler.createTagLibrary();
+        this.config = config;
+        this.tagDecorator = config.createTagDecorator();
+        this.tagLibrary = config.createTagLibrary();
 
         // namespace management
         this.namespaceManager = new NamespaceManager();
@@ -127,7 +128,7 @@ final class CompilationManager {
     }
 
     public void writeComment(String text) {
-        if (this.compiler.isTrimmingComments())
+        if (this.config.isTrimmingComments())
             return; 
 
         if (this.finished) {
@@ -151,7 +152,7 @@ final class CompilationManager {
     }
 
     public void writeWhitespace(String text) {
-        if (!this.compiler.isTrimmingWhitespace()) {
+        if (!this.config.isTrimmingWhitespace()) {
             this.writeText(text);
         }
     }

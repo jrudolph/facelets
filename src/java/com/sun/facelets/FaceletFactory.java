@@ -15,6 +15,7 @@
 package com.sun.facelets;
 
 import java.io.IOException;
+import java.net.URL;
 
 import javax.el.ELException;
 import javax.faces.FacesException;
@@ -24,7 +25,7 @@ import javax.faces.FacesException;
  * underlying implementation.
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletFactory.java,v 1.3 2005/11/30 23:36:39 jhook Exp $
+ * @version $Id: FaceletFactory.java,v 1.3.8.1 2006/05/05 06:49:40 jhook Exp $
  */
 public abstract class FaceletFactory {
 
@@ -41,6 +42,19 @@ public abstract class FaceletFactory {
      * @throws ELException
      */
     public abstract Facelet getFacelet(String uri) throws IOException,
+            FaceletException, FacesException, ELException;
+    
+    /**
+     * Return a Facelet instance as specified by the file at the passed URL.
+     * 
+     * @param uri
+     * @return
+     * @throws IOException
+     * @throws FaceletException
+     * @throws FacesException
+     * @throws ELException
+     */
+    public abstract Facelet getFacelet(URL url) throws IOException,
             FaceletException, FacesException, ELException;
 
     /**

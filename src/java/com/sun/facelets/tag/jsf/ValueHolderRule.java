@@ -29,7 +29,7 @@ import com.sun.facelets.util.FacesAPI;
 /**
  * 
  * @author Jacob Hookom
- * @version $Id: ValueHolderRule.java,v 1.2 2005/08/24 04:38:51 jhook Exp $
+ * @version $Id: ValueHolderRule.java,v 1.2.12.1 2006/05/05 06:50:02 jhook Exp $
  */
 final class ValueHolderRule extends MetaRule {
 
@@ -56,8 +56,8 @@ final class ValueHolderRule extends MetaRule {
         }
 
         public void applyMetadata(FaceletContext ctx, Object instance) {
-            ((ValueHolder) instance).setConverter((Converter) this.attr
-                    .getObject(ctx, Converter.class));
+            ((UIComponent) instance).setValueExpression("converter",
+                    attr.getValueExpression(ctx, Converter.class));
         }
     }
 

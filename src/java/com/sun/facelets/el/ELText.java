@@ -33,9 +33,16 @@ import com.sun.facelets.util.FastWriter;
  * parser accepts either <code>${..}</code> or <code>#{..}</code>.
  * 
  * @author Jacob Hookom
- * @version $Id: ELText.java,v 1.4 2006/03/29 04:10:10 jhook Exp $
+ * @version $Id: ELText.java,v 1.4.2.1 2006/05/05 06:49:53 jhook Exp $
  */
 public class ELText {
+    
+    public static void main(String[] argv) throws Exception {
+        String in = "&lt;e:serverSuggest id=\"foo\" value=\"\\#{requestScope.foo}\" from=\"\\#{company.suggestEmployees}\">\\#{item.lastName}, \\#{item.firstName}&lt;/e:serverSuggest>";
+        System.out.println(in);
+        ELText txt = ELText.parse(in);
+        System.out.println(txt);
+    }
 
     private static final class LiteralValueExpression extends ValueExpression {
 
@@ -316,6 +323,10 @@ public class ELText {
             c = ca[i];
             if ('\\' == c) {
                 esc = !esc;
+                if (esc && i < end && ca[i+1] == '$' || ca[i+1] == '#') {
+                    i++;
+                    continue;
+                }
             } else if (!esc && ('$' == c || '#' == c)) {
                 if (i < end) {
                     if ('{' == ca[i + 1]) {
@@ -338,6 +349,7 @@ public class ELText {
                     }
                 }
             }
+            esc = false;
             buff.append(c);
             i++;
         }

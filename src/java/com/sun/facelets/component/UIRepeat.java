@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.faces.FacesException;
 import javax.faces.application.FacesMessage;
@@ -402,10 +403,10 @@ public class UIRepeat extends UIComponentBase implements NamingContainer {
             if (idxStart != -1
                     && Character.isDigit(clientId.charAt(idxStart + 1))) {
                 int idxEnd = clientId.indexOf(NamingContainer.SEPARATOR_CHAR,
-                        idxStart);
+                        idxStart+1);
                 if (idxEnd != -1) {
                     int newIndex = Integer.parseInt(clientId.substring(
-                            idxStart, idxEnd));
+                            idxStart+1, idxEnd));
                     boolean found = false;
                     try {
                         this.captureOrigValue();

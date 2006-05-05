@@ -21,6 +21,7 @@ import java.util.Map;
 
 import javax.faces.FacesException;
 
+import com.sun.facelets.resource.Resource;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.TagHandler;
 import com.sun.facelets.tag.TagLibrary;
@@ -29,7 +30,7 @@ import com.sun.facelets.tag.TagLibrary;
  * Library for JSTL Functions
  * 
  * @author Jacob Hookom
- * @version $Id: JstlFnLibrary.java,v 1.2 2005/08/24 04:38:59 jhook Exp $
+ * @version $Id: JstlFnLibrary.java,v 1.2.12.1 2006/05/05 06:50:03 jhook Exp $
  */
 public class JstlFnLibrary implements TagLibrary {
 
@@ -81,6 +82,10 @@ public class JstlFnLibrary implements TagLibrary {
     public static void main(String[] argv) {
         JstlFnLibrary lib = new JstlFnLibrary();
         System.out.println(lib.containsFunction(JstlFnLibrary.Namespace, "toUpperCase"));
+    }
+
+    public Resource createResource(String path) {
+        return null;
     }
 
 }

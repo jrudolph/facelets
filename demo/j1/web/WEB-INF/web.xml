@@ -10,20 +10,6 @@
     <display-name>Facelets J1 Demo</display-name>
     <description>Facelets J1 Demo</description>
 
-    <context-param>
-        <param-name>facelets.REFRESH_PERIOD</param-name>
-        <param-value>2</param-value>
-    </context-param>
-
-    <context-param>
-        <param-name>facelets.DEVELOPMENT</param-name>
-        <param-value>true</param-value>
-    </context-param>
-
-    <context-param>
-        <param-name>javax.faces.STATE_SAVING_METHOD</param-name>
-        <param-value>server</param-value>
-    </context-param>
 	
 	<context-param>
 		<param-name>javax.faces.DEFAULT_SUFFIX</param-name>
@@ -31,7 +17,7 @@
 	</context-param>
 
     <context-param>
-        <param-name>com.sun.faces.validateXml</param-name>
+        <param-name>facelets.DEVELOPMENT</param-name>
         <param-value>true</param-value>
         <description>
             Set this flag to true if you want the JavaServer Faces
@@ -52,6 +38,26 @@
             Default value is false.
         </description>
     </context-param>
+
+    <context-param>
+		<param-name>facelets.LIBRARIES</param-name>
+		<param-value>/WEB-INF/demo.taglib.xml</param-value>
+	</context-param>
+
+    <filter>
+	<filter-name>facelets</filter-name>
+	<filter-class>com.sun.facelets.webapp.FaceletFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>facelets</filter-name>
+        <url-pattern>*.jsf</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>facelets</filter-name>
+        <url-pattern>/FACES-INF/*</url-pattern>
+    </filter-mapping>
+
+
 
     <!-- Faces Servlet -->
     <servlet>

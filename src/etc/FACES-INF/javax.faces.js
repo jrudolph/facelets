@@ -12,7 +12,7 @@ Object.extend(Element, {
     var d = $(dest);
 	var parent = d.parentNode;
 	var temp = document.createElement('div');
-	temp.innerHTML = this.serialize(src);
+	temp.innerHTML = src
 	parent.replaceChild(temp.firstChild,d);
   },
   serialize: function(e) {
@@ -43,28 +43,32 @@ function $Error(e) {
 function $Form(src) {
 	if (src) {
 		var form = $(src);
-		while (form && form.tagName.toLowerCase() != 'form') {
+		while (form && form.tagName && form.tagName.toLowerCase() != 'form') {
 			if (form.form) return form.form;
-			form = form.parentNode;
+			if (form.parentNode) {
+				form = form.parentNode;
+			} else {
+				form = null;
+			}
 		}
-		return form;
+		if (form) return form;
 	}
 	return document.forms[0];
 };
 
 /* Facelet Utility Class
  ***********************************************************/
-var Facelet = {
+var Faces = {
 	initialized: false,
 	create: function() {
 		return function() {
-	  		if (Facelet.initialized) {
+	  		if (Faces.initialized) {
       			this.initialize.apply(this, arguments);
 	  		} else {
 				var args = arguments;
 				var me = this;
 	  			Event.observe(window,'load',function() {
-					Facelet.initialized = true;
+					Faces.initialized = true;
 					me.initialize.apply(me, args);
 				},false);
 			}
@@ -78,15 +82,15 @@ var Facelet = {
 	}
 };
 
-/* Turn any Element into a Facelet.Command
+/* Turn any Element into a Faces.Command
  ***********************************************************/
-Facelet.Command = Facelet.create();
-Facelet.Command.prototype = {
-	initialize: function(action,options) {
-		var form = (options && options.form) || $Form(action);
-		var event = (options && options.event) || 'click';
+Faces.Command = Faces.create();
+Faces.Command.prototype = {
+	initialize: function(action, event, options) {
+		var event = (event) || 'click';
+		var options = options;
 		Event.observe(action,event,function(e) {
-			new Facelet.Invoke(form,action,options);
+			new Faces.Event(action,options);
 			Event.stop(e);
 			return false;
 		},true);
@@ -95,14 +99,14 @@ Facelet.Command.prototype = {
 
 /* ViewState Hash over a given Form
  ***********************************************************/
-Facelet.ViewState = Class.create();
-Facelet.ViewState.Ignore = ['button','submit','reset','image'];
-Facelet.ViewState.prototype = {
+Faces.ViewState = Class.create();
+Faces.ViewState.Ignore = ['button','submit','reset','image'];
+Faces.ViewState.prototype = {
 	initialize: function(form) {
 		var e = Form.getElements($(form));
 		var t,p;
 		for (var i = 0; i < e.length; i++) {
-			if (Facelet.ViewState.Ignore.indexOf(e[i].type) == -1) {
+			if (Faces.ViewState.Ignore.indexOf(e[i].type) == -1) {
 				t = e[i].tagName.toLowerCase();
 				p = Form.Element.Serializers[t](e[i]);
 				if (p && p[0].length != 0) {
@@ -138,11 +142,11 @@ Facelet.ViewState.prototype = {
 	}
 };
 
-/* Handles Render Requests
+/* Handles Sending Events to the Server
  ***********************************************************/
-Facelet.Invoke = Class.create();
-Object.extend(Object.extend(Facelet.Invoke.prototype, Ajax.Request.prototype), {
-  initialize: function(form, source, options) {
+Faces.Event = Class.create();
+Object.extend(Object.extend(Faces.Event.prototype, Ajax.Request.prototype), {
+  initialize: function(source, options) {
     this.transport = Ajax.getTransport();
     this.setOptions(options);
 	
@@ -150,11 +154,11 @@ Object.extend(Object.extend(Facelet.Invoke.prototype, Ajax.Request.prototype), {
 	this.options.method = 'post';
 	
 	// get form
-	this.form = $Form(form);
+	this.form = $Form(source);
 	this.url = this.form.action;
 	
 	// create viewState
-	var viewState = new Facelet.ViewState(this.form);
+	var viewState = new Faces.ViewState(this.form);
 	
 	// add passed parameters
 	Object.extend(viewState, this.options.parameters || {});
@@ -165,71 +169,108 @@ Object.extend(Object.extend(Facelet.Invoke.prototype, Ajax.Request.prototype), {
 	if (action && action.form) viewState[action.name] = action.value;
 	else viewState[source] = source;
 	
-	// add render
-	if (this.options.render) {
-		viewState['javax.faces.Encode'] = this.options.render;
+	// initialize headers
+	this.options.requestHeaders = this.options.requestHeaders || [];
+	
+	// guarantee our header
+	this.options.requestHeaders.push('javax.faces.Async');
+	this.options.requestHeaders.push('true');
+	
+	// add event
+	if (this.options.event) {
+	    var sourceId = $(source).id || $(source).name;
+		sourceId += "," + this.options.event;
+		if (this.options.immediate) {
+			sourceId += ",immediate";
+		}
+		this.options.requestHeaders.push('javax.faces.Event');
+		this.options.requestHeaders.push(sourceId);
 	}
 	
+	// add update
 	if (this.options.update) {
-		viewState['javax.faces.Update'] = this.options.update;
+		this.options.requestHeaders.push('javax.faces.Update');
+		this.options.requestHeaders.push(Faces.toArray(this.options.update,',').join(','));
+	}
+	
+	// add encode
+	if (this.options.encode) {
+		this.options.requestHeaders.push('javax.faces.Encode');
+		this.options.requestHeaders.push(Faces.toArray(this.options.encode,',').join(','));
 	}
 	
 	// build url
-	this.url += (this.url.match(/\?/) ? '&' : '?') + viewState.toQueryString();
+	//this.url += (this.url.match(/\?/) ? '&' : '?') + viewState.toQueryString();
+	this.options.postBody = viewState.toQueryString();
 
-	// setup event handling
-    var onComplete = this.options.onComplete || Prototype.emptyFunction;
+    var onComplete = this.options.onComplete;
     this.options.onComplete = (function(transport, object) {
-      this.renderView();
-      onComplete(transport, object);
+      this.encodeView();
+	  if (onComplete) {
+      	onComplete(transport, object);
+	  } else {
+		 this.evalResponse();
+	  }
     }).bind(this);
 
+	if (this.options.onException == null) {
+		this.options.onException = this.onException;
+	}
+	
 	// send request
     this.request(this.url);
   },
-  renderView: function() {
-	var response = this.transport.responseXML.documentElement;
-	
-	// process each render-able area
-	var renders = response.getElementsByTagName('encode');
-	var destId,src;
-	for (var i = 0; i < renders.length; i++) {
-		destId = renders[i].getAttribute('id');
-		src = Element.firstElement(renders[i]);
-		Element.replace(destId,src);
-	}
-
-    if (this.responseIsSuccess()) {
-      if (this.onComplete)
-        setTimeout(this.onComplete.bind(this), 10);
-    }
+  encodeView: function() {
+	  //alert(this.transport.getAllResponseHeaders());
+	  var encode = this.header('javax.faces.Encode');
+	  if (encode) {
+		  encode = eval(encode);
+		  var view;
+		  for (var i = 0; i < encode.length; i++) {
+		    view = this.header('javax.faces.Encode_' + encode[i]);
+			if (view) {
+				view.evalScripts();
+				view = view.stripScripts();
+				Element.replace(encode[i], view);
+			}
+		  }
+	  }
+  },
+  evalResponse: function() {
+	  if (this.responseIsSuccess()) {
+		  var text = this.transport.responseText;
+		  if (text) {
+			  try {
+			      text.evalScripts();
+			  } catch (e) {}
+		  }
+	  }
+  },
+  onException: function(o,e) {
+	  throw e;
   }
 });
 
 /* Take any Event and delegate it to an Observer
  ***********************************************************/
-Facelet.Observer = Class.create();
-Facelet.Observer.prototype = {
-	initialize: function(form,trigger,options) {
+Faces.Observer = Faces.create();
+Faces.Observer.prototype = {
+	initialize: function(trigger,events,options) {
 		this.options = {};
 		Object.extend(this.options, options || {});
 		var source = this.options.source;
-		Event.observe(window,'load',function() {
-			if (form != null && trigger != null) {
-				var fn = function(e) {
-					new Facelet.Invoke(form,(source || Event.element(e)), options);
-					Event.stop(e);
-					return false;
-				};
-				var event = options.event || 'click';
-				var triggers = Facelet.toArray(trigger);
-				var events = Facelet.toArray(event);
-				for (var i = 0; i < triggers.length; i++) {
-					for (var j = 0; j < events.length; j++) {
-						Event.observe($(triggers[i]),events[j],fn,true);
-					}
-				}
+		var fn = function(e) {
+			new Faces.Event((source || Event.element(e)), options);
+			Event.stop(e);
+			return false;
+		};
+		var event = events || 'click';
+		var ta = Faces.toArray(trigger);
+		var ea = Faces.toArray(events);
+		for (var i = 0; i < ta.length; i++) {
+			for (var j = 0; j < ea.length; j++) {
+				Event.observe($(ta[i]),ea[j],fn,true);
 			}
-		},true);
+		}
 	}
 };

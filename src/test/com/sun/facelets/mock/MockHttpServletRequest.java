@@ -44,7 +44,7 @@ import javax.servlet.http.HttpSession;
 /**
  * 
  * @author Jacob Hookom
- * @version $Id: MockHttpServletRequest.java,v 1.2 2005/12/21 05:51:05 jhook Exp $
+ * @version $Id: MockHttpServletRequest.java,v 1.2.8.1 2006/05/05 06:50:11 jhook Exp $
  */
 public class MockHttpServletRequest implements HttpServletRequest {
 
@@ -184,6 +184,10 @@ public class MockHttpServletRequest implements HttpServletRequest {
             }
         }
         return -1;
+    }
+    
+    public void setHeader(String name, String value) {
+        this.headers.put(name, value);
     }
 
     public String getMethod() {

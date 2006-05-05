@@ -18,6 +18,7 @@ import java.lang.reflect.Method;
 
 import javax.faces.FacesException;
 
+import com.sun.facelets.resource.Resource;
 import com.sun.facelets.util.ParameterCheck;
 
 /**
@@ -26,7 +27,7 @@ import com.sun.facelets.util.ParameterCheck;
  * children handles the requested method.
  * 
  * @author Jacob Hookom
- * @version $Id: CompositeTagLibrary.java,v 1.3 2005/08/24 04:38:47 jhook Exp $
+ * @version $Id: CompositeTagLibrary.java,v 1.3.12.1 2006/05/05 06:50:01 jhook Exp $
  */
 public final class CompositeTagLibrary implements TagLibrary {
 
@@ -108,6 +109,20 @@ public final class CompositeTagLibrary implements TagLibrary {
             if (this.libraries[i].containsFunction(ns, name)) {
                 return this.libraries[i].createFunction(ns, name);
             }
+        }
+        return null;
+    }
+
+    /* 
+     * (non-Javadoc)
+     * 
+     * @see com.sun.facelets.tag.TagLibrary#createResource(java.lang.String)
+     */
+    public Resource createResource(String path) {
+        Resource rsc = null;
+        for (TagLibrary lib : this.libraries) {
+            rsc = lib.createResource(path);
+            if (rsc != null) return rsc;
         }
         return null;
     }

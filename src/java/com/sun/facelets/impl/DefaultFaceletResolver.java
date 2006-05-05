@@ -6,17 +6,18 @@ import java.net.URL;
 import javax.faces.FacesException;
 import javax.faces.context.FacesContext;
 
-import com.sun.facelets.util.Resource;
+import com.sun.facelets.FaceletResolver;
+import com.sun.facelets.util.PathTools;
 
-public class DefaultResourceResolver implements ResourceResolver {
+public class DefaultFaceletResolver implements FaceletResolver {
 
-    public DefaultResourceResolver() {
+    public DefaultFaceletResolver() {
         super();
     }
 
-    public URL resolveUrl(String path) {
+    public URL resolvePath(String path) {
         try {
-            return Resource.getResourceUrl(FacesContext.getCurrentInstance(),
+            return PathTools.getResourceUrl(FacesContext.getCurrentInstance(),
                     path);
         } catch (IOException e) {
             throw new FacesException(e);
@@ -24,7 +25,7 @@ public class DefaultResourceResolver implements ResourceResolver {
     }
 
     public String toString() {
-        return "DefaultResourceResolver";
+        return this.getClass().getName().toString();
     }
 
 }

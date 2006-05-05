@@ -43,20 +43,12 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.sun.facelets.compiler.Compiler;
-import com.sun.facelets.compiler.SAXCompiler;
-import com.sun.facelets.compiler.TagLibraryConfig;
+import com.sun.facelets.config.FaceletConfig;
 import com.sun.facelets.impl.DefaultFaceletFactory;
-import com.sun.facelets.impl.DefaultResourceResolver;
-import com.sun.facelets.impl.ResourceResolver;
-import com.sun.facelets.tag.TagDecorator;
-import com.sun.facelets.tag.TagLibrary;
 import com.sun.facelets.tag.jsf.ComponentSupport;
 import com.sun.facelets.tag.ui.UIDebug;
 import com.sun.facelets.util.DevTools;
 import com.sun.facelets.util.FacesAPI;
-import com.sun.facelets.util.FastWriter;
-import com.sun.facelets.util.Resource;
 
 /**
  * ViewHandler implementation for Facelets
@@ -74,8 +66,6 @@ public class FaceletViewHandler extends ViewHandler {
 
     public final static String PARAM_REFRESH_PERIO = "facelets.REFRESH_PERIOD";
 
-    public final static String PARAM_SKIP_COMMENTS = "facelets.SKIP_COMMENTS";
-
     /**
      * Context initialization parameter for defining what viewIds should be
      * handled by Facelets, and what should not. When left unset, all URLs will
@@ -83,16 +73,16 @@ public class FaceletViewHandler extends ViewHandler {
      * of either extension mappings or prefix mappings. For example:
      * 
      * <pre>
-     *   
      *    
      *     
-     *       &lt;context-param&gt;
-     *         &lt;param-name&gt;facelets.VIEW_MAPPINGS&lt;/param-name&gt;
-     *         &lt;param-value&gt;/demos/*; *.xhtml&lt;/param-value&gt;
-     *       &lt;/context-param&gt;
+     *      
+     *        &lt;context-param&gt;
+     *          &lt;param-name&gt;facelets.VIEW_MAPPINGS&lt;/param-name&gt;
+     *          &lt;param-value&gt;/demos/*; *.xhtml&lt;/param-value&gt;
+     *        &lt;/context-param&gt;
+     *       
      *      
      *     
-     *    
      * </pre>
      * 
      * would use Facelets for processing all viewIds in the "/demos" directory
@@ -106,14 +96,6 @@ public class FaceletViewHandler extends ViewHandler {
      */
     public final static String PARAM_VIEW_MAPPINGS = "facelets.VIEW_MAPPINGS";
 
-    public final static String PARAM_LIBRARIES = "facelets.LIBRARIES";
-
-    public final static String PARAM_DECORATORS = "facelets.DECORATORS";
-
-    public final static String PARAM_DEVELOPMENT = "facelets.DEVELOPMENT";
-
-    public final static String PARAM_RESOURCE_RESOLVER = "facelets.RESOURCE_RESOLVER";
-
     public final static String PARAM_BUILD_BEFORE_RESTORE = "facelets.BUILD_BEFORE_RESTORE";
 
     public final static String PARAM_BUFFER_SIZE = "facelets.BUFFER_SIZE";
@@ -126,13 +108,13 @@ public class FaceletViewHandler extends ViewHandler {
 
     private final ViewHandler parent;
 
-    private boolean developmentMode = false;
-
     private boolean buildBeforeRestore = false;
 
     private int bufferSize;
 
     private String defaultSuffix;
+
+    private FaceletConfig config;
 
     private FaceletFactory faceletFactory;
 
@@ -185,6 +167,14 @@ public class FaceletViewHandler extends ViewHandler {
         this.parent = parent;
     }
 
+    protected FaceletConfig createFaceletConfig(FacesContext faces) {
+        FaceletConfig cfg = FaceletConfig.getInstance(faces);
+        if (cfg == null) {
+            throw new FaceletException("Requires FaceletFilter to be initialized with Application!!");
+        }
+        return cfg;
+    }
+
     /**
      * Initialize the ViewHandler during its first request.
      */
@@ -192,9 +182,9 @@ public class FaceletViewHandler extends ViewHandler {
         synchronized (this) {
             if (this.faceletFactory == null) {
                 log.fine("Initializing");
-                Compiler c = this.createCompiler();
-                this.initializeCompiler(c);
-                this.faceletFactory = this.createFaceletFactory(c);
+                this.config = this.createFaceletConfig(context);
+                this.faceletFactory = this.createFaceletFactory(context,
+                        this.config);
 
                 this.initializeMappings(context);
                 this.initializeMode(context);
@@ -207,8 +197,6 @@ public class FaceletViewHandler extends ViewHandler {
 
     private void initializeMode(FacesContext context) {
         ExternalContext external = context.getExternalContext();
-        String param = external.getInitParameter(PARAM_DEVELOPMENT);
-        this.developmentMode = "true".equals(param);
 
         String restoreMode = external
                 .getInitParameter(PARAM_BUILD_BEFORE_RESTORE);
@@ -256,8 +244,9 @@ public class FaceletViewHandler extends ViewHandler {
         }
     }
 
-    protected FaceletFactory createFaceletFactory(Compiler c) {
-        
+    protected FaceletFactory createFaceletFactory(FacesContext faces,
+            FaceletConfig cfg) {
+
         // refresh period
         long refreshPeriod = DEFAULT_REFRESH_PERIOD;
         FacesContext ctx = FacesContext.getCurrentInstance();
@@ -267,87 +256,13 @@ public class FaceletViewHandler extends ViewHandler {
             refreshPeriod = Long.parseLong(userPeriod);
         }
 
-        // resource resolver
-        ResourceResolver resolver = new DefaultResourceResolver();
-        String resolverName = ctx.getExternalContext().getInitParameter(
-                PARAM_RESOURCE_RESOLVER);
-        if (resolverName != null && resolverName.length() > 0) {
-            try {
-                resolver = (ResourceResolver) Class.forName(resolverName, true,
-                        Thread.currentThread().getContextClassLoader())
-                        .newInstance();
-            } catch (Exception e) {
-                throw new FacesException("Error Initializing ResourceResolver["
-                        + resolverName + "]", e);
-            }
-        }
-
-        // Resource.getResourceUrl(ctx,"/")
-        return new DefaultFaceletFactory(c, resolver, refreshPeriod);
-    }
-
-    protected Compiler createCompiler() {
-        return new SAXCompiler();
-    }
-
-    protected void initializeCompiler(Compiler c) {
-        FacesContext ctx = FacesContext.getCurrentInstance();
-        ExternalContext ext = ctx.getExternalContext();
-
-        // load libraries
-        String libParam = ext.getInitParameter(PARAM_LIBRARIES);
-        if (libParam != null) {
-            libParam = libParam.trim();
-            String[] libs = libParam.split(";");
-            URL src;
-            TagLibrary libObj;
-            for (int i = 0; i < libs.length; i++) {
-                try {
-                    src = ext.getResource(libs[i].trim());
-                    if (src == null) {
-                        throw new FileNotFoundException(libs[i]);
-                    }
-                    libObj = TagLibraryConfig.create(src);
-                    c.addTagLibrary(libObj);
-                    log.fine("Successfully Loaded Library: " + libs[i]);
-                } catch (IOException e) {
-                    log.log(Level.SEVERE, "Error Loading Library: " + libs[i],
-                            e);
-                }
-            }
-        }
-
-        // load decorators
-        String decParam = ext.getInitParameter(PARAM_DECORATORS);
-        if (decParam != null) {
-            decParam = decParam.trim();
-            String[] decs = decParam.split(";");
-            TagDecorator decObj;
-            for (int i = 0; i < decs.length; i++) {
-                try {
-                    decObj = (TagDecorator) Class.forName(decs[i])
-                            .newInstance();
-                    c.addTagDecorator(decObj);
-                    log.fine("Successfully Loaded Decorator: " + decs[i]);
-                } catch (Exception e) {
-                    log.log(Level.SEVERE,
-                            "Error Loading Decorator: " + decs[i], e);
-                }
-            }
-        }
-
-        // skip params?
-        String skipParam = ext.getInitParameter(PARAM_SKIP_COMMENTS);
-        if (skipParam != null && "true".equals(skipParam)) {
-            c.setTrimmingComments(true);
-        }
+        return new DefaultFaceletFactory(cfg, refreshPeriod);
     }
 
     public UIViewRoot restoreView(FacesContext context, String viewId) {
         if (UIDebug.debugRequest(context)) {
             return new UIViewRoot();
         }
-      
 
         if (!this.buildBeforeRestore || !handledByFacelets(viewId)) {
             return this.parent.restoreView(context, viewId);
@@ -392,16 +307,16 @@ public class FaceletViewHandler extends ViewHandler {
         return this.parent;
     }
 
-    protected ResponseWriter createResponseWriter(FacesContext context)
+    public ResponseWriter createResponseWriter(FacesContext context)
             throws IOException, FacesException {
         ExternalContext extContext = context.getExternalContext();
         RenderKit renderKit = context.getRenderKit();
         // Avoid a cryptic NullPointerException when the renderkit ID
         // is incorrectly set
         if (renderKit == null) {
-          String id = context.getViewRoot().getRenderKitId();
+            String id = context.getViewRoot().getRenderKitId();
             throw new IllegalStateException(
-              "No render kit was available for id \"" + id + "\"");
+                    "No render kit was available for id \"" + id + "\"");
         }
 
         ServletRequest request = (ServletRequest) extContext.getRequest();
@@ -532,10 +447,18 @@ public class FaceletViewHandler extends ViewHandler {
                     || viewToRender.getChildren().isEmpty()) {
                 this.buildView(context, viewToRender);
             }
+            
+            // get our StateManager
+            StateManager stateMgr = context.getApplication().getStateManager();
+            
+            // eagerly create the session if statesaving = server
+            if (!stateMgr.isSavingStateInClient(context)) {
+                context.getExternalContext().getSession(true);
+            }
 
             // setup writer and assign it to the context
             ResponseWriter origWriter = this.createResponseWriter(context);
-            // QUESTION: should we use bufferSize?  Or, since the
+            // QUESTION: should we use bufferSize? Or, since the
             // StateWriter usually only needs a small bit at the end,
             // should we always use a much smaller size?
             stateWriter = new StateWriter(origWriter,
@@ -563,13 +486,12 @@ public class FaceletViewHandler extends ViewHandler {
                 removeTransient(viewToRender);
             }
 
-            StateManager stateMgr = context.getApplication().getStateManager();
             boolean writtenState = stateWriter.isStateWritten();
 
             // flush to origWriter
-            if (writtenState &&
-                ((stateMgr.isSavingStateInClient(context) || 
-                  FacesAPI.getVersion() >= 12))) {
+            if (writtenState
+                    && ((stateMgr.isSavingStateInClient(context) || FacesAPI
+                            .getVersion() >= 12))) {
 
                 String content = stateWriter.getAndResetBuffer();
                 int end = content.indexOf(STATE_KEY);
@@ -577,10 +499,10 @@ public class FaceletViewHandler extends ViewHandler {
                     // save state
                     Object stateObj = stateMgr.saveSerializedView(context);
                     stateMgr.writeState(context,
-                                   (StateManager.SerializedView) stateObj);
+                            (StateManager.SerializedView) stateObj);
                     String stateStr = stateWriter.getAndResetBuffer();
                     int start = 0;
-                  
+
                     while (end != -1) {
                         origWriter.write(content, start, end - start);
                         origWriter.write(stateStr);
@@ -631,7 +553,7 @@ public class FaceletViewHandler extends ViewHandler {
         }
 
         // handle dev response
-        if (this.developmentMode && !context.getResponseComplete()
+        if (this.config.isDevelopmentMode() && !context.getResponseComplete()
                 && resp instanceof HttpServletResponse) {
             HttpServletResponse httpResp = (HttpServletResponse) resp;
             httpResp.reset();
@@ -751,7 +673,17 @@ public class FaceletViewHandler extends ViewHandler {
     }
 
     public String getResourceURL(FacesContext context, String path) {
-        return this.parent.getResourceURL(context, path);
+        // lazy initialize so we have a FacesContext to use
+        if (this.faceletFactory == null) {
+            this.initialize(context);
+        }
+        
+        String p = path;
+        if (p.startsWith("resource://")) {
+            p = new StringBuffer(p.length()).append(this.config.getResourcePath()).append(
+                    p.substring(10)).toString();
+        }
+        return this.parent.getResourceURL(context, p);
     }
 
     /**

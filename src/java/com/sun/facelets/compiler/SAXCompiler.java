@@ -35,6 +35,7 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import com.sun.facelets.FaceletException;
 import com.sun.facelets.FaceletHandler;
+import com.sun.facelets.config.FaceletConfig;
 import com.sun.facelets.tag.Location;
 import com.sun.facelets.tag.Tag;
 import com.sun.facelets.tag.TagAttribute;
@@ -46,7 +47,7 @@ import com.sun.facelets.tag.TagAttributes;
  * @see com.sun.facelets.compiler.Compiler
  * 
  * @author Jacob Hookom
- * @version $Id: SAXCompiler.java,v 1.10 2006/03/29 04:10:04 jhook Exp $
+ * @version $Id: SAXCompiler.java,v 1.10.2.1 2006/05/05 06:49:49 jhook Exp $
  */
 public final class SAXCompiler extends Compiler {
 
@@ -124,8 +125,8 @@ public final class SAXCompiler extends Compiler {
 
         public void fatalError(SAXParseException e) throws SAXException {
             if (this.locator != null) {
-            throw new SAXException("Error Traced[line: "
-                    + this.locator.getLineNumber() + "] " + e.getMessage());
+                throw new SAXException("Error Traced[line: "
+                        + this.locator.getLineNumber() + "] " + e.getMessage());
             } else {
                 throw e;
             }
@@ -141,11 +142,12 @@ public final class SAXCompiler extends Compiler {
         public InputSource resolveEntity(String publicId, String systemId)
                 throws SAXException {
             String dtd = "default.dtd";
-            /*if ("-//W3C//DTD XHTML 1.0 Transitional//EN".equals(publicId)) {
-                dtd = "xhtml1-transitional.dtd";
-            } else if (systemId != null && systemId.startsWith("file:/")) {
-                return new InputSource(systemId);
-            }*/
+            /*
+             * if ("-//W3C//DTD XHTML 1.0 Transitional//EN".equals(publicId)) {
+             * dtd = "xhtml1-transitional.dtd"; } else if (systemId != null &&
+             * systemId.startsWith("file:/")) { return new
+             * InputSource(systemId); }
+             */
             URL url = Thread.currentThread().getContextClassLoader()
                     .getResource(dtd);
             return new InputSource(url.toString());
@@ -209,17 +211,17 @@ public final class SAXCompiler extends Compiler {
         }
     }
 
-    public SAXCompiler() {
-        super();
+    public SAXCompiler(FaceletConfig config) {
+        super(config);
     }
 
-    public FaceletHandler doCompile(URL src, String alias) throws IOException,
+    public FaceletHandler compile(URL src, String alias) throws IOException,
             FaceletException, ELException, FacesException {
         CompilationManager mngr = null;
         InputStream is = null;
         try {
             is = src.openStream();
-            mngr = new CompilationManager(alias, this);
+            mngr = new CompilationManager(alias, this.getFaceletConfig());
             writeXmlDecl(src, mngr);
             CompilationHandler handler = new CompilationHandler(mngr, alias);
             SAXParser parser = this.createSAXParser(handler);
@@ -269,8 +271,8 @@ public final class SAXCompiler extends Compiler {
         factory.setFeature("http://xml.org/sax/features/namespace-prefixes",
                 true);
         factory.setFeature("http://xml.org/sax/features/validation", this
-                .isValidating());
-        factory.setValidating(this.isValidating());
+                .getFaceletConfig().isValidating());
+        factory.setValidating(this.getFaceletConfig().isValidating());
         SAXParser parser = factory.newSAXParser();
         XMLReader reader = parser.getXMLReader();
         reader.setProperty("http://xml.org/sax/properties/lexical-handler",

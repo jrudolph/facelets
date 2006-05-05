@@ -1,4 +1,4 @@
-package com.sun.facelets.component;
+package com.sun.facelets.render;
 
 import java.io.IOException;
 import java.util.Iterator;

@@ -14,15 +14,18 @@
 
 package com.sun.facelets.tag;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 
 import javax.faces.FacesException;
+
+import com.sun.facelets.resource.Resource;
 
 /**
  * A library of Tags associated with one or more namespaces.
  * 
  * @author Jacob Hookom
- * @version $Id: TagLibrary.java,v 1.2 2005/08/24 04:38:48 jhook Exp $
+ * @version $Id: TagLibrary.java,v 1.2.12.1 2006/05/05 06:50:02 jhook Exp $
  */
 public interface TagLibrary {
 
@@ -78,4 +81,13 @@ public interface TagLibrary {
      * @return
      */
     public Method createFunction(String ns, String name);
+    
+    /**
+     * Return a Resource object that's available to external
+     * clients.
+     * 
+     * @param path
+     * @return
+     */
+    public Resource createResource(String path);
 }

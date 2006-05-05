@@ -38,17 +38,19 @@ import javax.servlet.ServletContextListener;
 
 import com.sun.facelets.compiler.Compiler;
 import com.sun.facelets.compiler.SAXCompiler;
+import com.sun.facelets.config.FaceletConfig;
+import com.sun.facelets.config.TagLibraryConfig;
 import com.sun.facelets.impl.DefaultFaceletFactory;
-import com.sun.facelets.impl.ResourceResolver;
 import com.sun.facelets.mock.MockHttpServletResponse;
 import com.sun.facelets.mock.MockServletContext;
 import com.sun.facelets.mock.MockHttpServletRequest;
+import com.sun.facelets.webapp.WebAppConfig;
 import com.sun.faces.util.DebugUtil;
 
 import junit.framework.TestCase;
 
 public abstract class FaceletTestCase extends TestCase implements
-        ResourceResolver {
+        FaceletResolver {
 
     private final String filePath = this.getDirectory();
 
@@ -65,6 +67,8 @@ public abstract class FaceletTestCase extends TestCase implements
     private FacesContextFactory factoryFacesContext;
 
     private LifecycleFactory factoryLifecycle;
+    
+    protected FaceletConfig faceletConfig;
 
     private boolean initialized = false;
 
@@ -116,9 +120,12 @@ public abstract class FaceletTestCase extends TestCase implements
                 this.factoryLifecycle
                         .getLifecycle(LifecycleFactory.DEFAULT_LIFECYCLE));
 
-        Compiler c = new SAXCompiler();
+        this.faceletConfig = new WebAppConfig(this.servletContext);
+        faceletConfig.setResolver(this);
+        WebAppConfig.setInstance(this.servletContext, (WebAppConfig) faceletConfig);
+        
         // c.setTrimmingWhitespace(true);
-        FaceletFactory factory = new DefaultFaceletFactory(c, this);
+        FaceletFactory factory = new DefaultFaceletFactory(this.faceletConfig);
         FaceletFactory.setInstance(factory);
 
         faces.setViewRoot(faces.getApplication().getViewHandler().createView(
@@ -178,7 +185,7 @@ public abstract class FaceletTestCase extends TestCase implements
         this.servletContext = null;
     }
 
-    public URL resolveUrl(String path) {
+    public URL resolvePath(String path) {
         try {
             return new URL(this.getContext().toURL(), path.substring(1));
         } catch (Exception e) {

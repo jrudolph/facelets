@@ -19,7 +19,7 @@ import java.io.Writer;
 
 /**
  * @author Jacob Hookom
- * @version $Id: FastWriter.java,v 1.3 2005/10/06 13:40:55 jhook Exp $
+ * @version $Id: FastWriter.java,v 1.3.10.1 2006/05/05 06:50:04 jhook Exp $
  */
 public final class FastWriter extends Writer {
     
@@ -27,7 +27,7 @@ public final class FastWriter extends Writer {
     private int size;
     
     public FastWriter() {
-        this(1024);
+        this(512);
     }
     
     public FastWriter(int initialSize) {

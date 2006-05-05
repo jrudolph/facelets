@@ -11,15 +11,23 @@
  * implied. See the License for the specific language governing
  * permissions and limitations under the License.
  */
+
 package com.sun.facelets.util;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.JarURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,12 +36,120 @@ import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 
 /**
+ * @author Jacob Hookom
  * @author Roland Huss
- * 
+ * @author Adam Winer
+ * @version $Id: PathTools.java,v 1.1.2.1 2006/05/05 06:50:05 jhook Exp $
  */
-public final class Resource {
-
+public final class PathTools {
+    
     protected final static Logger log = Logger.getLogger("facelets.factory");
+
+    /**
+     * 
+     */
+    public PathTools() {
+        super();
+    }
+
+    public static URL[] search(String prefix, String suffix) throws IOException {
+        return search(Thread.currentThread().getContextClassLoader(), prefix,
+                suffix);
+    }
+
+    public static URL[] search(ClassLoader cl, String prefix, String suffix)
+            throws IOException {
+        Enumeration e = cl.getResources(prefix);
+        Set all = new HashSet();
+        URL url;
+        URLConnection conn;
+        JarFile jarFile;
+        while (e.hasMoreElements()) {
+            url = (URL) e.nextElement();
+            conn = url.openConnection();
+            conn.setUseCaches(false);
+            conn.setDefaultUseCaches(false);
+            if (conn instanceof JarURLConnection) {
+                jarFile = ((JarURLConnection) conn).getJarFile();
+            } else {
+                jarFile = getAlternativeJarFile(url);
+            }
+            if (jarFile != null) {
+                searchJar(cl, all, jarFile, prefix, suffix);
+            } else {
+                searchDir(all, new File(url.getFile()), suffix);
+            }
+        }
+        URL[] urlArray = (URL[]) all.toArray(new URL[all.size()]);
+        return urlArray;
+    }
+
+    private static void searchDir(Set result, File file, String suffix)
+            throws IOException {
+        if (file.exists() && file.isDirectory()) {
+            File[] fc = file.listFiles();
+            String path;
+            URL src;
+            for (int i = 0; i < fc.length; i++) {
+                path = fc[i].getAbsolutePath();
+                if (fc[i].isDirectory()) {
+                    searchDir(result, fc[i], suffix);
+                } else if (path.endsWith(suffix)) {
+                    //result.add(new URL("file:/" + path));
+                    result.add(fc[i].toURL());
+                }
+            }
+        }
+    }
+
+    /** For URLs to JARs that do not use JarURLConnection - allowed by
+     * the servlet spec - attempt to produce a JarFile object all the same.
+     * Known servlet engines that function like this include Weblogic
+     * and OC4J.
+     * This is not a full solution, since an unpacked WAR or EAR will not
+     * have JAR "files" as such.
+     */
+    private static JarFile getAlternativeJarFile(URL url) throws IOException {
+        String urlFile = url.getFile();
+        // Trim off any suffix - which is prefixed by "!/" on Weblogic
+        int separatorIndex = urlFile.indexOf("!/");
+
+        // OK, didn't find that.  Try the less safe "!", used on OC4J
+        if (separatorIndex == -1) {
+          separatorIndex = urlFile.indexOf('!');
+        }
+
+        if (separatorIndex != -1) {
+            String jarFileUrl = urlFile.substring(0, separatorIndex);
+            // And trim off any "file:" prefix.
+            if (jarFileUrl.startsWith("file:")) {
+                jarFileUrl = jarFileUrl.substring("file:".length());
+            }
+            return new JarFile(jarFileUrl);
+        }
+        return null;
+    }
+
+    private static void searchJar(ClassLoader cl, Set result, JarFile file,
+            String prefix, String suffix) throws IOException {
+        Enumeration e = file.entries();
+        JarEntry entry;
+        String name;
+        while (e.hasMoreElements()) {
+            try {
+                entry = (JarEntry) e.nextElement();
+            } catch (Throwable t) {
+                continue;
+            }
+            name = entry.getName();
+            if (name.startsWith(prefix) && name.endsWith(suffix)) {
+                Enumeration e2 = cl.getResources(name);
+                while (e2.hasMoreElements()) {
+                    result.add(e2.nextElement());
+                }
+            }
+        }
+    }
 
     /**
      * Get an URL of an internal resource. First,

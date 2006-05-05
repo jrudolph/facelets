@@ -5,6 +5,9 @@
  "http://java.sun.com/dtd/web-facesconfig_1_1.dtd">
 
 <faces-config>
+	<lifecycle>
+		<phase-listener>com.sun.facelets.event.EventPhaseListener</phase-listener>
+	</lifecycle>
     <component>
 		<component-type>facelets.ui.Repeat</component-type>
 		<component-class>com.sun.facelets.component.UIRepeat</component-class>
@@ -30,7 +33,7 @@
         <renderer>
             <component-family>facelets</component-family>
             <renderer-type>facelets.ui.Repeat</renderer-type>
-            <renderer-class>com.sun.facelets.component.RepeatRenderer</renderer-class>
+            <renderer-class>com.sun.facelets.render.RepeatRenderer</renderer-class>
         </renderer>
     </render-kit>
 </faces-config>

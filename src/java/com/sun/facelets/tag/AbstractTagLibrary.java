@@ -14,21 +14,28 @@
 
 package com.sun.facelets.tag;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.el.ELException;
 import javax.faces.FacesException;
-import javax.faces.convert.Converter;
-import javax.faces.validator.Validator;
 
-import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
 import com.sun.facelets.FaceletHandler;
+import com.sun.facelets.resource.ClasspathResource;
+import com.sun.facelets.resource.Resource;
 import com.sun.facelets.tag.jsf.ComponentConfig;
 import com.sun.facelets.tag.jsf.ComponentHandler;
 import com.sun.facelets.tag.jsf.ConvertHandler;
@@ -40,20 +47,58 @@ import com.sun.facelets.tag.jsf.ValidatorConfig;
  * Base class for defining TagLibraries in Java
  * 
  * @author Jacob Hookom
- * @version $Id: AbstractTagLibrary.java,v 1.8 2005/08/24 04:38:46 jhook Exp $
+ * @version $Id: AbstractTagLibrary.java,v 1.8.12.1 2006/05/05 06:50:01 jhook Exp $
  */
 public abstract class AbstractTagLibrary implements TagLibrary {
+
+    public static void main(String[] argv) throws Exception {
+        String in = "/com/sun/facelets/*";
+        String ps = in.replace(".", "\\.").replace("*", "(.*)");
+        System.out.println(ps);
+        Pattern p = Pattern.compile(ps);
+        System.out
+                .println(p.matcher("/com/sun/facelets/FaceletViewHandler").matches());
+        
+        AbstractTagLibrary tl = new AbstractTagLibrary("http://foo.com") { };
+        tl.addResource("/com/sun/resc/facelets/*");
+        Resource rsc = tl.createResource("/com/sun/facelets/FaceletViewHandler.class");
+        System.out.println(rsc);
+    }
+
+    private static class ResourcePath {
+        private final String mimetype;
+
+        private Pattern pattern;
+
+        public ResourcePath(Pattern pattern, String mimetype) {
+            this.mimetype = mimetype;
+            this.pattern = pattern;
+        }
+
+        public boolean matches(String path) {
+            return this.pattern.matcher(path).matches();
+        }
+
+        public String getMimetype() {
+            return mimetype;
+        }
+
+        public Pattern getPattern() {
+            return pattern;
+        }
+    }
 
     private static class ValidatorConfigWrapper implements ValidatorConfig {
 
         private final TagConfig parent;
+
         private final String validatorId;
-        
+
         public ValidatorConfigWrapper(TagConfig parent, String validatorId) {
             this.parent = parent;
             this.validatorId = validatorId;
         }
-        
+
         public String getValidatorId() {
             return this.validatorId;
         }
@@ -68,32 +113,36 @@ public abstract class AbstractTagLibrary implements TagLibrary {
 
         public String getTagId() {
             return this.parent.getTagId();
-        }  
+        }
     }
-    
+
     private static class ConverterConfigWrapper implements ConverterConfig {
         private final TagConfig parent;
+
         private final String converterId;
-        
+
         public ConverterConfigWrapper(TagConfig parent, String converterId) {
             this.parent = parent;
             this.converterId = converterId;
         }
-        
+
         public String getConverterId() {
             return this.converterId;
         }
+
         public FaceletHandler getNextHandler() {
             return this.parent.getNextHandler();
         }
+
         public Tag getTag() {
             return this.parent.getTag();
         }
+
         public String getTagId() {
             return this.parent.getTagId();
         }
     }
-    
+
     private static class HandlerFactory implements TagHandlerFactory {
         private final static Class[] CONSTRUCTOR_SIG = new Class[] { TagConfig.class };
 
@@ -234,9 +283,12 @@ public abstract class AbstractTagLibrary implements TagLibrary {
                 return (TagHandler) this.constructor
                         .newInstance(new Object[] { ccfg });
             } catch (InvocationTargetException e) {
-                throw new FaceletException(e.getCause().getMessage(), e.getCause().getCause());
+                throw new FaceletException(e.getCause().getMessage(), e
+                        .getCause().getCause());
             } catch (Exception e) {
-                throw new FaceletException("Error Instantiating ComponentHandler: "+this.type.getName(), e);
+                throw new FaceletException(
+                        "Error Instantiating ComponentHandler: "
+                                + this.type.getName(), e);
             }
         }
     }
@@ -251,7 +303,8 @@ public abstract class AbstractTagLibrary implements TagLibrary {
 
         public TagHandler createHandler(TagConfig cfg) throws FacesException,
                 ELException {
-            return new ValidateHandler(new ValidatorConfigWrapper(cfg, this.validatorId));
+            return new ValidateHandler(new ValidatorConfigWrapper(cfg,
+                    this.validatorId));
         }
     }
 
@@ -265,19 +318,21 @@ public abstract class AbstractTagLibrary implements TagLibrary {
 
         public TagHandler createHandler(TagConfig cfg) throws FacesException,
                 ELException {
-            return new ConvertHandler(new ConverterConfigWrapper(cfg, this.converterId));
+            return new ConvertHandler(new ConverterConfigWrapper(cfg,
+                    this.converterId));
         }
     }
 
-    private static class UserConverterHandlerFactory implements TagHandlerFactory {
+    private static class UserConverterHandlerFactory implements
+            TagHandlerFactory {
         private final static Class[] CONS_SIG = new Class[] { ConverterConfig.class };
-        
+
         protected final String converterId;
-        
+
         protected final Class type;
 
         protected final Constructor constructor;
-        
+
         public UserConverterHandlerFactory(String converterId, Class type) {
             this.converterId = converterId;
             this.type = type;
@@ -289,31 +344,35 @@ public abstract class AbstractTagLibrary implements TagLibrary {
                         e);
             }
         }
-        
+
         public TagHandler createHandler(TagConfig cfg) throws FacesException,
-        ELException {
+                ELException {
             try {
                 ConverterConfig ccfg = new ConverterConfigWrapper(cfg,
                         this.converterId);
                 return (TagHandler) this.constructor
                         .newInstance(new Object[] { ccfg });
             } catch (InvocationTargetException e) {
-                throw new FaceletException(e.getCause().getMessage(), e.getCause().getCause());
+                throw new FaceletException(e.getCause().getMessage(), e
+                        .getCause().getCause());
             } catch (Exception e) {
-                throw new FaceletException("Error Instantiating ConverterHandler: "+this.type.getName(), e);
+                throw new FaceletException(
+                        "Error Instantiating ConverterHandler: "
+                                + this.type.getName(), e);
             }
         }
     }
-    
-    private static class UserValidatorHandlerFactory implements TagHandlerFactory {
+
+    private static class UserValidatorHandlerFactory implements
+            TagHandlerFactory {
         private final static Class[] CONS_SIG = new Class[] { ValidatorConfig.class };
-        
+
         protected final String validatorId;
-        
+
         protected final Class type;
 
         protected final Constructor constructor;
-        
+
         public UserValidatorHandlerFactory(String validatorId, Class type) {
             this.validatorId = validatorId;
             this.type = type;
@@ -325,32 +384,38 @@ public abstract class AbstractTagLibrary implements TagLibrary {
                         e);
             }
         }
-        
+
         public TagHandler createHandler(TagConfig cfg) throws FacesException,
-        ELException {
+                ELException {
             try {
                 ValidatorConfig ccfg = new ValidatorConfigWrapper(cfg,
                         this.validatorId);
                 return (TagHandler) this.constructor
                         .newInstance(new Object[] { ccfg });
             } catch (InvocationTargetException e) {
-                throw new FaceletException(e.getCause().getMessage(), e.getCause().getCause());
+                throw new FaceletException(e.getCause().getMessage(), e
+                        .getCause().getCause());
             } catch (Exception e) {
-                throw new FaceletException("Error Instantiating ValidatorHandler: "+this.type.getName(), e);
+                throw new FaceletException(
+                        "Error Instantiating ValidatorHandler: "
+                                + this.type.getName(), e);
             }
         }
     }
-    
+
     private final Map factories;
 
     private final String namespace;
 
     private final Map functions;
 
+    private final List<ResourcePath> resources;
+
     public AbstractTagLibrary(String namespace) {
         this.namespace = namespace;
         this.factories = new HashMap();
         this.functions = new HashMap();
+        this.resources = new ArrayList<ResourcePath>();
     }
 
     /**
@@ -406,7 +471,7 @@ public abstract class AbstractTagLibrary implements TagLibrary {
     protected final void addConverter(String name, String converterId) {
         this.factories.put(name, new ConverterHandlerFactory(converterId));
     }
-    
+
     /**
      * Add a ConvertHandler for the specified converterId of a TagHandler type
      * 
@@ -420,8 +485,10 @@ public abstract class AbstractTagLibrary implements TagLibrary {
      * @param type
      *            TagHandler type that takes in a ConverterConfig
      */
-    protected final void addConverter(String name, String converterId, Class type) {
-        this.factories.put(name, new UserConverterHandlerFactory(converterId, type));
+    protected final void addConverter(String name, String converterId,
+            Class type) {
+        this.factories.put(name, new UserConverterHandlerFactory(converterId,
+                type));
     }
 
     /**
@@ -437,7 +504,7 @@ public abstract class AbstractTagLibrary implements TagLibrary {
     protected final void addValidator(String name, String validatorId) {
         this.factories.put(name, new ValidatorHandlerFactory(validatorId));
     }
-    
+
     /**
      * Add a ValidateHandler for the specified validatorId
      * 
@@ -451,8 +518,10 @@ public abstract class AbstractTagLibrary implements TagLibrary {
      * @param type
      *            TagHandler type that takes in a ValidatorConfig
      */
-    protected final void addValidator(String name, String validatorId, Class type) {
-        this.factories.put(name, new UserValidatorHandlerFactory(validatorId, type));
+    protected final void addValidator(String name, String validatorId,
+            Class type) {
+        this.factories.put(name, new UserValidatorHandlerFactory(validatorId,
+                type));
     }
 
     /**
@@ -475,23 +544,35 @@ public abstract class AbstractTagLibrary implements TagLibrary {
      * @see UserTagHandler
      * @param name
      *            name to use, "foo" would be &lt;my:foo />
-     * @param source source where the Facelet (Tag) source is
+     * @param source
+     *            source where the Facelet (Tag) source is
      */
     protected final void addUserTag(String name, URL source) {
         this.factories.put(name, new UserTagFactory(source));
     }
-    
-    
+
     /**
      * Add a Method to be used as a Function at Compilation.
      * 
      * @see javax.el.FunctionMapper
      * 
-     * @param name (suffix) of function name
-     * @param method method instance 
+     * @param name
+     *            (suffix) of function name
+     * @param method
+     *            method instance
      */
     protected final void addFunction(String name, Method method) {
         this.functions.put(name, method);
+    }
+
+    protected final void addResource(String path) {
+        this.addResource(path, null);
+    }
+
+    protected final void addResource(String path, String mimetype) {
+        String p = path.replace(".", "\\.").replace("*", "(.*)");
+        Pattern reg = Pattern.compile(p);
+        this.resources.add(new ResourcePath(reg, mimetype));
     }
 
     /*
@@ -582,5 +663,18 @@ public abstract class AbstractTagLibrary implements TagLibrary {
 
     public String getNamespace() {
         return namespace;
+    }
+
+    public Resource createResource(String path) {
+        for (ResourcePath r : this.resources) {
+            if (r.matches(path)) {
+                ClassLoader cl = Thread.currentThread().getContextClassLoader();
+                URL url = cl.getResource(path.substring(1));
+                if (url != null) {
+                    return new ClasspathResource(url, r.getMimetype());
+                }
+            }
+        }
+        return null;
     }
 }

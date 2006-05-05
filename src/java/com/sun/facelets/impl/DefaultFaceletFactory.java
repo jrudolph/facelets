@@ -24,52 +24,55 @@ import java.util.logging.Logger;
 
 import javax.el.ELException;
 import javax.faces.FacesException;
-import javax.faces.context.FacesContext;
 
 import com.sun.facelets.Facelet;
 import com.sun.facelets.FaceletException;
 import com.sun.facelets.FaceletFactory;
 import com.sun.facelets.FaceletHandler;
+import com.sun.facelets.FaceletResolver;
 import com.sun.facelets.compiler.Compiler;
+import com.sun.facelets.config.FaceletConfig;
 import com.sun.facelets.util.ParameterCheck;
-import com.sun.facelets.util.Resource;
 
 /**
  * Default FaceletFactory implementation.
  * 
  * @author Jacob Hookom
- * @version $Id: DefaultFaceletFactory.java,v 1.7 2006/04/04 14:34:12 jhook Exp $
+ * @version $Id: DefaultFaceletFactory.java,v 1.7.2.1 2006/05/05 06:49:56 jhook Exp $
  */
 public final class DefaultFaceletFactory extends FaceletFactory {
 
     protected final static Logger log = Logger.getLogger("facelets.factory");
 
+    private final FaceletConfig config;
+    
+    private final FaceletResolver resolver;
+    
     private final Compiler compiler;
 
     private final Map facelets;
 
     private final Map relativeLocations;
-    
-    private final ResourceResolver resolver;
-    
+
     private final URL baseUrl;
 
     private final long refreshPeriod;
 
-    public DefaultFaceletFactory(Compiler compiler, ResourceResolver resolver) throws IOException {
-        this(compiler, resolver, -1);
+    public DefaultFaceletFactory(FaceletConfig config)
+            throws IOException {
+        this(config, -1);
     }
 
-    public DefaultFaceletFactory(Compiler compiler, ResourceResolver resolver, long refreshPeriod) {
-        ParameterCheck.notNull("compiler", compiler);
-        ParameterCheck.notNull("resolver", resolver);
-        this.compiler = compiler;
+    public DefaultFaceletFactory(FaceletConfig config,
+            long refreshPeriod) {
+        ParameterCheck.notNull("FaceletConfig", config);
+        this.config = config;
+        this.compiler = config.createCompiler();
         this.facelets = new HashMap();
         this.relativeLocations = new HashMap();
-        this.resolver = resolver;
-        this.baseUrl = resolver.resolveUrl("/");
-        //this.location = url;
-        log.fine("Using ResourceResolver: " + resolver);
+        this.resolver = this.config.getResolver();
+        this.baseUrl = resolver.resolvePath("/");
+        log.fine("Using FaceletResolver: " + resolver);
         this.refreshPeriod = (refreshPeriod > 0) ? refreshPeriod * 1000 : -1;
         log.fine("Using Refresh Period: " + this.refreshPeriod);
     }
@@ -109,7 +112,7 @@ public final class DefaultFaceletFactory extends FaceletFactory {
      */
     public URL resolveURL(URL source, String path) throws IOException {
         if (path.startsWith("/")) {
-            URL url = this.resolver.resolveUrl(path);
+            URL url = this.resolver.resolvePath(path);
             if (url == null) {
                 throw new FileNotFoundException(path
                         + " Not Found in ExternalContext as a Resource");
@@ -190,14 +193,14 @@ public final class DefaultFaceletFactory extends FaceletFactory {
                 + url.getFile().replaceFirst(this.baseUrl.getFile(), "");
         try {
             FaceletHandler h = this.compiler.compile(url, alias);
-            DefaultFacelet f = new DefaultFacelet(this, this.compiler
+            DefaultFacelet f = new DefaultFacelet(this, this.config
                     .createExpressionFactory(), url, alias, h);
             return f;
         } catch (FileNotFoundException fnfe) {
             if (log.isLoggable(Level.WARNING)) {
                 log.warning(alias + " not found at " + url.toExternalForm());
             }
-            throw new FileNotFoundException(url.toExternalForm());
+            throw new FileNotFoundException("Facelet Not Found: " + url.toExternalForm());
         }
     }
 
@@ -212,5 +215,10 @@ public final class DefaultFaceletFactory extends FaceletFactory {
 
     public long getRefreshPeriod() {
         return refreshPeriod;
+    }
+
+    public URL getResource(String uri) throws IOException, FaceletException,
+            FacesException {
+        return null;
     }
 }

@@ -12,7 +12,7 @@
  * limitations under the License.
  */
 
-package com.sun.facelets.compiler;
+package com.sun.facelets.config;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;

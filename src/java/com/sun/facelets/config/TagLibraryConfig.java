@@ -12,7 +12,7 @@
  * permissions and limitations under the License.
  */
 
-package com.sun.facelets.compiler;
+package com.sun.facelets.config;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,24 +33,25 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
+import com.sun.facelets.compiler.Compiler;
 import com.sun.facelets.tag.AbstractTagLibrary;
 import com.sun.facelets.tag.TagHandler;
 import com.sun.facelets.tag.TagLibrary;
 import com.sun.facelets.util.ParameterCheck;
-import com.sun.facelets.util.Classpath;
+import com.sun.facelets.util.PathTools;
 
 /**
  * Handles creating a {@link com.sun.facelets.tag.TagLibrary TagLibrary} from a
  * {@link java.net.URL URL} source.
  * 
  * @author Jacob Hookom
- * @version $Id: TagLibraryConfig.java,v 1.8 2005/11/01 03:04:26 jhook Exp $
+ * @version $Id: TagLibraryConfig.java,v 1.1.2.1 2006/05/05 06:49:53 jhook Exp $
  */
 public final class TagLibraryConfig {
 
     private final static String SUFFIX = ".taglib.xml";
 
-    protected final static Logger log = Logger.getLogger("facelets.compiler");
+    protected final static Logger log = Logger.getLogger("facelets.config");
 
     private static class TagLibraryImpl extends AbstractTagLibrary {
         public TagLibraryImpl(String namespace) {
@@ -117,6 +118,11 @@ public final class TagLibraryConfig {
             ParameterCheck.notNull("method", method);
             this.addFunction(name, method);
         }
+        
+        public void putResource(String path, String mimetype) {
+            ParameterCheck.notNull("path", path);
+            this.addResource(path, mimetype);
+        }
     }
 
     private static class LibraryHandler extends DefaultHandler {
@@ -145,6 +151,8 @@ public final class TagLibraryConfig {
         private Class functionClass;
         
         private String functionSignature;
+        
+        private String mimeType;
 
         public LibraryHandler(URL source) {
             this.file = source.getFile();
@@ -183,6 +191,9 @@ public final class TagLibraryConfig {
                 else if ("function-class".equals(qName)) {
                     String className = this.captureBuffer();
                     this.functionClass = this.createClass(Object.class, className);
+                }
+                else if ("mime-type".equals(qName)) {
+                    this.mimeType = this.captureBuffer();
                 }
                 else
                 {
@@ -252,6 +263,13 @@ public final class TagLibraryConfig {
                         this.functionSignature = this.captureBuffer();
                         Method m = this.createMethod(this.functionClass, this.functionSignature);
                         impl.putFunction(this.functionName, m);
+                    }
+                    else if ("resource-path".equals(qName)) {
+                        String path = this.captureBuffer();
+                        if (!path.startsWith("/")) {
+                            throw new Exception("resource-path definitions must start with '/'");
+                        }
+                        impl.putResource(path, this.mimeType);
                     }
                 }
             } catch (Exception e) {
@@ -356,6 +374,8 @@ public final class TagLibraryConfig {
                 this.functionName = null;
                 this.functionClass = null;
                 this.functionSignature = null;
+            } else if ("resource".equals(qName)) {
+                this.mimeType = null;
             }
         }
 
@@ -386,12 +406,13 @@ public final class TagLibraryConfig {
 
     public static TagLibrary create(URL url) throws IOException {
         InputStream is = null;
+        TagLibrary tl = null;
         try {
             is = url.openStream();
             LibraryHandler handler = new LibraryHandler(url);
             SAXParser parser = createSAXParser(handler);
             parser.parse(is, handler);
-            return handler.getLibrary();
+            tl = handler.getLibrary();
         } catch (SAXException e) {
           IOException ioe =
             new IOException("Error parsing [" + url + "]: ");
@@ -406,14 +427,15 @@ public final class TagLibraryConfig {
             if (is != null)
                 is.close();
         }
+        return tl;
     }
 
-    public void loadImplicit(Compiler compiler) throws IOException {
+    public void loadImplicit(FaceletConfig config) throws IOException {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        URL[] urls = Classpath.search(cl, "META-INF/", SUFFIX);
+        URL[] urls = PathTools.search(cl, "META-INF/", SUFFIX);
         for (int i = 0; i < urls.length; i++) {
             try {
-                compiler.addTagLibrary(create(urls[i]));
+                config.addTagLibrary(create(urls[i]));
                 log.info("Added Library from: " + urls[i]);
             } catch (Exception e) {
                 log.log(Level.SEVERE, "Error Loading Library: " + urls[i], e);
