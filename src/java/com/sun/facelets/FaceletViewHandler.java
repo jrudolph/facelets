@@ -570,7 +570,6 @@ public class FaceletViewHandler extends ViewHandler {
             }
 
             boolean writtenState = stateWriter.isStateWritten();
-
             // flush to origWriter
             if (writtenState &&
                 ((stateMgr.isSavingStateInClient(context) || 
@@ -600,6 +599,12 @@ public class FaceletViewHandler extends ViewHandler {
                 // Wrote state, but don't actually need to output any state;
                 // just flush the buffer
                 origWriter.write(stateWriter.getAndResetBuffer());
+                // But, for JSF 1.1, make sure we actually call
+                // saveSerializedView()
+                if ((FacesAPI.getVersion() < 12) &&
+                    !stateMgr.isSavingStateInClient(context)) {
+                    stateMgr.saveSerializedView(context);
+                }
             }
 
             time = System.currentTimeMillis() - time;
