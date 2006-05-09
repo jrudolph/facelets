@@ -14,6 +14,7 @@
 
 package com.sun.facelets.compiler;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -46,7 +47,7 @@ import com.sun.facelets.tag.TagAttributes;
  * @see com.sun.facelets.compiler.Compiler
  * 
  * @author Jacob Hookom
- * @version $Id: SAXCompiler.java,v 1.10 2006/03/29 04:10:04 jhook Exp $
+ * @version $Id: SAXCompiler.java,v 1.11 2006/05/09 06:25:40 jhook Exp $
  */
 public final class SAXCompiler extends Compiler {
 
@@ -217,10 +218,11 @@ public final class SAXCompiler extends Compiler {
             FaceletException, ELException, FacesException {
         CompilationManager mngr = null;
         InputStream is = null;
+        String encoding = "UTF-8";
         try {
-            is = src.openStream();
+            is = new BufferedInputStream(src.openStream(), 1024);
             mngr = new CompilationManager(alias, this);
-            writeXmlDecl(src, mngr);
+            encoding = writeXmlDecl(is, mngr);
             CompilationHandler handler = new CompilationHandler(mngr, alias);
             SAXParser parser = this.createSAXParser(handler);
             parser.parse(is, handler);
@@ -235,14 +237,14 @@ public final class SAXCompiler extends Compiler {
                 is.close();
             }
         }
-        return mngr.createFaceletHandler();
+        return new EncodingHandler(mngr.createFaceletHandler(), encoding);
     }
 
-    protected static final void writeXmlDecl(URL src, CompilationManager mngr)
+    protected static final String writeXmlDecl(InputStream is, CompilationManager mngr)
             throws IOException {
-        InputStream is = null;
+        is.mark(128);
+        String encoding = "UTF-8";
         try {
-            is = src.openStream();
             byte[] b = new byte[128];
             if (is.read(b) > 0) {
                 String r = new String(b);
@@ -252,14 +254,19 @@ public final class SAXCompiler extends Compiler {
                     if (e > 0) {
                         mngr.writeInstruction(r.substring(s, e + 2) + '\n');
                     }
+                    s = r.indexOf("encoding=\"");
+                    if (s > 0) {
+                        e = r.indexOf('"', s+10);
+                        if (e > 0) {
+                            encoding = r.substring(s+10, e);
+                        }
+                    }
                 }
             }
-
         } finally {
-            if (is != null) {
-                is.close();
-            }
+            is.reset();
         }
+        return encoding;
     }
 
     private final SAXParser createSAXParser(CompilationHandler handler)

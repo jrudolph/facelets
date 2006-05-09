@@ -33,7 +33,7 @@ import com.sun.facelets.util.FastWriter;
  * parser accepts either <code>${..}</code> or <code>#{..}</code>.
  * 
  * @author Jacob Hookom
- * @version $Id: ELText.java,v 1.4 2006/03/29 04:10:10 jhook Exp $
+ * @version $Id: ELText.java,v 1.5 2006/05/09 06:25:39 jhook Exp $
  */
 public class ELText {
 
@@ -108,7 +108,7 @@ public class ELText {
                 this.txt[i].writeText(out, ctx);
             }
         }
-        
+
         public String toString(ELContext ctx) {
             StringBuffer sb = new StringBuffer();
             for (int i = 0; i < this.txt.length; i++) {
@@ -316,6 +316,10 @@ public class ELText {
             c = ca[i];
             if ('\\' == c) {
                 esc = !esc;
+                if (esc && i < end && ca[i + 1] == '$' || ca[i + 1] == '#') {
+                    i++;
+                    continue;
+                }
             } else if (!esc && ('$' == c || '#' == c)) {
                 if (i < end) {
                     if ('{' == ca[i + 1]) {
@@ -338,6 +342,7 @@ public class ELText {
                     }
                 }
             }
+            esc = false;
             buff.append(c);
             i++;
         }

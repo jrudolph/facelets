@@ -416,7 +416,7 @@ public class FaceletViewHandler extends ViewHandler {
         String contentType = null;
 
         // get the encoding
-        String encoding = request.getCharacterEncoding();
+        String encoding = null;
 
         // Create a dummy ResponseWriter with a bogus writer,
         // so we can figure out what content type the ReponseWriter
@@ -425,18 +425,35 @@ public class FaceletViewHandler extends ViewHandler {
                 NullWriter.Instance, contentType, encoding);
 
         contentType = writer.getContentType();
-        encoding = writer.getCharacterEncoding();
+        encoding = request.getCharacterEncoding();
 
-        // see if we need to override it
-        Map m = context.getViewRoot().getAttributes();
-        if (m.containsKey("contentType")) {
-            contentType = (String) m.get("contentType");
+        // see if we need to override the contentType
+        Map m = context.getExternalContext().getRequestMap();
+        if (m.containsKey("facelets.ContentType")) {
+            contentType = (String) m.get("facelets.ContentType");
             if (log.isLoggable(Level.FINEST)) {
-                log.finest("UIViewRoot specified alternate contentType '"
+                log.finest("Facelet specified alternate contentType '"
                         + contentType + "'");
             }
         }
 
+        // see if we need to override the encoding
+        Map sm = context.getExternalContext().getSessionMap();
+        if (m.containsKey("facelets.Encoding")) {
+            encoding = (String) m.get("facelets.Encoding");
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("Facelet specified alternate encoding '"
+                        + encoding + "'");
+            }
+            sm.put("facelets.Encoding", encoding);
+        } else if (encoding == null && sm.containsKey("facelets.Encoding")) {
+            encoding = (String) sm.get("facelets.Encoding");
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("Session specified alternate encoding '"
+                        + encoding + "'");
+            }
+        }
+        
         // safety check
         if (contentType == null) {
             contentType = "text/html";
