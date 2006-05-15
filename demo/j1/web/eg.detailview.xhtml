@@ -4,7 +4,9 @@
 	  xmlns:f="http://java.sun.com/jsf/core"
 	  xmlns:e="http://www.enverio.com/jsf"
 	  xmlns:ui="http://java.sun.com/jsf/facelets"
-	  xmlns:d="http://java.sun.com/jsf/facelets/demo">
+	  xmlns:d="http://java.sun.com/jsf/facelets/demo"
+	  xmlns:bp="http://java.sun.com/blueprints/ui"
+	  xmlns:t="http://myfaces.apache.org/tomahawk">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <title>Facelets JavaOne Demo</title>
@@ -19,8 +21,8 @@
 
 <!-- EXAMPLE: START -->
 
-<div style="text-align: center; margin: 25px 0;">
-<h:dataTable id="datagrid" value="#{company.allEmployees}" var="emp" style="width: 100%;">
+<t:div id="refreshable" style="text-align: center; margin: 25px 0;">
+<h:dataTable id="datagrid" binding="#{page.dataGrid}" value="#{company.allEmployees}" var="emp" rows="5" style="width: 100%;">
 	<h:column>
 		<f:facet name="header">Last Name</f:facet>
 		<h:inputText id="lastName" value="#{emp.lastName}" onblur="new Faces.Event(this, { update: this.name });" valueChangeListener="#{page.highlight}"/>
@@ -34,7 +36,18 @@
 		<h:inputText id="email" value="#{emp.email}" style="width: 200px;" onblur="new Faces.Event(this, { update: this.name });" valueChangeListener="#{page.highlight}"/>
 	</h:column>
 </h:dataTable>
+<div id="datascroller" style="margin-top: 10px;">
+	<bp:scroller for="datagrid" actionListener="#{page.scrollDataGrid}" navFacetOrientation="EAST">
+		  <f:facet name="next"><img src="style/j1/control_end.gif"/></f:facet>
+		  <f:facet name="previous"><img src="style/j1/control_start.gif"/></f:facet>
+	</bp:scroller>
+	<script type="text/javascript">
+	document.forms[0].submit = function() {};
+	var a = $('datascroller').getElementsByTagName('a');
+	$A(a).each(function(e) { new Faces.Command(e, 'mousedown', { encode: 'refreshable' }); });
+	</script>
 </div>
+</t:div>
 <!-- EXAMPLE: END -->
 
 <d:source id="src0"><i>// page.xhtml</i>

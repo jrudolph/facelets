@@ -2,21 +2,23 @@ package com.sun.facelets.component;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.faces.FacesException;
+import javax.faces.application.FacesMessage;
+import javax.faces.application.StateManager;
 import javax.faces.component.ContextCallback;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
-import javax.servlet.http.HttpServletResponse;
+import javax.faces.context.ResponseWriterWrapper;
 
-import com.sun.facelets.client.ClientUtils;
 import com.sun.facelets.event.EventCallback;
 import com.sun.facelets.event.Events;
 import com.sun.facelets.util.FastWriter;
@@ -27,12 +29,20 @@ public class UIFacelet extends UIViewRoot {
 
     public static final ContextCallback Update = new ContextCallback() {
         public void invokeContextCallback(FacesContext faces, UIComponent c) {
+            if (log.isLoggable(Level.FINE)) {
+                log.fine("Updating[" + c.getClientId(faces) + "] "
+                        + c.getClass().getName());
+            }
             c.processUpdates(faces);
         }
     };
 
     public static final ContextCallback Validate = new ContextCallback() {
         public void invokeContextCallback(FacesContext faces, UIComponent c) {
+            if (log.isLoggable(Level.FINE)) {
+                log.fine("Validating[" + c.getClientId(faces) + "] "
+                        + c.getClass().getName());
+            }
             c.processValidators(faces);
         }
     };
@@ -40,6 +50,10 @@ public class UIFacelet extends UIViewRoot {
     public static final ContextCallback Encode = new ContextCallback() {
         public void invokeContextCallback(FacesContext faces, UIComponent c) {
             try {
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine("Encoding[" + c.getClientId(faces) + "] "
+                            + c.getClass().getName());
+                }
                 c.encodeAll(faces);
             } catch (IOException e) {
                 throw new FacesException(e);
@@ -50,7 +64,7 @@ public class UIFacelet extends UIViewRoot {
     public static final String PARAM_ENCODE = "javax.faces.Encode";
 
     public static final String PARAM_UPDATE = "javax.faces.Update";
-    
+
     public final static String PARAM_ASYNC = "javax.faces.Async";
 
     private transient Set<String> encode = new HashSet<String>();
@@ -73,6 +87,7 @@ public class UIFacelet extends UIViewRoot {
     }
 
     public void processUpdates(FacesContext faces) {
+        log.fine("Processing Updates");
         if (!this.update.isEmpty()) {
             this.process(faces, this.update, Update);
         } else {
@@ -81,6 +96,7 @@ public class UIFacelet extends UIViewRoot {
     }
 
     public void processValidators(FacesContext faces) {
+        log.fine("Processing Validators");
         if (!this.update.isEmpty()) {
             this.process(faces, this.update, Validate);
         } else {
@@ -89,21 +105,33 @@ public class UIFacelet extends UIViewRoot {
     }
 
     public void encodeAll(FacesContext faces) throws IOException {
+
+        // determine event callback
         EventCallback c = Events.getEventCallback(faces);
         if (c != null && !c.isImmediate()) {
             if (log.isLoggable(Level.FINE)) {
                 log.fine(c.toString());
             }
             c.invoke(faces);
-            this.encodeQueued(faces);
-        } else if (!this.encodeQueued(faces)) {
-            if (log.isLoggable(Level.FINE)) {
-                log.fine("Encoding whole View");
-            }
+        }
+
+        // see if there were any extras queued
+        boolean partial = this.encodeQueued(faces);
+
+        if (!partial && c == null && !AsyncResponse.exists()) {
             super.encodeAll(faces);
         } else {
             if (log.isLoggable(Level.FINE)) {
-                log.fine("Skipped EncodeAll since Updates or Encodes were queued");
+                log.fine("Skipped EncodeAll since Async was queued");
+            }
+        }
+        
+        if (log.isLoggable(Level.FINE)) {
+            Iterator<FacesMessage> itr = faces.getMessages();
+            FacesMessage msg;
+            while (itr.hasNext()) {
+                msg = itr.next();
+                log.fine(msg.getSeverity() + " " + msg.getDetail());
             }
         }
     }
@@ -112,22 +140,17 @@ public class UIFacelet extends UIViewRoot {
         if (!this.encode.isEmpty()) {
             ExternalContext ctx = faces.getExternalContext();
             Object resp = ctx.getResponse();
-            if (resp instanceof HttpServletResponse) {
-                ((HttpServletResponse) resp).addHeader("Cache-Control",
-                        "no-cache");
-            }
+            
+            AsyncResponse async = AsyncResponse.getInstance();
+            if (async == null) return false;
 
             UIViewRoot root = faces.getViewRoot();
             boolean success = false;
             ResponseWriter rw = faces.getResponseWriter();
             FastWriter fw = new FastWriter(256);
             ResponseWriter crw;
-            StringBuffer headerId = new StringBuffer(16);
+            
             try {
-                if (resp instanceof HttpServletResponse) {
-                    ((HttpServletResponse) resp).setHeader("javax.faces.Encode",
-                            ClientUtils.toArray(this.encode));
-                }
                 for (String id : this.encode) {
                     fw.reset();
                     crw = rw.cloneWithWriter(fw);
@@ -136,13 +159,18 @@ public class UIFacelet extends UIViewRoot {
                     if (!success) {
                         log.warning(id + " not found");
                     }
-                    headerId.setLength(0);
-                    headerId.append("javax.faces.Encode_").append(id);
-                    if (resp instanceof HttpServletResponse) {
-                        ((HttpServletResponse) resp).setHeader(headerId
-                                .toString(), fw.toString());
-                    }
+                    async.getEncoded().put(id, fw.toString());
                 }
+                
+                // write state
+                StateCapture sc = new StateCapture(rw.cloneWithWriter(fw));
+                faces.setResponseWriter(sc);
+                StateManager sm = faces.getApplication().getStateManager();
+                Object stateObj = sm.saveSerializedView(faces);
+                sm.writeState(faces,
+                        (StateManager.SerializedView) stateObj);
+                async.setViewState(sc.getState());
+                
             } catch (FacesException e) {
                 if (e.getCause() instanceof IOException) {
                     throw (IOException) e.getCause();
@@ -172,7 +200,7 @@ public class UIFacelet extends UIViewRoot {
                 this.update.add(id);
             }
             if (log.isLoggable(Level.FINE)) {
-                log.fine("Updating Only: "+this.update);
+                log.fine("Updating Only: " + this.update);
             }
         }
 
@@ -181,7 +209,7 @@ public class UIFacelet extends UIViewRoot {
                 this.encode.add(id);
             }
             if (log.isLoggable(Level.FINE)) {
-                log.fine("Encoding Only: "+this.encode);
+                log.fine("Encoding Only: " + this.encode);
             }
         }
 
@@ -194,5 +222,30 @@ public class UIFacelet extends UIViewRoot {
 
     public Set<String> getUpdateIdSet() {
         return this.update;
+    }
+    
+    private static class StateCapture extends ResponseWriterWrapper {
+        
+        protected final ResponseWriter orig;
+        private Object state;
+        
+        public StateCapture(ResponseWriter orig) {
+            this.orig = orig;
+        }
+
+        protected ResponseWriter getWrapped() {
+            return this.orig;
+        }
+
+        public void writeAttribute(String name, Object value, String property) throws IOException {
+            if ("value".equals(name)) {
+                this.state = value;
+            }
+        }
+        
+        public String getState() {
+            return this.state != null ? this.state.toString() : "";
+        }
+        
     }
 }

@@ -12,7 +12,7 @@ Object.extend(Element, {
     var d = $(dest);
 	var parent = d.parentNode;
 	var temp = document.createElement('div');
-	temp.innerHTML = src
+	temp.innerHTML = src;
 	parent.replaceChild(temp.firstChild,d);
   },
   serialize: function(e) {
@@ -79,21 +79,9 @@ var Faces = {
 			return s.split((e)?e:' ').map(function(p) { return p.trim(); });
 		}
 		return s;
-	}
-};
-
-/* Turn any Element into a Faces.Command
- ***********************************************************/
-Faces.Command = Faces.create();
-Faces.Command.prototype = {
-	initialize: function(action, event, options) {
-		var event = (event) || 'click';
-		var options = options;
-		Event.observe(action,event,function(e) {
-			new Faces.Event(action,options);
-			Event.stop(e);
-			return false;
-		},true);
+	},
+	toString: function() {
+		return "Faces Agent v. 1.0";
 	}
 };
 
@@ -166,7 +154,7 @@ Object.extend(Object.extend(Faces.Event.prototype, Ajax.Request.prototype), {
 	
 	// add source
 	var action = $(source);
-	if (action && action.form) viewState[action.name] = action.value;
+	if (action && action.form) viewState[action.name] = action.value || 'x';
 	else viewState[source] = source;
 	
 	// initialize headers
@@ -222,23 +210,34 @@ Object.extend(Object.extend(Faces.Event.prototype, Ajax.Request.prototype), {
   },
   encodeView: function() {
 	  //alert(this.transport.getAllResponseHeaders());
-	  var encode = this.header('javax.faces.Encode');
-	  if (encode) {
-		  encode = eval(encode);
-		  var view;
+	  var async = this.header('javax.faces.Async');
+	  var state = this.header('javax.faces.ViewState');
+	  if (async) {
+		  var xml = this.transport.responseXML;
+		  state = state || xml.getElementsByTagName('async-resp')[0].getAttribute('state');
+		  var encode = xml.getElementsByTagName('encode');
+		  var id, content, markup, str;
 		  for (var i = 0; i < encode.length; i++) {
-		    view = this.header('javax.faces.Encode_' + encode[i]);
-			if (view) {
-				view.evalScripts();
-				view = view.stripScripts();
-				Element.replace(encode[i], view);
-			}
+			  id = encode[i].getAttribute('id');
+			  content = encode[i].firstChild;
+			  markup = content.text || content.data;
+			  str = markup.stripScripts();
+			  Element.replace(id, str);
+			  markup.evalScripts();
+		  }
+	  }
+	  
+	  if (state) {
+		  var hf = $('javax.faces.ViewState');
+		  if (hf) {
+			  hf.value = state;
 		  }
 	  }
   },
   evalResponse: function() {
 	  if (this.responseIsSuccess()) {
 		  var text = this.transport.responseText;
+		  //alert(text);
 		  if (text) {
 			  try {
 			      text.evalScripts();
@@ -250,6 +249,21 @@ Object.extend(Object.extend(Faces.Event.prototype, Ajax.Request.prototype), {
 	  throw e;
   }
 });
+
+/* Turn any Element into a Faces.Command
+ ***********************************************************/
+Faces.Command = Faces.create();
+Faces.Command.prototype = {
+	initialize: function(action, event, options) {
+		var event = (event) || 'click';
+		var options = options;
+		Event.observe(action,event,function(e) {
+			new Faces.Event(action,options);
+			Event.stop(e);
+			return false;
+		},true);
+	}
+};
 
 /* Take any Event and delegate it to an Observer
  ***********************************************************/

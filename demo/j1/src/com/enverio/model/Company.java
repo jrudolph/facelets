@@ -13,8 +13,14 @@ import com.enverio.util.Projections;
 import com.enverio.util.Transformer;
 
 public class Company {
+    
+    public static void main(String[] argv) {
+        Company c = new Company();
+        System.out.println(c.getCatalog().getProducts().size());
+    }
 
     private List<Department> departments = new ArrayList<Department>();
+    private Catalog catalog = null;
 
     public Company() {
         this.loadFromXML();
@@ -22,6 +28,12 @@ public class Company {
 
     public List<Department> getDepartments() {
         return departments;
+    }
+    
+    public void setCatalog(Catalog c) {
+        if (c != null) {
+            this.catalog = c;
+        }
     }
 
     public void setDepartments(List<Department> departments) {
@@ -45,18 +57,29 @@ public class Company {
         }
         return emps;
     }
+    
+    public void addDepartment(Department d) {
+        this.departments.add(d);
+    }
 
     private void loadFromXML() {
         Digester d = new Digester();
 
         d.addObjectCreate("company/department", Department.class);
         d.addSetProperties("company/department");
-        d.addSetNext("company/department", "add");
+        d.addSetNext("company/department", "addDepartment");
         d.addObjectCreate("company/department/employee", Employee.class);
         d.addSetProperties("company/department/employee");
         d.addSetNext("company/department/employee", "addEmployee");
-
-        d.push(this.departments);
+        d.addObjectCreate("company/catalog", Catalog.class);
+        d.addSetNext("company/catalog", "setCatalog");
+        d.addObjectCreate("company/catalog/product", Product.class);
+        d.addSetProperties("company/catalog/product");
+        d.addSetNext("company/catalog/product", "addProduct");
+        d.addObjectCreate("company/catalog/product/uom", Uom.class);
+        d.addSetProperties("company/catalog/product/uom");
+        d.addSetNext("company/catalog/product/uom", "addUom");
+        d.push(this);
 
         try {
             ClassLoader cl = Thread.currentThread().getContextClassLoader();
@@ -64,5 +87,10 @@ public class Company {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public Catalog getCatalog() {
+        
+        return catalog;
     }
 }

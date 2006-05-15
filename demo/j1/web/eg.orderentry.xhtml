@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:f="http://java.sun.com/jsf/core"
+	  xmlns:e="http://www.enverio.com/jsf"
+	  xmlns:ui="http://java.sun.com/jsf/facelets"
+	  xmlns:d="http://java.sun.com/jsf/facelets/demo">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Facelets JavaOne Demo</title>
+</head>
+
+<body>
+
+<ui:composition template="_template.xhtml">
+<ui:define name="head">
+<style type="text/css">
+    div.auto_complete {
+      position:absolute;
+      width:250px;
+      background-color:white;
+      border:1px solid #888;
+      margin:0px;
+      padding:0px;
+	  text-align: left;
+    }
+    div.auto_complete ul  {
+      list-style-type: none;
+      margin:0px;
+      padding:0px;
+    }
+    div.auto_complete ul li.selected { background-color: #ffb; }
+    div.auto_complete li {
+      list-style-type: none;
+      display:block;
+      margin:0;
+      padding:2px;
+      height:16px;
+    }
+	dt {
+		padding-top: 5px;
+	}
+</style>
+</ui:define>
+<ui:define name="body">
+<h:messages id="msg"/>
+<h:outputText id="orderTotal" value="#{order.total}" binding="#{orderEntry.total}"/>
+<h:dataTable binding="#{orderEntry.data}" value="#{company.catalog.products}" var="prd" style="width: 100%;">
+	<h:column><f:facet name="header">Id</f:facet>#{prd.id}</h:column>
+	<h:column><f:facet name="header">Description</f:facet>#{prd.description}</h:column>
+	<h:column><f:facet name="header">Mfr</f:facet>#{prd.manufacturer}</h:column>
+	<h:column><f:facet name="header">UOM</f:facet><h:selectOneMenu value="#{orderEntry.uom}"><f:selectItems value="#{e:selectUom(prd.uoms)}"/></h:selectOneMenu></h:column>
+	<h:column><f:facet name="header">Qty</f:facet><h:inputText value="#{orderEntry.quantity}" size="2"/></h:column>
+	<h:column><f:facet name="header">Buy</f:facet><h:commandButton action="#{orderEntry.addProduct}" style="background: none;" onclick="new Faces.Event(this); return false;"/></h:column>
+</h:dataTable>
+
+</ui:define>
+</ui:composition>
+
+</body>
+</html>

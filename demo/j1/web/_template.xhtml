@@ -1,6 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:h="http://java.sun.com/jsf/html"
+	  xmlns:f="http://java.sun.com/jsf/core"
 	  xmlns:ui="http://java.sun.com/jsf/facelets">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
@@ -14,16 +15,15 @@
 <ui:insert name="head"/>
 </head>
 
+<f:view contentType="text/html"/>
+
 <body>
 
 <div id="nav">
 	<ul class="menubar">
 		<li><a href="home.jsf">Home</a></li>
 		<li><a href="eg.autosuggest.jsf">Auto Suggest</a></li>
-		<li><a href="#">Validation</a></li>
-		<li><a href="eg.detailview.jsf">Detail View</a></li>
-		<li><a href="#">Item Entry</a></li>
-		<li><a href="#" class="last">Graphing</a></li>
+		<li><a href="eg.detailview.jsf" class="last">Detail View</a></li>
 	</ul>
 </div>
 

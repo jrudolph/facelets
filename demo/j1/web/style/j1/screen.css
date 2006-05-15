@@ -9,6 +9,7 @@ body, div, dd, dt, dl, img, p, h1, h2, h3, h4, h5, form, pre, code {
 html {
 	height: 100%;
 	background: #7A8593 url(bg.gif) 0 0 repeat-x;
+	background-attachment: fixed;
 	overflow: -moz-scrollbars-vertical;
 }
 img {
