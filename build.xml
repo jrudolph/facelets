@@ -128,7 +128,8 @@
         <include name="**/*.properties"/>
         <include name="**/*.xml"/>
         <include name="**/*.dtd"/>
-	    <include name="**/*.ent"/>
+	  <include name="**/*.ent"/>
+        <include name="**/*.js"/>
       </fileset>
     </copy>
 
@@ -205,7 +206,7 @@
 	<ant target="-build-demo" antfile="demo/hangman/build.xml"/>
 	<ant target="-build-demo" antfile="demo/starterkit/build.xml"/>
 	<ant target="-build-demo" antfile="demo/portlet/build.xml"/>
-	<ant target="-build-demo" antfile="demo/j1/build.xml"/>
+	<ant target="build-demo" antfile="demo/j1/build.xml"/>
     <copy todir="${release}/facelets-${release.version}" includeEmptyDirs="false">
        <fileset dir="${dist}"/>
     </copy>
