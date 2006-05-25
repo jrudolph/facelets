@@ -4,8 +4,12 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Logger;
 
+import javax.faces.component.UIComponent;
 import javax.faces.component.UIData;
+import javax.faces.component.UIInput;
 import javax.faces.component.UIOutput;
+import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 
 import com.enverio.model.Catalog;
@@ -14,9 +18,11 @@ import com.enverio.model.Order;
 import com.enverio.model.OrderLine;
 import com.enverio.model.Product;
 import com.enverio.model.Uom;
-import com.sun.facelets.Facelets;
 import com.sun.facelets.client.ClientWriter;
 import com.sun.facelets.client.Effect;
+import com.sun.facelets.client.Element;
+import com.sun.facelets.client.Field;
+import com.sun.facelets.component.AsyncResponse;
 
 public class OrderEntry implements Serializable {
     
@@ -40,50 +46,76 @@ public class OrderEntry implements Serializable {
     private Order order;
 
     private Product product;
-
-    private String uom;
-    
-    private int quantity = 1;
     
     private UIData data;
     
+    private UIData header;
+    
     private UIOutput total;
+    
+    private UIInput uom;
+    
+    private UIInput quantity;
 
     public OrderEntry() {
         super();
     }
-
+    
+    
+    
+    
+    
+    
+    /**
+     * Completely normal EL invocation
+     */
+    public void deleteLine() throws Exception {
+    	OrderLine line = (OrderLine) this.header.getRowData();
+    	this.order.getLines().remove(line);
+    }
+    
+    
+    
+    
+    /**
+     * AJAX specific implementation which shows coordination
+     * with the full view
+     */
     public void addProduct() throws Exception {
-        if (this.product == null) {
-            this.product = (Product) this.data.getRowData();
-        }
-        if (this.product != null) {
 
-            // default UOM if need be
-            if (this.uom == null) {
-                this.uom = this.product.getUoms().get(0).getUnits();
+        	
+        	this.product = (Product) this.data.getRowData();
+        	
+        	String uomVal = (String) this.uom.getValue();
+        	
+        	Number qtyVal = (Number) this.quantity.getValue();
+            if (qtyVal == null || qtyVal.intValue() == 0) {
+            	qtyVal = new Integer(1);
             }
-            
-            // default quantity
-            if (this.quantity == 0) {
-                this.quantity = 1;
-            }
-            
-            
-            log.info("Adding Product: "+this.product+" for "+this.uom+"/"+this.quantity);
             
             this.order.getLines().add(0,
-                    new OrderLine(this.product, this.uom, this.quantity));
+                    new OrderLine(this.product, uomVal, qtyVal.intValue()));
             
-            if (this.total != null) {
-                Facelets.encode(this.total);
-                ClientWriter cw = Facelets.getClientWriter();
-                cw.startScript();
-                cw.select(this.total, Effect.highlight());
-                cw.endScript();
-            }
-        }
+            
+            //=========================================
+            
+            // Fan-out AJAX to update the UI based on Action Logic
+            AsyncResponse.encode(this.total);
+            AsyncResponse.encode(this.header);
+            
+            // optional JS effects
+            ClientWriter cw = AsyncResponse.getClientWriter();
+            cw.startScript();
+            cw.select(this.total, Effect.pulsate());
+            cw.select(this.uom, Effect.highlight());
+            cw.select(this.quantity, Effect.highlight(), Field.clear());
+            cw.endScript();
     }
+    
+    
+    
+    
+    
 
     public Order getOrder() {
         return order;
@@ -101,14 +133,6 @@ public class OrderEntry implements Serializable {
         this.product = product;
     }
 
-    public String getUom() {
-        return uom;
-    }
-
-    public void setUom(String uom) {
-        this.uom = uom;
-    }
-
     public static SelectItem[] selectUom(List<Uom> list) {
         SelectItem[] si = new SelectItem[list.size()];
         Uom u;
@@ -117,14 +141,6 @@ public class OrderEntry implements Serializable {
             si[i] = new SelectItem(u.getUnits(), u.getUnits());
         }
         return si;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
     }
 
     public UIData getData() {
@@ -142,5 +158,50 @@ public class OrderEntry implements Serializable {
     public void setTotal(UIOutput total) {
         this.total = total;
     }
+
+	public UIInput getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(UIInput quantity) {
+		this.quantity = quantity;
+	}
+
+	public UIInput getUom() {
+		return uom;
+	}
+
+	public void setUom(UIInput uom) {
+		this.uom = uom;
+	}
+	
+	public void scrollDataGrid(ActionEvent event) {
+        int currentRow = 1;
+        FacesContext context = FacesContext.getCurrentInstance();
+        UIComponent component = event.getComponent();
+        Integer curRow = (Integer) component.getAttributes().get("currentRow");
+        if (curRow != null)
+            currentRow = curRow.intValue();
+
+        if (this.data != null) {
+            int rows = this.data.getRows();
+            if (rows < 1)
+                return;
+            if (currentRow < 0)
+                this.data.setFirst(0);
+            else if (currentRow >= this.data.getRowCount())
+                this.data.setFirst(this.data.getRowCount() - 1);
+            else
+                this.data.setFirst(currentRow - currentRow % rows);
+        }
+    }
+
+	public UIData getHeader() {
+		return header;
+	}
+
+	public void setHeader(UIData header) {
+		this.header = header;
+	}
 
 }

@@ -11,6 +11,14 @@ public class Effect {
             writer.write(");");
         }
     };
+    
+    private final static Script Pulsate = new Script() {
+    	public void write(String variable, ClientWriter writer) throws IOException {
+            writer.write("new Effect.Pulsate(");
+            writer.write(variable);
+            writer.write(");");
+        } 	
+    };
 
     public Effect() {
         super();
@@ -18,6 +26,10 @@ public class Effect {
     
     public static Script highlight() {
         return Highlight;
+    }
+    
+    public static Script pulsate() {
+    	return Pulsate;
     }
 
 }

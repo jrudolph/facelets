@@ -9,9 +9,9 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
 
-import com.sun.facelets.Facelets;
 import com.sun.facelets.client.ClientWriter;
 import com.sun.facelets.client.Effect;
+import com.sun.facelets.component.AsyncResponse;
 
 public class EditEmployee {
 
@@ -22,7 +22,7 @@ public class EditEmployee {
         UIComponent c = event.getComponent();
 
         try {
-            ClientWriter cw = Facelets.getClientWriter();
+            ClientWriter cw = AsyncResponse.getClientWriter();
             cw.startScript().select(c, Effect.highlight()).endScript().close();
         } catch (Exception e) {
             log.log(Level.SEVERE, "Error in ValueChangeListener", e);

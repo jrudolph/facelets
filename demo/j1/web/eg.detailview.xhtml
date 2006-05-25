@@ -21,7 +21,7 @@
 
 <!-- EXAMPLE: START -->
 
-<t:div id="refreshable" style="text-align: center; margin: 25px 0;">
+<t:div id="refreshable" style="margin: 25px 0;">
 <h:dataTable id="datagrid" binding="#{page.dataGrid}" value="#{company.allEmployees}" var="emp" rows="5" style="width: 100%;">
 	<h:column>
 		<f:facet name="header">Last Name</f:facet>
@@ -36,6 +36,7 @@
 		<h:inputText id="email" value="#{emp.email}" style="width: 200px;" onblur="new Faces.Event(this, { update: this.name });" valueChangeListener="#{page.highlight}"/>
 	</h:column>
 </h:dataTable>
+
 <div id="datascroller" style="margin-top: 10px;">
 	<bp:scroller for="datagrid" actionListener="#{page.scrollDataGrid}" navFacetOrientation="EAST">
 		  <f:facet name="next"><img src="style/j1/control_end.gif"/></f:facet>
@@ -44,11 +45,13 @@
 	<script type="text/javascript">
 	document.forms[0].submit = function() {};
 	var a = $('datascroller').getElementsByTagName('a');
-	$A(a).each(function(e) { new Faces.Command(e, 'mousedown', { encode: 'refreshable' }); });
+	$A(a).each(function(e) { new Faces.Command(e, 'mousedown', { encode: 'refreshable' }); return false; });
 	</script>
 </div>
+
 </t:div>
 <!-- EXAMPLE: END -->
+
 
 <d:source id="src0"><i>// page.xhtml</i>
 &lt;h:dataTable id="datagrid"

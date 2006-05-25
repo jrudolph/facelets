@@ -45,14 +45,29 @@
 <ui:define name="body">
 <h3>Auto Suggest</h3>
 <p>The token AJAX widget for frameworks.  This example shows how a developer can easily customize the presentation of the widget, just as they would with any other content on the page with server-side templating.</p>
+<div class="wrapper" style="text-align:center; ">
+
+
+
+
+
+
 
 <!-- EXAMPLE: START -->
-<div class="wrapper" style="text-align:center; ">
+
 <e:serverSuggest id="foo" value="#{requestScope.foo}" from="#{company.suggestEmployees}">
-#{item.lastName}, #{item.firstName}
+<b>#{item.firstName}</b> #{item.lastName}
 </e:serverSuggest>
-</div>
+
 <!-- EXAMPLE: END -->
+
+
+
+
+
+</div>
+
+
 
 <d:source id="src0"><i>// page.xhtml</i>
 &lt;e:serverSuggest

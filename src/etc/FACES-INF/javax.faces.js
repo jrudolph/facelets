@@ -10,6 +10,7 @@ Object.extend(String.prototype, {
 Object.extend(Element, {
   replace: function(dest, src)  {
     var d = $(dest);
+    if (!d) alert(dest + " not found");
 	var parent = d.parentNode;
 	var temp = document.createElement('div');
 	temp.innerHTML = src;
