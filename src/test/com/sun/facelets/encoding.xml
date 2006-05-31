@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='iso-8859-1'?>
+<html xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h=" http://java.sun.com/jsf/html">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+</head>
+
+<body>
+<f:view encoding="iso-8859-1"/>
+    <h:form>
+        #{testBean.text}
+        <h:inputText value="#{testBean.text}"/>
+        <h:commandButton value="Change"/>
+        <ui:include src="encoding-child.xml"/> <!-- It works when removing this include -->
+    </h:form>
+</body>
+</html>
