@@ -35,7 +35,7 @@ import com.sun.facelets.tag.TagAttributeException;
 /**
  * 
  * @author Jacob Hookom
- * @version $Id: ComponentSupport.java,v 1.5 2006/03/29 04:10:02 jhook Exp $
+ * @version $Id: ComponentSupport.java,v 1.6 2006/05/31 04:11:58 jhook Exp $
  */
 public final class ComponentSupport {
 
@@ -240,6 +240,42 @@ public final class ComponentSupport {
                 }
             }
             viewToRender.encodeEnd(context);
+        }
+    }
+    
+    public static void removeTransient(UIComponent c) {
+        UIComponent d, e;
+        if (c.getChildCount() > 0) {
+            for (Iterator itr = c.getChildren().iterator(); itr.hasNext();) {
+                d = (UIComponent) itr.next();
+                if (d.getFacets().size() > 0) {
+                    for (Iterator jtr = d.getFacets().values().iterator(); jtr
+                            .hasNext();) {
+                        e = (UIComponent) jtr.next();
+                        if (e.isTransient()) {
+                            jtr.remove();
+                        } else {
+                            removeTransient(e);
+                        }
+                    }
+                }
+                if (d.isTransient()) {
+                    itr.remove();
+                } else {
+                    removeTransient(d);
+                }
+            }
+        }
+        if (c.getFacets().size() > 0) {
+            for (Iterator itr = c.getFacets().values().iterator(); itr
+                    .hasNext();) {
+                d = (UIComponent) itr.next();
+                if (d.isTransient()) {
+                    itr.remove();
+                } else {
+                    removeTransient(d);
+                }
+            }
         }
     }
     

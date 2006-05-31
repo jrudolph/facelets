@@ -18,6 +18,8 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.el.ELException;
 import javax.faces.FacesException;
@@ -47,9 +49,11 @@ import com.sun.facelets.tag.TagAttributes;
  * @see com.sun.facelets.compiler.Compiler
  * 
  * @author Jacob Hookom
- * @version $Id: SAXCompiler.java,v 1.11 2006/05/09 06:25:40 jhook Exp $
+ * @version $Id: SAXCompiler.java,v 1.12 2006/05/31 04:11:58 jhook Exp $
  */
 public final class SAXCompiler extends Compiler {
+    
+    private final static Pattern XmlDeclaration = Pattern.compile("^<\\?xml.+?version=['\"](.+?)['\"](.+?encoding=['\"]((.+?))['\"])?.*?\\?>");
 
     private static class CompilationHandler extends DefaultHandler implements
             LexicalHandler {
@@ -248,18 +252,11 @@ public final class SAXCompiler extends Compiler {
             byte[] b = new byte[128];
             if (is.read(b) > 0) {
                 String r = new String(b);
-                int s = r.indexOf("<?xml");
-                if (s >= 0) {
-                    int e = r.indexOf("?>", s);
-                    if (e > 0) {
-                        mngr.writeInstruction(r.substring(s, e + 2) + '\n');
-                    }
-                    s = r.indexOf("encoding=\"");
-                    if (s > 0) {
-                        e = r.indexOf('"', s+10);
-                        if (e > 0) {
-                            encoding = r.substring(s+10, e);
-                        }
+                Matcher m = XmlDeclaration.matcher(r);
+                if (m.find()) {
+                    mngr.writeInstruction(m.group(0));
+                    if (m.group(3) != null) {
+                        encoding = m.group(3);
                     }
                 }
             }

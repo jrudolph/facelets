@@ -22,8 +22,8 @@ public class EncodingHandler implements FaceletHandler {
 
     public void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
-        ctx.getFacesContext().getExternalContext().getRequestMap().put("facelets.Encoding", this.encoding);
         this.next.apply(ctx, parent);
+        ctx.getFacesContext().getExternalContext().getRequestMap().put("facelets.Encoding", this.encoding);
     }
 
 }

@@ -143,42 +143,6 @@ public class FaceletViewHandler extends ViewHandler {
     // Array of viewId prefixes that should be handled by Facelets
     private String[] prefixesArray;
 
-    protected static void removeTransient(UIComponent c) {
-        UIComponent d, e;
-        if (c.getChildCount() > 0) {
-            for (Iterator itr = c.getChildren().iterator(); itr.hasNext();) {
-                d = (UIComponent) itr.next();
-                if (d.getFacets().size() > 0) {
-                    for (Iterator jtr = d.getFacets().values().iterator(); jtr
-                            .hasNext();) {
-                        e = (UIComponent) jtr.next();
-                        if (e.isTransient()) {
-                            jtr.remove();
-                        } else {
-                            removeTransient(e);
-                        }
-                    }
-                }
-                if (d.isTransient()) {
-                    itr.remove();
-                } else {
-                    removeTransient(d);
-                }
-            }
-        }
-        if (c.getFacets().size() > 0) {
-            for (Iterator itr = c.getFacets().values().iterator(); itr
-                    .hasNext();) {
-                d = (UIComponent) itr.next();
-                if (d.isTransient()) {
-                    itr.remove();
-                } else {
-                    removeTransient(d);
-                }
-            }
-        }
-    }
-
     /**
      * 
      */
@@ -622,7 +586,7 @@ public class FaceletViewHandler extends ViewHandler {
 
             // remove transients for older versions
             if (FacesAPI.getVersion() < 12) {
-                removeTransient(viewToRender);
+                ComponentSupport.removeTransient(viewToRender);
             }
 
             boolean writtenState = stateWriter.isStateWritten();
