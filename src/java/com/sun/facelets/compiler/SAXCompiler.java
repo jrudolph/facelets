@@ -49,7 +49,7 @@ import com.sun.facelets.tag.TagAttributes;
  * @see com.sun.facelets.compiler.Compiler
  * 
  * @author Jacob Hookom
- * @version $Id: SAXCompiler.java,v 1.12 2006/05/31 04:11:58 jhook Exp $
+ * @version $Id: SAXCompiler.java,v 1.13 2006/05/31 04:16:46 jhook Exp $
  */
 public final class SAXCompiler extends Compiler {
     
@@ -254,7 +254,7 @@ public final class SAXCompiler extends Compiler {
                 String r = new String(b);
                 Matcher m = XmlDeclaration.matcher(r);
                 if (m.find()) {
-                    mngr.writeInstruction(m.group(0));
+                    mngr.writeInstruction(m.group(0) + "\n");
                     if (m.group(3) != null) {
                         encoding = m.group(3);
                     }
