@@ -591,39 +591,46 @@ public class FaceletViewHandler extends ViewHandler {
 
             boolean writtenState = stateWriter.isStateWritten();
             // flush to origWriter
-            if (writtenState
-                    && ((stateMgr.isSavingStateInClient(context) || FacesAPI
-                            .getVersion() >= 12))) {
-
+            if (writtenState) {
                 String content = stateWriter.getAndResetBuffer();
                 int end = content.indexOf(STATE_KEY);
+                // See if we can find any trace of the saved state.
+                // If so, we need to perform token replacement
                 if (end >= 0) {
                     // save state
                     Object stateObj = stateMgr.saveSerializedView(context);
-                    stateMgr.writeState(context,
-                            (StateManager.SerializedView) stateObj);
-                    String stateStr = stateWriter.getAndResetBuffer();
+                    String stateStr;
+                    if (stateObj == null) {
+                        stateStr = null;
+                    } else {
+                        stateMgr.writeState(context,
+                                       (StateManager.SerializedView) stateObj);
+                        stateStr = stateWriter.getAndResetBuffer();
+                    }
+
                     int start = 0;
 
                     while (end != -1) {
                         origWriter.write(content, start, end - start);
-                        origWriter.write(stateStr);
+                        if (stateStr != null) {
+                            origWriter.write(stateStr);
+                        }
                         start = end + STATE_KEY_LEN;
                         end = content.indexOf(STATE_KEY, start);
                     }
                     origWriter.write(content, start, content.length() - start);
+                // No trace of any saved state, so we just need to flush
+                // the buffer
                 } else {
                     origWriter.write(content);
-                }
-            } else if (writtenState) {
-                // Wrote state, but don't actually need to output any state;
-                // just flush the buffer
-                origWriter.write(stateWriter.getAndResetBuffer());
-                // But, for JSF 1.1, make sure we actually call
-                // saveSerializedView()
-                if ((FacesAPI.getVersion() < 12)
+                    // But for JSF 1.1 (actually, just 1.1_01 RI), if we didn't
+                    // detect any saved state, force a call to
+                    // saveSerializedView() in case we're using the old
+                    // pure-server-side state saving
+                    if ((FacesAPI.getVersion() < 12)
                         && !stateMgr.isSavingStateInClient(context)) {
-                    stateMgr.saveSerializedView(context);
+                        stateMgr.saveSerializedView(context);
+                    }
                 }
             }
 
@@ -750,12 +757,11 @@ public class FaceletViewHandler extends ViewHandler {
         if (handledByFacelets(context.getViewRoot().getViewId())) {
             // Tell the StateWriter that we're about to write state
             StateWriter.getCurrentInstance().writingState();
-
-            StateManager stateMgr = context.getApplication().getStateManager();
-            if (stateMgr.isSavingStateInClient(context)
-                    || FacesAPI.getVersion() >= 12) {
-                context.getResponseWriter().write(STATE_KEY);
-            }
+            // Write the STATE_KEY out.  Unfortunately, this will
+            // be wasteful for pure server-side state managers where nothing
+            // is actually written into the output, but this cannot
+            // programatically be discovered
+            context.getResponseWriter().write(STATE_KEY);
         } else {
             this.parent.writeState(context);
         }
