@@ -40,7 +40,7 @@ public class CoreTestCase extends FaceletTestCase {
 
         assertEquals("action1 listeners", 1,
                 action1.getActionListeners().length);
-        assertEquals("action2 listeners", 1,
+        assertEquals("action2 listeners", 2,
                 action2.getActionListeners().length);
 
         assertEquals("action2 binding", listener,
