@@ -31,7 +31,7 @@ import com.sun.facelets.tag.TagException;
 /**
  * 
  * @author Jacob Hookom
- * @version $Id: TextUnit.java,v 1.9 2006/03/29 04:10:04 jhook Exp $
+ * @version $Id: TextUnit.java,v 1.10 2006/06/13 03:39:06 jhook Exp $
  */
 final class TextUnit extends CompilationUnit {
 
@@ -270,9 +270,9 @@ final class TextUnit extends CompilationUnit {
                         }
                     }
                 }
-            }  
+            }
         }
-        
+
         // ALWAYS CLEAR FOR BOTH IMPL
         this.buffer.setLength(0);
     }
@@ -288,8 +288,6 @@ final class TextUnit extends CompilationUnit {
         }
         if (i == s.length() - 1) {
             return s;
-        } else if (i + 1 < s.length() && Character.isSpaceChar(s.charAt(i + 1))) {
-            return s.substring(0, i + 2);
         } else {
             return s.substring(0, i + 1);
         }

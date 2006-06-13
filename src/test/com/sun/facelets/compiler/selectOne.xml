@@ -1,0 +1,26 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional" "http://www.w3.org/TR/xhtml1/DTD/xhtml22-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+<body>
+
+<ui:composition>
+<form jsfc="h:form" id="testForm">
+	<h:selectOneMenu value="#{blah}" binding="#{test.target}">
+	
+		<f:selectItem itemValue="1" itemLabel="1"/> 
+		      
+		<f:selectItem itemValue="1" itemLabel="1"/>
+		
+	</h:selectOneMenu>
+	
+	I am
+	Sam
+	<span>YES</span>
+</form>
+</ui:composition>
+
+
+</body>
+</html>
