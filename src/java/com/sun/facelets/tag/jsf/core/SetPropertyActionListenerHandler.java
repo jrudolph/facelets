@@ -85,7 +85,7 @@ public class SetPropertyActionListenerHandler extends TagHandler {
                 throws AbortProcessingException {
             FacesContext faces = FacesContext.getCurrentInstance();
             Object valueObj = this.value.getValue(faces);
-            this.target.setValue(faces, value);
+            this.target.setValue(faces, valueObj);
         }
 
     }
