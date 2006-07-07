@@ -46,7 +46,7 @@ public class WhitespaceTestCase extends FaceletTestCase {
         f.apply(faces, root);
         
         assertNotNull("target binding", target);
-        assertEquals("children", 2, this.target.getChildCount());
+        assertEquals("children", 3, this.target.getChildCount());
 
         FastWriter fw = new FastWriter();
         ResponseWriter rw = faces.getResponseWriter();

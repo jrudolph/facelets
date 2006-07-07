@@ -15,8 +15,8 @@
 		
 	</h:selectOneMenu>
 	
-	I am
-	Sam
+	I am 
+	Sam  f
 	<span>YES</span>
 </form>
 </ui:composition>

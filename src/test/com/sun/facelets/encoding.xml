@@ -1,4 +1,7 @@
 <?xml version='1.0' encoding='iso-8859-1'?>
+
+<?tag-attribute name="foo" method="String method()" ?> 
+
 <html xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:h=" http://java.sun.com/jsf/html">
