@@ -14,6 +14,7 @@
 
 package com.sun.facelets.tag.jstl.core;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import javax.el.ELContext;
@@ -21,9 +22,33 @@ import javax.el.ValueExpression;
 
 /**
  * @author Jacob Hookom
- * @version $Id: MappedValueExpression.java,v 1.4 2005/10/19 06:39:30 jhook Exp $
+ * @version $Id: MappedValueExpression.java,v 1.5 2006/08/06 19:44:45 jhook Exp $
  */
 public final class MappedValueExpression extends ValueExpression {
+	
+	private final static class Entry implements Map.Entry, Serializable {
+		
+		private final Map src;
+		private final Object key;
+		
+		public Entry(Map src, Object key) {
+			this.src = src;
+			this.key = key;
+		}
+
+		public Object getKey() {
+			return key;
+		}
+
+		public Object getValue() {
+			return src.get(key);
+		}
+
+		public Object setValue(Object value) {
+			return src.put(key, value);
+		}
+		
+	}
 
     /**
      * 
@@ -50,8 +75,9 @@ public final class MappedValueExpression extends ValueExpression {
     public Object getValue(ELContext context) {
         Object base = this.orig.getValue(context);
         if (base != null) {
-            context.setPropertyResolved(false);
-            return context.getELResolver().getValue(context, base, key);
+            context.setPropertyResolved(true);
+            return new Entry((Map) base, key);
+            
         }
         return null;
     }
@@ -136,7 +162,7 @@ public final class MappedValueExpression extends ValueExpression {
     }
 
     /*
-     * (non-Javadoc)
+     * (non-Javadoc)eturn new Map.Entry<K, V>
      * 
      * @see javax.el.Expression#isLiteralText()
      */
