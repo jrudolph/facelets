@@ -31,7 +31,7 @@ import com.sun.facelets.util.FacesAPI;
 /**
  * 
  * @author Jacob Hookom
- * @version $Id: ComponentRule.java,v 1.2 2005/08/24 04:38:50 jhook Exp $
+ * @version $Id: ComponentRule.java,v 1.3 2006/08/07 04:00:47 jhook Exp $
  */
 final class ComponentRule extends MetaRule {
 
@@ -130,8 +130,8 @@ final class ComponentRule extends MetaRule {
     }
 
     private static void warnAttr(TagAttribute attr, Class type, String n) {
-        if (log.isLoggable(Level.WARNING)) {
-            log.warning(attr + " Property '" + n + "' is not on type: "
+        if (log.isLoggable(Level.FINER)) {
+            log.finer(attr + " Property '" + n + "' is not on type: "
                     + type.getName());
         }
     }
