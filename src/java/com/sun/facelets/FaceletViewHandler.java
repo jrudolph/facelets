@@ -51,6 +51,7 @@ import com.sun.facelets.tag.jsf.ComponentSupport;
 import com.sun.facelets.tag.ui.UIDebug;
 import com.sun.facelets.util.DevTools;
 import com.sun.facelets.util.FacesAPI;
+import com.sun.facelets.util.ReflectionUtil;
 
 /**
  * ViewHandler implementation for Facelets
@@ -231,8 +232,7 @@ public class FaceletViewHandler extends ViewHandler {
                 PARAM_RESOURCE_RESOLVER);
         if (resolverName != null && resolverName.length() > 0) {
             try {
-                resolver = (ResourceResolver) Class.forName(resolverName, true,
-                        Thread.currentThread().getContextClassLoader())
+                resolver = (ResourceResolver) ReflectionUtil.forName(resolverName)
                         .newInstance();
             } catch (Exception e) {
                 throw new FacesException("Error Initializing ResourceResolver["
@@ -283,7 +283,7 @@ public class FaceletViewHandler extends ViewHandler {
             TagDecorator decObj;
             for (int i = 0; i < decs.length; i++) {
                 try {
-                    decObj = (TagDecorator) Class.forName(decs[i])
+                    decObj = (TagDecorator) ReflectionUtil.forName(decs[i])
                             .newInstance();
                     c.addTagDecorator(decObj);
                     log.fine("Successfully Loaded Decorator: " + decs[i]);
@@ -664,12 +664,14 @@ public class FaceletViewHandler extends ViewHandler {
         if (this.developmentMode && !context.getResponseComplete()
                 && resp instanceof HttpServletResponse) {
             HttpServletResponse httpResp = (HttpServletResponse) resp;
-            httpResp.reset();
-            httpResp.setContentType("text/html; charset=UTF-8");
-            Writer w = httpResp.getWriter();
-            DevTools.debugHtml(w, context, e);
-            w.flush();
-            context.responseComplete();
+            if (!httpResp.isCommitted()) {
+	            httpResp.reset();
+	            httpResp.setContentType("text/html; charset=UTF-8");
+	            Writer w = httpResp.getWriter();
+	            DevTools.debugHtml(w, context, e);
+	            w.flush();
+	            context.responseComplete();
+            }
         } else if (e instanceof RuntimeException) {
             throw (RuntimeException) e;
         } else if (e instanceof IOException) {

@@ -30,10 +30,10 @@ public class ReflectionUtil {
         if (c == null) {
             if (name.endsWith("[]")) {
                 String nc = name.substring(0, name.length() - 2);
-                c = Class.forName(nc, true, Thread.currentThread().getContextClassLoader());
+                c = Class.forName(nc, false, Thread.currentThread().getContextClassLoader());
                 c = Array.newInstance(c, 0).getClass();
             } else {
-                c = Class.forName(name, true, Thread.currentThread().getContextClassLoader());
+                c = Class.forName(name, false, Thread.currentThread().getContextClassLoader());
             }
         }
         return c;

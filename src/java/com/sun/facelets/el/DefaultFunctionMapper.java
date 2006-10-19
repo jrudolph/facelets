@@ -34,7 +34,7 @@ import com.sun.facelets.util.ReflectionUtil;
  * @see javax.el.FunctionMapper
  * 
  * @author Jacob Hookom
- * @version $Id: DefaultFunctionMapper.java,v 1.4 2006/08/06 19:40:40 jhook Exp $
+ * @version $Id: DefaultFunctionMapper.java,v 1.5 2006/10/19 03:48:12 jhook Exp $
  */
 public final class DefaultFunctionMapper extends FunctionMapper implements
 		Externalizable {
@@ -166,7 +166,7 @@ public final class DefaultFunctionMapper extends FunctionMapper implements
 		public Method getMethod() {
 			if (this.m == null) {
 				try {
-					Class t = Class.forName(this.owner);
+					Class t = ReflectionUtil.forName(this.owner);
 					Class[] p = ReflectionUtil.toTypeArray(this.types);
 					this.m = t.getMethod(this.name, p);
 				} catch (Exception e) {

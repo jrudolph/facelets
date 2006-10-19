@@ -38,13 +38,14 @@ import com.sun.facelets.tag.TagHandler;
 import com.sun.facelets.tag.TagLibrary;
 import com.sun.facelets.util.ParameterCheck;
 import com.sun.facelets.util.Classpath;
+import com.sun.facelets.util.ReflectionUtil;
 
 /**
  * Handles creating a {@link com.sun.facelets.tag.TagLibrary TagLibrary} from a
  * {@link java.net.URL URL} source.
  * 
  * @author Jacob Hookom
- * @version $Id: TagLibraryConfig.java,v 1.9 2006/05/03 05:18:10 jhook Exp $
+ * @version $Id: TagLibraryConfig.java,v 1.10 2006/10/19 03:48:12 jhook Exp $
  */
 public final class TagLibraryConfig {
 
