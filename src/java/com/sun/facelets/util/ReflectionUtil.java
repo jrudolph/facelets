@@ -103,8 +103,9 @@ public class ReflectionUtil {
             return m;
         }
 
-        for (Class c: dclass.getInterfaces()) {
-            m = getMethod(c, methodName, paramTypes);
+        Class[] intf = dclass.getInterfaces();
+        for (int i = 0; i < intf.length; i++) {
+            m = getMethod(intf[i], methodName, paramTypes);
             if (m != null) {
                 return m;
             }
