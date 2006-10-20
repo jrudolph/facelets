@@ -48,7 +48,7 @@ import com.sun.facelets.util.ReflectionUtil;
  * @see javax.faces.event.ActionListener
  * @see javax.faces.component.ActionSource
  * @author Jacob Hookom
- * @version $Id: ActionListenerHandler.java,v 1.4 2006/10/19 03:48:11 jhook Exp $
+ * @version $Id: ActionListenerHandler.java,v 1.5 2006/10/20 01:14:45 jhook Exp $
  */
 public final class ActionListenerHandler extends TagHandler {
 	
@@ -134,7 +134,11 @@ public final class ActionListenerHandler extends TagHandler {
         if (parent instanceof ActionSource) {
         	if (ComponentSupport.isNew(parent)) {
 				ActionSource as = (ActionSource) parent;
-				ActionListener listener = new LazyActionListener(this.listenerType, this.binding.getValueExpression(ctx, ActionListener.class));
+				ValueExpression b = null;
+				if (this.binding != null) {
+					b = this.binding.getValueExpression(ctx, ActionListener.class);
+				}
+				ActionListener listener = new LazyActionListener(this.listenerType, b);
 				as.addActionListener(listener);
 			}
         } else {

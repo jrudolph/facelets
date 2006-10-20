@@ -24,6 +24,7 @@ import javax.faces.component.EditableValueHolder;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
+import javax.faces.event.ActionListener;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.event.ValueChangeListener;
 
@@ -132,9 +133,12 @@ public final class ValueChangeListenerHandler extends TagHandler {
 		if (parent instanceof EditableValueHolder) {
 			if (ComponentSupport.isNew(parent)) {
 				EditableValueHolder evh = (EditableValueHolder) parent;
+				ValueExpression b = null;
+				if (this.binding != null) {
+					b = this.binding.getValueExpression(ctx, ValueChangeListener.class);
+				}
 				ValueChangeListener listener = new LazyValueChangeListener(
-						this.listenerType, this.binding.getValueExpression(ctx,
-								ValueChangeListener.class));
+						this.listenerType, b);
 				evh.addValueChangeListener(listener);
 			}
 		} else {

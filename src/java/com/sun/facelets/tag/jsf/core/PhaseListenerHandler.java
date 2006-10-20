@@ -13,6 +13,7 @@ import javax.faces.event.AbortProcessingException;
 import javax.faces.event.PhaseEvent;
 import javax.faces.event.PhaseId;
 import javax.faces.event.PhaseListener;
+import javax.faces.event.ValueChangeListener;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
@@ -122,10 +123,13 @@ public class PhaseListenerHandler extends TagHandler {
 			if (root == null) {
 				throw new TagException(this.tag, "UIViewRoot not available");
 			}
+			ValueExpression b = null;
+			if (this.binding != null) {
+				b = this.binding.getValueExpression(ctx, PhaseListener.class);
+			}
 
-			PhaseListener pl = new LazyPhaseListener(this.listenerType,
-					this.binding.getValueExpression(ctx, PhaseListener.class));
-			
+			PhaseListener pl = new LazyPhaseListener(this.listenerType, b);
+
 			root.addPhaseListener(pl);
 		}
 	}
