@@ -2,12 +2,12 @@
  * Licensed under the Common Development and Distribution License,
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.sun.com/cddl/
- *   
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
  * implied. See the License for the specific language governing
  * permissions and limitations under the License.
  */
@@ -55,7 +55,7 @@ import com.sun.facelets.util.ReflectionUtil;
 
 /**
  * ViewHandler implementation for Facelets
- * 
+ *
  * @author Jacob Hookom
  * @version $Id: FaceletViewHandler.java,v 1.49.2.6 2006/03/20 07:22:00 jhook
  *          Exp $
@@ -76,20 +76,20 @@ public class FaceletViewHandler extends ViewHandler {
      * handled by Facelets, and what should not. When left unset, all URLs will
      * be handled by Facelets. When set, it must be a semicolon separated list
      * of either extension mappings or prefix mappings. For example:
-     * 
+     *
      * <pre>
-     *    
-     *     
-     *      
+     *
+     *
+     *
      *        &lt;context-param&gt;
      *          &lt;param-name&gt;facelets.VIEW_MAPPINGS&lt;/param-name&gt;
      *          &lt;param-value&gt;/demos/*; *.xhtml&lt;/param-value&gt;
      *        &lt;/context-param&gt;
-     *       
-     *      
-     *     
+     *
+     *
+     *
      * </pre>
-     * 
+     *
      * would use Facelets for processing all viewIds in the "/demos" directory
      * or that end in .xhtml, and use the standard JSP engine for all other
      * viewIds.
@@ -138,7 +138,7 @@ public class FaceletViewHandler extends ViewHandler {
     private String[] prefixesArray;
 
     /**
-     * 
+     *
      */
     public FaceletViewHandler(ViewHandler parent) {
         this.parent = parent;
@@ -342,7 +342,7 @@ public class FaceletViewHandler extends ViewHandler {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see javax.faces.application.ViewHandlerWrapper#getWrapped()
      */
     protected ViewHandler getWrapped() {
@@ -369,10 +369,10 @@ public class FaceletViewHandler extends ViewHandler {
         }
 
         // get our content type
-        String contentType = null;
+        String contentType = (String)extContext.getRequestMap().get("facelets.ContentType");
 
         // get the encoding
-        String encoding = null;
+        String encoding = (String) extContext.getRequestMap().get("facelets.Encoding");
 
         // Create a dummy ResponseWriter with a bogus writer,
         // so we can figure out what content type the ReponseWriter
@@ -397,7 +397,7 @@ public class FaceletViewHandler extends ViewHandler {
 
     /**
      * Generate the encoding
-     * 
+     *
      * @param context
      * @param orig
      * @return
@@ -448,7 +448,7 @@ public class FaceletViewHandler extends ViewHandler {
 
     /**
      * Generate the content type
-     * 
+     *
      * @param context
      * @param orig
      * @return
