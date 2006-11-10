@@ -166,11 +166,13 @@ public class FaceletFilter implements Filter {
 
             if (!async.getEncoded().isEmpty()) {
                 httpResp.setHeader("javax.faces.Async", "true");
+                httpResp.setHeader("javax.faces.ViewState", async.getViewState());
                 httpResp.setContentType("text/xml");
                 baos.reset();
-                baos.write("<async-resp state=\"".getBytes());
-                baos.write(async.getViewState().getBytes());
-                baos.write("\">".getBytes());
+                baos.write("<async-resp>".getBytes());
+//                baos.write("<view-state><![CDATA[".getBytes());
+//                baos.write(async.getViewState().getBytes());
+//                baos.write("]]></view-state>".getBytes());
                 for (Map.Entry<String, String> e : async.getEncoded()
                         .entrySet()) {
                     baos.write("<encode id=\"".getBytes());

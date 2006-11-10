@@ -163,13 +163,13 @@ public class UIFacelet extends UIViewRoot {
                 }
                 
                 // write state
+                fw.reset();
                 StateCapture sc = new StateCapture(rw.cloneWithWriter(fw));
                 faces.setResponseWriter(sc);
                 StateManager sm = faces.getApplication().getStateManager();
-                Object stateObj = sm.saveSerializedView(faces);
-                sm.writeState(faces,
-                        (StateManager.SerializedView) stateObj);
-                async.setViewState(sc.getState());
+                Object stateObj = sm.saveView(faces);
+                sm.writeState(faces, stateObj);
+                async.setViewState(fw.toString());
                 
             } catch (FacesException e) {
                 if (e.getCause() instanceof IOException) {

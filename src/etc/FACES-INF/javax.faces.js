@@ -232,7 +232,7 @@ Object.extend(Object.extend(Faces.Event.prototype, Ajax.Request.prototype), {
 	  if (state) {
 		  var hf = $('javax.faces.ViewState');
 		  if (hf) {
-			  hf.value = state;
+			  Element.replace(hf,state);
 		  }
 	  }
   },
