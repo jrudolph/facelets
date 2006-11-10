@@ -15,7 +15,9 @@
 package com.sun.facelets.tag.ui;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -29,7 +31,7 @@ import com.sun.facelets.util.FastWriter;
 
 /**
  * @author Jacob Hookom
- * @version $Id: UIDebug.java,v 1.4 2006/01/14 06:46:16 jhook Exp $
+ * @version $Id: UIDebug.java,v 1.4.8.1 2006/11/10 06:26:10 jhook Exp $
  */
 public final class UIDebug extends UIComponentBase {
 
@@ -49,6 +51,18 @@ public final class UIDebug extends UIComponentBase {
 
     public String getFamily() {
         return COMPONENT_FAMILY;
+    }
+
+    public List getChildren() {
+        return new ArrayList() {
+            public boolean add(Object o) {
+                throw new IllegalStateException("<ui:debug> does not support children");
+            }
+
+            public void add(int index, Object o) {
+                throw new IllegalStateException("<ui:debug> does not support children");
+            }
+        };
     }
 
     public void encodeBegin(FacesContext faces) throws IOException {

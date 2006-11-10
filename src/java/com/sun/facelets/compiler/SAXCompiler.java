@@ -14,9 +14,12 @@
 
 package com.sun.facelets.compiler;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.el.ELException;
 import javax.faces.FacesException;
@@ -47,9 +50,10 @@ import com.sun.facelets.tag.TagAttributes;
  * @see com.sun.facelets.compiler.Compiler
  * 
  * @author Jacob Hookom
- * @version $Id: SAXCompiler.java,v 1.10.2.1 2006/05/05 06:49:49 jhook Exp $
+ * @version $Id: SAXCompiler.java,v 1.10.2.2 2006/11/10 06:26:08 jhook Exp $
  */
 public final class SAXCompiler extends Compiler {
+    private final static Pattern XmlDeclaration = Pattern.compile("^<\\?xml.+?version=['\"](.+?)['\"](.+?encoding=['\"]((.+?))['\"])?.*?\\?>");
 
     private static class CompilationHandler extends DefaultHandler implements
             LexicalHandler {
@@ -219,10 +223,11 @@ public final class SAXCompiler extends Compiler {
             FaceletException, ELException, FacesException {
         CompilationManager mngr = null;
         InputStream is = null;
+        String encoding = "UTF-8";
         try {
-            is = src.openStream();
+            is = new BufferedInputStream(src.openStream(), 1024);
             mngr = new CompilationManager(alias, this.getFaceletConfig());
-            writeXmlDecl(src, mngr);
+            encoding = writeXmlDecl(is, mngr);
             CompilationHandler handler = new CompilationHandler(mngr, alias);
             SAXParser parser = this.createSAXParser(handler);
             parser.parse(is, handler);
@@ -237,31 +242,29 @@ public final class SAXCompiler extends Compiler {
                 is.close();
             }
         }
-        return mngr.createFaceletHandler();
+        return new EncodingHandler(mngr.createFaceletHandler(), encoding);
     }
 
-    protected static final void writeXmlDecl(URL src, CompilationManager mngr)
+    protected static final String writeXmlDecl(InputStream is, CompilationManager mngr)
             throws IOException {
-        InputStream is = null;
+        is.mark(128);
+        String encoding = "UTF-8";
         try {
-            is = src.openStream();
             byte[] b = new byte[128];
             if (is.read(b) > 0) {
                 String r = new String(b);
-                int s = r.indexOf("<?xml");
-                if (s >= 0) {
-                    int e = r.indexOf("?>", s);
-                    if (e > 0) {
-                        mngr.writeInstruction(r.substring(s, e + 2) + '\n');
+                Matcher m = XmlDeclaration.matcher(r);
+                if (m.find()) {
+                    mngr.writeInstruction(m.group(0) + "\n");
+                    if (m.group(3) != null) {
+                        encoding = m.group(3);
                     }
                 }
             }
-
         } finally {
-            if (is != null) {
-                is.close();
-            }
+            is.reset();
         }
+        return encoding;
     }
 
     private final SAXParser createSAXParser(CompilationHandler handler)

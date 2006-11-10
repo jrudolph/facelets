@@ -38,7 +38,7 @@ import com.sun.facelets.tag.jsf.ComponentSupport;
  * documentation</a>.
  * 
  * @author Jacob Hookom
- * @version $Id: ViewHandler.java,v 1.3 2006/03/29 04:10:09 jhook Exp $
+ * @version $Id: ViewHandler.java,v 1.3.2.1 2006/11/10 06:26:07 jhook Exp $
  */
 public final class ViewHandler extends TagHandler {
 
@@ -49,6 +49,8 @@ public final class ViewHandler extends TagHandler {
     private final TagAttribute renderKitId;
     
     private final TagAttribute contentType;
+    
+    private final TagAttribute encoding;
 
     private final TagAttribute beforePhaseListener;
 
@@ -62,6 +64,7 @@ public final class ViewHandler extends TagHandler {
         this.locale = this.getAttribute("locale");
         this.renderKitId = this.getAttribute("renderKitId");
         this.contentType = this.getAttribute("contentType");
+        this.encoding = this.getAttribute("encoding");
         this.beforePhaseListener = this.getAttribute("beforePhaseListener");
         this.afterPhaseListener = this.getAttribute("afterPhaseListener");
     }
@@ -86,7 +89,11 @@ public final class ViewHandler extends TagHandler {
             }
             if (this.contentType != null) {
                 String v = this.contentType.getValue(ctx);
-                root.getAttributes().put("contentType", v);
+                ctx.getFacesContext().getExternalContext().getRequestMap().put("facelets.ContentType", v);
+            }
+            if (this.encoding != null) {
+                String v = this.encoding.getValue(ctx);
+                ctx.getFacesContext().getExternalContext().getRequestMap().put("facelets.Encoding", v);
             }
             if (this.beforePhaseListener != null) {
                 MethodExpression m = this.beforePhaseListener

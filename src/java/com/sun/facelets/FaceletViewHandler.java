@@ -66,6 +66,7 @@ public class FaceletViewHandler extends ViewHandler {
 
     public final static String PARAM_REFRESH_PERIO = "facelets.REFRESH_PERIOD";
 
+
     /**
      * Context initialization parameter for defining what viewIds should be
      * handled by Facelets, and what should not. When left unset, all URLs will
@@ -123,42 +124,6 @@ public class FaceletViewHandler extends ViewHandler {
 
     // Array of viewId prefixes that should be handled by Facelets
     private String[] prefixesArray;
-
-    protected static void removeTransient(UIComponent c) {
-        UIComponent d, e;
-        if (c.getChildCount() > 0) {
-            for (Iterator itr = c.getChildren().iterator(); itr.hasNext();) {
-                d = (UIComponent) itr.next();
-                if (d.getFacets().size() > 0) {
-                    for (Iterator jtr = d.getFacets().values().iterator(); jtr
-                            .hasNext();) {
-                        e = (UIComponent) jtr.next();
-                        if (e.isTransient()) {
-                            jtr.remove();
-                        } else {
-                            removeTransient(e);
-                        }
-                    }
-                }
-                if (d.isTransient()) {
-                    itr.remove();
-                } else {
-                    removeTransient(d);
-                }
-            }
-        }
-        if (c.getFacets().size() > 0) {
-            for (Iterator itr = c.getFacets().values().iterator(); itr
-                    .hasNext();) {
-                d = (UIComponent) itr.next();
-                if (d.isTransient()) {
-                    itr.remove();
-                } else {
-                    removeTransient(d);
-                }
-            }
-        }
-    }
 
     /**
      * 
@@ -328,10 +293,10 @@ public class FaceletViewHandler extends ViewHandler {
         }
 
         // get our content type
-        String contentType = null;
+        String contentType = (String)extContext.getRequestMap().get("facelets.ContentType");
 
         // get the encoding
-        String encoding = request.getCharacterEncoding();
+        String encoding = (String) extContext.getRequestMap().get("facelets.Encoding");
 
         // Create a dummy ResponseWriter with a bogus writer,
         // so we can figure out what content type the ReponseWriter
@@ -339,15 +304,87 @@ public class FaceletViewHandler extends ViewHandler {
         ResponseWriter writer = renderKit.createResponseWriter(
                 NullWriter.Instance, contentType, encoding);
 
-        contentType = writer.getContentType();
-        encoding = writer.getCharacterEncoding();
+        contentType = getResponseContentType(context, writer.getContentType());
+        encoding = getResponseEncoding(context, writer.getCharacterEncoding());
 
-        // see if we need to override it
-        Map m = context.getViewRoot().getAttributes();
-        if (m.containsKey("contentType")) {
-            contentType = (String) m.get("contentType");
+        // apply them to the response
+        response.setContentType(contentType + "; charset=" + encoding);
+
+        // removed 2005.8.23 to comply with J2EE 1.3
+        // response.setCharacterEncoding(encoding);
+
+        // Now, clone with the real writer
+        writer = writer.cloneWithWriter(response.getWriter());
+
+        return writer;
+    }
+    /**
+     * Generate the encoding
+     * 
+     * @param context
+     * @param orig
+     * @return
+     */
+    protected String getResponseEncoding(FacesContext context, String orig) {
+        String encoding = orig;
+
+        // see if we need to override the encoding
+        Map m = context.getExternalContext().getRequestMap();
+        Map sm = context.getExternalContext().getSessionMap();
+
+        // 1. check the request attribute
+        if (m.containsKey("facelets.Encoding")) {
+            encoding = (String) m.get("facelets.Encoding");
             if (log.isLoggable(Level.FINEST)) {
-                log.finest("UIViewRoot specified alternate contentType '"
+                log.finest("Facelet specified alternate encoding '" + encoding
+                        + "'");
+            }
+            sm.put(CHARACTER_ENCODING_KEY, encoding);
+        }
+
+        // 2. get it from request
+        Object request = context.getExternalContext().getRequest();
+        if (encoding == null && request instanceof ServletRequest) {
+            encoding = ((ServletRequest) request).getCharacterEncoding();
+        }
+
+        // 3. get it from the session
+        if (encoding == null) {
+            encoding = (String) sm.get(CHARACTER_ENCODING_KEY);
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("Session specified alternate encoding '" + encoding
+                        + "'");
+            }
+        }
+
+        // 4. default it
+        if (encoding == null) {
+            encoding = "UTF-8";
+            if (log.isLoggable(Level.FINEST)) {
+                log
+                        .finest("ResponseWriter created had a null CharacterEncoding, defaulting to UTF-8");
+            }
+        }
+
+        return encoding;
+    }
+
+    /**
+     * Generate the content type
+     * 
+     * @param context
+     * @param orig
+     * @return
+     */
+    protected String getResponseContentType(FacesContext context, String orig) {
+        String contentType = orig;
+
+        // see if we need to override the contentType
+        Map m = context.getExternalContext().getRequestMap();
+        if (m.containsKey("facelets.ContentType")) {
+            contentType = (String) m.get("facelets.ContentType");
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("Facelet specified alternate contentType '"
                         + contentType + "'");
             }
         }
@@ -360,24 +397,8 @@ public class FaceletViewHandler extends ViewHandler {
                         .finest("ResponseWriter created had a null ContentType, defaulting to text/html");
             }
         }
-        if (encoding == null) {
-            encoding = "UTF-8";
-            if (log.isLoggable(Level.FINEST)) {
-                log
-                        .finest("ResponseWriter created had a null CharacterEncoding, defaulting to UTF-8");
-            }
-        }
 
-        // apply them to the response
-        response.setContentType(contentType + "; charset=" + encoding);
-
-        // removed 2005.8.23 to comply with J2EE 1.3
-        // response.setCharacterEncoding(encoding);
-
-        // Now, clone with the real writer
-        writer = writer.cloneWithWriter(response.getWriter());
-
-        return writer;
+        return contentType;
     }
 
     protected void buildView(FacesContext context, UIViewRoot viewToRender)
@@ -483,40 +504,53 @@ public class FaceletViewHandler extends ViewHandler {
 
             // remove transients for older versions
             if (FacesAPI.getVersion() < 12) {
-                removeTransient(viewToRender);
+                ComponentSupport.removeTransient(viewToRender);
             }
 
             boolean writtenState = stateWriter.isStateWritten();
 
             // flush to origWriter
-            if (writtenState
-                    && ((stateMgr.isSavingStateInClient(context) || FacesAPI
-                            .getVersion() >= 12))) {
-
+            if (writtenState) {
                 String content = stateWriter.getAndResetBuffer();
                 int end = content.indexOf(STATE_KEY);
+                // See if we can find any trace of the saved state.
+                // If so, we need to perform token replacement
                 if (end >= 0) {
                     // save state
                     Object stateObj = stateMgr.saveSerializedView(context);
-                    stateMgr.writeState(context,
-                            (StateManager.SerializedView) stateObj);
-                    String stateStr = stateWriter.getAndResetBuffer();
+                    String stateStr;
+                    if (stateObj == null) {
+                        stateStr = null;
+                    } else {
+                        stateMgr.writeState(context,
+                                       (StateManager.SerializedView) stateObj);
+                        stateStr = stateWriter.getAndResetBuffer();
+                    }
+
                     int start = 0;
 
                     while (end != -1) {
                         origWriter.write(content, start, end - start);
-                        origWriter.write(stateStr);
+                        if (stateStr != null) {
+                            origWriter.write(stateStr);
+                        }
                         start = end + STATE_KEY_LEN;
                         end = content.indexOf(STATE_KEY, start);
                     }
                     origWriter.write(content, start, content.length() - start);
+                // No trace of any saved state, so we just need to flush
+                // the buffer
                 } else {
                     origWriter.write(content);
+                    // But for JSF 1.1 (actually, just 1.1_01 RI), if we didn't
+                    // detect any saved state, force a call to
+                    // saveSerializedView() in case we're using the old
+                    // pure-server-side state saving
+                    if ((FacesAPI.getVersion() < 12)
+                        && !stateMgr.isSavingStateInClient(context)) {
+                        stateMgr.saveSerializedView(context);
+                    }
                 }
-            } else if (writtenState) {
-                // Wrote state, but don't actually need to output any state;
-                // just flush the buffer
-                origWriter.write(stateWriter.getAndResetBuffer());
             }
 
             time = System.currentTimeMillis() - time;
@@ -556,12 +590,14 @@ public class FaceletViewHandler extends ViewHandler {
         if (this.config.isDevelopmentMode() && !context.getResponseComplete()
                 && resp instanceof HttpServletResponse) {
             HttpServletResponse httpResp = (HttpServletResponse) resp;
+            if (!httpResp.isCommitted()) {
             httpResp.reset();
             httpResp.setContentType("text/html; charset=UTF-8");
             Writer w = httpResp.getWriter();
             DevTools.debugHtml(w, context, e);
             w.flush();
             context.responseComplete();
+            }
         } else if (e instanceof RuntimeException) {
             throw (RuntimeException) e;
         } else if (e instanceof IOException) {
@@ -642,12 +678,11 @@ public class FaceletViewHandler extends ViewHandler {
         if (handledByFacelets(context.getViewRoot().getViewId())) {
             // Tell the StateWriter that we're about to write state
             StateWriter.getCurrentInstance().writingState();
-
-            StateManager stateMgr = context.getApplication().getStateManager();
-            if (stateMgr.isSavingStateInClient(context)
-                    || FacesAPI.getVersion() >= 12) {
-                context.getResponseWriter().write(STATE_KEY);
-            }
+            // Write the STATE_KEY out.  Unfortunately, this will
+            // be wasteful for pure server-side state managers where nothing
+            // is actually written into the output, but this cannot
+            // programatically be discovered
+            context.getResponseWriter().write(STATE_KEY);
         } else {
             this.parent.writeState(context);
         }

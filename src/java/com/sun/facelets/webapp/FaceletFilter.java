@@ -4,13 +4,9 @@ import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.StringWriter;
 import java.net.URL;
-import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.Filter;
@@ -23,14 +19,10 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.collections.EnumerationIterator;
-import org.apache.commons.collections.IteratorEnumeration;
-
 import com.sun.facelets.component.AsyncResponse;
 import com.sun.facelets.component.UIFacelet;
 import com.sun.facelets.resource.ClasspathResource;
 import com.sun.facelets.resource.Resource;
-import com.sun.facelets.util.FastWriter;
 
 public class FaceletFilter implements Filter {
 
