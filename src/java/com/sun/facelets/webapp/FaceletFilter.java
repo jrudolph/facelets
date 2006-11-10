@@ -176,12 +176,12 @@ public class FaceletFilter implements Filter {
                     baos.write("<encode id=\"".getBytes());
                     baos.write(e.getKey().getBytes());
                     baos.write("\"><![CDATA[".getBytes());
-                    baos.write(e.getValue().getBytes());
+                    baos.write(e.getValue().replaceAll("]]>","]]@@").getBytes());
                     baos.write("]]></encode>".getBytes());
                 }
                 if (b.length > 0) {
                     baos.write("<data><![CDATA[".getBytes());
-                    baos.write(b);
+                    baos.write(new String(b).replaceAll("]]>","]]@@").getBytes());
                     baos.write("]]></data>".getBytes());
                 }
                 baos.write("</async-resp>".getBytes());

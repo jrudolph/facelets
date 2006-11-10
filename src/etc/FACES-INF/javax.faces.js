@@ -222,6 +222,7 @@ Object.extend(Object.extend(Faces.Event.prototype, Ajax.Request.prototype), {
 			  id = encode[i].getAttribute('id');
 			  content = encode[i].firstChild;
 			  markup = content.text || content.data;
+			  markup = markup.replace(']]@@',']]>');
 			  str = markup.stripScripts();
 			  Element.replace(id, str);
 			  markup.evalScripts();
