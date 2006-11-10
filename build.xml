@@ -198,23 +198,26 @@
     </copy>
          
   </target>
+	
+  <!-- ========================= Create Demos ========================= -->
+  <target name="demos" depends="dependencies, dist">
+  	<ant target="-build-demo" antfile="demo/numberguess/build.xml"/>
+  	<ant target="-build-demo" antfile="demo/hangman/build.xml"/>
+  	<ant target="-build-demo" antfile="demo/starterkit/build.xml"/>
+  	<ant target="-build-demo" antfile="demo/portlet/build.xml"/>
+  	<ant target="build-demo" antfile="demo/j1/build.xml"/>
+  </target>
 
   <!-- ========================= Create Release ========================= -->
-  <target name="release" depends="clean, dependencies, doc, dist">
+  <target name="release" depends="clean, dependencies, doc, dist, demos">
     <mkdir dir="${release}/facelets-${release.version}"/>
-	<ant target="-build-demo" antfile="demo/numberguess/build.xml"/>
-	<ant target="-build-demo" antfile="demo/hangman/build.xml"/>
-	<ant target="-build-demo" antfile="demo/starterkit/build.xml"/>
-	<ant target="-build-demo" antfile="demo/portlet/build.xml"/>
-	<ant target="build-demo" antfile="demo/j1/build.xml"/>
     <copy todir="${release}/facelets-${release.version}" includeEmptyDirs="false">
        <fileset dir="${dist}"/>
     </copy>
     <mkdir dir="${release}/facelets-${release.version}/lib"/>
 	<copy todir="${release}/facelets-${release.version}/lib">
       <fileset dir="${lib}">
-        <exclude name="servlet-api.jar"/>
-		<exclude name="j2ee.jar"/>
+		<exclude name="javaee.jar"/>
       </fileset>
     </copy>
     <copy file="README.TXT" todir="${release}/facelets-${release.version}"/>
