@@ -20,7 +20,7 @@ body {
 	font-family: Verdana, Arial, Helvetica, sans-serif;
 	font-size: 11px;
 	color: #67717D;
-	width: 680px;
+	width: 820px;
 	margin-left: auto;
 	margin-right: auto;
 }
@@ -151,6 +151,11 @@ ul.menubar  {
 	border-right: 0;
 }
 
+.top {
+	background: #fff url(hdr.bg.gif) 0 100% repeat-x;
+	padding: 4px;
+	border-bottom: 1px solid #CCC;
+}
 
 .source {
 	padding-bottom: 20px;
@@ -175,4 +180,31 @@ ul.menubar  {
 }
 .code i {
 	color: #093;
+}
+
+/* table
+----------------------------------------------- */
+th {
+	
+}
+
+/* buttons
+----------------------------------------------- */
+input.delete {
+	border: 0;
+	padding: 0;
+	background: none;
+}
+input.orange{
+	cursor:hand;
+	color:#FFF;
+	font-weight:bold;
+	padding:2px 1px;
+	margin:0px;
+	white-space:nowrap;
+	background: #E76F00 url(btn.orange.gif) 0 100% repeat-x;
+	border-right:1px solid #C06600;
+	border-bottom:1px solid #C06600;
+	border-left:1px solid #FAE2CC;
+	border-top:1px solid #FAE2CC;
 }
