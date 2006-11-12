@@ -178,12 +178,12 @@ public class FaceletFilter implements Filter {
                     baos.write("<encode id=\"".getBytes());
                     baos.write(e.getKey().getBytes());
                     baos.write("\"><![CDATA[".getBytes());
-                    baos.write(e.getValue().replaceAll("]]>","]]@@").getBytes());
+                    baos.write(e.getValue().replaceAll("<!\\[CDATA\\[", "").replaceAll("]]>", "").getBytes());
                     baos.write("]]></encode>".getBytes());
                 }
                 if (b.length > 0) {
                     baos.write("<data><![CDATA[".getBytes());
-                    baos.write(new String(b).replaceAll("]]>","]]@@").getBytes());
+                    baos.write(new String(b).replaceAll("<!\\[CDATA\\[", "").replaceAll("]]>", "").getBytes());
                     baos.write("]]></data>".getBytes());
                 }
                 baos.write("</async-resp>".getBytes());
@@ -197,8 +197,8 @@ public class FaceletFilter implements Filter {
     }
 
     public void destroy() {
-        // TODO Auto-generated method stub
-
+        this.resourceCache.clear();
+        this.faceletConfig = null;
     }
 
 }

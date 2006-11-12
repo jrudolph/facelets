@@ -213,6 +213,7 @@ Object.extend(Object.extend(Faces.Event.prototype, Ajax.Request.prototype), {
 	  //alert(this.transport.getAllResponseHeaders());
 	  var async = this.header('javax.faces.Async');
 	  var state = this.header('javax.faces.ViewState');
+
 	  if (async) {
 		  var xml = this.transport.responseXML;
 		  state = state || xml.getElementsByTagName('async-resp')[0].getAttribute('state');
@@ -225,7 +226,6 @@ Object.extend(Object.extend(Faces.Event.prototype, Ajax.Request.prototype), {
 			  markup = markup.replace(']]@@',']]>');
 			  str = markup.stripScripts();
 			  Element.replace(id, str);
-			  markup.evalScripts();
 		  }
 	  }
 	  
@@ -242,7 +242,7 @@ Object.extend(Object.extend(Faces.Event.prototype, Ajax.Request.prototype), {
 		  //alert(text);
 		  if (text) {
 			  try {
-			      text.evalScripts();
+			      text.replace(']]@@',']]>').evalScripts();
 			  } catch (e) {}
 		  }
 	  }
