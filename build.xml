@@ -7,7 +7,12 @@
   <property file="user.properties" />
   <property file="build.properties"/>
   <property file="${user.home}/build.properties"/>
-                                                                                
+
+  <property name="facelets.build.home"       value="${basedir}"/>
+
+  <import
+      file="${facelets.build.home}/common/ant/dependencies.xml"/>
+
   <!-- Establish property definition defaults -->
   <property name="compile.debug"       value="true"/>
   <property name="compile.deprecation" value="false"/>
@@ -19,8 +24,10 @@
   <property name="lib"                 value="lib"/>
   <property name="release"             value="release"/>
   <property name="doc"                 value="doc"/>
-  <property name="dependencies"        value="dependencies"/>
-  <property name="jsf-api.jar"         value="${basedir}/../javaserverfaces-sources/jsf-api/build/lib/jsf-api.jar" />
+  <property name="dependencies"        value="${basedir}/dependencies" />
+  <property name="jsf-api.jar"         value="${dependencies}/jsf-api.jar" />
+  <property name="portlet-api.jar"     value="${dependencies}/portlet-api.jar" />
+  <property name="servlet-api.jar"     value="${dependencies}/servlet-api.jar" />
   <property name="jar"                 value="jsf-facelets.jar"/>
 
 
@@ -29,12 +36,14 @@
     <fileset dir="lib" includes="*.jar"/>
     <pathelement location="${jsf-api.jar}"/>
     <pathelement location="${servlet-api.jar}" />
+    <pathelement location="${el-api.jar}" />
+    <pathelement location="${el-impl.jar}" />
     <pathelement location="${}"/>
   </path>
 
 
   <!-- ===================== Prepare Directories ========================= -->
-  <target name="prepare">
+  <target name="prepare" depends="update">
                                                                                 
     <!-- "Build" Hierarchy -->
     <mkdir dir="${build}"/>
@@ -52,7 +61,6 @@
     <mkdir dir="${dist}/demo"/>
 	
     <!-- CVS Dependencies -->
-    <mkdir dir="${dependencies}"/>
     <mkdir dir="${lib}"/>
 
     <uptodate property="docs.uptodate" targetfile="${build}/docs/api/index.html">
@@ -178,7 +186,7 @@
     </jar>
   </target>
  
-  <target name="dist" depends="prepare,dependencies,compile,javadoc,jar"
+  <target name="dist" depends="prepare,compile,javadoc,jar"
    description="Create binary distribution">
                                                                                 
     <!-- Copy Javadocs -->
@@ -199,7 +207,7 @@
   </target>
 
   <!-- ========================= Create Release ========================= -->
-  <target name="release" depends="clean, dependencies, doc, dist">
+  <target name="release" depends="clean, doc, dist">
     <mkdir dir="${release}/facelets-${release.version}"/>
 	<ant target="-build-demo" antfile="demo/numberguess/build.xml"/>
 	<ant target="-build-demo" antfile="demo/hangman/build.xml"/>
@@ -224,7 +232,6 @@
   <!-- ====================== Clean Generated Files ===================== -->
   <target name="clean"
    description="Clean previous build results">
-    <delete dir="${dependencies}"/>                                                                   
     <delete dir="${build}"/>
     <delete dir="${dist}"/>
     <delete dir="${release}"/>
@@ -234,85 +241,8 @@
 
   <!-- ========================= All In One Build ======================= -->
   <target name="all" depends="dist"
-   description="Clean, dependencies, compile, and dist"/>
+   description="Clean, compile, and dist"/>
    
-   
-  <!-- =========================== Dependencies ========================= -->
-  <target name="dependencies" depends="prepare">
-     <condition property="missing.el-api" >
-       <not>
-          <available file="${lib}/el-api.jar"/>
-       </not>
-     </condition>
-     <condition property="missing.el-ri" >
-       <not>
-          <available file="${lib}/el-ri.jar"/>
-       </not>
-     </condition>
-     <ant target="-auto-depend-el-api" />
-     <ant target="-auto-depend-el-ri" />
-  </target>
-
-  <target name="-auto-depend-el-api" if="missing.el-api">
-    <ant target="depend-el-api" />
-  </target>
-
-  <target name="-auto-depend-el-ri" if="missing.el-ri">
-    <ant target="depend-el-ri" />
-  </target>
-  
-  <target name="depend-el-api">
-  	<cvs cvsRoot=":pserver:${java.net.cvs.user}@cvs.dev.java.net:/cvs"
-	     package="glassfish/servlet-api/src/jsr245/src/share/javax/el"
-         dest="${dependencies}" />
-    <mkdir dir="${build}/dependencies/el-api" />
-	<javac srcdir="${dependencies}/glassfish/servlet-api/src/jsr245/src/share"
-          destdir="${build}/dependencies/el-api"
-            debug="${compile.debug}"
-      deprecation="${compile.deprecation}"
-         optimize="${compile.optimize}"
-           source="${compile.source}"
-           target="${compile.target}">
-      <classpath refid="compile.classpath"/>
-    </javac>
-	<copy todir="${build}/dependencies/el-api">
-      <fileset dir="${dependencies}/glassfish/servlet-api/src/jsr245/src/share">
-        <include name="**/*.properties"/>
-        <include name="**/*.xml"/>
-        <include name="**/*.dtd"/>
-	    <include name="**/*.ent"/>
-      </fileset>
-    </copy>
-	<jar jarfile="${lib}/el-api.jar"
-         basedir="${build}/dependencies/el-api" />
-  </target>
-  
-  <target name="depend-el-ri">
-  	<cvs cvsRoot=":pserver:${java.net.cvs.user}@cvs.dev.java.net:/cvs"
-	     package="glassfish/appserv-webtier/src/java/com/sun/el"
-         dest="${dependencies}" />
-	<mkdir dir="${build}/dependencies/el-ri" />
-	<javac srcdir="${dependencies}/glassfish/appserv-webtier/src/java"
-          destdir="${build}/dependencies/el-ri"
-            debug="${compile.debug}"
-      deprecation="${compile.deprecation}"
-         optimize="${compile.optimize}"
-           source="${compile.source}"
-           target="${compile.target}">
-      <classpath refid="compile.classpath"/>
-    </javac>
-	<copy todir="${build}/dependencies/el-ri">
-      <fileset dir="${dependencies}/glassfish/appserv-webtier/src/java">
-        <include name="**/*.properties"/>
-        <include name="**/*.xml"/>
-        <include name="**/*.dtd"/>
-	    <include name="**/*.ent"/>
-      </fileset>
-    </copy>
-	<jar jarfile="${lib}/el-ri.jar"
-         basedir="${build}/dependencies/el-ri" />
-  </target>
-
 <target name="push-to-maven-prepare">
   <taskdef resource="maven-repository-importer.properties">
     <classpath>
