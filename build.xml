@@ -23,6 +23,7 @@
   <property name="dist"                value="dist"/>
   <property name="lib"                 value="lib"/>
   <property name="release"             value="release"/>
+  <property name="release.version"     value="1.1.11a"/>
   <property name="doc"                 value="doc"/>
   <property name="dependencies"        value="${basedir}/dependencies" />
   <property name="jsf-api.jar"         value="${dependencies}/jsf-api.jar" />
@@ -246,7 +247,7 @@
 <target name="push-to-maven-prepare">
   <taskdef resource="maven-repository-importer.properties">
     <classpath>
-      <pathelement path="${lib}/maven-repository-importer-1.1.jar" />
+      <pathelement path="${maven.repository.importer.jar}" />
     </classpath>
   </taskdef>
   <delete dir="${build}/maven-repo" /><!-- clean it -->
@@ -273,6 +274,23 @@
     </commandline>
   </cvs>
 </target>
+
+<target name="push-to-maven-jsf-repo" depends="push-to-maven-prepare">
+  <!-- import to CVS-->
+  <tstamp />
+  <echo>importing to CVS...</echo>
+  <cvs dest="${build}/maven-repo">
+    <commandline>
+      <argument value="-d:pserver:${user.name}@cvs.dev.java.net:/cvs" />
+      <argument line="-z9 import -ko -W *.jar -kb -m" />
+      <argument value="deploying new jars to the java.net maven repository" />
+
+      <argument value="javaserverfaces-sources/repo" />
+      <argument line="deployment-to-maven-repository t${DSTAMP}${TSTAMP}" />
+    </commandline>
+  </cvs>
+</target>
+
  
 </project>
 

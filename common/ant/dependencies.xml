@@ -46,6 +46,7 @@
            jsf-api 1.2
            portlet-api 1.0
            servlet-api 2.4
+           Maven java.net repository importer 1.2
     -->
 
     <property name="dependency.base.dir" 
@@ -55,6 +56,7 @@
     <property name="jsf-api.version" value="1.2"/>
     <property name="portlet-api.version" value="1.0"/>
     <property name="servlet-api.version" value="2.4"/>
+    <property name="maven.repository.importer.version" value="1.2"/>
     <property name="el-api.jar" 
               value="${dependency.base.dir}/el-api-${el-api.version}.jar"/>
     <property name="el-impl.jar" 
@@ -65,6 +67,8 @@
               value="${dependency.base.dir}/portlet-api-${portlet-api.version}.jar"/>
     <property name="servlet-api.jar" 
               value="${dependency.base.dir}/servlet-api-${servlet-api.version}.jar"/>
+    <property name="maven.repository.importer.jar" 
+              value="${dependency.base.dir}/maven.repository.importer-${maven.repository.importer.version}.jar"/>
 
     <target name="update" description="Download project dependencies">
         <!-- setup the proxy if necessary -->
@@ -145,6 +149,21 @@
                      usetimestamp="true"/>
             </then>
         </if>
+
+        <!-- MAVEN REPOSITORY IMPORTER -->
+        <if>
+            <not>
+                <available file="${maven.repository.importer.jar}"
+                           property="ignored"/>
+            </not>
+            <then>
+                <get src="https://maven-repository.dev.java.net/nonav/repository/com.sun.wts.tools.mri/jars/maven-repository-importer-${maven.repository.importer.version}.jar"
+                     dest="${maven.repository.importer.jar}"
+                     usetimestamp="true"/>
+
+            </then>
+        </if>
+
 
 
     </target>
