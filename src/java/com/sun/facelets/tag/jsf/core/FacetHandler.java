@@ -23,13 +23,10 @@ import javax.faces.component.UIComponentBase;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
-import com.sun.facelets.tag.MetaRuleset;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.TagException;
 import com.sun.facelets.tag.TagHandler;
-import com.sun.facelets.tag.jsf.ComponentConfig;
-import com.sun.facelets.tag.jsf.ComponentHandler;
 
 /**
  * Register a named facet on the UIComponent associated with the closest parent
@@ -38,22 +35,44 @@ import com.sun.facelets.tag.jsf.ComponentHandler;
  * documentation</a>.
  * 
  * @author Jacob Hookom
- * @version $Id: FacetHandler.java,v 1.4 2006/12/01 07:31:22 jhook Exp $
+ * @version $Id: FacetHandler.java,v 1.5 2006/12/01 21:07:26 jhook Exp $
  */
-public final class FacetHandler extends ComponentHandler {
+public final class FacetHandler extends TagHandler {
+
+    /**
+     * A UIComponent for capturing a child UIComponent, representative of the
+     * desired Facet
+     * 
+     * @author Jacob Hookom
+     * 
+     */
+    private final static class UIFacet extends UIComponentBase {
+        public String getFamily() {
+            return null;
+        }
+    }
 
     protected final TagAttribute name;
 
-    public FacetHandler(ComponentConfig config) {
+    public FacetHandler(TagConfig config) {
         super(config);
         this.name = this.getRequiredAttribute("name");
     }
 
-	protected void applyComponentToParent(FaceletContext ctx, UIComponent parent, UIComponent c) {
-		parent.getFacets().put(this.name.getValue(ctx), c);
-	}
-
-	protected MetaRuleset createMetaRuleset(Class type) {
-		return super.createMetaRuleset(type).ignoreAll();
-	}
+    /* (non-Javadoc)
+     * @see com.sun.facelets.FaceletHandler#apply(com.sun.facelets.FaceletContext, javax.faces.component.UIComponent)
+     */
+    public void apply(FaceletContext ctx, UIComponent parent)
+            throws IOException, FacesException, FaceletException, ELException {
+        UIFacet facet = new UIFacet();
+        this.nextHandler.apply(ctx, facet);
+        int childCount = facet.getChildCount();
+        UIComponent c;
+        if (childCount == 1) {
+            c = (UIComponent) facet.getChildren().get(0);
+            parent.getFacets().put(this.name.getValue(ctx), c);
+        } else {
+            throw new TagException(this.tag, "Facet Tag can only have one child UIComponent");
+        }
+    }
 }

@@ -17,10 +17,6 @@
 		<component-type>facelets.ui.Debug</component-type>
 		<component-class>com.sun.facelets.tag.ui.UIDebug</component-class>
 	</component>
-	<component>
-		<component-type>facelets.core.Facet</component-type>
-		<component-class>com.sun.facelets.tag.jsf.core.UIFacet</component-class>
-	</component>
 	<render-kit>
         <render-kit-id>HTML_BASIC</render-kit-id>
         <renderer>
