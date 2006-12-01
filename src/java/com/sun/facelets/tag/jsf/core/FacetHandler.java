@@ -35,44 +35,33 @@ import com.sun.facelets.tag.TagHandler;
  * documentation</a>.
  * 
  * @author Jacob Hookom
- * @version $Id: FacetHandler.java,v 1.5 2006/12/01 21:07:26 jhook Exp $
+ * @version $Id: FacetHandler.java,v 1.6 2006/12/01 21:18:26 jhook Exp $
  */
 public final class FacetHandler extends TagHandler {
 
-    /**
-     * A UIComponent for capturing a child UIComponent, representative of the
-     * desired Facet
-     * 
-     * @author Jacob Hookom
-     * 
-     */
-    private final static class UIFacet extends UIComponentBase {
-        public String getFamily() {
-            return null;
-        }
-    }
+	public static final String KEY = "facelets.FACET_NAME";
 
-    protected final TagAttribute name;
+	protected final TagAttribute name;
 
-    public FacetHandler(TagConfig config) {
-        super(config);
-        this.name = this.getRequiredAttribute("name");
-    }
+	public FacetHandler(TagConfig config) {
+		super(config);
+		this.name = this.getRequiredAttribute("name");
+	}
 
-    /* (non-Javadoc)
-     * @see com.sun.facelets.FaceletHandler#apply(com.sun.facelets.FaceletContext, javax.faces.component.UIComponent)
-     */
-    public void apply(FaceletContext ctx, UIComponent parent)
-            throws IOException, FacesException, FaceletException, ELException {
-        UIFacet facet = new UIFacet();
-        this.nextHandler.apply(ctx, facet);
-        int childCount = facet.getChildCount();
-        UIComponent c;
-        if (childCount == 1) {
-            c = (UIComponent) facet.getChildren().get(0);
-            parent.getFacets().put(this.name.getValue(ctx), c);
-        } else {
-            throw new TagException(this.tag, "Facet Tag can only have one child UIComponent");
-        }
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.sun.facelets.FaceletHandler#apply(com.sun.facelets.FaceletContext,
+	 *      javax.faces.component.UIComponent)
+	 */
+	public void apply(FaceletContext ctx, UIComponent parent)
+			throws IOException, FacesException, FaceletException, ELException {
+		String old = (String) ctx.getAttribute(KEY);
+		ctx.setAttribute(KEY, this.name.getValue(ctx));
+		try {
+			this.nextHandler.apply(ctx, parent);
+		} finally {
+			ctx.setAttribute(KEY, old);
+		}
+	}
 }

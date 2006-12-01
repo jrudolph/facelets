@@ -56,7 +56,7 @@ import com.sun.facelets.util.FacesAPI;
  * golden hammer for wiring UIComponents to Facelets.
  * 
  * @author Jacob Hookom
- * @version $Id: ComponentHandler.java,v 1.16 2006/12/01 21:07:26 jhook Exp $
+ * @version $Id: ComponentHandler.java,v 1.17 2006/12/01 21:18:26 jhook Exp $
  */
 public class ComponentHandler extends MetaTagHandler {
 
@@ -117,6 +117,9 @@ public class ComponentHandler extends MetaTagHandler {
         if (parent == null) {
             throw new TagException(this.tag, "Parent UIComponent was null");
         }
+        
+        // possible facet scoped
+        String facetName = this.getFacetName(ctx);
 
         // our id
         String id = ctx.generateUniqueId(this.tagId);
@@ -168,16 +171,31 @@ public class ComponentHandler extends MetaTagHandler {
         // finish cleaning up orphaned children
         if (componentFound) {
             ComponentSupport.finalizeForDeletion(c);
-            parent.getChildren().remove(c);
+            
+            if (facetName == null) {
+            	parent.getChildren().remove(c);
+            }
         }
         
-
         this.onComponentPopulated(ctx, c, parent);
 
         // add to the tree afterwards
         // this allows children to determine if it's
         // been part of the tree or not yet
-        parent.getChildren().add(c);
+        if (facetName == null) {
+        	parent.getChildren().add(c);
+        } else {
+        	parent.getFacets().put(facetName, c);
+        }
+    }
+    
+    /**
+     * Return the Facet name we are scoped in, otherwise null
+     * @param ctx
+     * @return
+     */
+    protected final String getFacetName(FaceletContext ctx) {
+    	return (String) ctx.getAttribute(FacetHandler.KEY);
     }
 
     /**
