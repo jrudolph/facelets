@@ -35,7 +35,7 @@ import com.sun.facelets.tag.TagAttributeException;
 /**
  * 
  * @author Jacob Hookom
- * @version $Id: ComponentSupport.java,v 1.6 2006/05/31 04:11:58 jhook Exp $
+ * @version $Id: ComponentSupport.java,v 1.7 2006/12/01 07:01:59 jhook Exp $
  */
 public final class ComponentSupport {
 
@@ -111,19 +111,29 @@ public final class ComponentSupport {
      * @return
      */
     public static final UIComponent findChildByTagId(UIComponent parent, String id) {
-        int sz = parent.getChildCount();
-        if (sz > 0) {
-            UIComponent c = null;
-            List cl = parent.getChildren();
-            String cid = null;
-            while (--sz >= 0) {
-                c = (UIComponent) cl.get(sz);
-                cid = (String) c.getAttributes().get(MARK_CREATED);
-                if (id.equals(cid)) {
-                    return c;
-                }
-            }
-        }
+    	Iterator itr = parent.getFacetsAndChildren();
+    	UIComponent c = null;
+    	String cid = null;
+    	while (itr.hasNext()) {
+    		c = (UIComponent) itr.next();
+    		cid = (String) c.getAttributes().get(MARK_CREATED);
+    		if (id.equals(cid)) {
+    			return c;
+    		}
+    	}
+//        int sz = parent.getChildCount();
+//        if (sz > 0) {
+//            UIComponent c = null;
+//            List cl = parent.getChildren();
+//            String cid = null;
+//            while (--sz >= 0) {
+//                c = (UIComponent) cl.get(sz);
+//                cid = (String) c.getAttributes().get(MARK_CREATED);
+//                if (id.equals(cid)) {
+//                    return c;
+//                }
+//            }
+//        }
         return null;
     }
 
