@@ -48,6 +48,7 @@ import com.sun.facelets.tag.Metadata;
 import com.sun.facelets.tag.TagException;
 import com.sun.facelets.tag.TagHandler;
 import com.sun.facelets.tag.MetaRuleset;
+import com.sun.facelets.tag.jsf.core.FacetHandler;
 import com.sun.facelets.util.FacesAPI;
 
 /**
@@ -55,7 +56,7 @@ import com.sun.facelets.util.FacesAPI;
  * golden hammer for wiring UIComponents to Facelets.
  * 
  * @author Jacob Hookom
- * @version $Id: ComponentHandler.java,v 1.14 2006/03/29 15:01:22 jhook Exp $
+ * @version $Id: ComponentHandler.java,v 1.15 2006/12/01 07:31:22 jhook Exp $
  */
 public class ComponentHandler extends MetaTagHandler {
 
@@ -176,7 +177,18 @@ public class ComponentHandler extends MetaTagHandler {
         // add to the tree afterwards
         // this allows children to determine if it's
         // been part of the tree or not yet
-        parent.getChildren().add(c);
+        this.applyComponentToParent(ctx, parent, c);
+    }
+    
+    /**
+     * Method for adding the child component to the parent again.  This defaults
+     * adding the child to the parent via 'getChildren'.
+     * <p />
+     * Use the the other 'onXXXX' hook method instead of this method to override
+     * behavior, or make sure you call the super. 
+     */
+    protected void applyComponentToParent(FaceletContext ctx, UIComponent parent, UIComponent c) {
+    	parent.getChildren().add(c);
     }
 
     /**

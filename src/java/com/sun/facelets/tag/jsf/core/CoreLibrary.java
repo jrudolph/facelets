@@ -32,7 +32,7 @@ import com.sun.facelets.tag.AbstractTagLibrary;
  * documentation</a>.
  * 
  * @author Jacob Hookom
- * @version $Id: CoreLibrary.java,v 1.10 2006/10/19 03:48:11 jhook Exp $
+ * @version $Id: CoreLibrary.java,v 1.11 2006/12/01 07:31:22 jhook Exp $
  */
 public final class CoreLibrary extends AbstractTagLibrary {
 
@@ -53,7 +53,7 @@ public final class CoreLibrary extends AbstractTagLibrary {
 
         this.addConverter("converter", null, ConvertDelegateHandler.class);
 
-        this.addTagHandler("facet", FacetHandler.class);
+        this.addComponent("facet", "facelets.core.Facet", null, FacetHandler.class);
 
         this.addTagHandler("loadBundle", LoadBundleHandler.class);
 
