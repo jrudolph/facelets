@@ -18,9 +18,12 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.el.ELContext;
 import javax.el.ELException;
@@ -81,7 +84,7 @@ final class DefaultFaceletContext extends FaceletContext {
     public DefaultFaceletContext(FacesContext faces, DefaultFacelet facelet) {
         this.ctx = ELAdaptor.getELContext(faces);
         this.ids = new HashMap();
-        this.clients = new ArrayList(2);
+        this.clients = new ArrayList(5);
         this.faces = faces;
         this.facelet = facelet;
         this.varMapper = this.ctx.getVariableMapper();
@@ -245,16 +248,23 @@ final class DefaultFaceletContext extends FaceletContext {
 
     public void popClient(TemplateClient client) {
         if (!this.clients.isEmpty()) {
-            this.clients.remove(client);
+            Iterator itr = this.clients.iterator();
+            while (itr.hasNext()) {
+                if (itr.next().equals(client)) {
+                    itr.remove();
+                    return;
+                }
+            }
         }
+        throw new IllegalStateException(client + " not found");
     }
 
     public void pushClient(final TemplateClient client) {
-        this.clients.add(new TemplateClientMomento(this.facelet, client));
+        this.clients.add(0, new TemplateManager(this.facelet, client));
     }
 
     public void extendClient(final TemplateClient client) {
-        this.clients.add(0, new TemplateClientMomento(this.facelet, client));
+        this.clients.add(new TemplateManager(this.facelet, client));
     }
 
     public boolean includeDefinition(UIComponent parent, String name)
@@ -262,7 +272,7 @@ final class DefaultFaceletContext extends FaceletContext {
         boolean found = false;
         TemplateClient client;
 
-        for (int i = this.clients.size() - 1; found == false && i >= 0; i--) {
+        for (int i = 0; i < this.clients.size() && found == false; i++) {
             client = ((TemplateClient) this.clients.get(i));
             if (client.equals(this.facelet))
                 continue;
@@ -272,12 +282,14 @@ final class DefaultFaceletContext extends FaceletContext {
         return found;
     }
 
-    private final static class TemplateClientMomento implements TemplateClient {
+    private final static class TemplateManager implements TemplateClient {
         private final DefaultFacelet owner;
 
         private final TemplateClient target;
 
-        public TemplateClientMomento(DefaultFacelet owner, TemplateClient target) {
+        private final Set names = new HashSet();
+
+        public TemplateManager(DefaultFacelet owner, TemplateClient target) {
             this.owner = owner;
             this.target = target;
         }
@@ -285,14 +297,23 @@ final class DefaultFaceletContext extends FaceletContext {
         public boolean apply(FaceletContext ctx, UIComponent parent, String name)
                 throws IOException, FacesException, FaceletException,
                 ELException {
-            return this.target.apply(new DefaultFaceletContext(
-                    (DefaultFaceletContext) ctx, this.owner), parent, name);
+            String testName = (name != null) ? name : "facelets._NULL_DEF_";
+            if (this.names.contains(testName)) {
+                return false;
+            } else {
+                this.names.add(testName);
+                boolean found = false;
+                found = this.target.apply(new DefaultFaceletContext(
+                        (DefaultFaceletContext) ctx, this.owner), parent, name);
+                this.names.remove(testName);
+                return found;
+            }
         }
 
         public boolean equals(Object o) {
             // System.out.println(this.owner.getAlias() + " == " +
             // ((DefaultFacelet) o).getAlias());
-            return this.owner == o;
+            return this.owner == o || this.target == o;
         }
     }
 }

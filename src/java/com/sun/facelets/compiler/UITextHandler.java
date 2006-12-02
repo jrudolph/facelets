@@ -32,7 +32,7 @@ import com.sun.facelets.util.FastWriter;
 
 /**
  * @author Jacob Hookom
- * @version $Id: UITextHandler.java,v 1.7.8.1 2006/03/15 19:31:46 jhook Exp $
+ * @version $Id: UITextHandler.java,v 1.7.8.2 2006/12/02 05:21:53 jhook Exp $
  */
 final class UITextHandler implements FaceletHandler, TextHandler {
 

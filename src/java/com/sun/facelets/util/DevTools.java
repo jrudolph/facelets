@@ -262,6 +262,13 @@ public final class DevTools {
                     }
                 }
             }
+
+            ValueBinding binding = c.getValueBinding("binding");
+            if (binding != null) {
+                writer.write(" binding=\"");
+                writer.write(binding.getExpressionString().replaceAll("<", TS));
+                writer.write("\"");
+            }
         } catch (Exception e) {
             // do nothing
         }

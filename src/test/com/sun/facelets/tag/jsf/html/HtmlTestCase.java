@@ -60,6 +60,10 @@ public class HtmlTestCase extends FaceletTestCase {
 
         UIViewRoot root = faces.getViewRoot();
         at.apply(faces, root);
+        
+        UIComponent c = root.findComponent("pg2");
+        assertNotNull("pg2", c);
+        assertEquals("pg2 children", 1, c.getChildCount());
     }
 
 }

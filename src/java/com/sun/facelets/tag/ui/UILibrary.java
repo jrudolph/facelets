@@ -19,7 +19,7 @@ import com.sun.facelets.tag.AbstractTagLibrary;
 
 /**
  * @author Jacob Hookom
- * @version $Id: UILibrary.java,v 1.6.8.1 2006/03/20 07:22:02 jhook Exp $
+ * @version $Id: UILibrary.java,v 1.6.8.2 2006/12/02 05:21:54 jhook Exp $
  */
 public final class UILibrary extends AbstractTagLibrary {
 

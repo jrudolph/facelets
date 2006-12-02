@@ -46,7 +46,7 @@ import com.sun.facelets.tag.jsf.ComponentSupport;
  * Default Facelet implementation.
  * 
  * @author Jacob Hookom
- * @version $Id: DefaultFacelet.java,v 1.8 2006/01/14 06:46:16 jhook Exp $
+ * @version $Id: DefaultFacelet.java,v 1.8.4.1 2006/12/02 05:21:54 jhook Exp $
  */
 final class DefaultFacelet extends Facelet {
 
@@ -317,5 +317,9 @@ final class DefaultFacelet extends Facelet {
             out.writeUTF(this.alias);
             out.writeLong(this.time);
         }
+    }
+
+    public String toString() {
+        return this.alias;
     }
 }

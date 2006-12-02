@@ -30,9 +30,14 @@ public class RepeatRenderer extends Renderer {
                 ResponseWriter out = context.getResponseWriter();
                 out.startElement(tag, component);
                 String[] attrs = (String[]) a.get("alias.attributes");
+                String attr;
                 if (attrs != null) {
                     for (int i = 0; i < attrs.length; i++) {
-                        out.writeAttribute(attrs[i], a.get(attrs[i]), attrs[i]);
+                        attr = attrs[i];
+                        if ("styleClass".equals(attr)) {
+                            attr = "class";
+                        }
+                        out.writeAttribute(attr, a.get(attrs[i]), attrs[i]);
                     }
                 }
             }

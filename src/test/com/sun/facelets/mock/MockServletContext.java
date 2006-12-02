@@ -38,7 +38,7 @@ import javax.servlet.ServletException;
 /**
  * 
  * @author Jacob Hookom
- * @version $Id: MockServletContext.java,v 1.1 2005/07/18 08:25:42 jhook Exp $
+ * @version $Id: MockServletContext.java,v 1.1.8.1 2006/12/02 05:21:59 jhook Exp $
  */
 public class MockServletContext implements ServletContext {
 
@@ -228,5 +228,9 @@ public class MockServletContext implements ServletContext {
     public String getServletContextName() {
         return this.getClass().getName();
     }
+
+	public String getContextPath() {
+		return this.getClass().getResource("").getFile();
+	}
 
 }

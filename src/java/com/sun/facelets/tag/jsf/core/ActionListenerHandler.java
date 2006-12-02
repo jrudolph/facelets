@@ -15,13 +15,19 @@
 package com.sun.facelets.tag.jsf.core;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 import javax.el.ELException;
 import javax.el.ValueExpression;
 import javax.faces.FacesException;
 import javax.faces.component.ActionSource;
+import javax.faces.component.EditableValueHolder;
 import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
+import javax.faces.event.AbortProcessingException;
+import javax.faces.event.ActionEvent;
 import javax.faces.event.ActionListener;
+import javax.faces.event.ValueChangeListener;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
@@ -30,6 +36,8 @@ import com.sun.facelets.tag.TagAttributeException;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.TagException;
 import com.sun.facelets.tag.TagHandler;
+import com.sun.facelets.tag.jsf.ComponentSupport;
+import com.sun.facelets.util.ReflectionUtil;
 
 /**
  * Register an ActionListener instance on the UIComponent associated with the
@@ -40,15 +48,54 @@ import com.sun.facelets.tag.TagHandler;
  * @see javax.faces.event.ActionListener
  * @see javax.faces.component.ActionSource
  * @author Jacob Hookom
- * @version $Id: ActionListenerHandler.java,v 1.3 2006/02/23 02:54:52 jhook Exp $
+ * @version $Id: ActionListenerHandler.java,v 1.3.2.1 2006/12/02 05:21:49 jhook Exp $
  */
 public final class ActionListenerHandler extends TagHandler {
+	
+	private final static class LazyActionListener implements ActionListener, Serializable {
+		private transient ActionListener instance;
+		private final String type;
+		private final ValueExpression binding;
+		
+		public LazyActionListener(String type, ValueExpression binding) {
+			this.type = type;
+			this.binding = binding;
+		}
 
-    private Class listenerType;
+		public void processAction(ActionEvent event) throws AbortProcessingException {
+			if (this.instance == null) {
+				FacesContext faces = FacesContext.getCurrentInstance();
+				if (faces == null)
+					return;
+				if (this.binding != null) {
+					this.instance = (ActionListener) binding
+							.getValue(faces.getELContext());
+				}
+				if (this.instance == null && this.type != null) {
+					try {
+						this.instance = (ActionListener) ReflectionUtil
+								.forName(this.type).newInstance();
+					} catch (Exception e) {
+						throw new AbortProcessingException(
+								"Couldn't Lazily instantiate ValueChangeListener",
+								e);
+					}
+					if (this.binding != null) {
+						binding.setValue(faces.getELContext(), this.instance);
+					}
+				}
+			}
+			if (this.instance != null) {
+				this.instance.processAction(event);
+			}
+		}
+	}
 
-    private final TagAttribute type;
+	private final TagAttribute type;
 
-    private final TagAttribute binding;
+	private final TagAttribute binding;
+
+	private final String listenerType;
 
     /**
      * @param config
@@ -57,16 +104,23 @@ public final class ActionListenerHandler extends TagHandler {
         super(config);
         this.binding = this.getAttribute("binding");
         this.type = this.getAttribute("type");
-        if (type != null) {
-            if (!type.isLiteral()) {
-                throw new TagAttributeException(this.tag, this.type, "Must be literal");
-            }
-            try {
-                this.listenerType = Class.forName(type.getValue());
-            } catch (Exception e) {
-                throw new TagAttributeException(this.tag, this.type, e);
-            }
-        }
+        if (this.type != null) {
+			if (!this.type.isLiteral()) {
+				throw new TagAttributeException(this.type,
+						"Must be a literal class name of type ActionListener");
+			} else {
+				// test it out
+				try {
+					Class c = ReflectionUtil.forName(this.type.getValue());
+				} catch (ClassNotFoundException e) {
+					throw new TagAttributeException(this.type,
+							"Couldn't qualify ActionListener", e);
+				}
+			}
+			this.listenerType = this.type.getValue();
+		} else {
+			this.listenerType = null;
+		}
     }
 
     /*
@@ -78,28 +132,15 @@ public final class ActionListenerHandler extends TagHandler {
     public void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
         if (parent instanceof ActionSource) {
-            // only process if parent was just created
-            if (parent.getParent() == null) {
-                ActionSource src = (ActionSource) parent;
-                ActionListener listener = null;
-                ValueExpression ve = null;
-                if (this.binding != null) {
-                    ve = this.binding.getValueExpression(ctx,
-                            ActionListener.class);
-                    listener = (ActionListener) ve.getValue(ctx);
-                }
-                if (listener == null) {
-                    try {
-                        listener = (ActionListener) listenerType.newInstance();
-                    } catch (Exception e) {
-                        throw new TagAttributeException(this.tag, this.type, e.getCause());
-                    }
-                    if (ve != null) {
-                        ve.setValue(ctx, ve);
-                    }
-                }
-                src.addActionListener(listener);
-            }
+        	if (ComponentSupport.isNew(parent)) {
+				ActionSource as = (ActionSource) parent;
+				ValueExpression b = null;
+				if (this.binding != null) {
+					b = this.binding.getValueExpression(ctx, ActionListener.class);
+				}
+				ActionListener listener = new LazyActionListener(this.listenerType, b);
+				as.addActionListener(listener);
+			}
         } else {
             throw new TagException(this.tag,
                     "Parent is not of type ActionSource, type is: " + parent);

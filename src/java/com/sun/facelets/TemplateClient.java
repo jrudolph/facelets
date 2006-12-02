@@ -27,7 +27,7 @@ import javax.faces.component.UIComponent;
  * 'true'.
  * 
  * @author Jacob Hookom
- * @version $Id: TemplateClient.java,v 1.1.4.1 2006/03/25 17:35:38 jhook Exp $
+ * @version $Id: TemplateClient.java,v 1.1.4.2 2006/12/02 05:21:56 jhook Exp $
  */
 public interface TemplateClient {
 

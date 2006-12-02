@@ -39,7 +39,7 @@ import com.sun.facelets.tag.ui.UILibrary;
  * @see com.sun.facelets.compiler.Compiler
  * 
  * @author Jacob Hookom
- * @version $Id: CompilationManager.java,v 1.12.2.3 2006/03/28 07:31:11 jhook Exp $
+ * @version $Id: CompilationManager.java,v 1.12.2.4 2006/12/02 05:21:52 jhook Exp $
  */
 final class CompilationManager {
 

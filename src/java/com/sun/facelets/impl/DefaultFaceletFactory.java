@@ -38,7 +38,7 @@ import com.sun.facelets.util.Resource;
  * Default FaceletFactory implementation.
  * 
  * @author Jacob Hookom
- * @version $Id: DefaultFaceletFactory.java,v 1.5.4.1 2006/03/22 02:31:48 jhook Exp $
+ * @version $Id: DefaultFaceletFactory.java,v 1.5.4.2 2006/12/02 05:21:54 jhook Exp $
  */
 public final class DefaultFaceletFactory extends FaceletFactory {
 
@@ -46,9 +46,9 @@ public final class DefaultFaceletFactory extends FaceletFactory {
 
     private final Compiler compiler;
 
-    private final Map facelets;
+    private Map facelets;
 
-    private final Map relativeLocations;
+    private Map relativeLocations;
     
     private final ResourceResolver resolver;
     
@@ -85,7 +85,9 @@ public final class DefaultFaceletFactory extends FaceletFactory {
         if (url == null) {
             url = this.resolveURL(this.baseUrl, uri);
             if (url != null) {
-                this.relativeLocations.put(uri, url);
+            	Map newLoc = new HashMap(this.relativeLocations);
+            	newLoc.put(uri, url);
+                this.relativeLocations = newLoc;
             } else {
                 throw new IOException("'" + uri + "' not found.");
             }
@@ -136,10 +138,13 @@ public final class DefaultFaceletFactory extends FaceletFactory {
     public Facelet getFacelet(URL url) throws IOException, FaceletException,
             FacesException, ELException {
         ParameterCheck.notNull("url", url);
-        DefaultFacelet f = (DefaultFacelet) this.facelets.get(url);
+        String key = url.toString();
+        DefaultFacelet f = (DefaultFacelet) this.facelets.get(key);
         if (f == null || this.needsToBeRefreshed(f)) {
             f = this.createFacelet(url);
-            this.facelets.put(url, f);
+            Map newLoc = new HashMap(this.facelets);
+        	newLoc.put(key, f);
+            this.facelets = newLoc;
         }
         return f;
     }
@@ -197,7 +202,7 @@ public final class DefaultFaceletFactory extends FaceletFactory {
             if (log.isLoggable(Level.WARNING)) {
                 log.warning(alias + " not found at " + url.toExternalForm());
             }
-            throw fnfe;
+            throw new FileNotFoundException("Facelet Not Found: " + url.toExternalForm());
         }
     }
 

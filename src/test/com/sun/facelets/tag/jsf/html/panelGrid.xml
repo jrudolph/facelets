@@ -5,15 +5,16 @@
 <body>
 
 <ui:composition>
-<h:panelGrid>
+<h:panelGrid id="pg1">
 	<span>Some Text<br/><b><h:outputText value="#{foo}"/></b></span>
 	<span>More Text<br/><b><h:outputText value="#{foo}"/></b></span>
 	<h:outputText value="#{foo}"/>
 	#{bar} is going to test me on this one.
 	I better get it right
 </h:panelGrid>
-</ui:composition>
 
+<h:panelGrid id="pg2" columns="1"><h:outputText value="Blart"/> </h:panelGrid>
+</ui:composition>
 
 </body>
 </html>

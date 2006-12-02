@@ -30,7 +30,7 @@ import com.sun.facelets.util.FacesAPI;
 /**
  * 
  * @author Jacob Hookom
- * @version $Id: ActionSourceRule.java,v 1.2.8.1 2006/03/20 07:21:59 jhook Exp $
+ * @version $Id: ActionSourceRule.java,v 1.2.8.2 2006/12/02 05:21:51 jhook Exp $
  */
 final class ActionSourceRule extends MetaRule {
 

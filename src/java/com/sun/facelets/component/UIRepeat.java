@@ -112,11 +112,11 @@ public class UIRepeat extends UIComponentBase implements NamingContainer {
         }
     }
 
-    private void setDataModel(DataModel model) {
+    private synchronized void setDataModel(DataModel model) {
         this.model = model;
     }
 
-    private DataModel getDataModel() {
+    private synchronized DataModel getDataModel() {
         if (this.model == null) {
             Object val = this.getValue();
             if (val == null) {

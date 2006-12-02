@@ -37,12 +37,13 @@ import com.sun.facelets.tag.TagLibrary;
 import com.sun.facelets.tag.ui.UILibrary;
 import com.sun.facelets.util.ParameterCheck;
 import com.sun.facelets.util.FacesAPI;
+import com.sun.facelets.util.ReflectionUtil;
 
 /**
  * A Compiler instance may handle compiling multiple sources
  * 
  * @author Jacob Hookom
- * @version $Id: Compiler.java,v 1.13.4.3 2006/03/19 05:34:16 jhook Exp $
+ * @version $Id: Compiler.java,v 1.13.4.4 2006/12/02 05:21:52 jhook Exp $
  */
 public abstract class Compiler {
 
@@ -148,7 +149,7 @@ public abstract class Compiler {
         String type = (String) this.features.get(name);
         if (type != null) {
             try {
-                return Class.forName(type, true, Thread.currentThread().getContextClassLoader()).newInstance();
+                return ReflectionUtil.forName(type).newInstance();
             } catch (Throwable t) {
                 throw new FaceletException("Could not instantiate feature["
                         + name + "]: " + type);

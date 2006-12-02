@@ -28,7 +28,7 @@ import com.sun.facelets.util.FacesAPI;
  * 
  * 
  * @author Jacob Hookom
- * @version $Id: ELAdaptor.java,v 1.7.6.2 2006/03/24 01:17:36 jhook Exp $
+ * @version $Id: ELAdaptor.java,v 1.7.6.3 2006/12/02 05:21:55 jhook Exp $
  */
 public final class ELAdaptor {
 

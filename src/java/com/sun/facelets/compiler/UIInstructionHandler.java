@@ -34,7 +34,7 @@ import com.sun.facelets.util.FastWriter;
 
 /**
  * @author Adam Winer
- * @version $Id: UIInstructionHandler.java,v 1.1.2.4 2006/03/24 05:58:16 jhook Exp $
+ * @version $Id: UIInstructionHandler.java,v 1.1.2.5 2006/12/02 05:21:52 jhook Exp $
  */
 final class UIInstructionHandler implements FaceletHandler, TextHandler {
     private final String alias;

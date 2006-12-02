@@ -48,6 +48,7 @@ import com.sun.facelets.tag.Metadata;
 import com.sun.facelets.tag.TagException;
 import com.sun.facelets.tag.TagHandler;
 import com.sun.facelets.tag.MetaRuleset;
+import com.sun.facelets.tag.jsf.core.FacetHandler;
 import com.sun.facelets.util.FacesAPI;
 
 /**
@@ -55,7 +56,7 @@ import com.sun.facelets.util.FacesAPI;
  * golden hammer for wiring UIComponents to Facelets.
  * 
  * @author Jacob Hookom
- * @version $Id: ComponentHandler.java,v 1.12.4.4 2006/03/29 14:37:49 jhook Exp $
+ * @version $Id: ComponentHandler.java,v 1.12.4.5 2006/12/02 05:21:51 jhook Exp $
  */
 public class ComponentHandler extends MetaTagHandler {
 
@@ -116,6 +117,9 @@ public class ComponentHandler extends MetaTagHandler {
         if (parent == null) {
             throw new TagException(this.tag, "Parent UIComponent was null");
         }
+        
+        // possible facet scoped
+        String facetName = this.getFacetName(ctx);
 
         // our id
         String id = ctx.generateUniqueId(this.tagId);
@@ -167,16 +171,31 @@ public class ComponentHandler extends MetaTagHandler {
         // finish cleaning up orphaned children
         if (componentFound) {
             ComponentSupport.finalizeForDeletion(c);
-            parent.getChildren().remove(c);
+            
+            if (facetName == null) {
+            	parent.getChildren().remove(c);
+            }
         }
         
-
         this.onComponentPopulated(ctx, c, parent);
 
         // add to the tree afterwards
         // this allows children to determine if it's
         // been part of the tree or not yet
-        parent.getChildren().add(c);
+        if (facetName == null) {
+        	parent.getChildren().add(c);
+        } else {
+        	parent.getFacets().put(facetName, c);
+        }
+    }
+    
+    /**
+     * Return the Facet name we are scoped in, otherwise null
+     * @param ctx
+     * @return
+     */
+    protected final String getFacetName(FaceletContext ctx) {
+    	return (String) ctx.getAttribute(FacetHandler.KEY);
     }
 
     /**

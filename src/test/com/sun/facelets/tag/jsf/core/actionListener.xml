@@ -6,5 +6,6 @@
 	</h:commandLink>
 	<h:commandLink id="action2" action="foo">
 		<f:actionListener binding="#{actionListener}" type="com.sun.facelets.tag.jsf.core.ActionListenerImpl"/>
+		<f:setPropertyActionListener value="#{emp.firstName}" target="#{emp.lastName}"/>
 	</h:commandLink>
 </composition>

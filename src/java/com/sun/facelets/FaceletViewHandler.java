@@ -2,12 +2,12 @@
  * Licensed under the Common Development and Distribution License,
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *   http://www.sun.com/cddl/
- *   
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or 
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
  * implied. See the License for the specific language governing
  * permissions and limitations under the License.
  */
@@ -17,11 +17,8 @@ package com.sun.facelets;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Writer;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -32,7 +29,6 @@ import javax.el.ELException;
 import javax.faces.FacesException;
 import javax.faces.application.StateManager;
 import javax.faces.application.ViewHandler;
-import javax.faces.component.UIComponent;
 import javax.faces.component.UIViewRoot;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
@@ -55,12 +51,11 @@ import com.sun.facelets.tag.jsf.ComponentSupport;
 import com.sun.facelets.tag.ui.UIDebug;
 import com.sun.facelets.util.DevTools;
 import com.sun.facelets.util.FacesAPI;
-import com.sun.facelets.util.FastWriter;
-import com.sun.facelets.util.Resource;
+import com.sun.facelets.util.ReflectionUtil;
 
 /**
  * ViewHandler implementation for Facelets
- * 
+ *
  * @author Jacob Hookom
  * @version $Id: FaceletViewHandler.java,v 1.49.2.6 2006/03/20 07:22:00 jhook
  *          Exp $
@@ -81,20 +76,20 @@ public class FaceletViewHandler extends ViewHandler {
      * handled by Facelets, and what should not. When left unset, all URLs will
      * be handled by Facelets. When set, it must be a semicolon separated list
      * of either extension mappings or prefix mappings. For example:
-     * 
+     *
      * <pre>
-     *   
-     *    
-     *     
-     *       &lt;context-param&gt;
-     *         &lt;param-name&gt;facelets.VIEW_MAPPINGS&lt;/param-name&gt;
-     *         &lt;param-value&gt;/demos/*; *.xhtml&lt;/param-value&gt;
-     *       &lt;/context-param&gt;
-     *      
-     *     
-     *    
+     *
+     *
+     *
+     *        &lt;context-param&gt;
+     *          &lt;param-name&gt;facelets.VIEW_MAPPINGS&lt;/param-name&gt;
+     *          &lt;param-value&gt;/demos/*; *.xhtml&lt;/param-value&gt;
+     *        &lt;/context-param&gt;
+     *
+     *
+     *
      * </pre>
-     * 
+     *
      * would use Facelets for processing all viewIds in the "/demos" directory
      * or that end in .xhtml, and use the standard JSP engine for all other
      * viewIds.
@@ -142,44 +137,8 @@ public class FaceletViewHandler extends ViewHandler {
     // Array of viewId prefixes that should be handled by Facelets
     private String[] prefixesArray;
 
-    protected static void removeTransient(UIComponent c) {
-        UIComponent d, e;
-        if (c.getChildCount() > 0) {
-            for (Iterator itr = c.getChildren().iterator(); itr.hasNext();) {
-                d = (UIComponent) itr.next();
-                if (d.getFacets().size() > 0) {
-                    for (Iterator jtr = d.getFacets().values().iterator(); jtr
-                            .hasNext();) {
-                        e = (UIComponent) jtr.next();
-                        if (e.isTransient()) {
-                            jtr.remove();
-                        } else {
-                            removeTransient(e);
-                        }
-                    }
-                }
-                if (d.isTransient()) {
-                    itr.remove();
-                } else {
-                    removeTransient(d);
-                }
-            }
-        }
-        if (c.getFacets().size() > 0) {
-            for (Iterator itr = c.getFacets().values().iterator(); itr
-                    .hasNext();) {
-                d = (UIComponent) itr.next();
-                if (d.isTransient()) {
-                    itr.remove();
-                } else {
-                    removeTransient(d);
-                }
-            }
-        }
-    }
-
     /**
-     * 
+     *
      */
     public FaceletViewHandler(ViewHandler parent) {
         this.parent = parent;
@@ -257,7 +216,7 @@ public class FaceletViewHandler extends ViewHandler {
     }
 
     protected FaceletFactory createFaceletFactory(Compiler c) {
-        
+
         // refresh period
         long refreshPeriod = DEFAULT_REFRESH_PERIOD;
         FacesContext ctx = FacesContext.getCurrentInstance();
@@ -273,8 +232,7 @@ public class FaceletViewHandler extends ViewHandler {
                 PARAM_RESOURCE_RESOLVER);
         if (resolverName != null && resolverName.length() > 0) {
             try {
-                resolver = (ResourceResolver) Class.forName(resolverName, true,
-                        Thread.currentThread().getContextClassLoader())
+                resolver = (ResourceResolver) ReflectionUtil.forName(resolverName)
                         .newInstance();
             } catch (Exception e) {
                 throw new FacesException("Error Initializing ResourceResolver["
@@ -325,7 +283,7 @@ public class FaceletViewHandler extends ViewHandler {
             TagDecorator decObj;
             for (int i = 0; i < decs.length; i++) {
                 try {
-                    decObj = (TagDecorator) Class.forName(decs[i])
+                    decObj = (TagDecorator) ReflectionUtil.forName(decs[i])
                             .newInstance();
                     c.addTagDecorator(decObj);
                     log.fine("Successfully Loaded Decorator: " + decs[i]);
@@ -384,7 +342,7 @@ public class FaceletViewHandler extends ViewHandler {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see javax.faces.application.ViewHandlerWrapper#getWrapped()
      */
     protected ViewHandler getWrapped() {
@@ -395,7 +353,14 @@ public class FaceletViewHandler extends ViewHandler {
             throws IOException, FacesException {
         ExternalContext extContext = context.getExternalContext();
         RenderKit renderKit = context.getRenderKit();
-        ServletRequest request = (ServletRequest) extContext.getRequest();
+        // Avoid a cryptic NullPointerException when the renderkit ID
+        // is incorrectly set
+        if (renderKit == null) {
+            String id = context.getViewRoot().getRenderKitId();
+            throw new IllegalStateException(
+                    "No render kit was available for id \"" + id + "\"");
+        }
+
         ServletResponse response = (ServletResponse) extContext.getResponse();
 
         // set the buffer for content
@@ -404,10 +369,10 @@ public class FaceletViewHandler extends ViewHandler {
         }
 
         // get our content type
-        String contentType = null;
+        String contentType = (String)extContext.getRequestMap().get("facelets.ContentType");
 
         // get the encoding
-        String encoding = request.getCharacterEncoding();
+        String encoding = (String) extContext.getRequestMap().get("facelets.Encoding");
 
         // Create a dummy ResponseWriter with a bogus writer,
         // so we can figure out what content type the ReponseWriter
@@ -415,15 +380,88 @@ public class FaceletViewHandler extends ViewHandler {
         ResponseWriter writer = renderKit.createResponseWriter(
                 NullWriter.Instance, contentType, encoding);
 
-        contentType = writer.getContentType();
-        encoding = writer.getCharacterEncoding();
+        contentType = getResponseContentType(context, writer.getContentType());
+        encoding = getResponseEncoding(context, writer.getCharacterEncoding());
 
-        // see if we need to override it
-        Map m = context.getViewRoot().getAttributes();
-        if (m.containsKey("contentType")) {
-            contentType = (String) m.get("contentType");
+        // apply them to the response
+        response.setContentType(contentType + "; charset=" + encoding);
+
+        // removed 2005.8.23 to comply with J2EE 1.3
+        // response.setCharacterEncoding(encoding);
+
+        // Now, clone with the real writer
+        writer = writer.cloneWithWriter(response.getWriter());
+
+        return writer;
+    }
+
+    /**
+     * Generate the encoding
+     *
+     * @param context
+     * @param orig
+     * @return
+     */
+    protected String getResponseEncoding(FacesContext context, String orig) {
+        String encoding = orig;
+
+        // see if we need to override the encoding
+        Map m = context.getExternalContext().getRequestMap();
+        Map sm = context.getExternalContext().getSessionMap();
+
+        // 1. check the request attribute
+        if (m.containsKey("facelets.Encoding")) {
+            encoding = (String) m.get("facelets.Encoding");
             if (log.isLoggable(Level.FINEST)) {
-                log.finest("UIViewRoot specified alternate contentType '"
+                log.finest("Facelet specified alternate encoding '" + encoding
+                        + "'");
+            }
+            sm.put(CHARACTER_ENCODING_KEY, encoding);
+        }
+
+        // 2. get it from request
+        Object request = context.getExternalContext().getRequest();
+        if (encoding == null && request instanceof ServletRequest) {
+            encoding = ((ServletRequest) request).getCharacterEncoding();
+        }
+
+        // 3. get it from the session
+        if (encoding == null) {
+            encoding = (String) sm.get(CHARACTER_ENCODING_KEY);
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("Session specified alternate encoding '" + encoding
+                        + "'");
+            }
+        }
+
+        // 4. default it
+        if (encoding == null) {
+            encoding = "UTF-8";
+            if (log.isLoggable(Level.FINEST)) {
+                log
+                        .finest("ResponseWriter created had a null CharacterEncoding, defaulting to UTF-8");
+            }
+        }
+
+        return encoding;
+    }
+
+    /**
+     * Generate the content type
+     *
+     * @param context
+     * @param orig
+     * @return
+     */
+    protected String getResponseContentType(FacesContext context, String orig) {
+        String contentType = orig;
+
+        // see if we need to override the contentType
+        Map m = context.getExternalContext().getRequestMap();
+        if (m.containsKey("facelets.ContentType")) {
+            contentType = (String) m.get("facelets.ContentType");
+            if (log.isLoggable(Level.FINEST)) {
+                log.finest("Facelet specified alternate contentType '"
                         + contentType + "'");
             }
         }
@@ -436,24 +474,8 @@ public class FaceletViewHandler extends ViewHandler {
                         .finest("ResponseWriter created had a null ContentType, defaulting to text/html");
             }
         }
-        if (encoding == null) {
-            encoding = "UTF-8";
-            if (log.isLoggable(Level.FINEST)) {
-                log
-                        .finest("ResponseWriter created had a null CharacterEncoding, defaulting to UTF-8");
-            }
-        }
 
-        // apply them to the response
-        response.setContentType(contentType + "; charset=" + encoding);
-
-        // removed 2005.8.23 to comply with J2EE 1.3
-        // response.setCharacterEncoding(encoding);
-
-        // Now, clone with the real writer
-        writer = writer.cloneWithWriter(response.getWriter());
-
-        return writer;
+        return contentType;
     }
 
     protected void buildView(FacesContext context, UIViewRoot viewToRender)
@@ -510,6 +532,7 @@ public class FaceletViewHandler extends ViewHandler {
             log.fine("Rendering View: " + viewToRender.getViewId());
         }
 
+        StateWriter stateWriter = null;
         try {
             // build view - but not if we're in "buildBeforeRestore"
             // land and we've already got a populated view. Note
@@ -525,10 +548,20 @@ public class FaceletViewHandler extends ViewHandler {
 
             // setup writer and assign it to the context
             ResponseWriter origWriter = this.createResponseWriter(context);
-            FastWriter stateWriter = new FastWriter(
+            // QUESTION: should we use bufferSize? Or, since the
+            // StateWriter usually only needs a small bit at the end,
+            // should we always use a much smaller size?
+            stateWriter = new StateWriter(origWriter,
                     this.bufferSize != -1 ? this.bufferSize : 1024);
+
             ResponseWriter writer = origWriter.cloneWithWriter(stateWriter);
             context.setResponseWriter(writer);
+
+            // force creation of session if saving state there
+            StateManager stateMgr = context.getApplication().getStateManager();
+            if (!stateMgr.isSavingStateInClient(context)) {
+                context.getExternalContext().getSession(true);
+            }
 
             long time = System.currentTimeMillis();
 
@@ -546,33 +579,52 @@ public class FaceletViewHandler extends ViewHandler {
 
             // remove transients for older versions
             if (FacesAPI.getVersion() < 12) {
-                removeTransient(viewToRender);
+                ComponentSupport.removeTransient(viewToRender);
             }
 
-            // save state
-            StateManager stateMgr = context.getApplication().getStateManager();
-            Object stateObj = stateMgr.saveSerializedView(context);
-
+            boolean writtenState = stateWriter.isStateWritten();
             // flush to origWriter
-            String content = stateWriter.toString();
+            if (writtenState) {
+                String content = stateWriter.getAndResetBuffer();
+                int end = content.indexOf(STATE_KEY);
+                // See if we can find any trace of the saved state.
+                // If so, we need to perform token replacement
+                if (end >= 0) {
+                    // save state
+                    Object stateObj = stateMgr.saveSerializedView(context);
+                    String stateStr;
+                    if (stateObj == null) {
+                        stateStr = null;
+                    } else {
+                        stateMgr.writeState(context,
+                                       (StateManager.SerializedView) stateObj);
+                        stateStr = stateWriter.getAndResetBuffer();
+                    }
 
-            if ((stateMgr.isSavingStateInClient(context) || FacesAPI
-                    .getVersion() >= 12)) {
-                stateWriter.reset();
-                stateMgr.writeState(context,
-                        (StateManager.SerializedView) stateObj);
-                String stateStr = stateWriter.toString();
-                int start = 0;
-                int end = content.indexOf(STATE_KEY, start);
-                while (end != -1) {
-                    origWriter.write(content, start, end - start);
-                    origWriter.write(stateStr);
-                    start = end + STATE_KEY_LEN;
-                    end = content.indexOf(STATE_KEY, start);
+                    int start = 0;
+
+                    while (end != -1) {
+                        origWriter.write(content, start, end - start);
+                        if (stateStr != null) {
+                            origWriter.write(stateStr);
+                        }
+                        start = end + STATE_KEY_LEN;
+                        end = content.indexOf(STATE_KEY, start);
+                    }
+                    origWriter.write(content, start, content.length() - start);
+                // No trace of any saved state, so we just need to flush
+                // the buffer
+                } else {
+                    origWriter.write(content);
+                    // But for JSF 1.1 (actually, just 1.1_01 RI), if we didn't
+                    // detect any saved state, force a call to
+                    // saveSerializedView() in case we're using the old
+                    // pure-server-side state saving
+                    if ((FacesAPI.getVersion() < 12)
+                        && !stateMgr.isSavingStateInClient(context)) {
+                        stateMgr.saveSerializedView(context);
+                    }
                 }
-                origWriter.write(content, start, content.length() - start);
-            } else {
-                origWriter.write(content);
             }
 
             time = System.currentTimeMillis() - time;
@@ -585,6 +637,9 @@ public class FaceletViewHandler extends ViewHandler {
             this.handleFaceletNotFound(context, viewToRender.getViewId());
         } catch (Exception e) {
             this.handleRenderException(context, e);
+        } finally {
+            if (stateWriter != null)
+                stateWriter.release();
         }
     }
 
@@ -609,12 +664,14 @@ public class FaceletViewHandler extends ViewHandler {
         if (this.developmentMode && !context.getResponseComplete()
                 && resp instanceof HttpServletResponse) {
             HttpServletResponse httpResp = (HttpServletResponse) resp;
-            httpResp.reset();
-            httpResp.setContentType("text/html; charset=UTF-8");
-            Writer w = httpResp.getWriter();
-            DevTools.debugHtml(w, context, e);
-            w.flush();
-            context.responseComplete();
+            if (!httpResp.isCommitted()) {
+	            httpResp.reset();
+	            httpResp.setContentType("text/html; charset=UTF-8");
+	            Writer w = httpResp.getWriter();
+	            DevTools.debugHtml(w, context, e);
+	            w.flush();
+	            context.responseComplete();
+            }
         } else if (e instanceof RuntimeException) {
             throw (RuntimeException) e;
         } else if (e instanceof IOException) {
@@ -693,11 +750,13 @@ public class FaceletViewHandler extends ViewHandler {
 
     public void writeState(FacesContext context) throws IOException {
         if (handledByFacelets(context.getViewRoot().getViewId())) {
-            StateManager stateMgr = context.getApplication().getStateManager();
-            if (stateMgr.isSavingStateInClient(context)
-                    || FacesAPI.getVersion() >= 12) {
-                context.getResponseWriter().write(STATE_KEY);
-            }
+            // Tell the StateWriter that we're about to write state
+            StateWriter.getCurrentInstance().writingState();
+            // Write the STATE_KEY out.  Unfortunately, this will
+            // be wasteful for pure server-side state managers where nothing
+            // is actually written into the output, but this cannot
+            // programatically be discovered
+            context.getResponseWriter().write(STATE_KEY);
         } else {
             this.parent.writeState(context);
         }

@@ -39,7 +39,7 @@ import com.sun.facelets.tag.TagHandler;
 
 /**
  * @author Jacob Hookom
- * @version $Id: CompositionHandler.java,v 1.9.4.1 2006/03/10 05:59:05 jhook Exp $
+ * @version $Id: CompositionHandler.java,v 1.9.4.2 2006/12/02 05:21:53 jhook Exp $
  */
 public final class CompositionHandler extends TagHandler implements
         TemplateClient {

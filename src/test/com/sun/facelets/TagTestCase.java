@@ -25,7 +25,7 @@ public class TagTestCase extends FaceletTestCase {
         root.encodeAll(faces);
         System.out.println(fw);
     }
-    
+
     public void testConditionalInsert() throws Exception {
         FaceletFactory ff = FaceletFactory.getInstance();
         FacesContext faces = FacesContext.getCurrentInstance();

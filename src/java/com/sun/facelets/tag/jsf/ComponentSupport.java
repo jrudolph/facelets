@@ -35,7 +35,7 @@ import com.sun.facelets.tag.TagAttributeException;
 /**
  * 
  * @author Jacob Hookom
- * @version $Id: ComponentSupport.java,v 1.4.6.1 2006/03/20 07:21:59 jhook Exp $
+ * @version $Id: ComponentSupport.java,v 1.4.6.2 2006/12/02 05:21:51 jhook Exp $
  */
 public final class ComponentSupport {
 
@@ -111,19 +111,29 @@ public final class ComponentSupport {
      * @return
      */
     public static final UIComponent findChildByTagId(UIComponent parent, String id) {
-        int sz = parent.getChildCount();
-        if (sz > 0) {
-            UIComponent c = null;
-            List cl = parent.getChildren();
-            String cid = null;
-            while (--sz >= 0) {
-                c = (UIComponent) cl.get(sz);
-                cid = (String) c.getAttributes().get(MARK_CREATED);
-                if (id.equals(cid)) {
-                    return c;
-                }
-            }
-        }
+    	Iterator itr = parent.getFacetsAndChildren();
+    	UIComponent c = null;
+    	String cid = null;
+    	while (itr.hasNext()) {
+    		c = (UIComponent) itr.next();
+    		cid = (String) c.getAttributes().get(MARK_CREATED);
+    		if (id.equals(cid)) {
+    			return c;
+    		}
+    	}
+//        int sz = parent.getChildCount();
+//        if (sz > 0) {
+//            UIComponent c = null;
+//            List cl = parent.getChildren();
+//            String cid = null;
+//            while (--sz >= 0) {
+//                c = (UIComponent) cl.get(sz);
+//                cid = (String) c.getAttributes().get(MARK_CREATED);
+//                if (id.equals(cid)) {
+//                    return c;
+//                }
+//            }
+//        }
         return null;
     }
 
@@ -240,6 +250,42 @@ public final class ComponentSupport {
                 }
             }
             viewToRender.encodeEnd(context);
+        }
+    }
+    
+    public static void removeTransient(UIComponent c) {
+        UIComponent d, e;
+        if (c.getChildCount() > 0) {
+            for (Iterator itr = c.getChildren().iterator(); itr.hasNext();) {
+                d = (UIComponent) itr.next();
+                if (d.getFacets().size() > 0) {
+                    for (Iterator jtr = d.getFacets().values().iterator(); jtr
+                            .hasNext();) {
+                        e = (UIComponent) jtr.next();
+                        if (e.isTransient()) {
+                            jtr.remove();
+                        } else {
+                            removeTransient(e);
+                        }
+                    }
+                }
+                if (d.isTransient()) {
+                    itr.remove();
+                } else {
+                    removeTransient(d);
+                }
+            }
+        }
+        if (c.getFacets().size() > 0) {
+            for (Iterator itr = c.getFacets().values().iterator(); itr
+                    .hasNext();) {
+                d = (UIComponent) itr.next();
+                if (d.isTransient()) {
+                    itr.remove();
+                } else {
+                    removeTransient(d);
+                }
+            }
         }
     }
     

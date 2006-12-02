@@ -29,7 +29,7 @@ import com.sun.facelets.tag.jsf.ComponentHandler;
  * Handler for f:verbatim
  * 
  * @author Adam Winer
- * @version $Id: VerbatimHandler.java,v 1.1.2.2 2006/03/28 03:25:40 adamwiner Exp $
+ * @version $Id: VerbatimHandler.java,v 1.1.2.3 2006/12/02 05:21:50 jhook Exp $
  */
 public final class VerbatimHandler extends ComponentHandler {
     public VerbatimHandler(ComponentConfig config) {

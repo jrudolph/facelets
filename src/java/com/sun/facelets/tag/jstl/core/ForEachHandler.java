@@ -36,7 +36,7 @@ import com.sun.facelets.tag.TagHandler;
 /**
  * @author Jacob Hookom
  * @author Andrew Robinson
- * @version $Id: ForEachHandler.java,v 1.7.6.3 2006/03/19 02:37:01 jhook Exp $
+ * @version $Id: ForEachHandler.java,v 1.7.6.4 2006/12/02 05:21:56 jhook Exp $
  */
 public final class ForEachHandler extends TagHandler {
 

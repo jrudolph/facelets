@@ -34,7 +34,7 @@ import com.sun.facelets.el.VariableMapperWrapper;
  * sets them on the FaceletContext before including the targeted Facelet file.
  * 
  * @author Jacob Hookom
- * @version $Id: UserTagHandler.java,v 1.6.4.1 2006/03/10 05:59:07 jhook Exp $
+ * @version $Id: UserTagHandler.java,v 1.6.4.2 2006/12/02 05:21:59 jhook Exp $
  */
 final class UserTagHandler extends TagHandler implements TemplateClient {
 
