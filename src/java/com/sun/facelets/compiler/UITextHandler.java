@@ -32,9 +32,9 @@ import com.sun.facelets.util.FastWriter;
 
 /**
  * @author Jacob Hookom
- * @version $Id: UITextHandler.java,v 1.8 2006/03/29 04:10:05 jhook Exp $
+ * @version $Id: UITextHandler.java,v 1.9 2006/12/03 18:56:01 jhook Exp $
  */
-final class UITextHandler implements FaceletHandler, TextHandler {
+final class UITextHandler extends AbstractUIHandler {
 
     private final ELText txt;
     
@@ -55,8 +55,7 @@ final class UITextHandler implements FaceletHandler, TextHandler {
                 ELText nt = this.txt.apply(ctx.getExpressionFactory(), ctx);
                 UIComponent c = new UIText(this.alias, nt);
                 c.setId(ComponentSupport.getViewRoot(ctx, parent).createUniqueId());
-                //c.getAttributes().put(ComponentSupport.MARK_CREATED, ctx.generateUniqueId(this.tagId));
-                parent.getChildren().add(c);
+                this.addComponent(ctx, parent, c);
             } catch (Exception e) {
                 throw new ELException(this.alias + ": "+ e.getMessage(), e.getCause());
             }

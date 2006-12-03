@@ -27,7 +27,7 @@ import com.sun.facelets.FaceletHandler;
 import com.sun.facelets.tag.TextHandler;
 import com.sun.facelets.tag.jsf.ComponentSupport;
 
-final class UILiteralTextHandler implements FaceletHandler, TextHandler {
+final class UILiteralTextHandler extends AbstractUIHandler {
     
     protected final String txtString;
     
@@ -40,7 +40,7 @@ final class UILiteralTextHandler implements FaceletHandler, TextHandler {
         if (parent != null) {
             UIComponent c = new UILiteralText(this.txtString);
             c.setId(ComponentSupport.getViewRoot(ctx, parent).createUniqueId());
-            parent.getChildren().add(c);
+            this.addComponent(ctx, parent, c);
         }
     }
 
