@@ -30,13 +30,14 @@ import com.sun.facelets.FaceletHandler;
 import com.sun.facelets.el.ELText;
 import com.sun.facelets.tag.TextHandler;
 import com.sun.facelets.tag.jsf.ComponentSupport;
+import com.sun.facelets.tag.jsf.core.FacetHandler;
 import com.sun.facelets.util.FastWriter;
 
 /**
  * @author Adam Winer
- * @version $Id: UIInstructionHandler.java,v 1.1.2.5 2006/12/02 05:21:52 jhook Exp $
+ * @version $Id: UIInstructionHandler.java,v 1.1.2.6 2006/12/03 18:59:32 jhook Exp $
  */
-final class UIInstructionHandler implements FaceletHandler, TextHandler {
+final class UIInstructionHandler extends AbstractUIHandler {
     private final String alias;
 
     private final ELText txt;
@@ -87,7 +88,7 @@ final class UIInstructionHandler implements FaceletHandler, TextHandler {
 
             UIComponent c = new UIInstructions(txt, applied);
             c.setId(ComponentSupport.getViewRoot(ctx, parent).createUniqueId());
-            parent.getChildren().add(c);
+            this.addComponent(ctx, parent, c);
         }
     }
 
