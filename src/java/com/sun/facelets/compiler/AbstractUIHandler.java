@@ -11,12 +11,16 @@ public abstract class AbstractUIHandler implements FaceletHandler, TextHandler {
 
 	public void addComponent(FaceletContext ctx, UIComponent parent, UIComponent c) {
 		// possible facet scoped
-        String facetName = (String) ctx.getAttribute(FacetHandler.KEY);
+        String facetName = this.getFacetName(ctx, parent);
         if (facetName == null) {
         	parent.getChildren().add(c);
         } else {
         	parent.getFacets().put(facetName, c);
         }
 	}
+	
+	protected final String getFacetName(FaceletContext ctx, UIComponent parent) {
+    	return (String) parent.getAttributes().get(FacetHandler.KEY);
+    }
 
 }
