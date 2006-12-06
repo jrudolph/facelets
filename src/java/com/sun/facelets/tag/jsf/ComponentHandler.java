@@ -56,7 +56,7 @@ import com.sun.facelets.util.FacesAPI;
  * golden hammer for wiring UIComponents to Facelets.
  * 
  * @author Jacob Hookom
- * @version $Id: ComponentHandler.java,v 1.17 2006/12/01 21:18:26 jhook Exp $
+ * @version $Id: ComponentHandler.java,v 1.18 2006/12/06 14:26:12 jhook Exp $
  */
 public class ComponentHandler extends MetaTagHandler {
 
@@ -119,7 +119,7 @@ public class ComponentHandler extends MetaTagHandler {
         }
         
         // possible facet scoped
-        String facetName = this.getFacetName(ctx);
+        String facetName = this.getFacetName(ctx, parent);
 
         // our id
         String id = ctx.generateUniqueId(this.tagId);
@@ -194,8 +194,8 @@ public class ComponentHandler extends MetaTagHandler {
      * @param ctx
      * @return
      */
-    protected final String getFacetName(FaceletContext ctx) {
-    	return (String) ctx.getAttribute(FacetHandler.KEY);
+    protected final String getFacetName(FaceletContext ctx, UIComponent parent) {
+    	return (String) parent.getAttributes().get(FacetHandler.KEY);
     }
 
     /**

@@ -35,7 +35,7 @@ import com.sun.facelets.tag.TagHandler;
  * documentation</a>.
  * 
  * @author Jacob Hookom
- * @version $Id: FacetHandler.java,v 1.6 2006/12/01 21:18:26 jhook Exp $
+ * @version $Id: FacetHandler.java,v 1.7 2006/12/06 14:26:12 jhook Exp $
  */
 public final class FacetHandler extends TagHandler {
 
@@ -56,12 +56,14 @@ public final class FacetHandler extends TagHandler {
 	 */
 	public void apply(FaceletContext ctx, UIComponent parent)
 			throws IOException, FacesException, FaceletException, ELException {
-		String old = (String) ctx.getAttribute(KEY);
-		ctx.setAttribute(KEY, this.name.getValue(ctx));
+		if (parent == null) {
+			throw new TagException(this.tag, "Parent UIComponent was null");
+		}
+		parent.getAttributes().put(KEY, this.name.getValue(ctx));
 		try {
 			this.nextHandler.apply(ctx, parent);
 		} finally {
-			ctx.setAttribute(KEY, old);
+			parent.getAttributes().remove(KEY);
 		}
 	}
 }
