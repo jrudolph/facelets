@@ -39,7 +39,7 @@ import com.sun.facelets.tag.TagHandler;
 
 /**
  * @author Jacob Hookom
- * @version $Id: DecorateHandler.java,v 1.10.4.2 2006/12/02 05:21:53 jhook Exp $
+ * @version $Id: DecorateHandler.java,v 1.10.4.3 2006/12/19 05:03:53 jhook Exp $
  */
 public final class DecorateHandler extends TagHandler implements TemplateClient {
 
@@ -100,7 +100,7 @@ public final class DecorateHandler extends TagHandler implements TemplateClient 
             }
         }
 
-        ctx.pushClient(this);
+        ctx.extendClient(this);
         try {
             ctx.includeFacelet(parent, this.template.getValue(ctx));
         } finally {
