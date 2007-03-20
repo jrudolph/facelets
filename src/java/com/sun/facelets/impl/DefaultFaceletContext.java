@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -68,7 +69,7 @@ final class DefaultFaceletContext extends FaceletContext {
 
     private FunctionMapper fnMapper;
 
-    private final Map ids;
+	private final Map ids;
 
     public DefaultFaceletContext(DefaultFaceletContext ctx,
             DefaultFacelet facelet) {
@@ -316,4 +317,13 @@ final class DefaultFaceletContext extends FaceletContext {
             return this.owner == o || this.target == o;
         }
     }
+    
+
+	public boolean isPropertyResolved() {
+		return this.ctx.isPropertyResolved();
+	}
+
+	public void setPropertyResolved(boolean resolved) {
+		this.ctx.setPropertyResolved(resolved);
+	}
 }
