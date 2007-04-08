@@ -46,7 +46,7 @@ import com.sun.facelets.tag.jsf.ComponentSupport;
  * documentation</a>.
  * 
  * @author Jacob Hookom
- * @version $Id: LoadBundleHandler.java,v 1.2 2005/08/24 04:38:50 jhook Exp $
+ * @version $Id: LoadBundleHandler.java,v 1.3 2007/04/08 16:54:47 youngm Exp $
  */
 public final class LoadBundleHandler extends TagHandler {
 
@@ -119,7 +119,11 @@ public final class LoadBundleHandler extends TagHandler {
         }
 
         public Object get(Object key) {
-            return this.bundle.getObject((String) key);
+        	try {
+        		return this.bundle.getObject((String) key);
+        	} catch( java.util.MissingResourceException mre ) {
+        		return "???"+key+"???";
+        	}
         }
 
         public boolean isEmpty() {
