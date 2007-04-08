@@ -17,5 +17,8 @@
 	<h:outputText id="out5" value="#{now}">
 		<f:convertDateTime pattern="K:mm a, z" timeZone="CST" />
 	</h:outputText>
+	<h:outputText id="out6" value="#{now}">
+		<f:convertDateTime pattern="K:mm a, z" timeZone="#{null}" />
+	</h:outputText>
 	</h:form>
 </composition>

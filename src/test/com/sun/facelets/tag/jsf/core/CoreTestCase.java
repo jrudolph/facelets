@@ -2,6 +2,8 @@ package com.sun.facelets.tag.jsf.core;
 
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
+import java.util.TimeZone;
 
 import javax.faces.component.UICommand;
 import javax.faces.component.UIComponent;
@@ -11,8 +13,10 @@ import javax.faces.component.UIOutput;
 import javax.faces.component.UIViewRoot;
 import javax.faces.component.html.HtmlGraphicImage;
 import javax.faces.context.FacesContext;
+import javax.faces.convert.DateTimeConverter;
 import javax.faces.event.ActionListener;
 import javax.faces.validator.Validator;
+import javax.servlet.http.HttpServletResponse;
 
 import com.sun.facelets.Facelet;
 import com.sun.facelets.FaceletFactory;
@@ -86,18 +90,21 @@ public class CoreTestCase extends FaceletTestCase {
         UIOutput out3 = (UIOutput) root.findComponent("form:out3");
         UIOutput out4 = (UIOutput) root.findComponent("form:out4");
         UIOutput out5 = (UIOutput) root.findComponent("form:out5");
+        UIOutput out6 = (UIOutput) root.findComponent("form:out6");
 
         assertNotNull("out1", out1);
         assertNotNull("out2", out2);
         assertNotNull("out3", out3);
         assertNotNull("out4", out4);
         assertNotNull("out5", out5);
+        assertNotNull("out6", out6);
 
         assertNotNull("out1 converter", out1.getConverter());
         assertNotNull("out2 converter", out2.getConverter());
         assertNotNull("out3 converter", out3.getConverter());
         assertNotNull("out4 converter", out4.getConverter());
         assertNotNull("out5 converter", out5.getConverter());
+        DateTimeConverter converter6 = (DateTimeConverter)out6.getConverter();
 
         assertEquals("out1 value", "12/24/69", out1.getConverter().getAsString(
                 faces, out1, now));
@@ -109,6 +116,7 @@ public class CoreTestCase extends FaceletTestCase {
                 .getAsString(faces, out4, now));
         assertEquals("out5 value", "0:57 AM, CST", out5.getConverter()
                 .getAsString(faces, out5, now));
+        assertEquals("Timezone should be GMT", TimeZone.getTimeZone("GMT"), converter6.getTimeZone());
     }
     
     public void testConvertDelegateHandler() throws Exception {
@@ -198,6 +206,9 @@ public class CoreTestCase extends FaceletTestCase {
         Object value = faces.getExternalContext().getRequestMap().get("foo");
         
         assertNotNull("bundle loaded into request", value);
+        assertTrue(value instanceof Map);
+        String result = (String)((Map)value).get("some.not.found.key"); 
+        assertTrue(result.contains("???"));
     }
     
     public void testValidateDelegateHandler() throws Exception {
