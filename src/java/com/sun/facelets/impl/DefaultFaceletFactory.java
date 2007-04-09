@@ -38,7 +38,7 @@ import com.sun.facelets.util.Resource;
  * Default FaceletFactory implementation.
  * 
  * @author Jacob Hookom
- * @version $Id: DefaultFaceletFactory.java,v 1.9 2006/12/01 07:01:19 jhook Exp $
+ * @version $Id: DefaultFaceletFactory.java,v 1.10 2007/04/09 01:13:17 youngm Exp $
  */
 public final class DefaultFaceletFactory extends FaceletFactory {
 
@@ -70,7 +70,7 @@ public final class DefaultFaceletFactory extends FaceletFactory {
         this.baseUrl = resolver.resolveUrl("/");
         //this.location = url;
         log.fine("Using ResourceResolver: " + resolver);
-        this.refreshPeriod = (refreshPeriod > 0) ? refreshPeriod * 1000 : -1;
+        this.refreshPeriod = (refreshPeriod >= 0) ? refreshPeriod * 1000 : -1;
         log.fine("Using Refresh Period: " + this.refreshPeriod);
     }
 
@@ -163,7 +163,7 @@ public final class DefaultFaceletFactory extends FaceletFactory {
                 try {
                     long atl = facelet.getSource().openConnection()
                             .getLastModified();
-                    return atl > ttl;
+                    return atl == 0 || atl > ttl;
                 } catch (Exception e) {
                     throw new FaceletException(
                             "Error Checking Last Modified for "
