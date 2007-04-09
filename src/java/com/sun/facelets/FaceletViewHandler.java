@@ -73,7 +73,7 @@ public class FaceletViewHandler extends ViewHandler {
      * Spelling error, We'll remove this in a future release.
      * @deprecated
      */
-    public final static String PARAM_REFRESH_PERIO = "facelets.REFRESH_PERIOD";
+    public final static String PARAM_REFRESH_PERIO = PARAM_REFRESH_PERIOD;
 
     public final static String PARAM_SKIP_COMMENTS = "facelets.SKIP_COMMENTS";
 
