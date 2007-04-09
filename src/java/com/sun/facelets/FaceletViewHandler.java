@@ -67,6 +67,12 @@ public class FaceletViewHandler extends ViewHandler {
 
     public final static long DEFAULT_REFRESH_PERIOD = 2;
 
+    public final static String PARAM_REFRESH_PERIOD = "facelets.REFRESH_PERIOD";
+
+    /**
+     * Spelling error, We'll remove this in a future release.
+     * @deprecated
+     */
     public final static String PARAM_REFRESH_PERIO = "facelets.REFRESH_PERIOD";
 
     public final static String PARAM_SKIP_COMMENTS = "facelets.SKIP_COMMENTS";
@@ -221,7 +227,7 @@ public class FaceletViewHandler extends ViewHandler {
         long refreshPeriod = DEFAULT_REFRESH_PERIOD;
         FacesContext ctx = FacesContext.getCurrentInstance();
         String userPeriod = ctx.getExternalContext().getInitParameter(
-                PARAM_REFRESH_PERIO);
+                PARAM_REFRESH_PERIOD);
         if (userPeriod != null && userPeriod.length() > 0) {
             refreshPeriod = Long.parseLong(userPeriod);
         }
