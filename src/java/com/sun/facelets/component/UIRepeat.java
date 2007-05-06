@@ -340,7 +340,7 @@ public class UIRepeat extends UIComponentBase implements NamingContainer {
 
                 int i = this.getOffset();
                 int end = this.getSize();
-                end = (end >= 0) ? i + end : Integer.MAX_VALUE;
+                end = (end >= 0) ? i + end : Integer.MAX_VALUE - 1;
 
                 // grab renderer
                 String rendererType = getRendererType();
