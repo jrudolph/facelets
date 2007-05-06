@@ -261,22 +261,24 @@ final class DefaultFaceletContext extends FaceletContext {
     }
 
     public void pushClient(final TemplateClient client) {
-        this.clients.add(0, new TemplateManager(this.facelet, client));
+        this.clients.add(0, new TemplateManager(this.facelet, client, true));
     }
 
     public void extendClient(final TemplateClient client) {
-        this.clients.add(new TemplateManager(this.facelet, client));
+        this.clients.add(new TemplateManager(this.facelet, client, false));
     }
 
     public boolean includeDefinition(UIComponent parent, String name)
             throws IOException, FaceletException, FacesException, ELException {
         boolean found = false;
-        TemplateClient client;
+        TemplateManager client;
 
         for (int i = 0; i < this.clients.size() && found == false; i++) {
-            client = ((TemplateClient) this.clients.get(i));
+            client = ((TemplateManager) this.clients.get(i));
             if (client.equals(this.facelet))
                 continue;
+            if (client.isRoot() && i != 0)
+            	break;
             found = client.apply(this, parent, name);
         }
 
@@ -287,12 +289,15 @@ final class DefaultFaceletContext extends FaceletContext {
         private final DefaultFacelet owner;
 
         private final TemplateClient target;
+        
+        private final boolean root;
 
         private final Set names = new HashSet();
 
-        public TemplateManager(DefaultFacelet owner, TemplateClient target) {
+        public TemplateManager(DefaultFacelet owner, TemplateClient target, boolean root) {
             this.owner = owner;
             this.target = target;
+            this.root = root;
         }
 
         public boolean apply(FaceletContext ctx, UIComponent parent, String name)
@@ -315,6 +320,10 @@ final class DefaultFaceletContext extends FaceletContext {
             // System.out.println(this.owner.getAlias() + " == " +
             // ((DefaultFacelet) o).getAlias());
             return this.owner == o || this.target == o;
+        }
+        
+        public boolean isRoot() {
+        	return this.root;
         }
     }
     

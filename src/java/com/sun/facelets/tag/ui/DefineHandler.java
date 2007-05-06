@@ -29,7 +29,7 @@ import com.sun.facelets.tag.TagHandler;
 
 /**
  * @author Jacob Hookom
- * @version $Id: DefineHandler.java,v 1.3 2005/08/24 04:38:55 jhook Exp $
+ * @version $Id: DefineHandler.java,v 1.4 2007/05/06 17:35:04 jhook Exp $
  */
 public final class DefineHandler extends TagHandler {
 
@@ -55,7 +55,13 @@ public final class DefineHandler extends TagHandler {
      */
     public void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
-        this.nextHandler.apply(ctx, parent);
+        // no-op
+    	//this.nextHandler.apply(ctx, parent);
+    }
+    
+    public void applyDefinition(FaceletContext ctx, UIComponent parent)
+    		throws IOException, FacesException, FaceletException, ELException {
+    	this.nextHandler.apply(ctx, parent);
     }
 
     public String getName() {

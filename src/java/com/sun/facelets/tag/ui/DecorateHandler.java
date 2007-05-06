@@ -39,7 +39,7 @@ import com.sun.facelets.tag.TagHandler;
 
 /**
  * @author Jacob Hookom
- * @version $Id: DecorateHandler.java,v 1.13 2006/12/19 05:00:27 jhook Exp $
+ * @version $Id: DecorateHandler.java,v 1.14 2007/05/06 17:35:04 jhook Exp $
  */
 public final class DecorateHandler extends TagHandler implements TemplateClient {
 
@@ -100,7 +100,7 @@ public final class DecorateHandler extends TagHandler implements TemplateClient 
             }
         }
 
-        ctx.extendClient(this);
+        ctx.pushClient(this);
         try {
             ctx.includeFacelet(parent, this.template.getValue(ctx));
         } finally {
@@ -111,9 +111,9 @@ public final class DecorateHandler extends TagHandler implements TemplateClient 
 
     public boolean apply(FaceletContext ctx, UIComponent parent, String name) throws IOException, FacesException, FaceletException, ELException {
         if (name != null) {
-            FaceletHandler handler = (FaceletHandler) this.handlers.get(name);
+            DefineHandler handler = (DefineHandler) this.handlers.get(name);
             if (handler != null) {
-                handler.apply(ctx, parent);
+            	handler.applyDefinition(ctx, parent);
                 return true;
             } else {
                 return false;
