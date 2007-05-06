@@ -36,7 +36,7 @@ import com.sun.facelets.tag.TagHandler;
 /**
  * @author Jacob Hookom
  * @author Andrew Robinson
- * @version $Id: ForEachHandler.java,v 1.8 2006/03/19 03:11:34 jhook Exp $
+ * @version $Id: ForEachHandler.java,v 1.9 2007/05/06 17:42:49 jhook Exp $
  */
 public final class ForEachHandler extends TagHandler {
 
@@ -214,7 +214,7 @@ public final class ForEachHandler extends TagHandler {
         if (this.end != null) {
             return this.end.getInt(ctx);
         }
-        return Integer.MAX_VALUE;
+        return Integer.MAX_VALUE - 1; #hotspot bug in the JVM
     }
 
     private final int getStep(FaceletContext ctx) {
