@@ -19,16 +19,25 @@
   <property name="lib"                 value="lib"/>
   <property name="release"             value="release"/>
   <property name="doc"                 value="doc"/>
-  <property name="dependencies"        value="dependencies"/>
-  <property name="jsf-api.jar"         value="${basedir}/../javaserverfaces-sources/jsf-api/build/lib/jsf-api.jar" />
   <property name="jar"                 value="jsf-facelets.jar"/>
+
+  <!-- Binary dependency info -->
+  <property name="http.proxy.host"     value=""/>
+  <property name="http.proxy.port"     value=""/>
+  <property name="ibiblio.repo"        value="http://www.ibiblio.org/maven/"/>
+  <property name="java.net.repo"       value="http://download.java.net/maven/1/"/>
+  <property name="jsf.api.version"     value="1.2_04-p02"/>
+  <property name="servlet.api.version" value="2.4"/>
+  <property name="el.version"          value="1.0"/>
+  <property name="jsf-api.jar"         value="jsf-api-${jsf.api.version}.jar"/>
+  <property name="el-api.jar"          value="el-api-${el.version}.jar"/>
+  <property name="el-ri.jar"           value="el-impl-${el.version}.jar"/>
+  <property name="servlet-api.jar"     value="servlet-api-${servlet.api.version}.jar"/>
 
 
   <path id="compile.classpath">
     <pathelement location="${build}/classes"/>
     <fileset dir="lib" includes="*.jar"/>
-    <pathelement location="${jsf-api.jar}"/>
-    <pathelement location="${servlet-api.jar}" />
     <pathelement location="${}"/>
   </path>
 
@@ -52,7 +61,6 @@
     <mkdir dir="${dist}/demo"/>
 	
     <!-- CVS Dependencies -->
-    <mkdir dir="${dependencies}"/>
     <mkdir dir="${lib}"/>
 
     <uptodate property="docs.uptodate" targetfile="${build}/docs/api/index.html">
@@ -241,18 +249,42 @@
   <target name="dependencies" depends="prepare">
      <condition property="missing.el-api" >
        <not>
-          <available file="${lib}/el-api.jar"/>
+          <available file="${lib}/${el-api.jar}"/>
        </not>
      </condition>
      <condition property="missing.el-ri" >
        <not>
-          <available file="${lib}/el-ri.jar"/>
+          <available file="${lib}/${el-ri.jar}"/>
        </not>
      </condition>
+     <condition property="missing.jsf-api">
+         <not>
+             <available file="${lib}/${jsf-api.jar}"/>
+         </not>
+     </condition>
+     <condition property="missing.servlet-api">
+         <not>
+             <available file="${lib}/${servlet-api.jar}"/>
+         </not>
+     </condition>
+     <condition property="set.proxy">
+         <and>
+            <length string="${http.proxy.host}" when="greater" length="0"/>
+            <length string="${http.proxy.port}" when="greater" length="0"/>
+         </and>
+     </condition>
+     <ant target="-set-proxy" />
      <ant target="-auto-depend-el-api" />
      <ant target="-auto-depend-el-ri" />
+     <ant target="-auto-depend-jsf-api" />
+     <ant target="-auto-depend-servlet-api" />
   </target>
 
+  <target name="-set-proxy" if="set.proxy">
+      <echo message="Using HTTP proxy ${http.proxy.host}:${http.proxy.port} to obtain binary dependencies."/>
+      <setproxy proxyhost="${http.proxy.host}" proxyport="${http.proxy.port}"/>
+  </target>
+    
   <target name="-auto-depend-el-api" if="missing.el-api">
     <ant target="depend-el-api" />
   </target>
@@ -260,57 +292,33 @@
   <target name="-auto-depend-el-ri" if="missing.el-ri">
     <ant target="depend-el-ri" />
   </target>
+
+  <target name="-auto-depend-jsf-api" if="missing.jsf-api">
+     <ant target="depend-jsf-api"/>
+  </target>
+
+  <target name="-auto-depend-servlet-api" if="missing.servlet-api">
+      <ant target="depend-servlet-api"/>
+  </target>
+
+  <target name="depend-servlet-api">
+      <get src="${ibiblio.repo}/javax.servlet/jars/${servlet-api.jar}"
+         dest="${lib}/${servlet-api.jar}"/>
+  </target>
+    
+  <target name="depend-jsf-api">
+    <get src="${java.net.repo}/javax.faces/jars/${jsf-api.jar}"
+         dest="${lib}/${jsf-api.jar}"/>
+  </target>
   
   <target name="depend-el-api">
-  	<cvs cvsRoot=":pserver:${java.net.cvs.user}@cvs.dev.java.net:/cvs"
-	     package="glassfish/servlet-api/src/jsr245/src/share/javax/el"
-         dest="${dependencies}" />
-    <mkdir dir="${build}/dependencies/el-api" />
-	<javac srcdir="${dependencies}/glassfish/servlet-api/src/jsr245/src/share"
-          destdir="${build}/dependencies/el-api"
-            debug="${compile.debug}"
-      deprecation="${compile.deprecation}"
-         optimize="${compile.optimize}"
-           source="${compile.source}"
-           target="${compile.target}">
-      <classpath refid="compile.classpath"/>
-    </javac>
-	<copy todir="${build}/dependencies/el-api">
-      <fileset dir="${dependencies}/glassfish/servlet-api/src/jsr245/src/share">
-        <include name="**/*.properties"/>
-        <include name="**/*.xml"/>
-        <include name="**/*.dtd"/>
-	    <include name="**/*.ent"/>
-      </fileset>
-    </copy>
-	<jar jarfile="${lib}/el-api.jar"
-         basedir="${build}/dependencies/el-api" />
+  	<get src="${java.net.repo}/javax.el/jars/${el-api.jar}"
+         dest="${lib}/${el-api.jar}"/>
   </target>
   
   <target name="depend-el-ri">
-  	<cvs cvsRoot=":pserver:${java.net.cvs.user}@cvs.dev.java.net:/cvs"
-	     package="glassfish/appserv-webtier/src/java/com/sun/el"
-         dest="${dependencies}" />
-	<mkdir dir="${build}/dependencies/el-ri" />
-	<javac srcdir="${dependencies}/glassfish/appserv-webtier/src/java"
-          destdir="${build}/dependencies/el-ri"
-            debug="${compile.debug}"
-      deprecation="${compile.deprecation}"
-         optimize="${compile.optimize}"
-           source="${compile.source}"
-           target="${compile.target}">
-      <classpath refid="compile.classpath"/>
-    </javac>
-	<copy todir="${build}/dependencies/el-ri">
-      <fileset dir="${dependencies}/glassfish/appserv-webtier/src/java">
-        <include name="**/*.properties"/>
-        <include name="**/*.xml"/>
-        <include name="**/*.dtd"/>
-	    <include name="**/*.ent"/>
-      </fileset>
-    </copy>
-	<jar jarfile="${lib}/el-ri.jar"
-         basedir="${build}/dependencies/el-ri" />
+  	<get src="${java.net.repo}/el-impl/jars/${el-ri.jar}"
+         dest="${lib}/${el-ri.jar}"/>
   </target>
 
 <target name="push-to-maven-prepare">
