@@ -45,7 +45,7 @@ import com.sun.facelets.util.ReflectionUtil;
  * {@link java.net.URL URL} source.
  * 
  * @author Jacob Hookom
- * @version $Id: TagLibraryConfig.java,v 1.10 2006/10/19 03:48:12 jhook Exp $
+ * @version $Id: TagLibraryConfig.java,v 1.11 2007/06/14 21:59:50 rlubke Exp $
  */
 public final class TagLibraryConfig {
 
@@ -132,6 +132,10 @@ public final class TagLibraryConfig {
         private Locator locator;
 
         private String tagName;
+
+        private String converterId;
+        
+        private String validatorId;
 
         private String componentClassName;
 
@@ -221,28 +225,36 @@ public final class TagLibraryConfig {
                         }
                     }
                     else if ("converter-id".equals(qName)) {
+                        this.converterId = this.captureBuffer(); 
+                    }
+                    else if ("converter".equals(qName)) {
                         if (this.handlerClass != null) {
                             impl.putConverter(this.tagName,
-                                              this.captureBuffer(),
+                                              this.converterId,
                                               handlerClass);
                             this.handlerClass = null;
                         }
                         else {
                             impl.putConverter(this.tagName,
-                                              this.captureBuffer());
+                                              this.converterId);
                         }
+                        this.converterId = null;
                     }
                     else if ("validator-id".equals(qName)) {
+                        this.validatorId = this.captureBuffer(); 
+                    }
+                    else if ("validator".equals(qName)) {
                         if (this.handlerClass != null) {
                             impl.putValidator(this.tagName,
-                                              this.captureBuffer(),
+                                              this.validatorId,
                                               handlerClass);
                             this.handlerClass = null;
                         }
                         else {
                             impl.putValidator(this.tagName,
-                                              this.captureBuffer());
+                                              this.validatorId);
                         }
+                        this.validatorId = null;
                     }
                     else  if ("source".equals(qName)) {
                         String path = this.captureBuffer();
