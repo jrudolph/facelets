@@ -744,9 +744,10 @@ public class FaceletViewHandler extends ViewHandler {
         ExternalContext extCtx = context.getExternalContext();
         String viewId = actionId;
         if (extCtx.getRequestPathInfo() == null) {
-            String facesSuffix = actionId.substring(actionId.lastIndexOf('.'));
             String viewSuffix = this.getDefaultSuffix(context);
-            viewId = actionId.replaceFirst(facesSuffix, viewSuffix);
+            viewId = new StringBuffer(viewId).replace(viewId.lastIndexOf('.'),
+                                                      viewId.length(),
+                                                      viewSuffix).toString();
         }
         if (log.isLoggable(Level.FINE)) {
             log.fine("ActionId -> ViewId: " + actionId + " -> " + viewId);
