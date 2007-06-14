@@ -17,6 +17,9 @@ package com.sun.facelets.tag;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import javax.el.ELException;
 import javax.el.VariableMapper;
@@ -25,22 +28,24 @@ import javax.faces.component.UIComponent;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
-import com.sun.facelets.FaceletHandler;
 import com.sun.facelets.TemplateClient;
 import com.sun.facelets.el.VariableMapperWrapper;
+import com.sun.facelets.tag.ui.DefineHandler;
 
 /**
  * A Tag that is specified in a FaceletFile. Takes all attributes specified and
  * sets them on the FaceletContext before including the targeted Facelet file.
  * 
  * @author Jacob Hookom
- * @version $Id: UserTagHandler.java,v 1.7 2006/03/29 04:10:13 jhook Exp $
+ * @version $Id: UserTagHandler.java,v 1.8 2007/06/14 03:03:01 rlubke Exp $
  */
 final class UserTagHandler extends TagHandler implements TemplateClient {
 
     protected final TagAttribute[] vars;
 
     protected final URL location;
+
+    protected final Map handlers;
 
     /**
      * @param config
@@ -49,6 +54,18 @@ final class UserTagHandler extends TagHandler implements TemplateClient {
         super(config);
         this.vars = this.tag.getAttributes().getAll();
         this.location = location;
+                Iterator itr = this.findNextByType(DefineHandler.class);
+        if (itr.hasNext()) {
+            handlers = new HashMap();
+
+            DefineHandler d = null;
+            while (itr.hasNext()) {
+                d = (DefineHandler) itr.next();
+                this.handlers.put(d.getName(), d);
+            }
+        } else {
+            handlers = null;
+        }
     }
 
     /**
@@ -90,11 +107,18 @@ final class UserTagHandler extends TagHandler implements TemplateClient {
     }
 
     public boolean apply(FaceletContext ctx, UIComponent parent, String name) throws IOException, FacesException, FaceletException, ELException {
-        if (name == null) {
-            this.nextHandler.apply(ctx, parent);
-            return true;
-        }
-        return false;
+        if (name != null) {
+            DefineHandler handler = (DefineHandler) this.handlers.get(name);
+            if (handler != null) {
+                handler.applyDefinition(ctx, parent);
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+             this.nextHandler.apply(ctx, parent);
+             return true;
+         }
     }
 
 }
