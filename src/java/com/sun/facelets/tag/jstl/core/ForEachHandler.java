@@ -14,18 +14,6 @@
 
 package com.sun.facelets.tag.jstl.core;
 
-import java.io.IOException;
-import java.lang.reflect.Array;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
-
-import javax.el.ELException;
-import javax.el.ValueExpression;
-import javax.el.VariableMapper;
-import javax.faces.FacesException;
-import javax.faces.component.UIComponent;
-
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
 import com.sun.facelets.tag.TagAttribute;
@@ -33,10 +21,23 @@ import com.sun.facelets.tag.TagAttributeException;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.TagHandler;
 
+import javax.el.ELException;
+import javax.el.ValueExpression;
+import javax.el.VariableMapper;
+import javax.faces.FacesException;
+import javax.faces.component.UIComponent;
+
+import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 /**
  * @author Jacob Hookom
  * @author Andrew Robinson
- * @version $Id: ForEachHandler.java,v 1.10 2007/05/06 17:47:35 jhook Exp $
+ * @version $Id: ForEachHandler.java,v 1.11 2007/06/15 00:08:14 rlubke Exp $
  */
 public final class ForEachHandler extends TagHandler {
 
@@ -233,10 +234,12 @@ public final class ForEachHandler extends TagHandler {
 
     private final ValueExpression getVarExpr(ValueExpression ve, Object src,
             Object value, int i) {
-        if (src instanceof Collection || src.getClass().isArray()) {
+        if (src instanceof List || src.getClass().isArray()) {
             return new IndexedValueExpression(ve, i);
         } else if (src instanceof Map && value instanceof Map.Entry) {
             return new MappedValueExpression(ve, (Map.Entry) value);
+        } else if (src instanceof Collection) {
+            return new IteratedValueExpression(ve, value);
         }
         throw new IllegalStateException("Cannot create VE for: " + src);
     }
