@@ -22,7 +22,7 @@ import java.util.Map;
  * Implementations of JSTL Functions
  * 
  * @author Jacob Hookom
- * @version $Id: JstlFunction.java,v 1.3 2005/08/24 04:38:59 jhook Exp $
+ * @version $Id: JstlFunction.java,v 1.4 2007/08/09 17:11:45 rlubke Exp $
  */
 public final class JstlFunction {
 
@@ -145,7 +145,7 @@ public final class JstlFunction {
         }
         int i = v.indexOf(s);
         if (i > 0) {
-            return v.substring(0, i-1);
+            return v.substring(0, i);
         }
         return null;
     }
