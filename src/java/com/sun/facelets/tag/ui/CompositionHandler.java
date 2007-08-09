@@ -39,7 +39,7 @@ import com.sun.facelets.tag.TagHandler;
 
 /**
  * @author Jacob Hookom
- * @version $Id: CompositionHandler.java,v 1.11 2007/05/06 17:35:04 jhook Exp $
+ * @version $Id: CompositionHandler.java,v 1.12 2007/08/09 16:54:44 rlubke Exp $
  */
 public final class CompositionHandler extends TagHandler implements
         TemplateClient {
@@ -121,9 +121,12 @@ public final class CompositionHandler extends TagHandler implements
     }
 
     public boolean apply(FaceletContext ctx, UIComponent parent, String name)
-            throws IOException, FacesException, FaceletException, ELException {
+          throws IOException, FacesException, FaceletException, ELException {
         if (name != null) {
-        	DefineHandler handler = (DefineHandler) this.handlers.get(name);
+            if (this.handlers == null) {
+                return false;
+            }
+            DefineHandler handler = (DefineHandler) this.handlers.get(name);
             if (handler != null) {
                 handler.applyDefinition(ctx, parent);
                 return true;
