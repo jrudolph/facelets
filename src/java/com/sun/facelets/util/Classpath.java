@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLDecoder;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
@@ -28,7 +29,7 @@ import java.util.jar.JarFile;
 /**
  * @author Jacob Hookom
  * @author Roland Huss
- * @version $Id: Classpath.java,v 1.6 2007/08/07 16:21:06 youngm Exp $
+ * @version $Id: Classpath.java,v 1.7 2007/08/14 18:16:48 rlubke Exp $
  */
 public final class Classpath {
 
@@ -67,7 +68,10 @@ public final class Classpath {
 				if (jarFile != null) {
 					searchJar(cl, all, jarFile, prefix, suffix);
 				} else {
-					searchDir(all, new File(url.getFile()), suffix);
+                    searchDir(all,
+                              new File(URLDecoder.decode(url.getFile(),
+                                                         "UTF-8")),
+                              suffix);
 				}
 			}
 		}
