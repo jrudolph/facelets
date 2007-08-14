@@ -165,7 +165,10 @@ public final class DevTools {
                     writer.write("<tr><td>");
                     writer.write(key.replaceAll("<", TS));
                     writer.write("</td><td>");
-                    writer.write(entry.getValue().toString().replaceAll("<", TS));
+                    writer.write(entry.getValue() == null
+                                 ? "null"
+                                 : entry.getValue().toString()
+                                       .replaceAll("<", TS));
                     writer.write("</td></tr>");
                     written = true;
                 }
