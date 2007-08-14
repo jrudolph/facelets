@@ -41,10 +41,10 @@ public final class FacesAPI {
     }
     
     public final static int getComponentVersion(UIComponent c) {
-        return (version >= 12 && c instanceof UIComponentBase) ? 12 : 11;
+        return version;
     }
     
     public final static int getComponentVersion(Class c) {
-        return (version >= 12 && UIComponentBase.class.isAssignableFrom(c)) ? 12 : 11;
+        return version;
     }
 }
