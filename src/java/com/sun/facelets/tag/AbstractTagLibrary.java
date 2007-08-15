@@ -40,7 +40,7 @@ import com.sun.facelets.tag.jsf.ValidatorConfig;
  * Base class for defining TagLibraries in Java
  * 
  * @author Jacob Hookom
- * @version $Id: AbstractTagLibrary.java,v 1.8 2005/08/24 04:38:46 jhook Exp $
+ * @version $Id: AbstractTagLibrary.java,v 1.9 2007/08/15 15:47:07 rlubke Exp $
  */
 public abstract class AbstractTagLibrary implements TagLibrary {
 
@@ -560,25 +560,7 @@ public abstract class AbstractTagLibrary implements TagLibrary {
             return (Method) this.functions.get(name);
         }
         return null;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    public boolean equals(Object obj) {
-        return (obj instanceof TagLibrary && obj.hashCode() == this.hashCode());
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see java.lang.Object#hashCode()
-     */
-    public int hashCode() {
-        return this.namespace.hashCode();
-    }
+    }    
 
     public String getNamespace() {
         return namespace;
