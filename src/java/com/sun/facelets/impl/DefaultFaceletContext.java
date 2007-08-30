@@ -273,12 +273,10 @@ final class DefaultFaceletContext extends FaceletContext {
         boolean found = false;
         TemplateManager client;
 
-        for (int i = 0; i < this.clients.size() && found == false; i++) {
+        for (int i = 0, size = this.clients.size(); i < size && !found; i++) {
             client = ((TemplateManager) this.clients.get(i));
             if (client.equals(this.facelet))
                 continue;            
-            if (client.isRoot() && i != 0)
-            	break;
             found = client.apply(this, parent, name);            
         }
 
