@@ -37,7 +37,7 @@ import com.sun.facelets.tag.ui.DefineHandler;
  * sets them on the FaceletContext before including the targeted Facelet file.
  * 
  * @author Jacob Hookom
- * @version $Id: UserTagHandler.java,v 1.9 2007/08/09 16:54:44 rlubke Exp $
+ * @version $Id: UserTagHandler.java,v 1.10 2007/09/04 20:18:27 youngm Exp $
  */
 final class UserTagHandler extends TagHandler implements TemplateClient {
 
@@ -94,7 +94,7 @@ final class UserTagHandler extends TagHandler implements TemplateClient {
         
         // eval include
         try {
-            ctx.pushClient(this);
+        	ctx.extendClient(this);
             ctx.includeFacelet(parent, this.location);
         } catch (FileNotFoundException e) {
             throw new TagException(this.tag, e.getMessage());
