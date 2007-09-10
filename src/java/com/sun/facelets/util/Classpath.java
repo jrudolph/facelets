@@ -22,6 +22,7 @@ import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -29,7 +30,7 @@ import java.util.jar.JarFile;
 /**
  * @author Jacob Hookom
  * @author Roland Huss
- * @version $Id: Classpath.java,v 1.7 2007/08/14 18:16:48 rlubke Exp $
+ * @version $Id: Classpath.java,v 1.8 2007/09/10 15:42:48 youngm Exp $
  */
 public final class Classpath {
 
@@ -50,7 +51,7 @@ public final class Classpath {
 				cl.getResources(prefix),
 				cl.getResources(prefix + "MANIFEST.MF")
 			};
-		Set all = new HashSet();
+		Set all = new LinkedHashSet();
 		URL url;
 		URLConnection conn;
 		JarFile jarFile;
