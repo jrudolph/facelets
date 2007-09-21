@@ -28,7 +28,7 @@ import javax.el.VariableMapper;
  * contain the ValueExpression requested.
  * 
  * @author Jacob Hookom
- * @version $Id: VariableMapperWrapper.java,v 1.3 2006/12/19 04:33:59 jhook Exp $
+ * @version $Id: VariableMapperWrapper.java,v 1.4 2007/09/21 16:31:02 youngm Exp $
  */
 public final class VariableMapperWrapper extends VariableMapper {
 
@@ -45,19 +45,18 @@ public final class VariableMapperWrapper extends VariableMapper {
 	}
 
 	/**
-	 * First tries to resolve agains the inner Map, then the wrapped
-	 * ValueExpression.
+	 * First tries to resolve against the wrapped ValueExpression and
+	 * then the inner.
 	 * 
 	 * @see javax.el.VariableMapper#resolveVariable(java.lang.String)
 	 */
 	public ValueExpression resolveVariable(String variable) {
 		ValueExpression ve = null;
 		try {
-			if (this.vars != null) {
-				ve = (ValueExpression) this.vars.get(variable);
-			}
-			if (ve == null) {
-				return this.target.resolveVariable(variable);
+			if(this.target != null)
+			ve = this.target.resolveVariable(variable);
+			if (ve == null && vars != null) {
+				return (ValueExpression) this.vars.get(variable); 
 			}
 			return ve;
 		} catch (StackOverflowError e) {
