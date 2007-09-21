@@ -28,7 +28,7 @@ import javax.el.VariableMapper;
  * contain the ValueExpression requested.
  * 
  * @author Jacob Hookom
- * @version $Id: VariableMapperWrapper.java,v 1.4 2007/09/21 16:31:02 youngm Exp $
+ * @version $Id: VariableMapperWrapper.java,v 1.5 2007/09/21 16:48:02 youngm Exp $
  */
 public final class VariableMapperWrapper extends VariableMapper {
 
@@ -54,7 +54,7 @@ public final class VariableMapperWrapper extends VariableMapper {
 		ValueExpression ve = null;
 		try {
 			if(this.target != null)
-			ve = this.target.resolveVariable(variable);
+				ve = this.target.resolveVariable(variable);
 			if (ve == null && vars != null) {
 				return (ValueExpression) this.vars.get(variable); 
 			}
