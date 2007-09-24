@@ -17,28 +17,25 @@ package com.sun.facelets.compiler;
 import java.io.IOException;
 import java.io.Writer;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.el.ELException;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
-import com.sun.facelets.FaceletHandler;
 import com.sun.facelets.el.ELText;
-import com.sun.facelets.tag.TextHandler;
 import com.sun.facelets.tag.jsf.ComponentSupport;
-import com.sun.facelets.tag.jsf.core.FacetHandler;
 import com.sun.facelets.util.FastWriter;
 
 /**
  * @author Adam Winer
- * @version $Id: UIInstructionHandler.java,v 1.3 2006/12/03 18:56:01 jhook Exp $
+ * @version $Id: UIInstructionHandler.java,v 1.4 2007/09/24 06:33:29 rlubke Exp $
  */
 final class UIInstructionHandler extends AbstractUIHandler {
+
     private final String alias;
+
+    private final String id;
 
     private final ELText txt;
     
@@ -48,8 +45,9 @@ final class UIInstructionHandler extends AbstractUIHandler {
   
     private final boolean literal;
 
-    public UIInstructionHandler(String alias, Instruction[] instructions, ELText txt) {
+    public UIInstructionHandler(String alias, String id, Instruction[] instructions, ELText txt) {
         this.alias = alias;
+        this.id = id;
         this.instructions = instructions;
         this.txt = txt;
         this.length = txt.toString().length();
@@ -58,7 +56,7 @@ final class UIInstructionHandler extends AbstractUIHandler {
         int size = instructions.length;
 
         for (int i = 0; i < size; i++) {
-            Instruction ins = (Instruction) this.instructions[i];
+            Instruction ins = this.instructions[i];
             if (!ins.isLiteral()) {
                 literal = false;
                 break;
@@ -68,27 +66,49 @@ final class UIInstructionHandler extends AbstractUIHandler {
         this.literal = literal;
     }
 
-    public void apply(FaceletContext ctx, UIComponent parent)
-            throws IOException, FacesException, FaceletException, ELException {
-        if (parent != null) {
-            Instruction[] applied;
-            if (this.literal) {
-                applied = this.instructions;
-            } else {
-                int size = this.instructions.length;
-                applied = new Instruction[size];
-                // Create a new list with all of the necessary applied
-                // instructions
-                Instruction ins;
-                for (int i = 0; i < size; i++) {
-                    ins = this.instructions[i];
-                    applied[i] = ins.apply(ctx.getExpressionFactory(), ctx);
-                }
-            }
 
-            UIComponent c = new UIInstructions(txt, applied);
-            c.setId(ComponentSupport.getViewRoot(ctx, parent).createUniqueId());
-            this.addComponent(ctx, parent, c);
+    public void apply(FaceletContext ctx, UIComponent parent)
+          throws IOException, FacesException, FaceletException, ELException {
+        if (parent != null) {
+            // our id
+            String id = ctx.generateUniqueId(this.id);
+
+            // grab our component
+            UIComponent c = ComponentSupport.findChildByTagId(parent, id);
+            boolean componentFound = false;
+            if (c != null) {
+                componentFound = true;
+                // mark all children for cleaning 
+                ComponentSupport.markForDeletion(c);
+            } else {
+                Instruction[] applied;
+                if (this.literal) {
+                    applied = this.instructions;
+                } else {
+                    int size = this.instructions.length;
+                    applied = new Instruction[size];
+                    // Create a new list with all of the necessary applied
+                    // instructions
+                    Instruction ins;
+                    for (int i = 0; i < size; i++) {
+                        ins = this.instructions[i];
+                        applied[i] = ins.apply(ctx.getExpressionFactory(), ctx);
+                    }
+                }
+
+                c = new UIInstructions(txt, applied);
+                // mark it owned by a facelet instance
+                c.setId(ComponentSupport
+                      .getViewRoot(ctx, parent).createUniqueId());
+                c.getAttributes().put(ComponentSupport.MARK_CREATED, id);
+            }
+            // finish cleaning up orphaned children
+            if (componentFound) {
+                ComponentSupport.finalizeForDeletion(c);
+
+                parent.getChildren().remove(c);
+            }
+            parent.getChildren().add(c);
         }
     }
 
@@ -109,4 +129,5 @@ final class UIInstructionHandler extends AbstractUIHandler {
         }
         return writer.toString();
     }
+
 }

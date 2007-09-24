@@ -31,7 +31,7 @@ import com.sun.facelets.tag.TagException;
 /**
  * 
  * @author Jacob Hookom
- * @version $Id: TextUnit.java,v 1.10 2006/06/13 03:39:06 jhook Exp $
+ * @version $Id: TextUnit.java,v 1.11 2007/09/24 06:33:29 rlubke Exp $
  */
 final class TextUnit extends CompilationUnit {
 
@@ -49,8 +49,11 @@ final class TextUnit extends CompilationUnit {
 
     private final String alias;
 
-    public TextUnit(String alias) {
+    private final String id;
+
+    public TextUnit(String alias, String id) {
         this.alias = alias;
+        this.id = id;
         this.buffer = new StringBuffer();
         this.textBuffer = new StringBuffer();
         this.instructionBuffer = new ArrayList();
@@ -226,7 +229,9 @@ final class TextUnit extends CompilationUnit {
                         Instruction[] instructions = (Instruction[]) this.instructionBuffer
                                 .toArray(new Instruction[size]);
                         this.children.add(new UIInstructionHandler(this.alias,
-                                instructions, txt));
+                                                                   this.id,
+                                                                   instructions,
+                                                                   txt));
                         this.instructionBuffer.clear();
                     }
 

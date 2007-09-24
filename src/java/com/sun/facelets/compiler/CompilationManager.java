@@ -39,7 +39,7 @@ import com.sun.facelets.tag.ui.UILibrary;
  * @see com.sun.facelets.compiler.Compiler
  * 
  * @author Jacob Hookom
- * @version $Id: CompilationManager.java,v 1.13 2006/03/29 04:10:02 jhook Exp $
+ * @version $Id: CompilationManager.java,v 1.14 2007/09/24 06:33:29 rlubke Exp $
  */
 final class CompilationManager {
 
@@ -99,7 +99,7 @@ final class CompilationManager {
         if (this.currentUnit() instanceof TextUnit) {
             unit = (TextUnit) this.currentUnit();
         } else {
-            unit = new TextUnit(this.alias);
+            unit = new TextUnit(this.alias, this.nextTagId());
             this.startUnit(unit);
         }
         unit.writeInstruction(value);
@@ -120,7 +120,7 @@ final class CompilationManager {
         if (this.currentUnit() instanceof TextUnit) {
             unit = (TextUnit) this.currentUnit();
         } else {
-            unit = new TextUnit(this.alias);
+            unit = new TextUnit(this.alias, this.nextTagId());
             this.startUnit(unit);
         }
         unit.write(value);
@@ -143,7 +143,7 @@ final class CompilationManager {
         if (this.currentUnit() instanceof TextUnit) {
             unit = (TextUnit) this.currentUnit();
         } else {
-            unit = new TextUnit(this.alias);
+            unit = new TextUnit(this.alias, this.nextTagId());
             this.startUnit(unit);
         }
           
@@ -196,7 +196,7 @@ final class CompilationManager {
             if (this.currentUnit() instanceof TextUnit) {
                 unit = (TextUnit) this.currentUnit();
             } else {
-                unit = new TextUnit(this.alias);
+                unit = new TextUnit(this.alias, this.nextTagId());
                 this.startUnit(unit);
             }
             unit.startTag(t);
