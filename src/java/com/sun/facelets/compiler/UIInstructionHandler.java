@@ -29,7 +29,7 @@ import com.sun.facelets.util.FastWriter;
 
 /**
  * @author Adam Winer
- * @version $Id: UIInstructionHandler.java,v 1.4 2007/09/24 06:33:29 rlubke Exp $
+ * @version $Id: UIInstructionHandler.java,v 1.5 2007/09/25 17:03:52 rlubke Exp $
  */
 final class UIInstructionHandler extends AbstractUIHandler {
 
@@ -104,11 +104,10 @@ final class UIInstructionHandler extends AbstractUIHandler {
             }
             // finish cleaning up orphaned children
             if (componentFound) {
-                ComponentSupport.finalizeForDeletion(c);
-
+                ComponentSupport.finalizeForDeletion(c);               
                 parent.getChildren().remove(c);
             }
-            parent.getChildren().add(c);
+            this.addComponent(ctx, parent, c);
         }
     }
 
