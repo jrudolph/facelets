@@ -14,13 +14,22 @@
 
 package com.sun.facelets.tag;
 
+import com.sun.facelets.FaceletContext;
+import com.sun.facelets.FaceletHandler;
+import java.io.IOException;
+import javax.el.ELException;
+import javax.faces.FacesException;
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
+import javax.faces.view.ComponentConfig;
+
 /**
  * Representation of a Tag in the Facelet definition
  * 
  * @author Jacob Hookom
- * @version $Id: Tag.java,v 1.4 2005/08/24 04:38:48 jhook Exp $
+ * @version $Id: Tag.java,v 1.4.16.1 2007/12/03 15:27:23 edburns Exp $
  */
-public final class Tag {
+public final class Tag extends ComponentConfig {
     private final TagAttributes attributes;
 
     private final Location location;
@@ -53,6 +62,10 @@ public final class Tag {
     public TagAttributes getAttributes() {
         return attributes;
     }
+    
+    public Object getAttributes2() {
+        return attributes;
+    }
 
     /**
      * Local name of the tag &lt;my:tag /> would be "tag"
@@ -69,6 +82,10 @@ public final class Tag {
      * @return location of the Tag in the Facelet file
      */
     public Location getLocation() {
+        return location;
+    }
+    
+    public javax.faces.view.Location getLocation2() {
         return location;
     }
 
@@ -97,5 +114,16 @@ public final class Tag {
      */
     public String toString() {
         return this.location + " <" + this.qName + ">";
+    }
+    
+    public void apply(FacesContext context, UIComponent instance)
+      throws IOException, FacesException, ELException {
+        this.nextHandler.apply((FaceletContext) context.getELContext().getContext(FaceletContext.class),
+                instance);
+    }
+    
+    private FaceletHandler nextHandler = null;
+    public void setNextFaceletHandler(FaceletHandler next) {
+        this.nextHandler = next;
     }
 }

@@ -21,9 +21,9 @@ package com.sun.facelets.tag;
  * @see com.sun.facelets.tag.Tag
  * @see com.sun.facelets.tag.TagAttribute
  * @author Jacob Hookom
- * @version $Id: Location.java,v 1.3 2005/08/24 04:38:47 jhook Exp $
+ * @version $Id: Location.java,v 1.3.16.1 2007/12/03 15:27:23 edburns Exp $
  */
-public final class Location {
+public final class Location extends javax.faces.view.Location {
 
     private final String path;
 
@@ -32,6 +32,7 @@ public final class Location {
     private final int column;
 
     public Location(String path, int line, int column) {
+        super(path,line, column);
         this.path = path;
         this.line = line;
         this.column = column;
