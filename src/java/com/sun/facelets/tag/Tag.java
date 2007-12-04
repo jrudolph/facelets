@@ -27,7 +27,7 @@ import javax.faces.view.ComponentConfig;
  * Representation of a Tag in the Facelet definition
  * 
  * @author Jacob Hookom
- * @version $Id: Tag.java,v 1.4.16.1 2007/12/03 15:27:23 edburns Exp $
+ * @version $Id: Tag.java,v 1.4.16.2 2007/12/04 19:57:12 edburns Exp $
  */
 public final class Tag extends ComponentConfig {
     private final TagAttributes attributes;
@@ -122,8 +122,20 @@ public final class Tag extends ComponentConfig {
                 instance);
     }
     
+    public void applyFragment(FacesContext context, UIComponent instance)
+      throws IOException, FacesException, ELException {
+        this.fragmentHandler.apply((FaceletContext) context.getELContext().getContext(FaceletContext.class),
+                instance);
+    }
+    
     private FaceletHandler nextHandler = null;
     public void setNextFaceletHandler(FaceletHandler next) {
         this.nextHandler = next;
     }
+
+    private FaceletHandler fragmentHandler = null;
+    public void setFragmentFaceletHandler(FaceletHandler fragment) {
+        this.fragmentHandler = fragment;
+    }
+    
 }

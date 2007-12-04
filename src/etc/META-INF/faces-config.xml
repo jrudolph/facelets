@@ -14,6 +14,10 @@
 		<component-class>com.sun.facelets.tag.ui.ComponentRef</component-class>
 	</component>
 	<component>
+		<component-type>facelets.ui.Component2Ref</component-type>
+		<component-class>com.sun.facelets.tag.ui.Component2Ref</component-class>
+	</component>
+	<component>
 		<component-type>facelets.ui.Debug</component-type>
 		<component-class>com.sun.facelets.tag.ui.UIDebug</component-class>
 	</component>

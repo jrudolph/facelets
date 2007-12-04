@@ -15,14 +15,13 @@
 package com.sun.facelets.tag.jsf;
 
 import com.sun.facelets.FaceletContext;
+import com.sun.facelets.FaceletHandler;
 import com.sun.facelets.el.LegacyValueBinding;
 import com.sun.facelets.tag.MetaRuleset;
 import com.sun.facelets.tag.MetaTagHandler;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagException;
-import com.sun.facelets.tag.jsf.ComponentConfig;
-import com.sun.facelets.tag.jsf.ComponentSupport;
-import com.sun.facelets.tag.jsf.EditableValueHolderRule;
+import com.sun.facelets.tag.TagHandler;
 import com.sun.facelets.tag.ui.*;
 import com.sun.facelets.util.FacesAPI;
 import java.io.IOException;
@@ -58,9 +57,9 @@ public class Component2Handler extends MetaTagHandler {
     public Component2Handler(ComponentConfig config) {
         super(config);
         this.componentType = null != this.getAttribute("componentType") ? 
-            this.getAttribute("componentType").toString() : ComponentRef.COMPONENT_TYPE;
+            this.getAttribute("componentType").toString() : Component2Ref.COMPONENT_TYPE;
         this.rendererType = null != this.getAttribute("rendererType") ? 
-            this.getAttribute("rendererType").toString() : "javax.faces.Text";
+            this.getAttribute("rendererType").toString() : Component2Ref.RENDERER_TYPE;
         this.id = this.getAttribute("id");
         this.binding = this.getAttribute("binding");
     }
@@ -152,6 +151,7 @@ public class Component2Handler extends MetaTagHandler {
         UIComponent c = null;
         FacesContext faces = ctx.getFacesContext();
         Application app = faces.getApplication();
+        this.tag.setFragmentFaceletHandler((FaceletHandler) ctx.getFacesContext().getELContext().getContext(Include2Handler.class));
         this.tag.setNextFaceletHandler(this.nextHandler);
         ctx.getFacesContext().getELContext().putContext(FaceletContext.class, ctx);
         try {
@@ -176,11 +176,8 @@ public class Component2Handler extends MetaTagHandler {
             }
         }
         finally {
+            this.tag.setFragmentFaceletHandler(null);
             this.tag.setNextFaceletHandler(null);
-            // uncomment-out when 179 is fixed
-            // https://jsp-spec-public.dev.java.net/issues/show_bug.cgi?id=179
-            // ctx.getFacesContext().getELContext().putContext(FaceletContext.class, 
-            //        null);
         }
         return c;
     }
