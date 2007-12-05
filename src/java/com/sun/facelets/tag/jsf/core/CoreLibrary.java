@@ -32,7 +32,7 @@ import com.sun.facelets.tag.AbstractTagLibrary;
  * documentation</a>.
  * 
  * @author Jacob Hookom
- * @version $Id: CoreLibrary.java,v 1.10 2006/10/19 03:48:11 jhook Exp $
+ * @version $Id: CoreLibrary.java,v 1.10.2.1 2007/12/05 18:31:28 edburns Exp $
  */
 public final class CoreLibrary extends AbstractTagLibrary {
 
@@ -46,6 +46,8 @@ public final class CoreLibrary extends AbstractTagLibrary {
         this.addTagHandler("actionListener", ActionListenerHandler.class);
 
         this.addTagHandler("attribute", AttributeHandler.class);
+        
+        this.addTagHandler("compositeAttachedObjectTarget", CompositeAttachedObjectTargetHandler.class);
 
         this.addConverter("convertDateTime", DateTimeConverter.CONVERTER_ID, ConvertDateTimeHandler.class);
 

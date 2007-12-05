@@ -21,10 +21,12 @@ import com.sun.facelets.tag.MetaRuleset;
 import com.sun.facelets.tag.MetaTagHandler;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagException;
-import com.sun.facelets.tag.TagHandler;
 import com.sun.facelets.tag.ui.*;
 import com.sun.facelets.util.FacesAPI;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.el.ELException;
@@ -86,6 +88,7 @@ public class Component2Handler extends MetaTagHandler {
             }
             ComponentSupport.markForDeletion(c);
         } else {
+            ctx.getFacesContext().getExternalContext().getRequestMap().put("Component2Handler", this);
             c = this.createComponent(ctx);
             if (log.isLoggable(Level.FINE)) {
                 log.fine(this.tag + " Component["+id+"] Created: "
@@ -130,6 +133,29 @@ public class Component2Handler extends MetaTagHandler {
         // this allows children to determine if it's
         // been part of the tree or not yet
         parent.getChildren().add(c);
+        
+        this.moveAttachedObjectsIfNecessary(ctx, (Component2Ref) c);
+        ctx.getFacesContext().getExternalContext().getRequestMap().remove("Component2Handler");
+        
+    }
+    
+    private Map<String, UIComponent> attachedObjectTargetMap;
+    public Map<String, UIComponent> getAttachedObjectTargetMap() {
+        if (null == attachedObjectTargetMap) {
+            attachedObjectTargetMap = new HashMap<String, UIComponent>();
+        }
+        return attachedObjectTargetMap;
+    } 
+    
+    private void moveAttachedObjectsIfNecessary(FaceletContext ctx, Component2Ref composite) {
+        Map<String, UIComponent> map = getAttachedObjectTargetMap();
+        Iterator<String> iter = map.keySet().iterator();
+        UIComponent target;
+        String outerId;
+        while (iter.hasNext()) {
+            target = map.get(outerId = iter.next());
+            composite.moveAttachedObjectToTarget(outerId, target);
+        }
     }
 
     /**

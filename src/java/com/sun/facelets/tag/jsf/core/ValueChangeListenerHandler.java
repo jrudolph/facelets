@@ -24,7 +24,6 @@ import javax.faces.component.EditableValueHolder;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
-import javax.faces.event.ActionListener;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.event.ValueChangeListener;
 
@@ -36,6 +35,7 @@ import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.TagException;
 import com.sun.facelets.tag.TagHandler;
 import com.sun.facelets.tag.jsf.ComponentSupport;
+import com.sun.facelets.tag.ui.Component2Ref;
 import com.sun.facelets.util.ReflectionUtil;
 
 /**
@@ -140,6 +140,10 @@ public final class ValueChangeListenerHandler extends TagHandler {
 				ValueChangeListener listener = new LazyValueChangeListener(
 						this.listenerType, b);
 				evh.addValueChangeListener(listener);
+                                if (parent instanceof Component2Ref) {
+                                    String attachedObjectId = this.getAttribute("id").getValue(ctx);
+                                    ((Component2Ref)parent).storeNamedAttachedObject(attachedObjectId, listener);
+                                }
 			}
 		} else {
 			throw new TagException(this.tag,
