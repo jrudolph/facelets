@@ -21,9 +21,12 @@
   <property name="compile.target"      value="1.5"/>
   <property name="build"               value="build"/>
   <property name="dist"                value="dist"/>
+  <property name="name"                value="facelets"/>
+  <property name="artifact-id"         value="jsf-${name}"/>
   <property name="lib"                 value="lib"/>
   <property name="release"             value="release"/>
-  <property name="release.version"     value="1.1.11a"/>
+  <property name="release.version"     value="1.1.11b"/>
+  <property name="mvn.repo.version"    value="${release.version}-SNAPSHOT"/>
   <property name="doc"                 value="doc"/>
   <property name="dependencies"        value="${basedir}/dependencies" />
   <property name="jsf-api.jar"         value="${dependencies}/jsf-api.jar" />
@@ -291,6 +294,31 @@
   </cvs>
 </target>
 
+<target name="push-local-to-maven" description="install facelets to local maven repo.">
+
+  <exec executable="mvn" os="SunOS">
+    <arg line="install:install-file -DgroupId=javax.faces -DartifactId=${artifact-id} -Dversion=${mvn.repo.version} -Dpackaging=jar -Dfile=${basedir}/dist/${artifact-id}.jar " />
+  </exec>
+  <exec executable="mvn" os="Linux">
+    <arg line="install:install-file -DgroupId=javax.faces -DartifactId=${artifact-id} -Dversion=${mvn.repo.version} -Dpackaging=jar -Dfile=${basedir}/dist/${artifact-id}.jar " />
+  </exec>
+  <exec executable="mvn" os="Mac OS X">
+    <arg line="install:install-file -DgroupId=javax.faces -DartifactId=${artifact-id} -Dversion=${mvn.repo.version} -Dpackaging=jar -Dfile=${basedir}/dist/${artifact-id}.jar " />
+  </exec>
+  <exec executable="mvn" os="Darwin">
+    <arg line="install:install-file -DgroupId=javax.faces -DartifactId=${artifact-id} -Dversion=${mvn.repo.version} -Dpackaging=jar -Dfile=${basedir}/dist/${artifact-id}.jar " />
+  </exec>
+  <exec executable="mvn.bat" os="Windows 2000">
+    <arg line="install:install-file -DgroupId=javax.faces -DartifactId=${artifact-id} -Dversion=${mvn.repo.version} -Dpackaging=jar -Dfile=${basedir}/dist/${artifact-id}.jar " />
+  </exec>
+  <exec executable="mvn.bat" os="Windows 2003">
+    <arg line="install:install-file -DgroupId=javax.faces -DartifactId=${artifact-id} -Dversion=${mvn.repo.version} -Dpackaging=jar -Dfile=${basedir}/dist/${artifact-id}.jar " />
+  </exec>
+  <exec executable="mvn.bat" os="Windows XP">
+    <arg line="install:install-file -DgroupId=javax.faces -DartifactId=${artifact-id} -Dversion=${mvn.repo.version} -Dpackaging=jar -Dfile=${basedir}/dist/${artifact-id}.jar " />
+  </exec>
+
+</target>
  
 </project>
 
