@@ -29,7 +29,7 @@ import com.sun.facelets.tag.jsf.ValidatorConfig;
  * documentation</a>.
  * 
  * @author Jacob Hookom
- * @version $Id: ValidateDelegateHandler.java,v 1.3 2005/08/24 04:38:50 jhook Exp $
+ * @version $Id: ValidateDelegateHandler.java,v 1.3.16.1 2007/12/05 02:15:58 edburns Exp $
  */
 public final class ValidateDelegateHandler extends ValidateHandler {
 
@@ -37,7 +37,7 @@ public final class ValidateDelegateHandler extends ValidateHandler {
 
     public ValidateDelegateHandler(ValidatorConfig config) {
         super(config);
-        this.validatorId = this.getRequiredAttribute("validatorId");
+        this.validatorId = this.getAttribute("validatorId");
     }
 
     /**

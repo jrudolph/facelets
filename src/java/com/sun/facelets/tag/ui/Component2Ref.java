@@ -55,6 +55,8 @@ public final class Component2Ref extends UIInput implements ActionSource2 {
 
     }
     
+    
+    
     // ActionSource2
     
     private MethodExpression actionExpression;
@@ -120,6 +122,11 @@ public final class Component2Ref extends UIInput implements ActionSource2 {
 
         removeFacesListener(listener);
 
+    }
+
+    public Object getSubmittedValue() {
+        Object result = new CompositeComponentValue(this);
+        return result;
     }
     
 }
