@@ -43,6 +43,14 @@
 		</attribute>
 	</tag>
 
+        <tag>
+                <name>ajax</name>
+                <tag-class></tag-class>
+                <tei-class></tei-class>
+		<body-content>JSP</body-content>
+                <description></description>
+        </tag>
+   
 	<tag>
 		<name>debug</name>
 		<tag-class></tag-class>
