@@ -19,7 +19,7 @@ import com.sun.facelets.tag.AbstractTagLibrary;
 
 /**
  * @author Jacob Hookom
- * @version $Id: UILibrary.java,v 1.7 2006/03/29 04:10:08 jhook Exp $
+ * @version $Id: UILibrary.java,v 1.7.8.1 2007/12/07 15:57:01 rogerk Exp $
  */
 public final class UILibrary extends AbstractTagLibrary {
 
@@ -49,5 +49,7 @@ public final class UILibrary extends AbstractTagLibrary {
         this.addComponent("repeat", UIRepeat.COMPONENT_TYPE, null, RepeatHandler.class);
         
         this.addComponent("debug", UIDebug.COMPONENT_TYPE, null);
+
+        this.addComponent("ajax", AjaxScript.COMPONENT_TYPE, null);
     }
 }
