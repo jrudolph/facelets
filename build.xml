@@ -12,6 +12,8 @@
 
   <import
       file="${facelets.build.home}/common/ant/dependencies.xml"/>
+  <import
+      file="${facelets.build.home}/common/ant/common.xml"/>
 
   <!-- Establish property definition defaults -->
   <property name="compile.debug"       value="true"/>
@@ -25,7 +27,7 @@
   <property name="artifact-id"         value="jsf-${name}"/>
   <property name="lib"                 value="lib"/>
   <property name="release"             value="release"/>
-  <property name="release.version"     value="1.1.11b"/>
+  <property name="release.version"     value="1.1.11b-SNAPSHOT"/>
   <property name="mvn.repo.version"    value="${release.version}-SNAPSHOT"/>
   <property name="doc"                 value="doc"/>
   <property name="dependencies"        value="${basedir}/dependencies" />
@@ -166,6 +168,7 @@
   
   <!-- ======================== Build DocBook =========================== -->
   <target name="doc" depends="prepare">
+<!--
     <delete dir="${build}/docs/dev"/>
     <xslt basedir="${doc}/en"
            destdir="${build}/docs/dev"
@@ -175,6 +178,7 @@
     <copy todir="${build}/docs/dev">
 		<fileset dir="${doc}/en/rsc"/>
 	</copy>
+-->
   </target>
 
   <!-- ===================== Distribution Files ========================= -->
@@ -216,7 +220,6 @@
 	<ant target="-build-demo" antfile="demo/numberguess/build.xml"/>
 	<ant target="-build-demo" antfile="demo/hangman/build.xml"/>
 	<ant target="-build-demo" antfile="demo/starterkit/build.xml"/>
-	<ant target="-build-demo" antfile="demo/portlet/build.xml"/>
     <copy todir="${release}/facelets-${release.version}" includeEmptyDirs="false">
        <fileset dir="${dist}"/>
     </copy>
@@ -319,6 +322,14 @@
   </exec>
 
 </target>
+
+  <target name="diffapis">
+
+  <difftrees treeA="${basedir}/src" treeB="/Users/edburns/Documents/Projects/JavaEE/workareas/facelets-1_1_11_A/src" />
+
+</target>
+
+
  
 </project>
 
