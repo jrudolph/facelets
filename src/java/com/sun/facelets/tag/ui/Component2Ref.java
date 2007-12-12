@@ -14,14 +14,20 @@
 
 package com.sun.facelets.tag.ui;
 
+import java.io.IOException;
+import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.el.MethodExpression;
+import javax.el.ValueExpression;
 import javax.faces.component.ActionSource;
 import javax.faces.component.ActionSource2;
 import javax.faces.component.EditableValueHolder;
+import javax.faces.component.NamingContainer;
 import javax.faces.component.StateHolder;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
@@ -34,7 +40,7 @@ import javax.faces.event.FacesListener;
 import javax.faces.event.ValueChangeListener;
 import javax.faces.validator.Validator;
 
-public final class Component2Ref extends UIInput implements ActionSource2, StateHolder {
+public final class Component2Ref extends UIInput implements ActionSource2, StateHolder, NamingContainer {
 
     public final static String COMPONENT_TYPE = "facelets.ui.Component2Ref";
     public final static String COMPONENT_FAMILY = "facelets";
@@ -143,8 +149,31 @@ public final class Component2Ref extends UIInput implements ActionSource2, State
     }
 
     public Object getSubmittedValue() {
-        Object result = new CompositeComponentValue(this);
-        return result;
+        return getCompositeComponentValue();
+    }
+
+    @Override
+    public void setValue(Object newVal) {
+        this.setCompositeComponentValue((CompositeComponentValue) newVal);
+    }
+
+    @Override
+    public Object getValue() {
+        return getCompositeComponentValue();
+    }
+    
+    
+    
+    private transient CompositeComponentValue compositeValue;
+    public CompositeComponentValue getCompositeComponentValue() {
+        if (null == compositeValue) {
+            compositeValue = new CompositeComponentValue(this);
+        }
+        return compositeValue;
+    }
+    
+    public void setCompositeComponentValue(CompositeComponentValue compositeValue) {
+        this.compositeValue = compositeValue;
     }
     
     private transient Map<String, Object> namedAttachedObjects;
@@ -239,6 +268,86 @@ public final class Component2Ref extends UIInput implements ActionSource2, State
             getNoChangeSourceClientIds().add(target.getClientId(context));
         }
     }
+
+    @Override
+    public void processDecodes(FacesContext context) {
+        Map<String, Object> requestMap = context.getExternalContext().
+                getRequestMap();
+        Component2Ref prev = (Component2Ref) requestMap.put("compositeComponent", 
+                this);
+
+        super.processDecodes(context);
+
+        if (null != prev) {
+            requestMap.put("compositeComponent", prev);
+        }
+        else {
+            requestMap.remove("compositeComponent");
+        }
+    }
+
+    @Override
+    public void processUpdates(FacesContext context) {
+        Map<String, Object> requestMap = context.getExternalContext().
+                getRequestMap();
+        Component2Ref prev = (Component2Ref) requestMap.put("compositeComponent", 
+                this);
+
+        super.processUpdates(context);
+
+        if (null != prev) {
+            requestMap.put("compositeComponent", prev);
+        }
+        else {
+            requestMap.remove("compositeComponent");
+        }
+    }
+
+    @Override
+    public void processValidators(FacesContext context) {
+        Map<String, Object> requestMap = context.getExternalContext().
+                getRequestMap();
+        Component2Ref prev = (Component2Ref) requestMap.put("compositeComponent", 
+                this);
+
+        super.processValidators(context);
+
+        if (null != prev) {
+            requestMap.put("compositeComponent", prev);
+        }
+        else {
+            requestMap.remove("compositeComponent");
+        }
+    }
+
+    private transient Component2Ref prev;
+    
+    @Override
+    public void encodeBegin(FacesContext context) throws IOException {
+        Map<String, Object> requestMap = context.getExternalContext().
+                getRequestMap();
+        prev = (Component2Ref) requestMap.put("compositeComponent", this);
+
+        super.encodeBegin(context);
+    }
+    
+    public void encodEnd(FacesContext context) throws IOException {
+        Map<String, Object> requestMap = context.getExternalContext().
+                getRequestMap();
+
+        super.encodeEnd(context);
+
+        if (null != prev) {
+            requestMap.put("compositeComponent", prev);
+        }
+        else {
+            requestMap.remove("compositeComponent");
+        }
+    }
+    
+    
+    
+    
     
     private Object[] values;
 
@@ -251,18 +360,28 @@ public final class Component2Ref extends UIInput implements ActionSource2, State
         immediate = (Boolean) values[2];          
         noChangeSourceClientIds = (List<String>) restoreAttachedState(context, 
                 values[3]);
+        compositeValue = 
+                (CompositeComponentValue) restoreAttachedState(context, 
+                values[4]);
+        if (null != compositeValue) {
+            compositeValue.setCompositeRoot(this);
+            setValue(compositeValue);
+        }
     }
 
     @Override
     public Object saveState(FacesContext context) {
         if (values == null) {
-             values = new Object[4];
+             values = new Object[5];
         }
       
         values[0] = super.saveState(context);
         values[1] = saveAttachedState(context, actionExpression);
         values[2] = immediate;
         values[3] = saveAttachedState(context, getNoChangeSourceClientIds());
+        if (null != compositeValue) {
+            values[4] = saveAttachedState(context, compositeValue);
+        }
         
         return (values);
 

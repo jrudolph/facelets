@@ -28,10 +28,12 @@
   <property name="lib"                 value="lib"/>
   <property name="release"             value="release"/>
   <property name="release.version"     value="1.1.11b-SNAPSHOT"/>
-  <property name="mvn.repo.version"    value="${release.version}-SNAPSHOT"/>
+  <property name="mvn.repo.version"    value="${release.version}"/>
   <property name="doc"                 value="doc"/>
   <property name="dependencies"        value="${basedir}/dependencies" />
   <property name="jsf-api.jar"         value="${dependencies}/jsf-api.jar" />
+<!-- for utils only.  Not a real dependency. -->
+  <property name="jsf-impl.jar"         value="${dependencies}/jsf-impl.jar" />
   <property name="portlet-api.jar"     value="${dependencies}/portlet-api.jar" />
   <property name="servlet-api.jar"     value="${dependencies}/servlet-api.jar" />
   <property name="jar"                 value="jsf-facelets.jar"/>
@@ -41,6 +43,7 @@
     <pathelement location="${build}/classes"/>
     <fileset dir="lib" includes="*.jar"/>
     <pathelement location="${jsf-api.jar}"/>
+    <pathelement location="${jsf-impl.jar}"/>
     <pathelement location="${servlet-api.jar}" />
     <pathelement location="${el-api.jar}" />
     <pathelement location="${el-impl.jar}" />

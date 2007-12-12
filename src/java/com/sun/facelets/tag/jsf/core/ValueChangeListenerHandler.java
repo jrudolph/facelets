@@ -141,8 +141,14 @@ public final class ValueChangeListenerHandler extends TagHandler {
 						this.listenerType, b);
 				evh.addValueChangeListener(listener);
                                 if (parent instanceof Component2Ref) {
-                                    String attachedObjectId = this.getAttribute("id").getValue(ctx);
-                                    ((Component2Ref)parent).storeNamedAttachedObject(attachedObjectId, listener);
+                                    TagAttribute innerComponentIdAttr = this.getAttribute("innerComponentId");
+                                    if (null != innerComponentIdAttr) {
+                                        String innerComponentId = innerComponentIdAttr.getValue(ctx);
+                                        if (null != innerComponentId && 0 < innerComponentId.length()) {
+                                            ((Component2Ref) parent).storeNamedAttachedObject(innerComponentId, 
+                                                    listener);
+                                        }
+                                    }
                                 }
 			}
 		} else {

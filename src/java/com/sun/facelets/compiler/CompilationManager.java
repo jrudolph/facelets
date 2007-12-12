@@ -29,6 +29,7 @@ import com.sun.facelets.tag.TagDecorator;
 import com.sun.facelets.tag.TagException;
 import com.sun.facelets.tag.TagLibrary;
 import com.sun.facelets.tag.ui.ComponentRefHandler;
+import com.sun.facelets.tag.ui.Component2RefHandler;
 import com.sun.facelets.tag.ui.CompositionHandler;
 import com.sun.facelets.tag.ui.UILibrary;
 
@@ -39,7 +40,7 @@ import com.sun.facelets.tag.ui.UILibrary;
  * @see com.sun.facelets.compiler.Compiler
  * 
  * @author Jacob Hookom
- * @version $Id: CompilationManager.java,v 1.13 2006/03/29 04:10:02 jhook Exp $
+ * @version $Id: CompilationManager.java,v 1.13.6.1 2007/12/12 23:48:22 edburns Exp $
  */
 final class CompilationManager {
 
@@ -311,7 +312,8 @@ final class CompilationManager {
 
     protected static boolean isTrimmed(String ns, String name) {
         return UILibrary.Namespace.equals(ns)
-                && (CompositionHandler.Name.equals(name) || ComponentRefHandler.Name.equals(name));
+                && (CompositionHandler.Name.equals(name) || 
+                Component2RefHandler.Name.equals(name) ||ComponentRefHandler.Name.equals(name));
     }
 
     private String[] determineQName(Tag tag) {

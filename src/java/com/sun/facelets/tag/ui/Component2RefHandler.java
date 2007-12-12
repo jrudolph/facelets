@@ -18,11 +18,11 @@ package com.sun.facelets.tag.ui;
 import com.sun.facelets.tag.jsf.Component2Handler;
 import com.sun.facelets.tag.jsf.ComponentConfig;
 
-public final class ComponentRef2Handler extends Component2Handler {
+public final class Component2RefHandler extends Component2Handler {
 
     public final static String Name = "component2";
     
-    public ComponentRef2Handler(ComponentConfig config) {
+    public Component2RefHandler(ComponentConfig config) {
         super(config);
     }
 

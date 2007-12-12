@@ -41,29 +41,115 @@
 
 package com.sun.facelets.tag.ui;
 
+import com.sun.faces.util.Util;
+import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 import javax.faces.component.ValueHolder;
+import com.sun.faces.util.Util.TreeTraversalCallback;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import javax.faces.context.FacesContext;
 
 /**
  *
  * @author edburns
  */
-public class CompositeComponentValue {
+public class CompositeComponentValue implements Serializable {
     
-    UIComponent compositeRoot;
+    transient UIComponent compositeRoot;
     
     /** Creates a new instance of CompositeComponentValue */
     public CompositeComponentValue(UIComponent compositeRoot) {
         this.compositeRoot = compositeRoot;
     }
     
+    void setCompositeRoot(UIComponent compositeRoot) {
+        this.compositeRoot = compositeRoot;
+    }
+    
     public Object getSubcomponentValue(String id) {
         Object result = null;
-        UIComponent sub = compositeRoot.findComponent(id);
+        UIComponent sub = getSubComponent(id);
         if (null != sub && sub instanceof ValueHolder) {
             result = ((ValueHolder)sub).getValue();
         }
         return result;
     }
     
+    public UIComponent getSubComponent(String id) {
+        UIComponent sub = compositeRoot.findComponent(id);
+        return sub;
+    }
+    
+    public String toString() {
+        final StringBuilder sb = new StringBuilder();
+        
+        TreeTraversalCallback cb = new TreeTraversalCallback() {
+
+            public boolean takeActionOnNode(FacesContext context, UIComponent comp) throws FacesException {
+                if ((comp != CompositeComponentValue.this.compositeRoot) && 
+                    comp instanceof ValueHolder) {
+                    sb.append((String) ((ValueHolder)comp).getValue() + " ");
+                }
+                return true;
+            }
+        };
+        FacesContext context = FacesContext.getCurrentInstance();
+        Util.prefixViewTraversal(context, compositeRoot, cb);
+        
+        return sb.toString();
+        
+    }
+
+    /**
+     * 
+     * Two CompositeComponentValue instances are considered equal if
+     * the list of child VauleHolder instances are the same instances.
+     * 
+     * This implementation uses a naieve algorithm due to battery life 
+     * constraints.
+     * 
+     * @return
+     */
+    @Override
+    public boolean equals(Object obj) {
+        boolean result = false;
+        
+        final CompositeComponentValue other = (CompositeComponentValue) obj;
+        final List<ValueHolder> thisValueHolders = new ArrayList<ValueHolder>();
+
+        // Collect valueHolder list from this
+        TreeTraversalCallback cb = new TreeTraversalCallback() {
+
+            public boolean takeActionOnNode(FacesContext context, UIComponent comp) throws FacesException {
+                if ((comp != CompositeComponentValue.this.compositeRoot) && 
+                    comp instanceof ValueHolder) {
+                    thisValueHolders.add((ValueHolder) comp);
+                }
+                return true;
+            }
+        };
+        FacesContext context = FacesContext.getCurrentInstance();
+        Util.prefixViewTraversal(context, compositeRoot, cb);
+        
+        cb = new TreeTraversalCallback() {
+
+            public boolean takeActionOnNode(FacesContext context, UIComponent comp) throws FacesException {
+                boolean keepGoing = true;
+                
+                if ((comp != other.compositeRoot) && 
+                    comp instanceof ValueHolder) {
+                    keepGoing = !thisValueHolders.contains((ValueHolder) comp);
+                }
+                
+                return keepGoing;
+            }
+        };
+        
+        result = Util.prefixViewTraversal(context, compositeRoot, cb);
+
+        return result;
+    }
+   
 }

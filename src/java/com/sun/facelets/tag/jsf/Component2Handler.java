@@ -19,10 +19,13 @@ import com.sun.facelets.FaceletHandler;
 import com.sun.facelets.el.LegacyValueBinding;
 import com.sun.facelets.tag.MetaRuleset;
 import com.sun.facelets.tag.MetaTagHandler;
+import com.sun.facelets.tag.Tag;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagException;
 import com.sun.facelets.tag.ui.*;
 import com.sun.facelets.util.FacesAPI;
+import com.sun.faces.util.Util;
+import com.sun.faces.util.Util.TreeTraversalCallback;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -51,7 +54,7 @@ public class Component2Handler extends MetaTagHandler {
     private final String componentType;
 
     private final TagAttribute id;
-
+    
     private final String rendererType;
 
     public final static String Name = "component2";
@@ -79,6 +82,7 @@ public class Component2Handler extends MetaTagHandler {
         // grab our component
         UIComponent c = ComponentSupport.findChildByTagId(parent, id);
         boolean componentFound = false;
+        ctx.getFacesContext().getExternalContext().getRequestMap().put("Component2Handler", this);
         if (c != null) {
             componentFound = true;
             // mark all children for cleaning
@@ -87,8 +91,19 @@ public class Component2Handler extends MetaTagHandler {
                         + " Component["+id+"] Found, marking children for cleanup");
             }
             ComponentSupport.markForDeletion(c);
+            
+            try {
+                this.tag.setFragmentFaceletHandler((FaceletHandler) ctx.getFacesContext().getELContext().getContext(Include2Handler.class));
+                this.tag.setNextFaceletHandler(this.nextHandler);
+                ctx.getFacesContext().getELContext().putContext(FaceletContext.class, ctx);
+                this.tag.applyFragment(ctx.getFacesContext(), c);
+                this.tag.apply(ctx.getFacesContext(), c);
+            }
+            finally {
+                this.tag.setFragmentFaceletHandler(null);
+                this.tag.setNextFaceletHandler(null);
+            }
         } else {
-            ctx.getFacesContext().getExternalContext().getRequestMap().put("Component2Handler", this);
             c = this.createComponent(ctx);
             if (log.isLoggable(Level.FINE)) {
                 log.fine(this.tag + " Component["+id+"] Created: "
@@ -100,8 +115,9 @@ public class Component2Handler extends MetaTagHandler {
             c.getAttributes().put(ComponentSupport.MARK_CREATED, id);
             
             // assign our unique id
-            if (this.id != null) {
-                c.setId(this.id.getValue(ctx));
+            String compositeComponentId;
+            if (null != (compositeComponentId = getCompositeComponentId(ctx))) {
+                c.setId(compositeComponentId);
             } else {
                 UIViewRoot root = ComponentSupport.getViewRoot(ctx, parent);
                 if (root != null) {
@@ -116,27 +132,57 @@ public class Component2Handler extends MetaTagHandler {
             
             // hook method
             this.onComponentCreated(ctx, c, parent);
+
+            // The next handler is called by the application!
         }
         
-        // The next handler is called by the application!
 
         // finish cleaning up orphaned children
         if (componentFound) {
             ComponentSupport.finalizeForDeletion(c);
             parent.getChildren().remove(c);
         }
-        
 
         this.onComponentPopulated(ctx, c, parent);
-
+        this.moveAttachedObjectsIfNecessary(ctx, (Component2Ref) c);
+        
         // add to the tree afterwards
         // this allows children to determine if it's
         // been part of the tree or not yet
         parent.getChildren().add(c);
-        
-        this.moveAttachedObjectsIfNecessary(ctx, (Component2Ref) c);
+
         ctx.getFacesContext().getExternalContext().getRequestMap().remove("Component2Handler");
         
+    }
+    
+    private TagAttribute getInclude2TagAttribute(String attrName) {
+        TagAttribute result = null;
+        Map<String,Object> requestMap = FacesContext.getCurrentInstance().getExternalContext().getRequestMap();
+        Tag include2Tag;
+
+        if (null != (include2Tag = (Tag) requestMap.get(
+                Include2Handler.INCLUDE2_TAG_REQUEST_ATTR_NAME))) {
+            result = include2Tag.getAttributes().get(attrName);
+        }
+
+        return result;
+    }
+    
+    private String getCompositeComponentId(FaceletContext ctx) {
+        String result = null;
+        TagAttribute innerId = getInclude2TagAttribute("innerComponentId");
+        // if one exists, see what is its value.
+        if (null != innerId) {
+            result = innerId.getValue(ctx);
+        }
+        if (null == result) {
+            // If the component author assigned a suggested name for this
+            // composite component
+            if (this.id != null) {
+                result = this.id.getValue(ctx);
+            }
+        }
+        return result;
     }
     
     private Map<String, UIComponent> attachedObjectTargetMap;
@@ -157,7 +203,7 @@ public class Component2Handler extends MetaTagHandler {
             composite.moveAttachedObjectToTarget(outerId, target);
         }
     }
-
+    
     /**
      * If the binding attribute was specified, use that in conjuction with our
      * componentType String variable to call createComponent on the Application,
@@ -199,6 +245,20 @@ public class Component2Handler extends MetaTagHandler {
                 }
             } else {
                 c = app.createComponent(this.componentType, this.tag);
+            }
+            TagAttribute include2Value = getInclude2TagAttribute("targetValue");
+            if (null != include2Value) {
+                if (include2Value.isLiteral()) {
+                    throw new TagException(this.tag, "Literal value not allowed for composite components");
+                }
+                try {
+                    ValueExpression include2ValueExpression = 
+                            (ValueExpression) include2Value.getValueExpression(ctx, Object.class);
+                    c.setValueExpression("targetValue", include2ValueExpression);
+                }
+                catch (ClassCastException cce) {
+                    throw new TagException(this.tag, "Unable to get ValueExpression from `value' attribute");
+                }
             }
         }
         finally {

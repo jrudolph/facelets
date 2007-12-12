@@ -23,16 +23,13 @@ import javax.faces.component.UIComponent;
  */
 public class CompositeAttachedObjectTargetHandler extends TagHandler {
     
-    private final TagAttribute outerId;
-
     public CompositeAttachedObjectTargetHandler(TagConfig config) {
         super(config);
-        this.outerId = this.getRequiredAttribute("outerId");
     }
 
     public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, FaceletException, ELException {
 
-        String outerIdVal = this.outerId.getValue(ctx);
+        String outerIdVal = parent.getId();
         Component2Handler composite = (Component2Handler)
                 ctx.getFacesContext().getExternalContext().getRequestMap().get("Component2Handler");
         composite.getAttachedObjectTargetMap().put(outerIdVal, parent);

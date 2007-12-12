@@ -28,14 +28,17 @@ import com.sun.facelets.el.VariableMapperWrapper;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.TagHandler;
+import java.util.Map;
 
 /**
  * @author Jacob Hookom
- * @version $Id: Include2Handler.java,v 1.1.2.1 2007/12/04 19:57:11 edburns Exp $
+ * @version $Id: Include2Handler.java,v 1.1.2.2 2007/12/12 23:48:21 edburns Exp $
  */
 public final class Include2Handler extends TagHandler {
 
     private final TagAttribute src;
+    
+    public static final String INCLUDE2_TAG_REQUEST_ATTR_NAME = "com.sun.facelets.InnerComponentId";
 
     /**
      * @param config
@@ -56,7 +59,11 @@ public final class Include2Handler extends TagHandler {
         String path = this.src.getValue(ctx);
         VariableMapper orig = ctx.getVariableMapper();
         ctx.setVariableMapper(new VariableMapperWrapper(orig));
+        Map<String,Object> requestMap = ctx.getFacesContext().getExternalContext().getRequestMap();
+        Object oldTag = null;
+        String innerComponentIdStr = null;
         try {
+            oldTag = requestMap.put(INCLUDE2_TAG_REQUEST_ATTR_NAME, this.tag);
             ctx.getFacesContext().getELContext().putContext(Include2Handler.class, this.nextHandler);
             ctx.includeFacelet(parent, path); // This causes nextHandler.apply to be called
         } finally {
@@ -64,6 +71,13 @@ public final class Include2Handler extends TagHandler {
             // https://jsp-spec-public.dev.java.net/issues/show_bug.cgi?id=179
             // ctx.getFacesContext().getELContext().putContext(Include2Handler.class, 
             //        null);
+            if (null != oldTag) {
+                requestMap.put(INCLUDE2_TAG_REQUEST_ATTR_NAME, oldTag);
+            }
+            else {
+                requestMap.remove(INCLUDE2_TAG_REQUEST_ATTR_NAME);
+            }
+
             ctx.setVariableMapper(orig);
         }
     }
