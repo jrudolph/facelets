@@ -22,10 +22,9 @@ import com.sun.facelets.tag.MetaTagHandler;
 import com.sun.facelets.tag.Tag;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagException;
+import com.sun.facelets.tag.UserTagHandler;
 import com.sun.facelets.tag.ui.*;
 import com.sun.facelets.util.FacesAPI;
-import com.sun.faces.util.Util;
-import com.sun.faces.util.Util.TreeTraversalCallback;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -93,7 +92,7 @@ public class Component2Handler extends MetaTagHandler {
             ComponentSupport.markForDeletion(c);
             
             try {
-                this.tag.setFragmentFaceletHandler((FaceletHandler) ctx.getFacesContext().getELContext().getContext(Include2Handler.class));
+                this.tag.setFragmentFaceletHandler((FaceletHandler) ctx.getFacesContext().getELContext().getContext(UserTagHandler.class));
                 this.tag.setNextFaceletHandler(this.nextHandler);
                 ctx.getFacesContext().getELContext().putContext(FaceletContext.class, ctx);
                 this.tag.applyFragment(ctx.getFacesContext(), c);
@@ -144,25 +143,31 @@ public class Component2Handler extends MetaTagHandler {
         }
 
         this.onComponentPopulated(ctx, c, parent);
-        this.moveAttachedObjectsIfNecessary(ctx, (Component2Ref) c);
         
         // add to the tree afterwards
         // this allows children to determine if it's
         // been part of the tree or not yet
         parent.getChildren().add(c);
+        
+        // If the component was created on this request...
+        if (!componentFound) {
+            // Do any attachedObject reparenting, if necessary.
+            this.moveAttachedObjectsIfNecessary(ctx, (Component2Ref) c);
+        }
+        
 
         ctx.getFacesContext().getExternalContext().getRequestMap().remove("Component2Handler");
         
     }
     
-    private TagAttribute getInclude2TagAttribute(String attrName) {
+    private TagAttribute getEnclosingTagAttribute(String attrName) {
         TagAttribute result = null;
         Map<String,Object> requestMap = FacesContext.getCurrentInstance().getExternalContext().getRequestMap();
-        Tag include2Tag;
+        Tag userTag;
 
-        if (null != (include2Tag = (Tag) requestMap.get(
-                Include2Handler.INCLUDE2_TAG_REQUEST_ATTR_NAME))) {
-            result = include2Tag.getAttributes().get(attrName);
+        if (null != (userTag = (Tag) requestMap.get(
+                UserTagHandler.USER_TAG_REQUEST_ATTR_NAME))) {
+            result = userTag.getAttributes().get(attrName);
         }
 
         return result;
@@ -170,7 +175,7 @@ public class Component2Handler extends MetaTagHandler {
     
     private String getCompositeComponentId(FaceletContext ctx) {
         String result = null;
-        TagAttribute innerId = getInclude2TagAttribute("innerComponentId");
+        TagAttribute innerId = getEnclosingTagAttribute("innerComponentId");
         // if one exists, see what is its value.
         if (null != innerId) {
             result = innerId.getValue(ctx);
@@ -202,6 +207,7 @@ public class Component2Handler extends MetaTagHandler {
             target = map.get(outerId = iter.next());
             composite.moveAttachedObjectToTarget(outerId, target);
         }
+        map.clear();
     }
     
     /**
@@ -223,7 +229,7 @@ public class Component2Handler extends MetaTagHandler {
         UIComponent c = null;
         FacesContext faces = ctx.getFacesContext();
         Application app = faces.getApplication();
-        this.tag.setFragmentFaceletHandler((FaceletHandler) ctx.getFacesContext().getELContext().getContext(Include2Handler.class));
+        this.tag.setFragmentFaceletHandler((FaceletHandler) ctx.getFacesContext().getELContext().getContext(UserTagHandler.class));
         this.tag.setNextFaceletHandler(this.nextHandler);
         ctx.getFacesContext().getELContext().putContext(FaceletContext.class, ctx);
         try {
@@ -246,15 +252,15 @@ public class Component2Handler extends MetaTagHandler {
             } else {
                 c = app.createComponent(this.componentType, this.tag);
             }
-            TagAttribute include2Value = getInclude2TagAttribute("targetValue");
-            if (null != include2Value) {
-                if (include2Value.isLiteral()) {
+            TagAttribute enclosingValue = getEnclosingTagAttribute("targetValue");
+            if (null != enclosingValue) {
+                if (enclosingValue.isLiteral()) {
                     throw new TagException(this.tag, "Literal value not allowed for composite components");
                 }
                 try {
-                    ValueExpression include2ValueExpression = 
-                            (ValueExpression) include2Value.getValueExpression(ctx, Object.class);
-                    c.setValueExpression("targetValue", include2ValueExpression);
+                    ValueExpression enclosingValueExpression = 
+                            (ValueExpression) enclosingValue.getValueExpression(ctx, Object.class);
+                    c.setValueExpression("targetValue", enclosingValueExpression);
                 }
                 catch (ClassCastException cce) {
                     throw new TagException(this.tag, "Unable to get ValueExpression from `value' attribute");

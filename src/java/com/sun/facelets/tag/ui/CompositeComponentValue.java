@@ -140,7 +140,7 @@ public class CompositeComponentValue implements Serializable {
                 
                 if ((comp != other.compositeRoot) && 
                     comp instanceof ValueHolder) {
-                    keepGoing = !thisValueHolders.contains((ValueHolder) comp);
+                    keepGoing = thisValueHolders.contains((ValueHolder) comp);
                 }
                 
                 return keepGoing;

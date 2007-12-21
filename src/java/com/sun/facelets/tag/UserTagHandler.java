@@ -25,22 +25,25 @@ import javax.faces.component.UIComponent;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
-import com.sun.facelets.FaceletHandler;
 import com.sun.facelets.TemplateClient;
 import com.sun.facelets.el.VariableMapperWrapper;
+import com.sun.facelets.tag.ui.Include2Handler;
+import java.util.Map;
 
 /**
  * A Tag that is specified in a FaceletFile. Takes all attributes specified and
  * sets them on the FaceletContext before including the targeted Facelet file.
  * 
  * @author Jacob Hookom
- * @version $Id: UserTagHandler.java,v 1.7 2006/03/29 04:10:13 jhook Exp $
+ * @version $Id: UserTagHandler.java,v 1.7.6.1 2007/12/21 14:59:04 edburns Exp $
  */
-final class UserTagHandler extends TagHandler implements TemplateClient {
+public final class UserTagHandler extends TagHandler implements TemplateClient {
 
     protected final TagAttribute[] vars;
 
     protected final URL location;
+
+    public static final String USER_TAG_REQUEST_ATTR_NAME = "com.sun.facelets.tag.UserTagHandler";
 
     /**
      * @param config
@@ -74,14 +77,26 @@ final class UserTagHandler extends TagHandler implements TemplateClient {
             }
             ctx.setVariableMapper(varMapper);
         }
-        
+        Map<String, Object> requestMap = ctx.getFacesContext().getExternalContext().getRequestMap();
+        Object oldTag = null;
+
         // eval include
         try {
+            oldTag = requestMap.put(USER_TAG_REQUEST_ATTR_NAME, this.tag);
+            ctx.getFacesContext().getELContext().putContext(UserTagHandler.class, this.nextHandler);
+        
             ctx.pushClient(this);
             ctx.includeFacelet(parent, this.location);
         } catch (FileNotFoundException e) {
             throw new TagException(this.tag, e.getMessage());
         } finally {
+
+            if (null != oldTag) {
+                requestMap.put(USER_TAG_REQUEST_ATTR_NAME, oldTag);
+            }
+            else {
+                requestMap.remove(USER_TAG_REQUEST_ATTR_NAME);
+            }
             
             // make sure we undo our changes
             ctx.popClient(this);

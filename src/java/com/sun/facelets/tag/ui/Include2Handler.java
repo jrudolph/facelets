@@ -32,7 +32,7 @@ import java.util.Map;
 
 /**
  * @author Jacob Hookom
- * @version $Id: Include2Handler.java,v 1.1.2.2 2007/12/12 23:48:21 edburns Exp $
+ * @version $Id: Include2Handler.java,v 1.1.2.3 2007/12/21 14:59:04 edburns Exp $
  */
 public final class Include2Handler extends TagHandler {
 
@@ -61,7 +61,7 @@ public final class Include2Handler extends TagHandler {
         ctx.setVariableMapper(new VariableMapperWrapper(orig));
         Map<String,Object> requestMap = ctx.getFacesContext().getExternalContext().getRequestMap();
         Object oldTag = null;
-        String innerComponentIdStr = null;
+
         try {
             oldTag = requestMap.put(INCLUDE2_TAG_REQUEST_ATTR_NAME, this.tag);
             ctx.getFacesContext().getELContext().putContext(Include2Handler.class, this.nextHandler);
