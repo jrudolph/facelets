@@ -175,7 +175,7 @@ public class Component2Handler extends MetaTagHandler {
     
     private String getCompositeComponentId(FaceletContext ctx) {
         String result = null;
-        TagAttribute innerId = getEnclosingTagAttribute("innerComponentId");
+        TagAttribute innerId = getEnclosingTagAttribute("id");
         // if one exists, see what is its value.
         if (null != innerId) {
             result = innerId.getValue(ctx);
