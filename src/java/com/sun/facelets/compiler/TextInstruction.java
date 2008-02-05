@@ -16,7 +16,6 @@ package com.sun.facelets.compiler;
 
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.el.ELContext;
 import javax.el.ELException;
@@ -27,6 +26,7 @@ import javax.faces.context.ResponseWriter;
 
 import com.sun.facelets.el.ELAdaptor;
 import com.sun.facelets.el.ELText;
+import javax.faces.component.UIComponent;
 
 final class TextInstruction implements Instruction {
     private final ELText txt;
@@ -38,7 +38,7 @@ final class TextInstruction implements Instruction {
         this.txt = txt;
     }
 
-    public void write(FacesContext context) throws IOException {
+    public void write(FacesContext context, UIComponent component) throws IOException {
         ResponseWriter out = context.getResponseWriter();
         try {
             ELContext elContext = ELAdaptor.getELContext(context);

@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
+import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
@@ -19,7 +20,7 @@ final class LiteralXMLInstruction implements Instruction {
         this.len = this.instruction.length;
     }
 
-    public void write(FacesContext context) throws IOException {
+    public void write(FacesContext context, UIComponent component) throws IOException {
         ResponseWriter rw = context.getResponseWriter();
         rw.writeText(STOP, 0, 0); // hack to get closing elements
         rw.write(this.instruction, 0, this.len);

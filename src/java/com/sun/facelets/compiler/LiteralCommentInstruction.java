@@ -19,6 +19,7 @@ import java.io.IOException;
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
 
+import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 
 final class LiteralCommentInstruction implements Instruction {
@@ -28,7 +29,7 @@ final class LiteralCommentInstruction implements Instruction {
         this.text = text;
     }
 
-    public void write(FacesContext context) throws IOException {
+    public void write(FacesContext context, UIComponent component) throws IOException {
         context.getResponseWriter().writeComment(this.text);
     }
 

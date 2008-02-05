@@ -9,6 +9,7 @@ import javax.faces.context.ResponseWriter;
 
 import com.sun.facelets.el.ELAdaptor;
 import com.sun.facelets.el.ELText;
+import javax.faces.component.UIComponent;
 
 public class XMLInstruction implements Instruction {
     
@@ -20,7 +21,7 @@ public class XMLInstruction implements Instruction {
         this.text = text;
     }
 
-    public void write(FacesContext context) throws IOException {
+    public void write(FacesContext context, UIComponent component) throws IOException {
         ResponseWriter rw = context.getResponseWriter();
         rw.writeText(STOP, 0, 0); // hack to get closing elements
         this.text.write(rw, ELAdaptor.getELContext(context));

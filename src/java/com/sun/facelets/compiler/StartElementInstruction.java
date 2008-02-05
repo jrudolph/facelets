@@ -16,17 +16,13 @@ package com.sun.facelets.compiler;
 
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
-import javax.el.ELException;
 
+import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
-import javax.faces.context.ResponseWriter;
 
-import com.sun.facelets.el.ELAdaptor;
-import com.sun.facelets.el.ELText;
 
 final class StartElementInstruction implements Instruction {
     private final String element;
@@ -35,7 +31,7 @@ final class StartElementInstruction implements Instruction {
         this.element = element;
     }
 
-    public void write(FacesContext context) throws IOException {
+    public void write(FacesContext context, UIComponent component) throws IOException {
         context.getResponseWriter().startElement(this.element, null);
     }
 

@@ -16,7 +16,7 @@ package com.sun.facelets.tag.jsf.html;
 
 /**
  * @author Jacob Hookom
- * @version $Id: HtmlLibrary.java,v 1.2 2005/08/24 04:38:46 jhook Exp $
+ * @version $Id: HtmlLibrary.java,v 1.2.22.1 2008/02/05 00:42:52 edburns Exp $
  */
 public final class HtmlLibrary extends AbstractHtmlLibrary {
 
@@ -73,6 +73,12 @@ public final class HtmlLibrary extends AbstractHtmlLibrary {
 
         this.addHtmlComponent("outputText", "javax.faces.HtmlOutputText",
                 "javax.faces.Text");
+        
+        this.addHtmlComponent("outputScript", "javax.faces.Output", 
+                "javax.faces.resource.Script");
+
+        this.addHtmlComponent("outputStylesheet", "javax.faces.Output", 
+                "javax.faces.resource.Stylesheet");
 
         this.addHtmlComponent("panelGrid", "javax.faces.HtmlPanelGrid",
                 "javax.faces.Grid");

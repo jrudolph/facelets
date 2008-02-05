@@ -1,6 +1,6 @@
 <project>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.sun.facelets</groupId>
+  <groupId>javax.faces</groupId>
   <artifactId>jsf-facelets</artifactId>
   <version>@VERSION@</version>
   <dependencies>
@@ -13,7 +13,7 @@
     <dependency>
       <groupId>javax.faces</groupId>
       <artifactId>jsf-api</artifactId>
-      <version>1.2</version>
+      <version>115-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>

@@ -15,13 +15,12 @@
 package com.sun.facelets.compiler;
 
 import java.io.IOException;
-import java.util.List;
 
 import javax.faces.context.FacesContext;
-import javax.faces.context.ResponseWriter;
 
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
+import javax.faces.component.UIComponent;
 
 final class LiteralTextInstruction implements Instruction {
     private final String text;
@@ -30,7 +29,7 @@ final class LiteralTextInstruction implements Instruction {
         this.text = text;
     }
 
-    public void write(FacesContext context) throws IOException {
+    public void write(FacesContext context, UIComponent component) throws IOException {
         context.getResponseWriter().writeText(this.text, null);
     }
 

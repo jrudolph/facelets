@@ -19,10 +19,11 @@ import java.io.IOException;
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
 
+import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 
 interface Instruction {
-    public void write(FacesContext context) throws IOException;
+    public void write(FacesContext context, UIComponent component) throws IOException;
     public Instruction apply(ExpressionFactory factory, ELContext ctx);
     public boolean isLiteral();
 }

@@ -36,7 +36,7 @@ final class UIInstructions extends UILeaf {
     public void encodeBegin(FacesContext context) throws IOException {
         int size = this.instructions.length;
         for (int i = 0; i < size; i++) {
-            this.instructions[i].write(context);
+            this.instructions[i].write(context, this);
         }
     }
 
