@@ -22,11 +22,7 @@ import javax.el.ExpressionFactory;
 
 import javax.faces.context.FacesContext;
 
-import javax.faces.component.HackGetFacesListenersAccess;
 import javax.faces.component.UIComponent;
-import javax.faces.event.BeforeEndElementListener;
-import javax.faces.event.ComponentLifecycleEvent;
-import javax.faces.event.ComponentLifecycleListener;
 
 final class EndElementInstruction implements Instruction {
     private final String element;
@@ -36,20 +32,6 @@ final class EndElementInstruction implements Instruction {
     }
 
     public void write(FacesContext context, UIComponent component) throws IOException {
-        ComponentLifecycleListener [] beforeEndListeners = (ComponentLifecycleListener[])
-                HackGetFacesListenersAccess.packageGetFacesListeners(context.getViewRoot(), 
-               BeforeEndElementListener.class);
-        ComponentLifecycleEvent event = null;
-        if (0 < beforeEndListeners.length) {
-            event = new ComponentLifecycleEvent(component);
-            
-        }
-        for (ComponentLifecycleListener cur : beforeEndListeners) {
-            if (cur.getElement().equals(element)) {
-                cur.processComponentLifecycleEvent(event);
-            }
-            
-        }
         // The implementation needs to add afterStart and beforeEnd listeners
         // to the html, head, body, and form elements.  It needs to handle the 
         // case where the element is declared in template text (template case),
