@@ -20,6 +20,7 @@ import java.io.IOException;
 import javax.el.ELContext;
 import javax.el.ExpressionFactory;
 
+import javax.faces.component.HackComponentPackagePrivateAccess;
 import javax.faces.context.FacesContext;
 
 import javax.faces.component.UIComponent;
@@ -97,7 +98,8 @@ final class EndElementInstruction implements Instruction {
         // The runtme adds a beforeEndElementListener for any component that
         // renders a <form>.
         
-        
+        HackComponentPackagePrivateAccess.packageCallBeforeEndContextCallbacks(
+                context.getViewRoot(), context, this.element);
         context.getResponseWriter().endElement(this.element);
     }
 
