@@ -24,7 +24,6 @@ import javax.faces.component.EditableValueHolder;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
-import javax.faces.event.ActionListener;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.event.ValueChangeListener;
 
@@ -52,71 +51,70 @@ public final class ValueChangeListenerHandler extends TagHandler {
 
 	private static class LazyValueChangeListener implements
 			ValueChangeListener, Serializable {
-		private transient ValueChangeListener instance;
 
-		private final String type;
+        private static final long serialVersionUID = 7613811124326963180L;
+
+        private final String type;
 
 		private final ValueExpression binding;
 
-		public LazyValueChangeListener(String type, ValueExpression binding) {
+        public LazyValueChangeListener(String type, ValueExpression binding) {
 			this.type = type;
 			this.binding = binding;
 		}
 
-		public void processValueChange(ValueChangeEvent event)
-				throws AbortProcessingException {
-			if (this.instance == null) {
-				FacesContext faces = FacesContext.getCurrentInstance();
-				if (faces == null)
-					return;
-				if (this.binding != null) {
-					this.instance = (ValueChangeListener) binding
-							.getValue(faces.getELContext());
-				}
-				if (this.instance == null && this.type != null) {
-					try {
-						this.instance = (ValueChangeListener) ReflectionUtil
-								.forName(this.type).newInstance();
-					} catch (Exception e) {
-						throw new AbortProcessingException(
-								"Couldn't Lazily instantiate ValueChangeListener",
-								e);
-					}
-					if (this.binding != null) {
-						binding.setValue(faces.getELContext(), this.instance);
-					}
-				}
-			}
-			if (this.instance != null) {
-				this.instance.processValueChange(event);
-			}
-		}
-	}
+        public void processValueChange(ValueChangeEvent event)
+              throws AbortProcessingException {
+            ValueChangeListener instance = null;
+            FacesContext faces = FacesContext.getCurrentInstance();
+            if (faces == null) {
+                return;
+            }
+            if (this.binding != null) {
+                instance = (ValueChangeListener) binding
+                      .getValue(faces.getELContext());
+            }
+            if (instance == null && this.type != null) {
+                try {
+                    instance = (ValueChangeListener) ReflectionUtil
+                          .forName(this.type).newInstance();
+                } catch (Exception e) {
+                    throw new AbortProcessingException(
+                          "Couldn't Lazily instantiate ValueChangeListener",
+                          e);
+                }
+                if (this.binding != null) {
+                    binding.setValue(faces.getELContext(), instance);
+                }
+            }
+            if (instance != null) {
+                instance.processValueChange(event);
+            }
+        }
+    }
 
-	private final TagAttribute type;
-
-	private final TagAttribute binding;
+    private final TagAttribute binding;
 
 	private final String listenerType;
 
 	public ValueChangeListenerHandler(TagConfig config) {
 		super(config);
 		this.binding = this.getAttribute("binding");
-		this.type = this.getAttribute("type");
-		if (this.type != null) {
-			if (!this.type.isLiteral()) {
-				throw new TagAttributeException(this.type,
+        TagAttribute type = this.getAttribute("type");
+		if (type != null) {
+			if (!type.isLiteral()) {
+				throw new TagAttributeException(type,
 						"Must be a literal class name of type ValueChangeListener");
 			} else {
 				// test it out
 				try {
-					Class c = ReflectionUtil.forName(this.type.getValue());
+					ReflectionUtil.forName(type.getValue());
 				} catch (ClassNotFoundException e) {
-					throw new TagAttributeException(this.type,
+					throw new TagAttributeException(type,
 							"Couldn't qualify ValueChangeListener", e);
 				}
 			}
-			this.listenerType = this.type.getValue();
+			this.listenerType = type.getValue();
 		} else {
 			this.listenerType = null;
 		}

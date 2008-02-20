@@ -21,13 +21,11 @@ import javax.el.ELException;
 import javax.el.ValueExpression;
 import javax.faces.FacesException;
 import javax.faces.component.ActionSource;
-import javax.faces.component.EditableValueHolder;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ActionListener;
-import javax.faces.event.ValueChangeListener;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
@@ -48,52 +46,54 @@ import com.sun.facelets.util.ReflectionUtil;
  * @see javax.faces.event.ActionListener
  * @see javax.faces.component.ActionSource
  * @author Jacob Hookom
- * @version $Id: ActionListenerHandler.java,v 1.5 2006/10/20 01:14:45 jhook Exp $
+ * @version $Id: ActionListenerHandler.java,v 1.6 2008/02/20 05:48:00 rlubke Exp $
  */
 public final class ActionListenerHandler extends TagHandler {
 	
 	private final static class LazyActionListener implements ActionListener, Serializable {
-		private transient ActionListener instance;
-		private final String type;
+
+        private static final long serialVersionUID = -9202120013153262119L;
+        
+        private final String type;
 		private final ValueExpression binding;
-		
-		public LazyActionListener(String type, ValueExpression binding) {
+
+
+        public LazyActionListener(String type, ValueExpression binding) {
 			this.type = type;
 			this.binding = binding;
 		}
 
-		public void processAction(ActionEvent event) throws AbortProcessingException {
-			if (this.instance == null) {
-				FacesContext faces = FacesContext.getCurrentInstance();
-				if (faces == null)
-					return;
-				if (this.binding != null) {
-					this.instance = (ActionListener) binding
-							.getValue(faces.getELContext());
-				}
-				if (this.instance == null && this.type != null) {
-					try {
-						this.instance = (ActionListener) ReflectionUtil
-								.forName(this.type).newInstance();
-					} catch (Exception e) {
-						throw new AbortProcessingException(
-								"Couldn't Lazily instantiate ValueChangeListener",
-								e);
-					}
-					if (this.binding != null) {
-						binding.setValue(faces.getELContext(), this.instance);
-					}
-				}
-			}
-			if (this.instance != null) {
-				this.instance.processAction(event);
-			}
-		}
-	}
+        public void processAction(ActionEvent event)
+              throws AbortProcessingException {
+            ActionListener instance = null;
+            FacesContext faces = FacesContext.getCurrentInstance();
+            if (faces == null) {
+                return;
+            }
+            if (this.binding != null) {
+                instance = (ActionListener) binding
+                      .getValue(faces.getELContext());
+            }
+            if (instance == null && this.type != null) {
+                try {
+                    instance = (ActionListener) ReflectionUtil
+                          .forName(this.type).newInstance();
+                } catch (Exception e) {
+                    throw new AbortProcessingException(
+                          "Couldn't Lazily instantiate ValueChangeListener",
+                          e);
+                }
+                if (this.binding != null) {
+                    binding.setValue(faces.getELContext(), instance);
+                }
+            }
+            if (instance != null) {
+                instance.processAction(event);
+            }
+        }
+    }
 
-	private final TagAttribute type;
-
-	private final TagAttribute binding;
+    private final TagAttribute binding;
 
 	private final String listenerType;
 
@@ -103,21 +103,21 @@ public final class ActionListenerHandler extends TagHandler {
     public ActionListenerHandler(TagConfig config) {
         super(config);
         this.binding = this.getAttribute("binding");
-        this.type = this.getAttribute("type");
-        if (this.type != null) {
-			if (!this.type.isLiteral()) {
-				throw new TagAttributeException(this.type,
+        TagAttribute type = this.getAttribute("type");
+        if (type != null) {
+			if (!type.isLiteral()) {
+				throw new TagAttributeException(type,
 						"Must be a literal class name of type ActionListener");
 			} else {
 				// test it out
 				try {
-					Class c = ReflectionUtil.forName(this.type.getValue());
+					ReflectionUtil.forName(type.getValue());
 				} catch (ClassNotFoundException e) {
-					throw new TagAttributeException(this.type,
+					throw new TagAttributeException(type,
 							"Couldn't qualify ActionListener", e);
 				}
 			}
-			this.listenerType = this.type.getValue();
+			this.listenerType = type.getValue();
 		} else {
 			this.listenerType = null;
 		}

@@ -13,7 +13,6 @@ import javax.faces.event.AbortProcessingException;
 import javax.faces.event.PhaseEvent;
 import javax.faces.event.PhaseId;
 import javax.faces.event.PhaseListener;
-import javax.faces.event.ValueChangeListener;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
@@ -30,41 +29,41 @@ public class PhaseListenerHandler extends TagHandler {
 	private final static class LazyPhaseListener implements PhaseListener,
 			Serializable {
 
-		private transient PhaseListener instance;
+        private static final long serialVersionUID = -6496143057319213401L;
 
-		private final String type;
+        private final String type;
 
 		private final ValueExpression binding;
 
-		public LazyPhaseListener(String type, ValueExpression binding) {
+        public LazyPhaseListener(String type, ValueExpression binding) {
 			this.type = type;
 			this.binding = binding;
 		}
 
-		private PhaseListener getInstance() {
-			if (this.instance == null) {
-				FacesContext faces = FacesContext.getCurrentInstance();
-				if (faces == null)
-					return null;
-				if (this.binding != null) {
-					this.instance = (PhaseListener) binding.getValue(faces
-							.getELContext());
-				}
-				if (this.instance == null && type != null) {
-					try {
-						this.instance = (PhaseListener) ReflectionUtil.forName(
-								this.type).newInstance();
-					} catch (Exception e) {
-						throw new AbortProcessingException(
-								"Couldn't Lazily instantiate PhaseListener", e);
-					}
-					if (this.binding != null) {
-						binding.setValue(faces.getELContext(), this.instance);
-					}
-				}
-			}
-			return this.instance;
-		}
+        private PhaseListener getInstance() {
+            PhaseListener instance = null;
+            FacesContext faces = FacesContext.getCurrentInstance();
+            if (faces == null) {
+                return null;
+            }
+            if (this.binding != null) {
+                instance = (PhaseListener) binding.getValue(faces
+                      .getELContext());
+            }
+            if (instance == null && type != null) {
+                try {
+                    instance = (PhaseListener) ReflectionUtil.forName(
+                          this.type).newInstance();
+                } catch (Exception e) {
+                    throw new AbortProcessingException(
+                          "Couldn't Lazily instantiate PhaseListener", e);
+                }
+                if (this.binding != null) {
+                    binding.setValue(faces.getELContext(), instance);
+                }
+            }
+            return instance;
+        }
 
 		public void afterPhase(PhaseEvent event) {
 			PhaseListener pl = this.getInstance();
@@ -87,30 +86,28 @@ public class PhaseListenerHandler extends TagHandler {
 
 	}
 
-	private final TagAttribute type;
-
-	private final TagAttribute binding;
+    private final TagAttribute binding;
 
 	private final String listenerType;
 
 	public PhaseListenerHandler(TagConfig config) {
 		super(config);
-		this.type = this.getAttribute("type");
+        TagAttribute type = this.getAttribute("type");
 		this.binding = this.getAttribute("binding");
-		if (this.type != null) {
-			if (!this.type.isLiteral()) {
-				throw new TagAttributeException(this.type,
+		if (type != null) {
+			if (!type.isLiteral()) {
+				throw new TagAttributeException(type,
 						"Must be a literal class name of type PhaseListener");
 			} else {
 				// test it out
 				try {
-					Class c = ReflectionUtil.forName(this.type.getValue());
+					ReflectionUtil.forName(type.getValue());
 				} catch (ClassNotFoundException e) {
-					throw new TagAttributeException(this.type,
+					throw new TagAttributeException(type,
 							"Couldn't qualify PhaseListener", e);
 				}
 			}
-			this.listenerType = this.type.getValue();
+			this.listenerType = type.getValue();
 		} else {
 			this.listenerType = null;
 		}
