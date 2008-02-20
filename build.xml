@@ -12,8 +12,6 @@
 
   <import
       file="${facelets.build.home}/common/ant/dependencies.xml"/>
-  <import
-      file="${facelets.build.home}/common/ant/common.xml"/>
 
   <!-- Establish property definition defaults -->
   <property name="compile.debug"       value="true"/>
@@ -23,18 +21,14 @@
   <property name="compile.target"      value="1.5"/>
   <property name="build"               value="build"/>
   <property name="dist"                value="dist"/>
-  <property name="name"                value="facelets"/>
-  <property name="artifact-id"         value="jsf-${name}"/>
   <property name="lib"                 value="lib"/>
   <property name="release"             value="release"/>
-  <property name="release.version"     value="1.1.11b-SNAPSHOT"/>
-  <property name="mvn.repo.version"    value="${release.version}"/>
+  <property name="release.version"     value="1.1.11-240"/>
+  <property name="artifact-id"          value="jsf-facelets"/>
   <property name="doc"                 value="doc"/>
   <property name="dependencies"        value="${basedir}/dependencies" />
   <property name="jsf-api.jar"         value="${dependencies}/jsf-api.jar" />
-<!-- for utils only.  Not a real dependency. -->
-  <property name="jsf-impl.jar"         value="${dependencies}/jsf-impl.jar" />
-  <property name="portlet-api.jar"     value="${dependencies}/portlet-api.jar" />
+  <property name="portlet-api.jar"     value="${dependencies}/portlet-api-1.0.jar" />
   <property name="servlet-api.jar"     value="${dependencies}/servlet-api.jar" />
   <property name="jar"                 value="jsf-facelets.jar"/>
 
@@ -43,7 +37,7 @@
     <pathelement location="${build}/classes"/>
     <fileset dir="lib" includes="*.jar"/>
     <pathelement location="${jsf-api.jar}"/>
-    <pathelement location="${jsf-impl.jar}"/>
+    <pathelement location="/Users/edburns/Documents/Projects/JavaEE/workareas/facelets-1_1_11_A/dependencies/portlet-api-1.0.jar"/>
     <pathelement location="${servlet-api.jar}" />
     <pathelement location="${el-api.jar}" />
     <pathelement location="${el-impl.jar}" />
@@ -171,7 +165,6 @@
   
   <!-- ======================== Build DocBook =========================== -->
   <target name="doc" depends="prepare">
-<!--
     <delete dir="${build}/docs/dev"/>
     <xslt basedir="${doc}/en"
            destdir="${build}/docs/dev"
@@ -181,7 +174,6 @@
     <copy todir="${build}/docs/dev">
 		<fileset dir="${doc}/en/rsc"/>
 	</copy>
--->
   </target>
 
   <!-- ===================== Distribution Files ========================= -->
@@ -218,11 +210,12 @@
   </target>
 
   <!-- ========================= Create Release ========================= -->
-  <target name="release" depends="clean, doc, dist">
+  <target name="release" depends="dist">
     <mkdir dir="${release}/facelets-${release.version}"/>
 	<ant target="-build-demo" antfile="demo/numberguess/build.xml"/>
 	<ant target="-build-demo" antfile="demo/hangman/build.xml"/>
 	<ant target="-build-demo" antfile="demo/starterkit/build.xml"/>
+<!--	<ant target="-build-demo" antfile="demo/portlet/build.xml"/>-->
     <copy todir="${release}/facelets-${release.version}" includeEmptyDirs="false">
        <fileset dir="${dist}"/>
     </copy>
@@ -284,6 +277,32 @@
   </cvs>
 </target>
 
+<target name="push-local-to-maven" depends="push-to-maven-prepare" description="install this facelets to the local maven repo.">
+
+  <exec executable="mvn" os="SunOS">
+    <arg line="install:install-file -DgroupId=javax.faces -DartifactId=${artifact-id} -Dversion=${release.version} -Dpackaging=jar -Dfile=${build}/maven-repo/javax.faces/jars/${artifact-id}-${release.version}.jar " />
+  </exec>
+  <exec executable="mvn" os="Linux">
+    <arg line="install:install-file -DgroupId=javax.faces -DartifactId=${artifact-id} -Dversion=${release.version} -Dpackaging=jar -Dfile=${build}/maven-repo/javax.faces/jars/${artifact-id}-${release.version}.jar  " />
+  </exec>
+  <exec executable="mvn" os="Mac OS X">
+    <arg line="install:install-file -DgroupId=javax.faces -DartifactId=${artifact-id} -Dversion=${release.version} -Dpackaging=jar -Dfile=${build}/maven-repo/javax.faces/jars/${artifact-id}-${release.version}.jar  " />
+  </exec>
+  <exec executable="mvn" os="Darwin">
+    <arg line="install:install-file -DgroupId=javax.faces -DartifactId=${artifact-id} -Dversion=${release.version} -Dpackaging=jar -Dfile=${build}/maven-repo/javax.faces/jars/${artifact-id}-${release.version}.jar  " />
+  </exec>
+  <exec executable="mvn.bat" os="Windows 2000">
+    <arg line="install:install-file -DgroupId=javax.faces -DartifactId=${artifact-id} -Dversion=${release.version} -Dpackaging=jar -Dfile=${build}/maven-repo/javax.faces/jars/${artifact-id}-${release.version}.jar  " />
+  </exec>
+  <exec executable="mvn.bat" os="Windows 2003">
+    <arg line="install:install-file -DgroupId=javax.faces -DartifactId=${artifact-id} -Dversion=${release.version} -Dpackaging=jar -Dfile=${build}/maven-repo/javax.faces/jars/${artifact-id}-${release.version}.jar  " />
+  </exec>
+  <exec executable="mvn.bat" os="Windows XP">
+    <arg line="install:install-file -DgroupId=javax.faces -DartifactId=${artifact-id} -Dversion=${release.version} -Dpackaging=jar -Dfile=${build}/maven-repo/javax.faces/jars/${artifact-id}-${release.version}.jar  " />
+  </exec>
+
+</target>
+
 <target name="push-to-maven-jsf-repo" depends="push-to-maven-prepare">
   <!-- import to CVS-->
   <tstamp />
@@ -299,39 +318,6 @@
     </commandline>
   </cvs>
 </target>
-
-<target name="push-local-to-maven" description="install facelets to local maven repo.">
-
-  <exec executable="mvn" os="SunOS">
-    <arg line="install:install-file -DgroupId=javax.faces -DartifactId=${artifact-id} -Dversion=${mvn.repo.version} -Dpackaging=jar -Dfile=${basedir}/dist/${artifact-id}.jar " />
-  </exec>
-  <exec executable="mvn" os="Linux">
-    <arg line="install:install-file -DgroupId=javax.faces -DartifactId=${artifact-id} -Dversion=${mvn.repo.version} -Dpackaging=jar -Dfile=${basedir}/dist/${artifact-id}.jar " />
-  </exec>
-  <exec executable="mvn" os="Mac OS X">
-    <arg line="install:install-file -DgroupId=javax.faces -DartifactId=${artifact-id} -Dversion=${mvn.repo.version} -Dpackaging=jar -Dfile=${basedir}/dist/${artifact-id}.jar " />
-  </exec>
-  <exec executable="mvn" os="Darwin">
-    <arg line="install:install-file -DgroupId=javax.faces -DartifactId=${artifact-id} -Dversion=${mvn.repo.version} -Dpackaging=jar -Dfile=${basedir}/dist/${artifact-id}.jar " />
-  </exec>
-  <exec executable="mvn.bat" os="Windows 2000">
-    <arg line="install:install-file -DgroupId=javax.faces -DartifactId=${artifact-id} -Dversion=${mvn.repo.version} -Dpackaging=jar -Dfile=${basedir}/dist/${artifact-id}.jar " />
-  </exec>
-  <exec executable="mvn.bat" os="Windows 2003">
-    <arg line="install:install-file -DgroupId=javax.faces -DartifactId=${artifact-id} -Dversion=${mvn.repo.version} -Dpackaging=jar -Dfile=${basedir}/dist/${artifact-id}.jar " />
-  </exec>
-  <exec executable="mvn.bat" os="Windows XP">
-    <arg line="install:install-file -DgroupId=javax.faces -DartifactId=${artifact-id} -Dversion=${mvn.repo.version} -Dpackaging=jar -Dfile=${basedir}/dist/${artifact-id}.jar " />
-  </exec>
-
-</target>
-
-  <target name="diffapis">
-
-  <difftrees treeA="${basedir}/src" treeB="/Users/edburns/Documents/Projects/JavaEE/workareas/facelets-1_1_11_A/src" />
-
-</target>
-
 
  
 </project>

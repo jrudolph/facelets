@@ -302,9 +302,6 @@ public class FaceletViewHandler extends ViewHandler {
     }
 
     public UIViewRoot restoreView(FacesContext context, String viewId) {
-        if (UIDebug.debugRequest(context)) {
-            return new UIViewRoot();
-        }
 
         if (!this.buildBeforeRestore || !handledByFacelets(viewId)) {
             return this.parent.restoreView(context, viewId);
@@ -330,11 +327,6 @@ public class FaceletViewHandler extends ViewHandler {
 
         UIViewRoot viewRoot = createView(context, viewId);
         context.setViewRoot(viewRoot);
-        try {
-            this.buildView(context, viewRoot);
-        } catch (IOException ioe) {
-            log.log(Level.SEVERE, "Error Building View", ioe);
-        }
         context.getApplication().getStateManager().restoreView(context, viewId,
                 renderKitId);
         return viewRoot;
@@ -488,6 +480,10 @@ public class FaceletViewHandler extends ViewHandler {
         if (log.isLoggable(Level.FINE)) {
             log.fine("Building View: " + renderedViewId);
         }
+        
+        if (this.faceletFactory == null) {
+            this.initialize(context);
+        }
 
         // grab our FaceletFactory and create a Facelet
         Facelet f = null;
@@ -534,17 +530,6 @@ public class FaceletViewHandler extends ViewHandler {
 
         StateWriter stateWriter = null;
         try {
-            // build view - but not if we're in "buildBeforeRestore"
-            // land and we've already got a populated view. Note
-            // that this optimizations breaks if there's a "c:if" in
-            // the page that toggles as a result of request processing -
-            // should that be handled? Or
-            // is this optimization simply so minor that it should just
-            // be trimmed altogether?
-            if (!this.buildBeforeRestore
-                    || viewToRender.getChildren().isEmpty()) {
-                this.buildView(context, viewToRender);
-            }
 
             // setup writer and assign it to the context
             ResponseWriter origWriter = this.createResponseWriter(context);
@@ -740,7 +725,12 @@ public class FaceletViewHandler extends ViewHandler {
         if (extCtx.getRequestPathInfo() == null) {
             String facesSuffix = actionId.substring(actionId.lastIndexOf('.'));
             String viewSuffix = this.getDefaultSuffix(context);
-            viewId = actionId.replaceFirst(facesSuffix, viewSuffix);
+            // We cannot use replaceFirst here because the first argument
+            // should be treated a literal, and replaceFirst 
+            // treats the first argument as a regex
+            int i = actionId.indexOf(facesSuffix);
+            viewId = actionId.substring(0, i) + 
+                    viewSuffix + actionId.substring(i + facesSuffix.length());
         }
         if (log.isLoggable(Level.FINE)) {
             log.fine("ActionId -> ViewId: " + actionId + " -> " + viewId);
@@ -771,10 +761,28 @@ public class FaceletViewHandler extends ViewHandler {
     }
 
     public UIViewRoot createView(FacesContext context, String viewId) {
+        UIViewRoot result = null;
         if (UIDebug.debugRequest(context)) {
-            return new UIViewRoot();
+            result = new UIViewRoot();
         }
-        return this.parent.createView(context, viewId);
+        else {
+            result = this.parent.createView(context, viewId);
+        }
+        
+        try {
+            context.setViewRoot(result);
+            this.buildView(context, result);
+        }
+        catch (IOException ioe) {
+            if (log.isLoggable(Level.SEVERE)) {
+                log
+                        .log(Level.SEVERE,
+                        "Unable to create View tree", ioe);
+            }
+            
+        }
+        
+        return result;
     }
 
     public String getActionURL(FacesContext context, String viewId) {

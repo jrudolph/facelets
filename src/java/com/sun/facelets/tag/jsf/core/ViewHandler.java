@@ -38,7 +38,7 @@ import com.sun.facelets.tag.jsf.ComponentSupport;
  * documentation</a>.
  * 
  * @author Jacob Hookom
- * @version $Id: ViewHandler.java,v 1.4 2006/05/09 06:25:41 jhook Exp $
+ * @version $Id: ViewHandler.java,v 1.4.12.1 2008/02/20 02:15:38 edburns Exp $
  */
 public final class ViewHandler extends TagHandler {
 
@@ -65,8 +65,8 @@ public final class ViewHandler extends TagHandler {
         this.renderKitId = this.getAttribute("renderKitId");
         this.contentType = this.getAttribute("contentType");
         this.encoding = this.getAttribute("encoding");
-        this.beforePhaseListener = this.getAttribute("beforePhaseListener");
-        this.afterPhaseListener = this.getAttribute("afterPhaseListener");
+        this.beforePhaseListener = this.getAttribute("beforePhase");
+        this.afterPhaseListener = this.getAttribute("afterPhase");
     }
 
     /**
