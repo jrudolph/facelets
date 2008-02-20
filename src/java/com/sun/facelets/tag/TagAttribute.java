@@ -28,7 +28,7 @@ import com.sun.facelets.el.TagValueExpression;
  * Representation of a Tag's attribute in a Facelet File
  * 
  * @author Jacob Hookom
- * @version $Id: TagAttribute.java,v 1.7 2005/11/09 03:49:18 jhook Exp $
+ * @version $Id: TagAttribute.java,v 1.8 2008/02/20 06:35:52 rlubke Exp $
  */
 public final class TagAttribute {
 
@@ -97,7 +97,7 @@ public final class TagAttribute {
         if (this.literal) {
             return Integer.parseInt(this.value);
         } else {
-            return ((Number) this.getObject(ctx, Number.class)).intValue();
+            return ((Number) this.getObject(ctx, Integer.class)).intValue();
         }
     }
 
