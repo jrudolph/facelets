@@ -30,9 +30,11 @@ import com.sun.facelets.tag.TagHandler;
 
 /**
  * @author Jacob Hookom
- * @version $Id: IncludeHandler.java,v 1.3 2005/08/24 04:38:55 jhook Exp $
+ * @version $Id: IncludeHandler.java,v 1.4 2008/02/20 16:54:44 rlubke Exp $
  */
 public final class IncludeHandler extends TagHandler {
+
+    
 
     private final TagAttribute src;
 
@@ -53,6 +55,9 @@ public final class IncludeHandler extends TagHandler {
     public void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
         String path = this.src.getValue(ctx);
+        if (path == null || path.length() == 0) {
+            return;
+        }
         VariableMapper orig = ctx.getVariableMapper();
         ctx.setVariableMapper(new VariableMapperWrapper(orig));
         try {
