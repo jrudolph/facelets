@@ -56,7 +56,8 @@ final class DefaultFaceletContext extends FaceletContext {
 	private final Map ids;
     private final Map prefixes;
     private String prefix;
-    private final StringBuilder uniqueIdBuilder=new StringBuilder(30);
+    //TODO: change to StringBuilder when JDK1.5 support is available in Facelets
+    private final StringBuffer uniqueIdBuilder=new StringBuffer(30);
 
 
     public DefaultFaceletContext(DefaultFaceletContext ctx,
