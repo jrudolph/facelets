@@ -184,7 +184,8 @@ final class DefaultFaceletContext extends FaceletContext {
     public String generateUniqueId(String base) {
 
         if(prefix==null) {
-            StringBuilder builder = new StringBuilder(faceletHierarchy.size()*30);
+            //TODO: change to StringBuilder when JDK1.5 support is available
+            StringBuffer builder = new StringBuffer(faceletHierarchy.size()*30);
             for(int i=0; i< faceletHierarchy.size(); i++) {
                 DefaultFacelet facelet = (DefaultFacelet) faceletHierarchy.get(i);
                 builder.append(facelet.getAlias());
