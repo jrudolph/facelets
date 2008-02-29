@@ -14,36 +14,19 @@
 
 package com.sun.facelets.impl;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-
-import javax.el.ELContext;
-import javax.el.ELException;
-import javax.el.ELResolver;
-import javax.el.ExpressionFactory;
-import javax.el.FunctionMapper;
-import javax.el.ValueExpression;
-import javax.el.VariableMapper;
-import javax.faces.FacesException;
-import javax.faces.component.UIComponent;
-import javax.faces.context.FacesContext;
-
-import com.sun.facelets.Facelet;
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
-import com.sun.facelets.FaceletHandler;
 import com.sun.facelets.TemplateClient;
 import com.sun.facelets.el.DefaultVariableMapper;
 import com.sun.facelets.el.ELAdaptor;
+
+import javax.el.*;
+import javax.faces.FacesException;
+import javax.faces.component.UIComponent;
+import javax.faces.context.FacesContext;
+import java.io.IOException;
+import java.net.URL;
+import java.util.*;
 
 /**
  * Default FaceletContext implementation.
@@ -64,29 +47,41 @@ final class DefaultFaceletContext extends FaceletContext {
     private final ELContext ctx;
 
     private final DefaultFacelet facelet;
+    private final List faceletHierarchy;
 
     private VariableMapper varMapper;
 
     private FunctionMapper fnMapper;
 
 	private final Map ids;
+    private final Map prefixes;
+    private String prefix;
+    private final StringBuilder uniqueIdBuilder=new StringBuilder(30);
+
 
     public DefaultFaceletContext(DefaultFaceletContext ctx,
             DefaultFacelet facelet) {
         this.ctx = ctx.ctx;
-        this.facelet = facelet;
         this.clients = ctx.clients;
         this.faces = ctx.faces;
         this.fnMapper = ctx.fnMapper;
         this.ids = ctx.ids;
+        this.prefixes = ctx.prefixes;
         this.varMapper = ctx.varMapper;
+        this.faceletHierarchy = new ArrayList(ctx.faceletHierarchy.size()+1);
+        this.faceletHierarchy.addAll(ctx.faceletHierarchy);
+        this.faceletHierarchy.add(facelet);
+        this.facelet=facelet;
     }
 
     public DefaultFaceletContext(FacesContext faces, DefaultFacelet facelet) {
         this.ctx = ELAdaptor.getELContext(faces);
         this.ids = new HashMap();
+        this.prefixes = new HashMap();
         this.clients = new ArrayList(5);
         this.faces = faces;
+        this.faceletHierarchy = new ArrayList(1);
+        this.faceletHierarchy.add(facelet);
         this.facelet = facelet;
         this.varMapper = this.ctx.getVariableMapper();
         if (this.varMapper == null) {
@@ -140,7 +135,7 @@ final class DefaultFaceletContext extends FaceletContext {
      *      java.lang.String)
      */
     public void includeFacelet(UIComponent parent, String relativePath)
-            throws IOException, FaceletException, FacesException, ELException {
+            throws IOException, FacesException, ELException {
         this.facelet.include(this, parent, relativePath);
     }
 
@@ -186,14 +181,44 @@ final class DefaultFaceletContext extends FaceletContext {
      * @see com.sun.facelets.FaceletContext#generateUniqueId(java.lang.String)
      */
     public String generateUniqueId(String base) {
+
+        if(prefix==null) {
+            StringBuilder builder = new StringBuilder(faceletHierarchy.size()*30);
+            for(int i=0; i< faceletHierarchy.size(); i++) {
+                DefaultFacelet facelet = (DefaultFacelet) faceletHierarchy.get(i);
+                builder.append(facelet.getAlias());
+            }
+            Integer prefixInt = new Integer(builder.toString().hashCode());
+
+            Integer cnt = (Integer) prefixes.get(prefixInt);
+            if(cnt==null) {
+                this.prefixes.put(prefixInt,new Integer(0));
+                prefix = prefixInt.toString();
+            } else {
+                int i=cnt.intValue()+1;
+                this.prefixes.put(prefixInt,new Integer(i));
+                prefix = prefixInt+"_"+i;
+            }
+        }
+
         Integer cnt = (Integer) this.ids.get(base);
         if (cnt == null) {
             this.ids.put(base, new Integer(0));
-            return base;
+            uniqueIdBuilder.delete(0,uniqueIdBuilder.length());
+            uniqueIdBuilder.append(prefix);
+            uniqueIdBuilder.append("_");
+            uniqueIdBuilder.append(base);
+            return uniqueIdBuilder.toString();
         } else {
             int i = cnt.intValue() + 1;
             this.ids.put(base, new Integer(i));
-            return base + "_" + i;
+            uniqueIdBuilder.delete(0,uniqueIdBuilder.length());
+            uniqueIdBuilder.append(prefix);
+            uniqueIdBuilder.append("_");
+            uniqueIdBuilder.append(base);
+            uniqueIdBuilder.append("_");            
+            uniqueIdBuilder.append(i);
+            return uniqueIdBuilder.toString();
         }
     }
 
@@ -237,7 +262,7 @@ final class DefaultFaceletContext extends FaceletContext {
      *      java.net.URL)
      */
     public void includeFacelet(UIComponent parent, URL absolutePath)
-            throws IOException, FaceletException, FacesException, ELException {
+            throws IOException, FacesException, ELException {
         this.facelet.include(this, parent, absolutePath);
     }
 
