@@ -769,6 +769,7 @@ public class FaceletViewHandler extends ViewHandler {
         result = this.parent.createView(context, viewId);
         
         try {
+            context.setViewRoot(result);
             this.buildView(context, result);
         }
         catch (IOException ioe) {
