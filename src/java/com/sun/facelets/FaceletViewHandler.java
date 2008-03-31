@@ -303,7 +303,7 @@ public class FaceletViewHandler extends ViewHandler {
 
     public UIViewRoot restoreView(FacesContext context, String viewId) {
 
-        if (!this.buildBeforeRestore || !handledByFacelets(viewId)) {
+        if (!handledByFacelets(viewId)) {
             return this.parent.restoreView(context, viewId);
         }
 
@@ -325,8 +325,13 @@ public class FaceletViewHandler extends ViewHandler {
                 .getViewHandler();
         String renderKitId = outerViewHandler.calculateRenderKitId(context);
 
-        UIViewRoot viewRoot = createView(context, viewId);
+        UIViewRoot viewRoot = this.parent.restoreView(context, viewId);
         context.setViewRoot(viewRoot);
+        try {
+            this.buildView(context, viewRoot);
+        } catch (IOException ioe) {
+            log.log(Level.SEVERE, "Error Building View", ioe);
+        }
         context.getApplication().getStateManager().restoreView(context, viewId,
                 renderKitId);
         return viewRoot;
@@ -533,7 +538,10 @@ public class FaceletViewHandler extends ViewHandler {
         try {
 
             // setup writer and assign it to the context
-            ResponseWriter origWriter = this.createResponseWriter(context);
+            ResponseWriter origWriter = null;
+            if (null == (origWriter = context.getResponseWriter())) {
+                origWriter = this.createResponseWriter(context);
+            }
             // QUESTION: should we use bufferSize? Or, since the
             // StateWriter usually only needs a small bit at the end,
             // should we always use a much smaller size?
