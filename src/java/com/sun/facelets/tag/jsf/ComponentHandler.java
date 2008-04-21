@@ -49,13 +49,18 @@ import com.sun.facelets.tag.TagException;
 import com.sun.facelets.tag.TagHandler;
 import com.sun.facelets.tag.MetaRuleset;
 import com.sun.facelets.util.FacesAPI;
+import javax.faces.event.ComponentSystemEventListener;
+import javax.faces.event.ListenerFor;
+import javax.faces.event.SystemEvent;
+import javax.faces.event.SystemEventListener;
+import javax.faces.render.Renderer;
 
 /**
  * Implementation of the tag logic used in the JSF specification. This is your
  * golden hammer for wiring UIComponents to Facelets.
  * 
  * @author Jacob Hookom
- * @version $Id: ComponentHandler.java,v 1.14 2006/03/29 15:01:22 jhook Exp $
+ * @version $Id: ComponentHandler.java,v 1.14.8.1 2008/04/21 16:15:16 edburns Exp $
  */
 public class ComponentHandler extends MetaTagHandler {
 
@@ -156,6 +161,7 @@ public class ComponentHandler extends MetaTagHandler {
             if (this.rendererType != null) {
                 c.setRendererType(this.rendererType);
             }
+            processListenerForAnnotationOnRenderer(ctx.getFacesContext(), c);
             
             // hook method
             this.onComponentCreated(ctx, c, parent);
@@ -178,6 +184,49 @@ public class ComponentHandler extends MetaTagHandler {
         // been part of the tree or not yet
         parent.getChildren().add(c);
     }
+    
+    private static void processListenerForAnnotationOnRenderer(FacesContext context,
+            UIComponent source) {
+        Renderer renderer = getRenderer(context, source);
+        if (null != renderer &&
+            renderer.getClass().isAnnotationPresent(ListenerFor.class) &&
+            renderer instanceof ComponentSystemEventListener) {
+            ListenerFor listenerFor = (ListenerFor) 
+                    renderer.getClass().getAnnotation(ListenerFor.class);
+            assert(null != listenerFor);
+            Class<? extends SystemEvent> eventClass = (Class<? extends SystemEvent>) listenerFor.systemEventClass();
+            FacesContext facesContext = FacesContext.getCurrentInstance();
+            source.subscribeToEvent(facesContext, eventClass, 
+                    (ComponentSystemEventListener) renderer);
+        }
+        
+    }
+    
+    private static Renderer getRenderer(FacesContext context, UIComponent component) {
+
+        String rendererType = component.getRendererType();
+        Renderer result = null;
+        if (rendererType != null) {
+            result = context.getRenderKit().getRenderer(component.getFamily(),
+                                                        rendererType);
+            if (null == result) {
+                if (log.isLoggable(Level.FINE)) {
+                    // PENDING(edburns): I18N
+                    log.fine("Can't get Renderer for type " + rendererType);
+                }
+            }
+        } else {
+            if (log.isLoggable(Level.FINE)) {
+                String id = component.getId();
+                id = (null != id) ? id : component.getClass().getName();
+                // PENDING(edburns): I18N
+                log.fine("No renderer-type for component " + id);
+            }
+        }
+        return result;
+    }
+    
+
 
     /**
      * If the binding attribute was specified, use that in conjuction with our
