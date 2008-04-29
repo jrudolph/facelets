@@ -40,7 +40,7 @@ import com.sun.facelets.tag.jsf.ValidatorConfig;
  * Base class for defining TagLibraries in Java
  * 
  * @author Jacob Hookom
- * @version $Id: AbstractTagLibrary.java,v 1.8 2005/08/24 04:38:46 jhook Exp $
+ * @version $Id: AbstractTagLibrary.java,v 1.8.22.1 2008/04/29 19:56:46 edburns Exp $
  */
 public abstract class AbstractTagLibrary implements TagLibrary {
 
@@ -125,7 +125,7 @@ public abstract class AbstractTagLibrary implements TagLibrary {
         }
     }
 
-    private static class ComponentConfigWrapper implements ComponentConfig {
+    protected static class ComponentConfigWrapper implements ComponentConfig {
 
         protected final TagConfig parent;
 
