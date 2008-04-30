@@ -143,6 +143,10 @@ public class FaceletViewHandler extends ViewHandler {
     public FaceletViewHandler(ViewHandler parent) {
         this.parent = parent;
     }
+    
+    public FaceletFactory getFaceletFactory() {
+        return this.faceletFactory;
+    }
 
     /**
      * Initialize the ViewHandler during its first request.

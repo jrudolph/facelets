@@ -16,6 +16,7 @@ package com.sun.facelets;
 
 import java.io.IOException;
 
+import java.net.URL;
 import javax.el.ELException;
 import javax.faces.FacesException;
 
@@ -24,7 +25,7 @@ import javax.faces.FacesException;
  * underlying implementation.
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletFactory.java,v 1.3 2005/11/30 23:36:39 jhook Exp $
+ * @version $Id: FaceletFactory.java,v 1.3.22.1 2008/04/30 18:10:56 edburns Exp $
  */
 public abstract class FaceletFactory {
 
@@ -42,6 +43,10 @@ public abstract class FaceletFactory {
      */
     public abstract Facelet getFacelet(String uri) throws IOException,
             FaceletException, FacesException, ELException;
+    
+    public abstract Facelet getFacelet(URL url) throws IOException, FaceletException,
+            FacesException, ELException;
+    
 
     /**
      * Set the static instance

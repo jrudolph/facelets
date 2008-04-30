@@ -14,7 +14,7 @@
 
 package com.sun.facelets.tag;
 
-import com.sun.facelets.tag.renderkit.TemplateRendererTagLibrary;
+import com.sun.facelets.tag.composite.CompositeComponentTagLibrary;
 import java.lang.reflect.Method;
 
 import javax.faces.FacesException;
@@ -27,7 +27,7 @@ import com.sun.facelets.util.ParameterCheck;
  * children handles the requested method.
  * 
  * @author Jacob Hookom
- * @version $Id: CompositeTagLibrary.java,v 1.3.26.1 2008/04/29 19:56:47 edburns Exp $
+ * @version $Id: CompositeTagLibrary.java,v 1.3.26.2 2008/04/30 18:10:56 edburns Exp $
  */
 public final class CompositeTagLibrary implements TagLibrary {
 
@@ -50,12 +50,12 @@ public final class CompositeTagLibrary implements TagLibrary {
                 return true;
             }
         }
-        if (TemplateRendererTagLibrary.tagLibraryForNSExists(ns)) {
+        if (CompositeComponentTagLibrary.tagLibraryForNSExists(ns)) {
             TagLibrary [] librariesPlusOne = new TagLibrary[libraries.length+1];
             System.arraycopy(this.libraries, 0, librariesPlusOne, 
                     0, libraries.length);
             librariesPlusOne[libraries.length] = 
-                    new TemplateRendererTagLibrary(ns);
+                    new CompositeComponentTagLibrary(ns);
             for (int i = 0; i < this.libraries.length; i++) {
                 libraries[i] = null;
             }
