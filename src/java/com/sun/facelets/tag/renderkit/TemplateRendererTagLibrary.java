@@ -7,11 +7,12 @@ package com.sun.facelets.tag.renderkit;
 
 import com.sun.facelets.tag.*;
 import com.sun.facelets.tag.jsf.ComponentConfig;
-import com.sun.facelets.tag.jsf.ComponentConfig;
 import java.lang.reflect.Method;
 import java.util.Set;
 import javax.faces.FacesException;
 import javax.faces.context.FacesContext;
+import javax.faces.render.RenderKit;
+import javax.faces.render.Renderer;
 
 /**
  *
@@ -66,12 +67,37 @@ public class TemplateRendererTagLibrary extends AbstractTagLibrary {
         int underscore = localName.indexOf("_");
         if (-1 != underscore && (underscore+1) < localName.length()) {
             String componentType = localName.substring(0, underscore);
+            componentType = "javax.faces." + 
+                  componentType.substring(0, 1).toUpperCase() + 
+                  componentType.substring(1).toLowerCase();
             String rendererType = localName.substring(underscore+1);
+            
+            String renderKitResourceId = getRenderKitResourceId(this.ns);
+            assert(null != renderKitResourceId);
+            String rendererResourceName = renderKitResourceId +
+                    "/" + localName + ".xhtml";
+            
+            installRendererIfNecessary(rendererResourceName, componentType, rendererType);
             ComponentConfig componentConfig = new ComponentConfigWrapper(tag, 
                     componentType, rendererType);
             result = new TemplateRendererTagHandler(componentConfig);
         }
         return result;
+    }
+    
+    private void installRendererIfNecessary(String rendererResourceName,
+            String componentType, 
+            String rendererType) {
+        FacesContext context = FacesContext.getCurrentInstance();
+        RenderKit renderKit = context.getRenderKit();
+
+        Renderer renderer = renderKit.getRenderer(componentType, rendererType);
+        
+        if (null == renderer) {
+            renderer = new TemplateRenderer(rendererResourceName);
+            renderKit.addRenderer(componentType, rendererType, renderer);
+        }
+
     }
     
     private static final String NS_RENDER_KIT_PREFIX = "/render-kit/";
