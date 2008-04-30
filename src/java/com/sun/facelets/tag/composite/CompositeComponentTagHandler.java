@@ -46,11 +46,11 @@ public class CompositeComponentTagHandler extends ComponentHandler {
 
     @Override
     protected void applyNextHandler(FaceletContext ctx, UIComponent c) throws IOException, FacesException, ELException {
-        // Apply the facelet for this composite component
-        applyCompositeComponent(ctx, c);
         // Allow any nested elements that reside inside the markup element
         // for this tag to get applied
         super.applyNextHandler(ctx, c);
+        // Apply the facelet for this composite component
+        applyCompositeComponent(ctx, c);
     }
     
     private void applyCompositeComponent(FaceletContext ctx, UIComponent c) {
