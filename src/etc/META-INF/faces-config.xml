@@ -5,11 +5,6 @@
  "http://java.sun.com/dtd/web-facesconfig_1_1.dtd">
 
 <faces-config>
-  <application>
-    <el-resolver>com.sun.facelets.tag.ui.CompositeComponentELResolver</el-resolver>
-  </application>
-
-
     <component>
 		<component-type>facelets.ui.Repeat</component-type>
 		<component-class>com.sun.facelets.component.UIRepeat</component-class>
@@ -19,13 +14,14 @@
 		<component-class>com.sun.facelets.tag.ui.ComponentRef</component-class>
 	</component>
 	<component>
-		<component-type>facelets.ui.Component2Ref</component-type>
-		<component-class>com.sun.facelets.tag.ui.Component2Ref</component-class>
-	</component>
-	<component>
 		<component-type>facelets.ui.Debug</component-type>
 		<component-class>com.sun.facelets.tag.ui.UIDebug</component-class>
 	</component>
+	<component>
+		<component-type>javax.faces.Composite</component-type>
+		<component-class>com.sun.facelets.tag.composite.CompositeComponent</component-class>
+	</component>
+
 	<render-kit>
         <render-kit-id>HTML_BASIC</render-kit-id>
         <renderer>
