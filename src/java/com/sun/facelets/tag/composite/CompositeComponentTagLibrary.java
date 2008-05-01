@@ -7,14 +7,19 @@ package com.sun.facelets.tag.composite;
 
 import com.sun.facelets.tag.*;
 import com.sun.facelets.tag.jsf.ComponentConfig;
+import com.sun.faces.scripting.GroovyHelper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.faces.FacesException;
 import javax.faces.application.Resource;
 import javax.faces.application.ResourceHandler;
+import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 
 
@@ -102,6 +107,84 @@ public class CompositeComponentTagLibrary extends AbstractTagLibrary {
         if (null != (resourceId = getCompositeComponentLibraryName(toTest))) {
             result = FacesContext.getCurrentInstance().getApplication().
                     getResourceHandler().libraryExists(resourceId);
+        }
+        
+        return result;
+    }
+    
+    public static boolean scriptComponentForResourceExists(FacesContext context,
+            Resource componentResource) {
+        boolean result = false;
+
+        Resource scriptComponentResource = getScriptComponentResource(context, 
+                componentResource);
+        try {
+            result = (null != scriptComponentResource) && (null != scriptComponentResource.getInputStream());
+        } catch (IOException ex) {
+            Logger.getLogger(CompositeComponentTagLibrary.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return result;
+    }
+    
+    private static Resource getScriptComponentResource(FacesContext context,
+            Resource componentResource) {
+        Resource result = null;
+
+        String resourceName = componentResource.getResourceName();
+        if (resourceName.endsWith(".xhtml")) {
+            resourceName = resourceName.substring(0, 
+                    resourceName.length() - 6) + ".groovy";
+            ResourceHandler resourceHandler = context.getApplication().getResourceHandler();
+            result = resourceHandler.createResource(resourceName, 
+                    componentResource.getLibraryName());
+        }
+        
+        return result;
+    }
+    
+    public static UIComponent getScriptComponent(FacesContext context, 
+            Resource componentResource) {
+        UIComponent result = null;
+        componentResource = getScriptComponentResource(context, componentResource);
+        InputStream resourceInputStream = null;
+        try {
+            if (null != resourceInputStream && null == (resourceInputStream = componentResource.getInputStream())) {
+                return null;
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(CompositeComponentTagLibrary.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+        String className = componentResource.getResourceName();
+        int lastDot = className.lastIndexOf(".");
+        className = className.substring(0, lastDot);
+        
+        URL componentResourceURL = componentResource.getURL();
+        String urlString = componentResourceURL.toExternalForm();
+        int lastSlash = urlString.lastIndexOf("/");
+        urlString = urlString.substring(0, lastSlash + 1);
+        Map<String, Object> appMap = context.getExternalContext().getApplicationMap();
+        // Add to the Groovy Classpath if necessary
+        if (!appMap.containsKey(urlString)) {
+            try {
+                URL componentLibraryURL = new URL(urlString);
+                GroovyHelper helper = GroovyHelper.getCurrentInstance();
+                helper.addURL(componentLibraryURL);
+                appMap.put(urlString, urlString);
+            } catch (MalformedURLException ex) {
+                Logger.getLogger(CompositeComponentTagLibrary.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        try {
+            Class componentClass = com.sun.faces.util.Util.loadClass(className, context);
+            result = (UIComponent) componentClass.newInstance();
+        } catch (IllegalAccessException ex) { 
+            Logger.getLogger(CompositeComponentTagLibrary.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            Logger.getLogger(CompositeComponentTagLibrary.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(CompositeComponentTagLibrary.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         return result;

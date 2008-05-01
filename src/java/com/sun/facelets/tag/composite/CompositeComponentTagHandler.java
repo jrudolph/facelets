@@ -40,6 +40,7 @@ public class CompositeComponentTagHandler extends ComponentHandler {
         UIComponent result = null;
         
         result = super.createComponent(ctx);
+        ((CompositeComponent)result).setResource(compositeComponentResource);
         
         return result;
     }
