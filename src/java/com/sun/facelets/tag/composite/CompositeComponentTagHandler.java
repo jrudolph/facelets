@@ -38,9 +38,18 @@ public class CompositeComponentTagHandler extends ComponentHandler {
     @Override
     protected UIComponent createComponent(FaceletContext ctx) {
         UIComponent result = null;
+        FacesContext context = ctx.getFacesContext();
+        Resource componentResource = CompositeComponentTagLibrary.
+                getScriptComponentResource(context, compositeComponentResource);
+
+        if (null != componentResource) {
+            result = context.getApplication().createComponent(componentResource);
+        }
         
-        result = super.createComponent(ctx);
-        ((CompositeComponent)result).setResource(compositeComponentResource);
+        if (null == result) {
+            result = super.createComponent(ctx);
+            ((CompositeComponent) result).setResource(compositeComponentResource);
+        }
         
         return result;
     }

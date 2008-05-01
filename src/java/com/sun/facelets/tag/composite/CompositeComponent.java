@@ -35,35 +35,6 @@ public class CompositeComponent extends UIComponentBase {
         this.resource = resource;
     }
 
-    @Override
-    public void decode(FacesContext context) {
-        boolean didDelegate = false;
-        if (CompositeComponentTagLibrary.scriptComponentForResourceExists(context, 
-                getResource())) {
-            if (CompositeComponentTagLibrary.
-                    scriptComponentForResourceExists(context, getResource())) {
-                UIComponent delegate = CompositeComponentTagLibrary.
-                        getScriptComponent(context, getResource());
-                if (null != delegate) {
-                    Class [] args = {FacesContext.class};
-                    try {
-                        if (null != delegate.getClass().getDeclaredMethod("decode", args)) {
-                            delegate.decode(context);
-                            didDelegate = true;
-                        }
-                    } catch (NoSuchMethodException ex) {
-                        Logger.getLogger(CompositeComponent.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (SecurityException ex) {
-                        Logger.getLogger(CompositeComponent.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-            }
-        }
-        if (!didDelegate) {
-            super.decode(context);
-        }
-    }
-
     // ----------------------------------------------------- StateHolder Methods
 
 
