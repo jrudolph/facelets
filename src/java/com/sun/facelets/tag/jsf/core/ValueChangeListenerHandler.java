@@ -157,7 +157,18 @@ public final class ValueChangeListenerHandler extends TagHandler implements Reta
                 this.listenerType, b);
         evh.addValueChangeListener(listener);
     }
+
+    public String getId() {
+        String result = null;
+        TagAttribute attr = this.getAttribute("id");
         
+        if (null != attr) {
+            result = attr.getValue();
+        }
+        return result;
+    }
+        
+    
         
 
 }

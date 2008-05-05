@@ -49,7 +49,7 @@ import com.sun.facelets.util.ReflectionUtil;
  * @see javax.faces.event.ActionListener
  * @see javax.faces.component.ActionSource
  * @author Jacob Hookom
- * @version $Id: ActionListenerHandler.java,v 1.5.12.1 2008/05/05 19:39:47 edburns Exp $
+ * @version $Id: ActionListenerHandler.java,v 1.5.12.2 2008/05/05 23:30:26 edburns Exp $
  */
 public final class ActionListenerHandler extends TagHandler implements RetargetableAttachedObjectHandler {
 	
@@ -156,4 +156,16 @@ public final class ActionListenerHandler extends TagHandler implements Retargeta
         ActionListener listener = new LazyActionListener(this.listenerType, b);
         as.addActionListener(listener);
     }
+    
+    public String getId() {
+        String result = null;
+        TagAttribute attr = this.getAttribute("id");
+        
+        if (null != attr) {
+            result = attr.getValue();
+        }
+        return result;
+    }
+        
+
 }

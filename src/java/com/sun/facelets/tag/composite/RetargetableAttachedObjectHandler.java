@@ -15,5 +15,7 @@ import javax.faces.component.UIComponent;
 public interface RetargetableAttachedObjectHandler {
     
      public void applyAttachedObjectToComponent(FaceletContext ctx, UIComponent parent);
+     
+     public String getId();
 
 }
