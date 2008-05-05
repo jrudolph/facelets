@@ -34,9 +34,11 @@ import com.sun.facelets.tag.TagAttributeException;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.TagException;
 import com.sun.facelets.tag.TagHandler;
+import com.sun.facelets.tag.composite.AttachedObjectTargetHandler;
+import com.sun.facelets.tag.composite.RetargetableAttachedObjectHandler;
 import com.sun.facelets.tag.jsf.ComponentSupport;
-import com.sun.facelets.tag.ui.Component2Ref;
 import com.sun.facelets.util.ReflectionUtil;
+import javax.faces.component.CompositeComponent;
 
 /**
  * Register an ValueChangeListener instance on the UIComponent associated with
@@ -48,7 +50,7 @@ import com.sun.facelets.util.ReflectionUtil;
  * @version $Id: ValueChangeListenerHandler.java,v 1.2 2005/08/24 04:38:50 jhook
  *          Exp $
  */
-public final class ValueChangeListenerHandler extends TagHandler {
+public final class ValueChangeListenerHandler extends TagHandler implements RetargetableAttachedObjectHandler {
 
 	private static class LazyValueChangeListener implements
 			ValueChangeListener, Serializable {
@@ -132,30 +134,30 @@ public final class ValueChangeListenerHandler extends TagHandler {
 			throws IOException, FacesException, FaceletException, ELException {
 		if (parent instanceof EditableValueHolder) {
 			if (ComponentSupport.isNew(parent)) {
-				EditableValueHolder evh = (EditableValueHolder) parent;
-				ValueExpression b = null;
-				if (this.binding != null) {
-					b = this.binding.getValueExpression(ctx, ValueChangeListener.class);
-				}
-				ValueChangeListener listener = new LazyValueChangeListener(
-						this.listenerType, b);
-				evh.addValueChangeListener(listener);
-                                if (parent instanceof Component2Ref) {
-                                    TagAttribute innerComponentIdAttr = this.getAttribute("innerComponentId");
-                                    if (null != innerComponentIdAttr) {
-                                        String innerComponentId = innerComponentIdAttr.getValue(ctx);
-                                        if (null != innerComponentId && 0 < innerComponentId.length()) {
-                                            ((Component2Ref) parent).storeNamedAttachedObject(innerComponentId, 
-                                                    listener);
-                                        }
-                                    }
-                                }
+                            applyAttachedObjectToComponent(ctx, parent);
 			}
-		} else {
+                } else if (parent instanceof CompositeComponent) {
+                    // Allow the composite component to know about the target
+                    // component.
+                    AttachedObjectTargetHandler.getRetargetableHandlers(parent).add(this);
+                } else {
 			throw new TagException(this.tag,
 					"Parent is not of type EditableValueHolder, type is: "
 							+ parent);
 		}
 	}
+
+    public void applyAttachedObjectToComponent(FaceletContext ctx, UIComponent parent) {
+        EditableValueHolder evh = (EditableValueHolder) parent;
+        ValueExpression b = null;
+        if (this.binding != null) {
+            b = this.binding.getValueExpression(ctx, ValueChangeListener.class);
+        }
+        ValueChangeListener listener = new LazyValueChangeListener(
+                this.listenerType, b);
+        evh.addValueChangeListener(listener);
+    }
+        
+        
 
 }

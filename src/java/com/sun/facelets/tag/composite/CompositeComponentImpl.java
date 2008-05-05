@@ -5,10 +5,8 @@
 
 package com.sun.facelets.tag.composite;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.faces.application.Resource;
-import javax.faces.component.UIComponent;
+import javax.faces.component.CompositeComponent;
 import javax.faces.component.UIComponentBase;
 import javax.faces.context.FacesContext;
 
@@ -16,7 +14,7 @@ import javax.faces.context.FacesContext;
  *
  * @author edburns
  */
-public class CompositeComponent extends UIComponentBase {
+public class CompositeComponentImpl extends UIComponentBase implements CompositeComponent {
     
     public static final String TYPE = "javax.faces.Composite";
 

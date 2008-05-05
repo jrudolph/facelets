@@ -11,7 +11,6 @@
  * implied. See the License for the specific language governing
  * permissions and limitations under the License.
  */
-
 package com.sun.facelets.tag.jsf.core;
 
 import javax.faces.component.UIOutput;
@@ -25,6 +24,7 @@ import javax.faces.validator.LengthValidator;
 import javax.faces.validator.LongRangeValidator;
 
 import com.sun.facelets.tag.AbstractTagLibrary;
+import com.sun.facelets.tag.composite.AttachedObjectTargetHandler;
 
 /**
  * For Tag details, see JSF Core <a target="_new"
@@ -32,22 +32,21 @@ import com.sun.facelets.tag.AbstractTagLibrary;
  * documentation</a>.
  * 
  * @author Jacob Hookom
- * @version $Id: CoreLibrary.java,v 1.10.2.1 2007/12/05 18:31:28 edburns Exp $
+ * @version $Id: CoreLibrary.java,v 1.10.8.1 2008/05/05 19:39:47 edburns Exp $
  */
 public final class CoreLibrary extends AbstractTagLibrary {
 
     public final static String Namespace = "http://java.sun.com/jsf/core";
-
     public final static CoreLibrary Instance = new CoreLibrary();
 
     public CoreLibrary() {
         super(Namespace);
 
+        this.addTagHandler("attachedObjectTarget", AttachedObjectTargetHandler.class);
+
         this.addTagHandler("actionListener", ActionListenerHandler.class);
 
         this.addTagHandler("attribute", AttributeHandler.class);
-        
-        this.addTagHandler("compositeAttachedObjectTarget", CompositeAttachedObjectTargetHandler.class);
 
         this.addConverter("convertDateTime", DateTimeConverter.CONVERTER_ID, ConvertDateTimeHandler.class);
 
@@ -60,21 +59,21 @@ public final class CoreLibrary extends AbstractTagLibrary {
         this.addTagHandler("loadBundle", LoadBundleHandler.class);
 
         this.addComponent("param", UIParameter.COMPONENT_TYPE, null);
-        
+
         this.addTagHandler("phaseListener", PhaseListenerHandler.class);
 
         this.addComponent("selectItem", UISelectItem.COMPONENT_TYPE, null);
 
         this.addComponent("selectItems", UISelectItems.COMPONENT_TYPE, null);
-        
+
         this.addTagHandler("setPropertyActionListener", SetPropertyActionListenerHandler.class);
-        
+
         this.addComponent("subview", "javax.faces.NamingContainer", null);
-        
+
         this.addValidator("validateLength", LengthValidator.VALIDATOR_ID);
-        
+
         this.addValidator("validateLongRange", LongRangeValidator.VALIDATOR_ID);
-        
+
         this.addValidator("validateDoubleRange", DoubleRangeValidator.VALIDATOR_ID);
 
         this.addValidator("validator", null, ValidateDelegateHandler.class);
@@ -83,8 +82,8 @@ public final class CoreLibrary extends AbstractTagLibrary {
                 ValueChangeListenerHandler.class);
 
         this.addTagHandler("view", ViewHandler.class);
-        
+
         this.addComponent("verbatim", "javax.faces.HtmlOutputText",
-                          "javax.faces.Text", VerbatimHandler.class);
+                "javax.faces.Text", VerbatimHandler.class);
     }
 }

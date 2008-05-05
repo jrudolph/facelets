@@ -89,7 +89,7 @@ public class CompositeComponentTagLibrary extends AbstractTagLibrary {
         TagHandler result = null;
         
         ComponentConfig componentConfig = new ComponentConfigWrapper(tag,
-                CompositeComponent.TYPE, null);
+                CompositeComponentImpl.TYPE, null);
         result = new CompositeComponentTagHandler(
                 getCompositeComponentResource(ns, localName),
                 componentConfig);

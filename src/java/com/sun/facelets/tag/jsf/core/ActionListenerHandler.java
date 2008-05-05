@@ -21,13 +21,12 @@ import javax.el.ELException;
 import javax.el.ValueExpression;
 import javax.faces.FacesException;
 import javax.faces.component.ActionSource;
-import javax.faces.component.EditableValueHolder;
 import javax.faces.component.UIComponent;
+import javax.faces.component.CompositeComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ActionEvent;
 import javax.faces.event.ActionListener;
-import javax.faces.event.ValueChangeListener;
 
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
@@ -36,6 +35,8 @@ import com.sun.facelets.tag.TagAttributeException;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.TagException;
 import com.sun.facelets.tag.TagHandler;
+import com.sun.facelets.tag.composite.AttachedObjectTargetHandler;
+import com.sun.facelets.tag.composite.RetargetableAttachedObjectHandler;
 import com.sun.facelets.tag.jsf.ComponentSupport;
 import com.sun.facelets.util.ReflectionUtil;
 
@@ -48,9 +49,9 @@ import com.sun.facelets.util.ReflectionUtil;
  * @see javax.faces.event.ActionListener
  * @see javax.faces.component.ActionSource
  * @author Jacob Hookom
- * @version $Id: ActionListenerHandler.java,v 1.5 2006/10/20 01:14:45 jhook Exp $
+ * @version $Id: ActionListenerHandler.java,v 1.5.12.1 2008/05/05 19:39:47 edburns Exp $
  */
-public final class ActionListenerHandler extends TagHandler {
+public final class ActionListenerHandler extends TagHandler implements RetargetableAttachedObjectHandler {
 	
 	private final static class LazyActionListener implements ActionListener, Serializable {
 		private transient ActionListener instance;
@@ -132,18 +133,27 @@ public final class ActionListenerHandler extends TagHandler {
     public void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
         if (parent instanceof ActionSource) {
-        	if (ComponentSupport.isNew(parent)) {
-				ActionSource as = (ActionSource) parent;
-				ValueExpression b = null;
-				if (this.binding != null) {
-					b = this.binding.getValueExpression(ctx, ActionListener.class);
-				}
-				ActionListener listener = new LazyActionListener(this.listenerType, b);
-				as.addActionListener(listener);
-			}
+            if (ComponentSupport.isNew(parent)) {
+                applyAttachedObjectToComponent(ctx, parent);
+            }
+        } else if (parent instanceof CompositeComponent) {
+            // Allow the composite component to know about the target
+            // component.
+            AttachedObjectTargetHandler.getRetargetableHandlers(parent).add(this);
+
         } else {
             throw new TagException(this.tag,
                     "Parent is not of type ActionSource, type is: " + parent);
         }
+    }
+    
+    public void applyAttachedObjectToComponent(FaceletContext ctx, UIComponent parent) {
+        ActionSource as = (ActionSource) parent;
+        ValueExpression b = null;
+        if (this.binding != null) {
+            b = this.binding.getValueExpression(ctx, ActionListener.class);
+        }
+        ActionListener listener = new LazyActionListener(this.listenerType, b);
+        as.addActionListener(listener);
     }
 }
