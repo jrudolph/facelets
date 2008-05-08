@@ -92,71 +92,66 @@ public class CompositeComponentTagHandler extends ComponentHandler {
     }
     
     private void retargetAttachedObjects(FaceletContext ctx, UIComponent c) {
-        Iterator<ActionListenerHandler> actionListeners = this.findNextByType(ActionListenerHandler.class);
-        ActionListenerHandler cur = null;
-        if (actionListeners.hasNext()) {
-            cur = actionListeners.next();
-            List<UIComponent> targets = AttachedObjectTargetHandler.
+        List<UIComponent> targets = AttachedObjectTargetHandler.
                     getAttachedObjectTargets(c);
-            List<RetargetableAttachedObjectHandler> handlers = 
+        List<RetargetableAttachedObjectHandler> handlers =
                     AttachedObjectTargetHandler.getRetargetableHandlers(c);
-            boolean foundMatch = false;
-            String 
-                    handlerTagId = null,
-                    componentTagId = null;
+        boolean foundMatch = false;
+        String
+                handlerTagId = null,
+                componentTagId = null;
             
-            for (UIComponent curTarget : targets) {
-                if (curTarget instanceof ActionSource2) {
-                    foundMatch = false;
-                    // Step 1, search the handlers list for a handler with an
-                    // ID attribute equal to the componentId of curTarget, and
-                    // that is an instanceof ActionListenerHandler
-                    for (RetargetableAttachedObjectHandler curHandler : handlers) {
-                        if ((null != (handlerTagId = curHandler.getId())) &&
+        for (UIComponent curTarget : targets) {
+            if (curTarget instanceof ActionSource2) {
+                foundMatch = false;
+                // Step 1, search the handlers list for a handler with an
+                // ID attribute equal to the componentId of curTarget, and
+                // that is an instanceof ActionListenerHandler
+                for (RetargetableAttachedObjectHandler curHandler : handlers) {
+                    if ((null != (handlerTagId = curHandler.getId())) &&
                             (null != (componentTagId = curTarget.getId())) &&
                             componentTagId.equals(handlerTagId) &&
                             curHandler instanceof ActionListenerHandler) {
+                        curHandler.applyAttachedObjectToComponent(ctx,
+                                curTarget);
+                        foundMatch = true;
+                        break;
+                    }
+                }
+                // Step 2, If that didn't work, just look for an 
+                // ActionListenerHandler;
+                if (!foundMatch) {
+                    for (RetargetableAttachedObjectHandler curHandler : handlers) {
+                        if (curHandler instanceof ActionListenerHandler) {
                             curHandler.applyAttachedObjectToComponent(ctx,
                                     curTarget);
-                            foundMatch = true;
-                            break;
-                        }
-                    }
-                    // Step 2, If that didn't work, just look for an 
-                    // ActionListenerHandler;
-                    if (!foundMatch) {
-                        for (RetargetableAttachedObjectHandler curHandler : handlers) {
-                            if (curHandler instanceof ActionListenerHandler) {
-                                curHandler.applyAttachedObjectToComponent(ctx,
-                                        curTarget);
-                            }
                         }
                     }
                 }
-                if (curTarget instanceof EditableValueHolder) {
-                    foundMatch = false;
-                    // Step 1, search the handlers list for a handler with an
-                    // ID attribute equal to the componentId of curTarget, and
-                    // that is an instanceof EditableValueHolder
-                    for (RetargetableAttachedObjectHandler curHandler : handlers) {
-                        if ((null != (handlerTagId = curHandler.getId())) &&
+            }
+            if (curTarget instanceof EditableValueHolder) {
+                foundMatch = false;
+                // Step 1, search the handlers list for a handler with an
+                // ID attribute equal to the componentId of curTarget, and
+                // that is an instanceof EditableValueHolder
+                for (RetargetableAttachedObjectHandler curHandler : handlers) {
+                    if ((null != (handlerTagId = curHandler.getId())) &&
                             (null != (componentTagId = curTarget.getId())) &&
                             componentTagId.equals(handlerTagId) &&
-                            curHandler instanceof ActionListenerHandler) {
+                            curHandler instanceof ValueChangeListenerHandler) {
+                        curHandler.applyAttachedObjectToComponent(ctx,
+                                curTarget);
+                        foundMatch = true;
+                        break;
+                    }
+                }
+                // Step 2, If that didn't work, just look for a
+                // ValueChangeListenerHandler;
+                if (!foundMatch) {
+                    for (RetargetableAttachedObjectHandler curHandler : handlers) {
+                        if (curHandler instanceof ValueChangeListenerHandler) {
                             curHandler.applyAttachedObjectToComponent(ctx,
                                     curTarget);
-                            foundMatch = true;
-                            break;
-                        }
-                    }
-                    // Step 2, If that didn't work, just look for a
-                    // ValueChangeListenerHandler;
-                    if (!foundMatch) {
-                        for (RetargetableAttachedObjectHandler curHandler : handlers) {
-                            if (curHandler instanceof ValueChangeListenerHandler) {
-                                curHandler.applyAttachedObjectToComponent(ctx,
-                                        curTarget);
-                            }
                         }
                     }
                 }
