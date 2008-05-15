@@ -331,21 +331,9 @@ public class FaceletViewHandler extends ViewHandler {
 
         UIViewRoot viewRoot = this.parent.restoreView(context, viewId);
         context.setViewRoot(viewRoot);
-        try {
-            this.buildView(context, viewRoot);
-        } catch (IOException ioe) {
-            log.log(Level.SEVERE, "Error Building View", ioe);
-        }
-        context.getApplication().getStateManager().restoreView(context, viewId,
-                renderKitId);
         return viewRoot;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.faces.application.ViewHandlerWrapper#getWrapped()
-     */
     protected ViewHandler getWrapped() {
         return this.parent;
     }
@@ -507,11 +495,26 @@ public class FaceletViewHandler extends ViewHandler {
         // populate UIViewRoot
         long time = System.currentTimeMillis();
         f.apply(context, viewToRender);
+        setViewPopulated(context.getExternalContext(), viewToRender);
         time = System.currentTimeMillis() - time;
         if (log.isLoggable(Level.FINE)) {
             log.fine("Took " + time + "ms to build view: "
                     + viewToRender.getViewId());
         }
+    }
+    
+    private boolean isViewPopulated(ExternalContext extContext, 
+            UIViewRoot viewToRender) {
+        boolean result = false;
+        
+        result = extContext.getRequestMap().containsKey(viewToRender.getViewId());
+        
+        return result;
+    }
+    
+    private void setViewPopulated(ExternalContext extContext, UIViewRoot viewToRender) {
+        extContext.getRequestMap().put(viewToRender.getViewId(), Boolean.TRUE);
+        
     }
 
     public void renderView(FacesContext context, UIViewRoot viewToRender)
@@ -540,6 +543,10 @@ public class FaceletViewHandler extends ViewHandler {
 
         StateWriter stateWriter = null;
         try {
+            // Only build the view if this view has not yet been built.
+            if (!this.isViewPopulated(context.getExternalContext(), viewToRender)) {
+                this.buildView(context, viewToRender);
+            }
 
             // setup writer and assign it to the context
             ResponseWriter origWriter = null;

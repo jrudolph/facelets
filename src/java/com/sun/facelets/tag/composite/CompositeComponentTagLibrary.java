@@ -7,7 +7,6 @@ package com.sun.facelets.tag.composite;
 
 import com.sun.facelets.tag.*;
 import com.sun.facelets.tag.jsf.ComponentConfig;
-import com.sun.faces.scripting.GroovyHelper;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;

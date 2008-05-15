@@ -49,7 +49,7 @@ import com.sun.facelets.util.ReflectionUtil;
  * @see javax.faces.event.ActionListener
  * @see javax.faces.component.ActionSource
  * @author Jacob Hookom
- * @version $Id: ActionListenerHandler.java,v 1.5.12.2 2008/05/05 23:30:26 edburns Exp $
+ * @version $Id: ActionListenerHandler.java,v 1.5.12.3 2008/05/15 01:10:22 edburns Exp $
  */
 public final class ActionListenerHandler extends TagHandler implements RetargetableAttachedObjectHandler {
 	
@@ -132,11 +132,19 @@ public final class ActionListenerHandler extends TagHandler implements Retargeta
      */
     public void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
+        // only process if it's been created
+        if (null == parent || !(null == parent.getParent())) {
+            return;
+        }
+        
         if (parent instanceof ActionSource) {
-            if (ComponentSupport.isNew(parent)) {
-                applyAttachedObjectToComponent(ctx, parent);
-            }
+            applyAttachedObjectToComponent(ctx, parent);
         } else if (parent instanceof CompositeComponent) {
+            if (null == getId()) {
+                // PENDING(): I18N
+                throw new TagException(this.tag,
+                        "actionListener tags nested within composite components must have a non-null ID attribute");
+            }
             // Allow the composite component to know about the target
             // component.
             AttachedObjectTargetHandler.getRetargetableHandlers(parent).add(this);

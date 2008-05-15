@@ -19,7 +19,7 @@
 	</component>
 	<component>
 		<component-type>javax.faces.Composite</component-type>
-		<component-class>com.sun.facelets.tag.composite.CompositeComponent</component-class>
+		<component-class>com.sun.facelets.tag.composite.CompositeComponentImpl</component-class>
 	</component>
 
 	<render-kit>

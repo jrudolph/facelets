@@ -30,12 +30,9 @@ import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.TagException;
 import com.sun.facelets.tag.MetaRuleset;
-import java.util.logging.Level;
-import javax.el.ELContext;
-import javax.faces.component.StateHolder;
-import javax.faces.context.FacesContext;
-import javax.faces.convert.ConverterException;
-import javax.faces.validator.ValidatorException;
+import com.sun.facelets.tag.composite.AttachedObjectTargetHandler;
+import com.sun.facelets.tag.composite.RetargetableAttachedObjectHandler;
+import javax.faces.component.CompositeComponent;
 
 /**
  * Handles setting a Validator instance on a EditableValueHolder. Will wire all
@@ -45,13 +42,13 @@ import javax.faces.validator.ValidatorException;
  * that it wasn't restored from an existing tree.
  * 
  * @author Jacob Hookom
- * @version $Id: ValidateHandler.java,v 1.3.16.1 2007/12/05 07:38:01 edburns Exp $
+ * @version $Id: ValidateHandler.java,v 1.3.26.1 2008/05/15 01:10:21 edburns Exp $
  */
-public class ValidateHandler extends MetaTagHandler {
+public class ValidateHandler extends MetaTagHandler implements RetargetableAttachedObjectHandler {
 
     private final TagAttribute binding;
     
-    private TagAttribute validatorId;
+    private String validatorId;
 
     /**
      * 
@@ -65,7 +62,7 @@ public class ValidateHandler extends MetaTagHandler {
     
     public ValidateHandler(ValidatorConfig config) {
         this((TagConfig) config);
-        this.validatorId = this.getAttribute("validatorId");
+        this.validatorId = config.getValidatorId();
     }
 
     /**
@@ -77,33 +74,27 @@ public class ValidateHandler extends MetaTagHandler {
     public final void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
 
-        if (parent == null || !(parent instanceof EditableValueHolder)) {
+        // only process if it's been created
+        if (null == parent || !(null == parent.getParent()))  {
+            return;
+        }
+        
+        if (parent instanceof EditableValueHolder) {
+            applyAttachedObjectToComponent(ctx, parent);
+        } else if (parent instanceof CompositeComponent) {
+            if (null == getId()) {
+                // PENDING(): I18N
+                throw new TagException(this.tag,
+                        "validator tags nested within composite components must have a non-null ID attribute");
+            }
+            // Allow the composite component to know about the target
+            // component.
+            AttachedObjectTargetHandler.getRetargetableHandlers(parent).add(this);
+        } else {
             throw new TagException(this.tag,
                     "Parent not an instance of EditableValueHolder: " + parent);
         }
 
-        // only process if it's been created
-        if (parent.getParent() == null) {
-            // cast to a ValueHolder
-            EditableValueHolder evh = (EditableValueHolder) parent;
-            ValueExpression bindingExpression = null;
-            ValueExpression validatorIdExpression = null;
-            Validator v = null;
-            if (this.binding != null) {
-                bindingExpression = this.binding.getValueExpression(ctx, 
-                        Validator.class);
-            }
-            if (this.validatorId != null) {
-                validatorIdExpression = this.validatorId.getValueExpression(ctx, 
-                        String.class);
-            }
-            v = new BindingValidator(validatorIdExpression, bindingExpression);
-            if (v == null) {
-                throw new TagException(this.tag, "No Validator was created");
-            }
-            this.setAttributes(ctx, v);
-            evh.addValidator(v);
-        }
     }
 
     /**
@@ -114,181 +105,52 @@ public class ValidateHandler extends MetaTagHandler {
      * @return a new Validator instance
      */
     protected Validator createValidator(FaceletContext ctx) {
-        ValueExpression bindingExpression = null;
-        ValueExpression validatorIdExpression = null;
-        Validator v = null;
-        if (this.binding != null) {
-            bindingExpression = this.binding.getValueExpression(ctx,
-                    Validator.class);
+        if (this.validatorId == null) {
+            throw new TagException(
+                    this.tag,
+                    "Default behavior invoked of requiring a validator-id passed in the constructor, must override ValidateHandler(ValidatorConfig)");
         }
-        if (this.validatorId != null) {
-            validatorIdExpression = this.validatorId.getValueExpression(ctx,
-                    String.class);
-        }
-        if (validatorIdExpression != null && validatorIdExpression.isLiteralText()) {
-            return createValidator(validatorIdExpression,
-                                   bindingExpression,
-                                   FacesContext.getCurrentInstance());
-        } else {
-            v = new BindingValidator(validatorIdExpression, bindingExpression);
-        }
-        return v;
+        return ctx.getFacesContext().getApplication().createValidator(
+                this.validatorId);
     }
 
+    @Override
     protected MetaRuleset createMetaRuleset(Class type) {
         return super.createMetaRuleset(type).ignore("binding");
     }
-    
-    
-    protected static Validator createValidator(ValueExpression validatorId,
-                                               ValueExpression binding,
-                                               FacesContext facesContext) {
 
-        ELContext elContext = facesContext.getELContext();
-        Validator validator = null;
-
-        // If "binding" is set, use it to create a validator instance.
-        if (binding != null) {
-            try {
-                validator = (Validator) binding.getValue(elContext);
-                if (validator != null) {
-                    return validator;
+    public void applyAttachedObjectToComponent(FaceletContext ctx, UIComponent parent) {
+            // cast to a ValueHolder
+            EditableValueHolder evh = (EditableValueHolder) parent;
+            ValueExpression ve = null;
+            Validator v = null;
+            if (this.binding != null) {
+                ve = this.binding.getValueExpression(ctx, Validator.class);
+                v = (Validator) ve.getValue(ctx);
+            }
+            if (v == null) {
+                v = this.createValidator(ctx);
+                if (ve != null) {
+                    ve.setValue(ctx, v);
                 }
-            } catch (Exception e) {
-                throw new FacesException(e);
             }
-        }
-
-        // If "validatorId" is set, use it to create the validator
-        // instance.  If "validatorId" and "binding" are both set, store the
-        // validator instance in the value of the property represented by
-        // the ValueExpression 'binding'.
-        if (validatorId != null) {
-            try {
-                String validatorIdVal = (String)
-                     validatorId.getValue(elContext);
-                validator = facesContext.getApplication()
-                     .createValidator(validatorIdVal);
-                if (validator != null && binding != null) {
-                    binding.setValue(elContext, validator);
-                }
-            } catch (Exception e) {
-                throw new FacesException(e);
+            if (v == null) {
+                throw new TagException(this.tag, "No Validator was created");
             }
+            this.setAttributes(ctx, v);
+            evh.addValidator(v);
+    }
+
+    public String getId() {
+        String result = null;
+        TagAttribute attr = this.getAttribute("id");
+        
+        if (null != attr) {
+            result = attr.getValue();
         }
-
-        if (validator == null) {
-            /***
-            if (LOGGER.isLoggable(Level.WARNING)) {
-                LOGGER.log(Level.WARNING,
-                     MessageUtils.getExceptionMessageString(
-                          MessageUtils.CANNOT_VALIDATE_ID,
-                          validatorId != null ? validatorId.getExpressionString() : "",
-                          binding != null ? binding.getExpressionString() : ""));
-            }
-             * ***/
-        }
-
-        return validator;
-
+        return result;
     }
     
-    
-    public static class BindingValidator implements Validator, StateHolder {
-
-        private ValueExpression binding;
-        private ValueExpression validatorId;
-
-        // -------------------------------------------------------- Constructors
-
-        /**
-         * <p>Only used during state restoration</p>
-         */
-        public BindingValidator() { }
-
-
-        public BindingValidator(ValueExpression validatorId,
-                                ValueExpression binding) {
-
-            this.validatorId = validatorId;
-            this.binding = binding;
-
-        }
-
-
-        // -------------------------------------------- Methods from StateHolder
-
-        private Object[] state;
-        public Object saveState(FacesContext context) {
-
-            if (state == null) {
-                state = new Object[2];
-            }
-            state[0] = validatorId;
-            state[1] = binding;
-
-            return state;
-            
-        }
-
-        public void restoreState(FacesContext context, Object state) {
-
-            this.state = (Object[]) state;
-            if (this.state != null) {
-                this.validatorId = (ValueExpression) this.state[0];
-                this.binding = (ValueExpression) this.state[1];
-            }
-
-        }
-
-        public boolean isTransient() {
-
-            return false;
-
-        }
-
-        public void setTransient(boolean newTransientValue) {
-            //no-op
-        }
-
-
-        // ---------------------------------------------- Methods from Validator
-
-
-        /**
-         * <p>Perform the correctness checks implemented by this
-         * {@link javax.faces.validator.Validator} against the specified {@link javax.faces.component.UIComponent}.
-         * If any violations are found, a {@link javax.faces.validator.ValidatorException}
-         * will be thrown containing the {@link javax.faces.application.FacesMessage} describing
-         * the failure.
-         *
-         * @param context   FacesContext for the request we are processing
-         * @param component UIComponent we are checking for correctness
-         * @param value     the value to validate
-         * @throws javax.faces.validator.ValidatorException
-         *                              if validation fails
-         * @throws NullPointerException if <code>context</code>
-         *                              or <code>component</code> is <code>null</code>
-         */
-        public void validate(FacesContext context,
-                             UIComponent component,
-                             Object value)
-        throws ValidatorException {
-
-
-           Validator instance = createValidator(validatorId, binding, context);
-
-
-            if (instance != null) {
-                instance.validate(context, component, value);
-            } else {
-                throw new ConverterException(
-                     "Can't create validator");
-            }
-
-        }
-
-    }
     
 
 }

@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package com.sun.facelets.tag.composite;
 
 import com.sun.facelets.Facelet;
@@ -10,13 +9,13 @@ import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
 import com.sun.facelets.FaceletFactory;
 import com.sun.facelets.FaceletViewHandler;
-import com.sun.facelets.tag.TagHandler;
 import com.sun.facelets.tag.jsf.ComponentConfig;
 import com.sun.facelets.tag.jsf.ComponentHandler;
+import com.sun.facelets.tag.jsf.ConvertHandler;
+import com.sun.facelets.tag.jsf.ValidateHandler;
 import com.sun.facelets.tag.jsf.core.ActionListenerHandler;
 import com.sun.facelets.tag.jsf.core.ValueChangeListenerHandler;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,6 +25,7 @@ import javax.faces.application.Resource;
 import javax.faces.component.ActionSource2;
 import javax.faces.component.EditableValueHolder;
 import javax.faces.component.UIComponent;
+import javax.faces.component.ValueHolder;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 
@@ -34,31 +34,29 @@ import javax.faces.context.FacesContext;
  * @author edburns
  */
 public class CompositeComponentTagHandler extends ComponentHandler {
-    
+
     CompositeComponentTagHandler(Resource compositeComponentResource,
             ComponentConfig config) {
         super(config);
         this.compositeComponentResource = compositeComponentResource;
     }
-    
     private Resource compositeComponentResource;
-    
+
     @Override
     protected UIComponent createComponent(FaceletContext ctx) {
         UIComponent result = null;
         FacesContext context = ctx.getFacesContext();
-        Resource componentResource = CompositeComponentTagLibrary.
-                getScriptComponentResource(context, compositeComponentResource);
+        Resource componentResource = CompositeComponentTagLibrary.getScriptComponentResource(context, compositeComponentResource);
 
         if (null != componentResource) {
             result = context.getApplication().createComponent(componentResource);
         }
-        
+
         if (null == result) {
             result = super.createComponent(ctx);
             ((CompositeComponentImpl) result).setResource(compositeComponentResource);
         }
-        
+
         return result;
     }
 
@@ -73,56 +71,54 @@ public class CompositeComponentTagHandler extends ComponentHandler {
         applyCompositeComponent(ctx, c);
         setCurrentCompositeComponent(extContext, null);
         // Allow any PDL declared attached objects to be retargeted
-        retargetAttachedObjects(ctx , c);
-        
+        retargetAttachedObjects(ctx, c);
+
     }
-    
+
     static UIComponent getCurrentCompositeComponent(ExternalContext extContext) {
-        UIComponent result = null;  
-        result = (UIComponent) 
-                extContext.getRequestMap().get("com.sun.facelets.CurrentCompositeComponent");
-        
+        UIComponent result = null;
+        result = (UIComponent) extContext.getRequestMap().get("com.sun.facelets.CurrentCompositeComponent");
+
         return result;
     }
-    
-    private static void setCurrentCompositeComponent(ExternalContext extContext, 
+
+    private static void setCurrentCompositeComponent(ExternalContext extContext,
             UIComponent cur) {
         extContext.getRequestMap().put("com.sun.facelets.CurrentCompositeComponent",
                 cur);
     }
-    
+
     private void retargetAttachedObjects(FaceletContext ctx, UIComponent c) {
-        List<UIComponent> targets = AttachedObjectTargetHandler.
-                    getAttachedObjectTargets(c);
+        List<UIComponent> targets = AttachedObjectTargetHandler.getAttachedObjectTargets(c);
         List<RetargetableAttachedObjectHandler> handlers =
-                    AttachedObjectTargetHandler.getRetargetableHandlers(c);
-        boolean foundMatch = false;
-        String
-                handlerTagId = null,
+                AttachedObjectTargetHandler.getRetargetableHandlers(c);
+        String handlerTagId = null,
                 componentTagId = null;
-            
+
         for (UIComponent curTarget : targets) {
             if (curTarget instanceof ActionSource2) {
-                foundMatch = false;
-                // Step 1, search the handlers list for a handler with an
+                // search the handlers list for a handler with an
                 // ID attribute equal to the componentId of curTarget, and
                 // that is an instanceof ActionListenerHandler
                 for (RetargetableAttachedObjectHandler curHandler : handlers) {
                     if ((null != (handlerTagId = curHandler.getId())) &&
-                            (null != (componentTagId = curTarget.getId())) &&
-                            componentTagId.equals(handlerTagId) &&
-                            curHandler instanceof ActionListenerHandler) {
+                        (null != (componentTagId = curTarget.getId())) &&
+                        componentTagId.equals(handlerTagId) &&
+                        curHandler instanceof ActionListenerHandler) {
                         curHandler.applyAttachedObjectToComponent(ctx,
                                 curTarget);
-                        foundMatch = true;
-                        break;
                     }
                 }
-                // Step 2, If that didn't work, just look for an 
-                // ActionListenerHandler;
-                if (!foundMatch) {
-                    for (RetargetableAttachedObjectHandler curHandler : handlers) {
-                        if (curHandler instanceof ActionListenerHandler) {
+            }
+            if (curTarget instanceof ValueHolder) {
+                // search the handlers list for a handler with an
+                // ID attribute equal to the componentId of curTarget, and
+                // that is an instanceof ConvertHandler.
+                for (RetargetableAttachedObjectHandler curHandler : handlers) {
+                    if ((null != (handlerTagId = curHandler.getId())) &&
+                        (null != (componentTagId = curTarget.getId())) &&
+                        componentTagId.equals(handlerTagId)) {
+                        if (curHandler instanceof ConvertHandler) {
                             curHandler.applyAttachedObjectToComponent(ctx,
                                     curTarget);
                         }
@@ -130,26 +126,16 @@ public class CompositeComponentTagHandler extends ComponentHandler {
                 }
             }
             if (curTarget instanceof EditableValueHolder) {
-                foundMatch = false;
-                // Step 1, search the handlers list for a handler with an
+                // search the handlers list for a handler with an
                 // ID attribute equal to the componentId of curTarget, and
-                // that is an instanceof EditableValueHolder
+                // that is an instanceof ValueChangeListenerHandler
+                // or ValidateHandler.
                 for (RetargetableAttachedObjectHandler curHandler : handlers) {
                     if ((null != (handlerTagId = curHandler.getId())) &&
-                            (null != (componentTagId = curTarget.getId())) &&
-                            componentTagId.equals(handlerTagId) &&
-                            curHandler instanceof ValueChangeListenerHandler) {
-                        curHandler.applyAttachedObjectToComponent(ctx,
-                                curTarget);
-                        foundMatch = true;
-                        break;
-                    }
-                }
-                // Step 2, If that didn't work, just look for a
-                // ValueChangeListenerHandler;
-                if (!foundMatch) {
-                    for (RetargetableAttachedObjectHandler curHandler : handlers) {
-                        if (curHandler instanceof ValueChangeListenerHandler) {
+                        (null != (componentTagId = curTarget.getId())) &&
+                        componentTagId.equals(handlerTagId)) {
+                        if ((curHandler instanceof ValueChangeListenerHandler) ||
+                            (curHandler instanceof ValidateHandler)) {
                             curHandler.applyAttachedObjectToComponent(ctx,
                                     curTarget);
                         }
@@ -158,12 +144,11 @@ public class CompositeComponentTagHandler extends ComponentHandler {
             }
         }
     }
-    
+
     private void applyCompositeComponent(FaceletContext ctx, UIComponent c) {
         Facelet f = null;
         FacesContext facesContext = ctx.getFacesContext();
-        FaceletViewHandler faceletViewHandler = (FaceletViewHandler) 
-                facesContext.getApplication().getViewHandler();
+        FaceletViewHandler faceletViewHandler = (FaceletViewHandler) facesContext.getApplication().getViewHandler();
         FaceletFactory factory = faceletViewHandler.getFaceletFactory();
         try {
             f = factory.getFacelet(compositeComponentResource.getURL());
@@ -177,8 +162,6 @@ public class CompositeComponentTagHandler extends ComponentHandler {
         } catch (ELException ex) {
             Logger.getLogger(CompositeComponentTagHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
-                     
+
     }
-    
-    
 }
