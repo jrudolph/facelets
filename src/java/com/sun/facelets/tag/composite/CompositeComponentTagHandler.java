@@ -23,6 +23,7 @@ import javax.el.ELException;
 import javax.faces.FacesException;
 import javax.faces.application.Resource;
 import javax.faces.component.ActionSource2;
+import javax.faces.component.CompositeComponent;
 import javax.faces.component.EditableValueHolder;
 import javax.faces.component.UIComponent;
 import javax.faces.component.ValueHolder;
@@ -54,8 +55,8 @@ public class CompositeComponentTagHandler extends ComponentHandler {
 
         if (null == result) {
             result = super.createComponent(ctx);
-            ((CompositeComponentImpl) result).setResource(compositeComponentResource);
         }
+        ((CompositeComponent) result).setResource(compositeComponentResource);
 
         return result;
     }
