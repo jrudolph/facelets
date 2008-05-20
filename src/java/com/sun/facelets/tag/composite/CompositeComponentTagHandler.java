@@ -9,6 +9,8 @@ import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
 import com.sun.facelets.FaceletFactory;
 import com.sun.facelets.FaceletViewHandler;
+import com.sun.facelets.tag.TagAttribute;
+import com.sun.facelets.tag.TagAttributes;
 import com.sun.facelets.tag.jsf.ComponentConfig;
 import com.sun.facelets.tag.jsf.ComponentHandler;
 import com.sun.facelets.tag.jsf.ConvertHandler;
@@ -20,7 +22,11 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.el.ELException;
+import javax.el.ExpressionFactory;
+import javax.el.ValueExpression;
+import javax.el.VariableMapper;
 import javax.faces.FacesException;
+import javax.faces.application.Application;
 import javax.faces.application.Resource;
 import javax.faces.component.ActionSource2;
 import javax.faces.component.CompositeComponent;
@@ -41,7 +47,43 @@ public class CompositeComponentTagHandler extends ComponentHandler {
         super(config);
         this.compositeComponentResource = compositeComponentResource;
     }
+    
+    private void convertAttributesIntoParams(FaceletContext ctx) {
+        TagAttributes tagAttributes = this.tag.getAttributes();
+        TagAttribute attrs[] = tagAttributes.getAll();
+        String name, value;
+        ExpressionFactory expressionFactory = null;
+        ValueExpression valueExpression = null;
+        VariableMapper variableMapper = null;
+        for (int i = 0; i < attrs.length; i++) {
+            name = attrs[i].getLocalName();
+            if (null != name && 0 < name.length() && 
+                !name.equals("id") && !name.equals("binding")){
+                value = attrs[i].getValue();
+                if (null != value && 0 < value.length()) {
+                    // lazily initialize this local variable
+                    if (null == expressionFactory) {
+                        expressionFactory = ctx.getFacesContext().getApplication().
+                                getExpressionFactory();
+                        variableMapper = ctx.getVariableMapper();
+                    }
+                    if (value.startsWith("#{")) {
+                        valueExpression = expressionFactory.
+                                createValueExpression(ctx, value, Object.class);
+                    } else {
+                        valueExpression = expressionFactory.
+                                createValueExpression(value, Object.class);
+                    }
+                    variableMapper.setVariable(name, valueExpression);
+                }
+            }
+        }
+        
+    }
+    
     private Resource compositeComponentResource;
+    
+    
 
     @Override
     protected UIComponent createComponent(FaceletContext ctx) {
@@ -153,6 +195,7 @@ public class CompositeComponentTagHandler extends ComponentHandler {
         FaceletFactory factory = faceletViewHandler.getFaceletFactory();
         try {
             f = factory.getFacelet(compositeComponentResource.getURL());
+            convertAttributesIntoParams(ctx);
             f.apply(facesContext, c);
         } catch (IOException ex) {
             Logger.getLogger(CompositeComponentTagHandler.class.getName()).log(Level.SEVERE, null, ex);
