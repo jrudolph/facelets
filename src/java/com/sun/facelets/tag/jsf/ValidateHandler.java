@@ -32,7 +32,7 @@ import com.sun.facelets.tag.TagException;
 import com.sun.facelets.tag.MetaRuleset;
 import com.sun.facelets.tag.composite.AttachedObjectTargetHandler;
 import com.sun.facelets.tag.composite.RetargetableAttachedObjectHandler;
-import javax.faces.component.CompositeComponent;
+import javax.faces.application.Resource;
 
 /**
  * Handles setting a Validator instance on a EditableValueHolder. Will wire all
@@ -42,7 +42,7 @@ import javax.faces.component.CompositeComponent;
  * that it wasn't restored from an existing tree.
  * 
  * @author Jacob Hookom
- * @version $Id: ValidateHandler.java,v 1.3.26.1 2008/05/15 01:10:21 edburns Exp $
+ * @version $Id: ValidateHandler.java,v 1.3.26.2 2008/05/21 15:04:39 edburns Exp $
  */
 public class ValidateHandler extends MetaTagHandler implements RetargetableAttachedObjectHandler {
 
@@ -81,7 +81,7 @@ public class ValidateHandler extends MetaTagHandler implements RetargetableAttac
         
         if (parent instanceof EditableValueHolder) {
             applyAttachedObjectToComponent(ctx, parent);
-        } else if (parent instanceof CompositeComponent) {
+        } else if (parent.getAttributes().containsKey(Resource.COMPONENT_RESOURCE_KEY)) {
             if (null == getId()) {
                 // PENDING(): I18N
                 throw new TagException(this.tag,

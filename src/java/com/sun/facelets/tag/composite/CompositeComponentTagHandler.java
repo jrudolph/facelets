@@ -26,10 +26,8 @@ import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
 import javax.el.VariableMapper;
 import javax.faces.FacesException;
-import javax.faces.application.Application;
 import javax.faces.application.Resource;
 import javax.faces.component.ActionSource2;
-import javax.faces.component.CompositeComponent;
 import javax.faces.component.EditableValueHolder;
 import javax.faces.component.UIComponent;
 import javax.faces.component.ValueHolder;
@@ -94,6 +92,11 @@ public class CompositeComponentTagHandler extends ComponentHandler {
         FacesContext context = ctx.getFacesContext();
         Resource componentResource = CompositeComponentTagLibrary.getScriptComponentResource(context, compositeComponentResource);
 
+        // PENDING(edburns): IMPORTANT: Figure out why this is getting
+        // called twice for loginPanel on a single render.  
+        // I think it has something to do with the resource request because
+        // I see that the LoginProductName.png image wasn't rendered initially
+        
         if (null != componentResource) {
             result = context.getApplication().createComponent(componentResource);
         }
@@ -112,12 +115,13 @@ public class CompositeComponentTagHandler extends ComponentHandler {
             result = super.createComponent(ctx);
         }
         
-        if (result instanceof CompositeComponent) {
-            ((CompositeComponent) result).setResource(compositeComponentResource);
+        if (null != result) {
+            result.getAttributes().put(Resource.COMPONENT_RESOURCE_KEY, 
+                    compositeComponentResource);
         }
         else {
-            throw new IllegalArgumentException("The component instance associated with the tag with id " +
-                    this.id.getValue(ctx) + " must implement CompositeComponent");
+            throw new NullPointerException("Unable to instantiate component for tag " +
+                    this.tag.getLocalName() + " with id " + this.id.getValue(ctx));
         }
         
 

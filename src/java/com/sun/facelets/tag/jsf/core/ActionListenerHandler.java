@@ -22,7 +22,6 @@ import javax.el.ValueExpression;
 import javax.faces.FacesException;
 import javax.faces.component.ActionSource;
 import javax.faces.component.UIComponent;
-import javax.faces.component.CompositeComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.event.AbortProcessingException;
 import javax.faces.event.ActionEvent;
@@ -37,8 +36,8 @@ import com.sun.facelets.tag.TagException;
 import com.sun.facelets.tag.TagHandler;
 import com.sun.facelets.tag.composite.AttachedObjectTargetHandler;
 import com.sun.facelets.tag.composite.RetargetableAttachedObjectHandler;
-import com.sun.facelets.tag.jsf.ComponentSupport;
 import com.sun.facelets.util.ReflectionUtil;
+import javax.faces.application.Resource;
 
 /**
  * Register an ActionListener instance on the UIComponent associated with the
@@ -49,7 +48,7 @@ import com.sun.facelets.util.ReflectionUtil;
  * @see javax.faces.event.ActionListener
  * @see javax.faces.component.ActionSource
  * @author Jacob Hookom
- * @version $Id: ActionListenerHandler.java,v 1.5.12.3 2008/05/15 01:10:22 edburns Exp $
+ * @version $Id: ActionListenerHandler.java,v 1.5.12.4 2008/05/21 15:04:39 edburns Exp $
  */
 public final class ActionListenerHandler extends TagHandler implements RetargetableAttachedObjectHandler {
 	
@@ -139,7 +138,7 @@ public final class ActionListenerHandler extends TagHandler implements Retargeta
         
         if (parent instanceof ActionSource) {
             applyAttachedObjectToComponent(ctx, parent);
-        } else if (parent instanceof CompositeComponent) {
+        } else if (parent.getAttributes().containsKey(Resource.COMPONENT_RESOURCE_KEY)) {
             if (null == getId()) {
                 // PENDING(): I18N
                 throw new TagException(this.tag,

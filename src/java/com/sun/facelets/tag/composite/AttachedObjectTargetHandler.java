@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import javax.el.ELException;
 import javax.faces.FacesException;
-import javax.faces.component.CompositeComponent;
+import javax.faces.application.Resource;
 import javax.faces.component.UIComponent;
 
 /**
@@ -31,7 +31,7 @@ public class AttachedObjectTargetHandler extends TagHandler {
     public void apply(FaceletContext ctx, UIComponent target) throws IOException, FacesException, FaceletException, ELException {
         UIComponent cur = CompositeComponentTagHandler.
                 getCurrentCompositeComponent(ctx.getFacesContext().getExternalContext());
-        if (null != cur && cur instanceof CompositeComponent) {
+        if (null != cur && cur.getAttributes().containsKey(Resource.COMPONENT_RESOURCE_KEY)) {
             // Allow the composite component to know about the target
             // component.
             AttachedObjectTargetHandler.getAttachedObjectTargets(cur).add(target);

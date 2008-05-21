@@ -6,15 +6,14 @@
 package com.sun.facelets.tag.composite;
 
 import javax.faces.application.Resource;
-import javax.faces.component.CompositeComponent;
-import javax.faces.component.UIComponentBase;
+import javax.faces.component.UINamingContainer;
 import javax.faces.context.FacesContext;
 
 /**
  *
  * @author edburns
  */
-public class CompositeComponentImpl extends UIComponentBase implements CompositeComponent {
+public class CompositeComponentImpl extends UINamingContainer {
     
     public static final String TYPE = "javax.faces.Composite";
 
@@ -23,16 +22,6 @@ public class CompositeComponentImpl extends UIComponentBase implements Composite
         return TYPE;
     }
     
-    private Resource resource;
-
-    public Resource getResource() {
-        return resource;
-    }
-
-    public void setResource(Resource resource) {
-        this.resource = resource;
-    }
-
     // ----------------------------------------------------- StateHolder Methods
 
 
@@ -44,13 +33,32 @@ public class CompositeComponentImpl extends UIComponentBase implements Composite
         if (values == null) {
             values = new Object[3];
         }
+        Resource compositeComponentResource = 
+                this.getResource();
+        this.clearResource();
 
         values[0] = super.saveState(context);
-        values[1] = getResource().getResourceName();
-        values[2] = getResource().getLibraryName();
+        values[1] = compositeComponentResource.getResourceName();
+        values[2] = compositeComponentResource.getLibraryName();
         return (values);
 
     }
+    
+    public Resource getResource() {
+        Resource result = (Resource)
+                this.getAttributes().get(Resource.COMPONENT_RESOURCE_KEY);
+        return result;
+    }
+    
+    public void setResource(Resource resource) {
+        this.getAttributes().put(Resource.COMPONENT_RESOURCE_KEY,
+                resource);
+    }
+    
+    private void clearResource() {
+        this.getAttributes().remove(Resource.COMPONENT_RESOURCE_KEY);
+    }
+    
 
     @Override
     public void restoreState(FacesContext context, Object state) {
@@ -60,9 +68,9 @@ public class CompositeComponentImpl extends UIComponentBase implements Composite
         String
                 resourceName = (String) values[1],
                 libraryName = (String) values[2];
-        resource = context.getApplication().getResourceHandler().
+        Resource resource = context.getApplication().getResourceHandler().
                 createResource(resourceName, libraryName);
-
+        this.setResource(resource);
     }
     
     

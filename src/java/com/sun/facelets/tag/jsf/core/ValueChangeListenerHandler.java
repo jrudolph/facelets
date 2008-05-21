@@ -38,7 +38,7 @@ import com.sun.facelets.tag.composite.AttachedObjectTargetHandler;
 import com.sun.facelets.tag.composite.RetargetableAttachedObjectHandler;
 import com.sun.facelets.tag.jsf.ComponentSupport;
 import com.sun.facelets.util.ReflectionUtil;
-import javax.faces.component.CompositeComponent;
+import javax.faces.application.Resource;
 
 /**
  * Register an ValueChangeListener instance on the UIComponent associated with
@@ -136,7 +136,7 @@ public final class ValueChangeListenerHandler extends TagHandler implements Reta
 			if (ComponentSupport.isNew(parent)) {
                             applyAttachedObjectToComponent(ctx, parent);
 			}
-                } else if (parent instanceof CompositeComponent) {
+                } else if (parent.getAttributes().containsKey(Resource.COMPONENT_RESOURCE_KEY)) {
                     // Allow the composite component to know about the target
                     // component.
                     AttachedObjectTargetHandler.getRetargetableHandlers(parent).add(this);
