@@ -41,11 +41,14 @@ import javax.faces.context.FacesContext;
  * @author edburns
  */
 public class CompositeComponentTagHandler extends ComponentHandler {
+    
+    private final TagAttribute componentType;
 
     CompositeComponentTagHandler(Resource compositeComponentResource,
             ComponentConfig config) {
         super(config);
         this.compositeComponentResource = compositeComponentResource;
+        this.componentType = this.getAttribute("componentType");
     }
     
     private void convertAttributesIntoParams(FaceletContext ctx) {
@@ -96,9 +99,27 @@ public class CompositeComponentTagHandler extends ComponentHandler {
         }
 
         if (null == result) {
+            if (this.componentType != null) {
+                ValueExpression ve = this.componentType.getValueExpression(ctx,
+                        String.class);
+                String type = (String) ve.getValue(ctx);
+                if (null != type && 0 < type.length()) {
+                    result = context.getApplication().createComponent(type);
+                }
+            }
+        }
+        if (null == result) {
             result = super.createComponent(ctx);
         }
-        ((CompositeComponent) result).setResource(compositeComponentResource);
+        
+        if (result instanceof CompositeComponent) {
+            ((CompositeComponent) result).setResource(compositeComponentResource);
+        }
+        else {
+            throw new IllegalArgumentException("The component instance associated with the tag with id " +
+                    this.id.getValue(ctx) + " must implement CompositeComponent");
+        }
+        
 
         return result;
     }

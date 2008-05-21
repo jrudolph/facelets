@@ -60,7 +60,7 @@ import javax.faces.render.Renderer;
  * golden hammer for wiring UIComponents to Facelets.
  * 
  * @author Jacob Hookom
- * @version $Id: ComponentHandler.java,v 1.14.8.1 2008/04/21 16:15:16 edburns Exp $
+ * @version $Id: ComponentHandler.java,v 1.14.8.1.2.1 2008/05/21 01:01:04 edburns Exp $
  */
 public class ComponentHandler extends MetaTagHandler {
 
@@ -71,7 +71,7 @@ public class ComponentHandler extends MetaTagHandler {
 
     private final String componentType;
 
-    private final TagAttribute id;
+    protected final TagAttribute id;
 
     private final String rendererType;
 
