@@ -32,6 +32,7 @@ import com.sun.facelets.tag.TagException;
 import com.sun.facelets.tag.MetaRuleset;
 import com.sun.facelets.tag.composite.AttachedObjectTargetHandler;
 import com.sun.facelets.tag.composite.RetargetableAttachedObjectHandler;
+import com.sun.facelets.tag.ui.ComponentContractHandler;
 import javax.faces.application.Resource;
 
 /**
@@ -42,7 +43,7 @@ import javax.faces.application.Resource;
  * that it wasn't restored from an existing tree.
  * 
  * @author Jacob Hookom
- * @version $Id: ValidateHandler.java,v 1.3.26.3 2008/05/29 15:44:34 edburns Exp $
+ * @version $Id: ValidateHandler.java,v 1.3.26.4 2008/05/29 15:57:58 edburns Exp $
  */
 public class ValidateHandler extends MetaTagHandler implements RetargetableAttachedObjectHandler {
 
@@ -78,6 +79,11 @@ public class ValidateHandler extends MetaTagHandler implements RetargetableAttac
         if (null == parent || !(null == parent.getParent()))  {
             return;
         }
+        
+        if (ComponentContractHandler.isInsideComponentContract(ctx)) {
+            return;
+        }
+        
         
         if (parent instanceof EditableValueHolder) {
             applyAttachedObjectToComponent(ctx, parent);

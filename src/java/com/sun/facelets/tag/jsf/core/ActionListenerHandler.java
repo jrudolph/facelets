@@ -36,6 +36,7 @@ import com.sun.facelets.tag.TagException;
 import com.sun.facelets.tag.TagHandler;
 import com.sun.facelets.tag.composite.AttachedObjectTargetHandler;
 import com.sun.facelets.tag.composite.RetargetableAttachedObjectHandler;
+import com.sun.facelets.tag.ui.ComponentContractHandler;
 import com.sun.facelets.util.ReflectionUtil;
 import javax.faces.application.Resource;
 
@@ -48,7 +49,7 @@ import javax.faces.application.Resource;
  * @see javax.faces.event.ActionListener
  * @see javax.faces.component.ActionSource
  * @author Jacob Hookom
- * @version $Id: ActionListenerHandler.java,v 1.5.12.5 2008/05/29 15:44:34 edburns Exp $
+ * @version $Id: ActionListenerHandler.java,v 1.5.12.6 2008/05/29 15:57:59 edburns Exp $
  */
 public final class ActionListenerHandler extends TagHandler implements RetargetableAttachedObjectHandler {
 	
@@ -136,6 +137,10 @@ public final class ActionListenerHandler extends TagHandler implements Retargeta
             return;
         }
         
+        if (ComponentContractHandler.isInsideComponentContract(ctx)) {
+            return;
+        }
+
         if (parent instanceof ActionSource) {
             applyAttachedObjectToComponent(ctx, parent);
         } else if (parent.getAttributes().containsKey(Resource.COMPONENT_RESOURCE_KEY)) {

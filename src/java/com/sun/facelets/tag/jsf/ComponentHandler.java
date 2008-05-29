@@ -14,45 +14,34 @@
 
 package com.sun.facelets.tag.jsf;
 
+import com.sun.beans.ObjectHandler;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.el.ELException;
-import javax.el.MethodExpression;
 import javax.el.ValueExpression;
 import javax.faces.FacesException;
 import javax.faces.application.Application;
 import javax.faces.component.ActionSource;
-import javax.faces.component.ActionSource2;
 import javax.faces.component.EditableValueHolder;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIViewRoot;
 import javax.faces.component.ValueHolder;
 import javax.faces.context.FacesContext;
-import javax.faces.convert.Converter;
 import javax.faces.el.ValueBinding;
-import javax.faces.event.ActionEvent;
-import javax.faces.event.MethodExpressionActionListener;
-import javax.faces.event.MethodExpressionValueChangeListener;
-import javax.faces.event.ValueChangeEvent;
-import javax.faces.validator.MethodExpressionValidator;
 
 import com.sun.facelets.FaceletContext;
-import com.sun.facelets.el.ELAdaptor;
-import com.sun.facelets.el.LegacyMethodBinding;
 import com.sun.facelets.el.LegacyValueBinding;
 import com.sun.facelets.tag.MetaTagHandler;
 import com.sun.facelets.tag.TagAttribute;
-import com.sun.facelets.tag.Metadata;
 import com.sun.facelets.tag.TagException;
-import com.sun.facelets.tag.TagHandler;
 import com.sun.facelets.tag.MetaRuleset;
+import com.sun.facelets.tag.ui.ComponentContractHandler;
 import com.sun.facelets.util.FacesAPI;
 import javax.faces.event.ComponentSystemEventListener;
 import javax.faces.event.ListenerFor;
 import javax.faces.event.SystemEvent;
-import javax.faces.event.SystemEventListener;
 import javax.faces.render.Renderer;
 
 /**
@@ -60,7 +49,7 @@ import javax.faces.render.Renderer;
  * golden hammer for wiring UIComponents to Facelets.
  * 
  * @author Jacob Hookom
- * @version $Id: ComponentHandler.java,v 1.14.8.1.2.1 2008/05/21 01:01:04 edburns Exp $
+ * @version $Id: ComponentHandler.java,v 1.14.8.1.2.2 2008/05/29 15:57:58 edburns Exp $
  */
 public class ComponentHandler extends MetaTagHandler {
 
@@ -120,6 +109,10 @@ public class ComponentHandler extends MetaTagHandler {
         // make sure our parent is not null
         if (parent == null) {
             throw new TagException(this.tag, "Parent UIComponent was null");
+        }
+
+        if (ComponentContractHandler.isInsideComponentContract(ctx)) {
+            return;
         }
 
         // our id

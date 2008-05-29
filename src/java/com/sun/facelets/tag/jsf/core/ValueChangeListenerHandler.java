@@ -37,6 +37,7 @@ import com.sun.facelets.tag.TagHandler;
 import com.sun.facelets.tag.composite.AttachedObjectTargetHandler;
 import com.sun.facelets.tag.composite.RetargetableAttachedObjectHandler;
 import com.sun.facelets.tag.jsf.ComponentSupport;
+import com.sun.facelets.tag.ui.ComponentContractHandler;
 import com.sun.facelets.util.ReflectionUtil;
 import javax.faces.application.Resource;
 
@@ -132,6 +133,10 @@ public final class ValueChangeListenerHandler extends TagHandler implements Reta
 	 */
 	public void apply(FaceletContext ctx, UIComponent parent)
 			throws IOException, FacesException, FaceletException, ELException {
+            if (ComponentContractHandler.isInsideComponentContract(ctx)) {
+                return;
+            }
+
 		if (parent instanceof EditableValueHolder) {
 			if (ComponentSupport.isNew(parent)) {
                             applyAttachedObjectToComponent(ctx, parent);

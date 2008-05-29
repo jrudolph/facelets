@@ -27,6 +27,7 @@ import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.TagException;
 import com.sun.facelets.tag.TagHandler;
+import com.sun.facelets.tag.ui.ComponentContractHandler;
 
 /**
  * Register a named facet on the UIComponent associated with the closest parent
@@ -35,7 +36,7 @@ import com.sun.facelets.tag.TagHandler;
  * documentation</a>.
  * 
  * @author Jacob Hookom
- * @version $Id: FacetHandler.java,v 1.3 2005/12/04 21:02:42 jhook Exp $
+ * @version $Id: FacetHandler.java,v 1.3.18.1 2008/05/29 15:57:59 edburns Exp $
  */
 public final class FacetHandler extends TagHandler {
 
@@ -64,6 +65,11 @@ public final class FacetHandler extends TagHandler {
      */
     public void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
+
+        if (ComponentContractHandler.isInsideComponentContract(ctx)) {
+            return;
+        }
+        
         UIFacet facet = new UIFacet();
         this.nextHandler.apply(ctx, facet);
         int childCount = facet.getChildCount();
