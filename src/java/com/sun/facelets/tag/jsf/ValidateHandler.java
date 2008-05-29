@@ -42,7 +42,7 @@ import javax.faces.application.Resource;
  * that it wasn't restored from an existing tree.
  * 
  * @author Jacob Hookom
- * @version $Id: ValidateHandler.java,v 1.3.26.2 2008/05/21 15:04:39 edburns Exp $
+ * @version $Id: ValidateHandler.java,v 1.3.26.3 2008/05/29 15:44:34 edburns Exp $
  */
 public class ValidateHandler extends MetaTagHandler implements RetargetableAttachedObjectHandler {
 
@@ -82,7 +82,7 @@ public class ValidateHandler extends MetaTagHandler implements RetargetableAttac
         if (parent instanceof EditableValueHolder) {
             applyAttachedObjectToComponent(ctx, parent);
         } else if (parent.getAttributes().containsKey(Resource.COMPONENT_RESOURCE_KEY)) {
-            if (null == getId()) {
+            if (null == getFor()) {
                 // PENDING(): I18N
                 throw new TagException(this.tag,
                         "validator tags nested within composite components must have a non-null ID attribute");
@@ -151,6 +151,17 @@ public class ValidateHandler extends MetaTagHandler implements RetargetableAttac
         return result;
     }
     
+            
+    public String getFor() {
+        String result = null;
+        TagAttribute attr = this.getAttribute("for");
+        
+        if (null != attr) {
+            result = attr.getValue();
+        }
+        return result;
+        
+    }
     
 
 }

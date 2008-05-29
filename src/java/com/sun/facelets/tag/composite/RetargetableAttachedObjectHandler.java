@@ -16,6 +16,6 @@ public interface RetargetableAttachedObjectHandler {
     
      public void applyAttachedObjectToComponent(FaceletContext ctx, UIComponent parent);
      
-     public String getId();
+     public String getFor();
 
 }

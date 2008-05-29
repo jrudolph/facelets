@@ -47,7 +47,7 @@ import javax.faces.application.Resource;
  * @see javax.faces.convert.Converter
  * @see javax.faces.component.ValueHolder
  * @author Jacob Hookom
- * @version $Id: ConvertHandler.java,v 1.3.26.2 2008/05/21 15:04:39 edburns Exp $
+ * @version $Id: ConvertHandler.java,v 1.3.26.3 2008/05/29 15:44:34 edburns Exp $
  */
 public class ConvertHandler extends MetaTagHandler implements RetargetableAttachedObjectHandler {
 
@@ -101,7 +101,7 @@ public class ConvertHandler extends MetaTagHandler implements RetargetableAttach
         if (parent instanceof ValueHolder) {
             applyAttachedObjectToComponent(ctx, parent);
         } else if (parent.getAttributes().containsKey(Resource.COMPONENT_RESOURCE_KEY)) {
-            if (null == getId()) {
+            if (null == getFor()) {
                 // PENDING(): I18N
                 throw new TagException(this.tag,
                         "converter tags nested within composite components must have a non-null ID attribute");
@@ -172,5 +172,15 @@ public class ConvertHandler extends MetaTagHandler implements RetargetableAttach
         return result;
     }
     
+    public String getFor() {
+        String result = null;
+        TagAttribute attr = this.getAttribute("for");
+        
+        if (null != attr) {
+            result = attr.getValue();
+        }
+        return result;
+        
+    }
     
 }

@@ -48,7 +48,7 @@ import javax.faces.application.Resource;
  * @see javax.faces.event.ActionListener
  * @see javax.faces.component.ActionSource
  * @author Jacob Hookom
- * @version $Id: ActionListenerHandler.java,v 1.5.12.4 2008/05/21 15:04:39 edburns Exp $
+ * @version $Id: ActionListenerHandler.java,v 1.5.12.5 2008/05/29 15:44:34 edburns Exp $
  */
 public final class ActionListenerHandler extends TagHandler implements RetargetableAttachedObjectHandler {
 	
@@ -139,7 +139,7 @@ public final class ActionListenerHandler extends TagHandler implements Retargeta
         if (parent instanceof ActionSource) {
             applyAttachedObjectToComponent(ctx, parent);
         } else if (parent.getAttributes().containsKey(Resource.COMPONENT_RESOURCE_KEY)) {
-            if (null == getId()) {
+            if (null == getFor()) {
                 // PENDING(): I18N
                 throw new TagException(this.tag,
                         "actionListener tags nested within composite components must have a non-null ID attribute");
@@ -172,6 +172,17 @@ public final class ActionListenerHandler extends TagHandler implements Retargeta
             result = attr.getValue();
         }
         return result;
+    }
+    
+    public String getFor() {
+        String result = null;
+        TagAttribute attr = this.getAttribute("for");
+        
+        if (null != attr) {
+            result = attr.getValue();
+        }
+        return result;
+        
     }
         
 

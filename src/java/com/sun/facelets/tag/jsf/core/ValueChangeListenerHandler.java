@@ -168,7 +168,15 @@ public final class ValueChangeListenerHandler extends TagHandler implements Reta
         return result;
     }
         
-    
+    public String getFor() {
+        String result = null;
+        TagAttribute attr = this.getAttribute("for");
         
+        if (null != attr) {
+            result = attr.getValue();
+        }
+        return result;
+        
+    }
 
 }

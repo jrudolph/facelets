@@ -169,7 +169,7 @@ public class CompositeComponentTagHandler extends ComponentHandler {
                 // ID attribute equal to the componentId of curTarget, and
                 // that is an instanceof ActionListenerHandler
                 for (RetargetableAttachedObjectHandler curHandler : handlers) {
-                    if ((null != (handlerTagId = curHandler.getId())) &&
+                    if ((null != (handlerTagId = curHandler.getFor())) &&
                         (null != (componentTagId = curTarget.getId())) &&
                         componentTagId.equals(handlerTagId) &&
                         curHandler instanceof ActionListenerHandler) {
@@ -183,7 +183,7 @@ public class CompositeComponentTagHandler extends ComponentHandler {
                 // ID attribute equal to the componentId of curTarget, and
                 // that is an instanceof ConvertHandler.
                 for (RetargetableAttachedObjectHandler curHandler : handlers) {
-                    if ((null != (handlerTagId = curHandler.getId())) &&
+                    if ((null != (handlerTagId = curHandler.getFor())) &&
                         (null != (componentTagId = curTarget.getId())) &&
                         componentTagId.equals(handlerTagId)) {
                         if (curHandler instanceof ConvertHandler) {
@@ -199,7 +199,7 @@ public class CompositeComponentTagHandler extends ComponentHandler {
                 // that is an instanceof ValueChangeListenerHandler
                 // or ValidateHandler.
                 for (RetargetableAttachedObjectHandler curHandler : handlers) {
-                    if ((null != (handlerTagId = curHandler.getId())) &&
+                    if ((null != (handlerTagId = curHandler.getFor())) &&
                         (null != (componentTagId = curTarget.getId())) &&
                         componentTagId.equals(handlerTagId)) {
                         if ((curHandler instanceof ValueChangeListenerHandler) ||

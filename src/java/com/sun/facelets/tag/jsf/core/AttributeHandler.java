@@ -27,6 +27,7 @@ import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.TagException;
 import com.sun.facelets.tag.TagHandler;
+import com.sun.facelets.tag.ui.ComponentContractHandler;
 
 /**
  * Sets the specified name and attribute on the parent UIComponent. If the
@@ -41,7 +42,7 @@ import com.sun.facelets.tag.TagHandler;
  * @see javax.faces.component.UIComponent#setValueExpression(java.lang.String,
  *      javax.el.ValueExpression)
  * @author Jacob Hookom
- * @version $Id: AttributeHandler.java,v 1.2 2005/08/24 04:38:49 jhook Exp $
+ * @version $Id: AttributeHandler.java,v 1.2.26.1 2008/05/29 15:44:34 edburns Exp $
  */
 public final class AttributeHandler extends TagHandler {
 
@@ -68,6 +69,10 @@ public final class AttributeHandler extends TagHandler {
             throws IOException, FacesException, FaceletException, ELException {
         if (parent == null) {
             throw new TagException(this.tag, "Parent UIComponent was null");
+        }
+        
+        if (ComponentContractHandler.isInsideComponentContract(ctx)) {
+            return;
         }
 
         // only process if the parent is new to the tree
