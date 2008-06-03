@@ -45,7 +45,7 @@ import com.sun.facelets.util.ReflectionUtil;
  * {@link java.net.URL URL} source.
  * 
  * @author Jacob Hookom
- * @version $Id: TagLibraryConfig.java,v 1.12 2008/06/03 04:15:00 rlubke Exp $
+ * @version $Id: TagLibraryConfig.java,v 1.13 2008/06/03 04:16:24 rlubke Exp $
  */
 public final class TagLibraryConfig {
 
@@ -430,7 +430,7 @@ public final class TagLibraryConfig {
             try {
                 compiler.addTagLibrary(create(urls[i]));
                 if (log.isLoggable(Level.FINE)) {
-                    log.info("Added Library from: " + urls[i]);
+                    log.fine("Added Library from: " + urls[i]);
                 }
             } catch (Exception e) {
                 log.log(Level.SEVERE, "Error Loading Library: " + urls[i], e);
