@@ -46,11 +46,11 @@ import com.sun.facelets.tag.jsf.ComponentSupport;
  * Default Facelet implementation.
  * 
  * @author Jacob Hookom
- * @version $Id: DefaultFacelet.java,v 1.9 2006/04/03 05:10:38 jhook Exp $
+ * @version $Id: DefaultFacelet.java,v 1.10 2008/06/03 04:29:38 rlubke Exp $
  */
 final class DefaultFacelet extends Facelet {
 
-    private final Logger log = Logger.getLogger("facelets.facelet");
+    private static final Logger log = Logger.getLogger("facelets.facelet");
 
     private final static String APPLIED_KEY = "com.sun.facelets.APPLIED";
 

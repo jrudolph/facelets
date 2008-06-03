@@ -39,12 +39,12 @@ import com.sun.facelets.tag.TagHandler;
 
 /**
  * @author Jacob Hookom
- * @version $Id: CompositionHandler.java,v 1.12 2007/08/09 16:54:44 rlubke Exp $
+ * @version $Id: CompositionHandler.java,v 1.13 2008/06/03 04:29:37 rlubke Exp $
  */
 public final class CompositionHandler extends TagHandler implements
         TemplateClient {
 
-    private final Logger log = Logger.getLogger("facelets.tag.ui.composition");
+    private static final Logger log = Logger.getLogger("facelets.tag.ui.composition");
 
     public final static String Name = "composition";
 

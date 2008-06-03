@@ -39,11 +39,11 @@ import com.sun.facelets.tag.TagHandler;
 
 /**
  * @author Jacob Hookom
- * @version $Id: DecorateHandler.java,v 1.14 2007/05/06 17:35:04 jhook Exp $
+ * @version $Id: DecorateHandler.java,v 1.15 2008/06/03 04:29:38 rlubke Exp $
  */
 public final class DecorateHandler extends TagHandler implements TemplateClient {
 
-    private final Logger log = Logger.getLogger("facelets.tag.ui.decorate");
+    private static final Logger log = Logger.getLogger("facelets.tag.ui.decorate");
     
     private final TagAttribute template;
 
