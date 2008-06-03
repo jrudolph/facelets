@@ -16,6 +16,7 @@ package com.sun.facelets.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -26,11 +27,14 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 /**
  * @author Jacob Hookom
  * @author Roland Huss
- * @version $Id: Classpath.java,v 1.8 2007/09/10 15:42:48 youngm Exp $
+ * @author Ales Justin (ales.justin@jboss.org)
+ * @version $Id: Classpath.java,v 1.9 2008/06/03 03:20:14 youngm Exp $
  */
 public final class Classpath {
 
@@ -69,10 +73,11 @@ public final class Classpath {
 				if (jarFile != null) {
 					searchJar(cl, all, jarFile, prefix, suffix);
 				} else {
-                    searchDir(all,
-                              new File(URLDecoder.decode(url.getFile(),
-                                                         "UTF-8")),
-                              suffix);
+					boolean searchDone = searchDir(all, new File(URLDecoder.decode(url.getFile(), "UTF-8")), suffix);
+					if (!searchDone)
+					{
+						searchFromURL(all, prefix, suffix, url);
+					}
 				}
 			}
 		}
@@ -80,7 +85,7 @@ public final class Classpath {
 		return urlArray;
 	}
 
-    private static void searchDir(Set result, File file, String suffix)
+    private static boolean searchDir(Set result, File file, String suffix) 
             throws IOException {
 		if (file.exists() && file.isDirectory()) {
 			File[] fc = file.listFiles();
@@ -95,15 +100,100 @@ public final class Classpath {
 					result.add(fc[i].toURL());
 				}
 			}
+			return true;
+		}
+		return false;
+	}
+
+    /**
+	 * Search from URL. Fall back on prefix tokens if not able to read from
+	 * original url param.
+	 * 
+	 * @param result the result urls
+	 * @param prefix the current prefix
+	 * @param suffix the suffix to match
+	 * @param url the current url to start search
+	 * @throws IOException for any error
+	 */
+	private static void searchFromURL(Set result, String prefix, String suffix,
+			URL url) throws IOException {
+		boolean done = false;
+		InputStream is = getInputStream(url);
+		if (is != null) {
+			try {
+				ZipInputStream zis;
+				if (is instanceof ZipInputStream)
+					zis = (ZipInputStream) is;
+				else
+					zis = new ZipInputStream(is);
+				try {
+					ZipEntry entry = zis.getNextEntry();
+					// initial entry should not be null
+					// if we assume this is some inner jar
+					done = (entry != null);
+					while (entry != null) {
+						String entryName = entry.getName();
+						if (entryName.endsWith(suffix)) {
+							String urlString = url.toExternalForm();
+							result.add(new URL(urlString + entryName));
+						}
+						entry = zis.getNextEntry();
+					}
+				} finally {
+					zis.close();
+				}
+			} catch (Exception ignore) {
+			}
+		}
+		if (done == false && prefix.length() > 0) {
+			// we add '/' at the end since join adds it as well
+			String urlString = url.toExternalForm() + "/";
+			String[] split = prefix.split("/");
+			prefix = join(split, true);
+			String end = join(split, false);
+			int p = urlString.lastIndexOf(end);
+			url = new URL(urlString.substring(0, p));
+			searchFromURL(result, prefix, suffix, url);
 		}
 	}
 
-    /** For URLs to JARs that do not use JarURLConnection - allowed by
-     * the servlet spec - attempt to produce a JarFile object all the same.
-     * Known servlet engines that function like this include Weblogic
-     * and OC4J.
-     * This is not a full solution, since an unpacked WAR or EAR will not
-     * have JAR "files" as such.
+	/**
+	 * Join tokens, exlude last if param equals true.
+	 * 
+	 * @param tokens
+	 *            the tokens
+	 * @param excludeLast
+	 *            do we exclude last token
+	 * @return joined tokens
+	 */
+	private static String join(String[] tokens, boolean excludeLast) {
+		StringBuffer join = new StringBuffer();
+		for (int i = 0; i < tokens.length - (excludeLast ? 1 : 0); i++)
+			join.append(tokens[i]).append("/");
+		return join.toString();
+	}
+
+	/**
+	 * Open input stream from url. Ignore any errors.
+	 * 
+	 * @param url
+	 *            the url to open
+	 * @return input stream or null if not possible
+	 */
+	private static InputStream getInputStream(URL url) {
+		try {
+			return url.openStream();
+		} catch (Throwable t) {
+			return null;
+		}
+	}
+
+    /**
+	 * For URLs to JARs that do not use JarURLConnection - allowed by the
+	 * servlet spec - attempt to produce a JarFile object all the same. Known
+	 * servlet engines that function like this include Weblogic and OC4J. This
+	 * is not a full solution, since an unpacked WAR or EAR will not have JAR
+	 * "files" as such.
 	 */
 	private static JarFile getAlternativeJarFile(URL url) throws IOException {
 		String urlFile = url.getFile();
