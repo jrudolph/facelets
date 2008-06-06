@@ -12,14 +12,14 @@
  implied. See the License for the specific language governing
  permissions and limitations under the License.
  
- $Id: facelet-taglib_1_0.dtd,v 1.3 2005/08/15 04:53:43 adamwiner Exp $
+ $Id: facelet-taglib_1_0.dtd,v 1.3.22.1 2008/06/06 19:45:07 edburns Exp $
 -->
 
-<!ELEMENT facelet-taglib (library-class|(namespace,(tag|function)+))>
+<!ELEMENT facelet-taglib (library-class|(namespace,(tag|function|resource)+))>
 <!ATTLIST facelet-taglib xmlns CDATA #FIXED "http://java.sun.com/JSF/Facelet">
 <!ELEMENT namespace (#PCDATA)>
 <!ELEMENT library-class (#PCDATA)>
-<!ELEMENT tag (tag-name,(handler-class|component|converter|validator|source))>
+<!ELEMENT tag (tag-name,handler-class?,(component|converter|validator|source))>
 <!ELEMENT tag-name (#PCDATA)>
 <!ELEMENT handler-class (#PCDATA)>
 <!ELEMENT component (component-type,renderer-type?,handler-class?)>
@@ -34,3 +34,6 @@
 <!ELEMENT function-name (#PCDATA)>
 <!ELEMENT function-class (#PCDATA)>
 <!ELEMENT function-signature (#PCDATA)>
+<!ELEMENT resource (mime-type?,resource-path)>
+<!ELEMENT resource-path (#PCDATA)>
+<!ELEMENT mime-type (#PCDATA)>

@@ -11,6 +11,7 @@ import java.util.Map;
 
 import javax.faces.FacesException;
 import javax.faces.application.FacesMessage;
+import javax.faces.component.ContextCallback;
 import javax.faces.component.EditableValueHolder;
 import javax.faces.component.NamingContainer;
 import javax.faces.component.UIComponent;
@@ -112,11 +113,11 @@ public class UIRepeat extends UIComponentBase implements NamingContainer {
         }
     }
 
-    private synchronized void setDataModel(DataModel model) {
+    private void setDataModel(DataModel model) {
         this.model = model;
     }
 
-    private synchronized DataModel getDataModel() {
+    private DataModel getDataModel() {
         if (this.model == null) {
             Object val = this.getValue();
             if (val == null) {
@@ -388,43 +389,43 @@ public class UIRepeat extends UIComponentBase implements NamingContainer {
         }
     }
 
-    // public boolean invokeOnComponent(FacesContext faces, String clientId,
-    // ContextCallback callback) throws FacesException {
-    // String id = super.getClientId(faces);
-    // if (clientId.equals(id)) {
-    // callback.invokeContextCallback(faces, this);
-    // return true;
-    // } else if (clientId.startsWith(id)) {
-    // int prevIndex = this.index;
-    // int idxStart = clientId.indexOf(NamingContainer.SEPARATOR_CHAR, id
-    // .length());
-    // if (idxStart != -1
-    // && Character.isDigit(clientId.charAt(idxStart + 1))) {
-    // int idxEnd = clientId.indexOf(NamingContainer.SEPARATOR_CHAR,
-    // idxStart);
-    // if (idxEnd != -1) {
-    // int newIndex = Integer.parseInt(clientId.substring(
-    // idxStart, idxEnd));
-    // boolean found = false;
-    // try {
-    // this.captureOrigValue();
-    // this.setIndex(newIndex);
-    // if (this.isIndexAvailable()) {
-    // found = super.invokeOnComponent(faces, clientId,
-    // callback);
-    // }
-    // } finally {
-    // this.setIndex(prevIndex);
-    // this.restoreOrigValue();
-    // }
-    // return found;
-    // }
-    // } else {
-    // return super.invokeOnComponent(faces, clientId, callback);
-    // }
-    // }
-    // return false;
-    // }
+     public boolean invokeOnComponent(FacesContext faces, String clientId,
+            ContextCallback callback) throws FacesException {
+        String id = super.getClientId(faces);
+        if (clientId.equals(id)) {
+            callback.invokeContextCallback(faces, this);
+            return true;
+        } else if (clientId.startsWith(id)) {
+            int prevIndex = this.index;
+            int idxStart = clientId.indexOf(NamingContainer.SEPARATOR_CHAR, id
+                    .length());
+            if (idxStart != -1
+                    && Character.isDigit(clientId.charAt(idxStart + 1))) {
+                int idxEnd = clientId.indexOf(NamingContainer.SEPARATOR_CHAR,
+                        idxStart+1);
+                if (idxEnd != -1) {
+                    int newIndex = Integer.parseInt(clientId.substring(
+                            idxStart+1, idxEnd));
+                    boolean found = false;
+                    try {
+                        this.captureOrigValue();
+                        this.setIndex(newIndex);
+                        if (this.isIndexAvailable()) {
+                            found = super.invokeOnComponent(faces, clientId,
+                                    callback);
+                        }
+                    } finally {
+                        this.setIndex(prevIndex);
+                        this.restoreOrigValue();
+                    }
+                    return found;
+                }
+            } else {
+                return super.invokeOnComponent(faces, clientId, callback);
+            }
+        }
+        return false;
+    }
 
     public void processDecodes(FacesContext faces) {
         if (!this.isRendered())
