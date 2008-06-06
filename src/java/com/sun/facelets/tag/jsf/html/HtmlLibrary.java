@@ -16,7 +16,7 @@ package com.sun.facelets.tag.jsf.html;
 
 /**
  * @author Jacob Hookom
- * @version $Id: HtmlLibrary.java,v 1.2 2005/08/24 04:38:46 jhook Exp $
+ * @version $Id: HtmlLibrary.java,v 1.2.26.1 2008/06/06 22:44:28 edburns Exp $
  */
 public final class HtmlLibrary extends AbstractHtmlLibrary {
 
@@ -26,6 +26,9 @@ public final class HtmlLibrary extends AbstractHtmlLibrary {
 
     public HtmlLibrary() {
         super(Namespace);
+
+        this.addHtmlComponent("body", "javax.faces.Output",
+                "javax.faces.Body");
 
         this.addHtmlComponent("column", "javax.faces.Column", null);
 
@@ -43,6 +46,9 @@ public final class HtmlLibrary extends AbstractHtmlLibrary {
 
         this.addHtmlComponent("graphicImage", "javax.faces.HtmlGraphicImage",
                 "javax.faces.Image");
+
+        this.addHtmlComponent("head", "javax.faces.Output",
+                "javax.faces.Head");
 
         this.addHtmlComponent("inputHidden", "javax.faces.HtmlInputHidden",
                 "javax.faces.Hidden");
@@ -73,6 +79,12 @@ public final class HtmlLibrary extends AbstractHtmlLibrary {
 
         this.addHtmlComponent("outputText", "javax.faces.HtmlOutputText",
                 "javax.faces.Text");
+        
+        this.addHtmlComponent("outputScript", "javax.faces.Output", 
+                "javax.faces.resource.Script");
+
+        this.addHtmlComponent("outputStylesheet", "javax.faces.Output", 
+                "javax.faces.resource.Stylesheet");
 
         this.addHtmlComponent("panelGrid", "javax.faces.HtmlPanelGrid",
                 "javax.faces.Grid");

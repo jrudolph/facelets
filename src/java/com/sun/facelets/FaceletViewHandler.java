@@ -312,7 +312,7 @@ public class FaceletViewHandler extends ViewHandler {
             return new UIViewRoot();
         }
 
-        if (!this.buildBeforeRestore || !handledByFacelets(viewId)) {
+        if (!handledByFacelets(viewId)) {
             return this.parent.restoreView(context, viewId);
         }
 
@@ -334,23 +334,11 @@ public class FaceletViewHandler extends ViewHandler {
                 .getViewHandler();
         String renderKitId = outerViewHandler.calculateRenderKitId(context);
 
-        UIViewRoot viewRoot = createView(context, viewId);
+        UIViewRoot viewRoot = this.parent.restoreView(context, viewId);
         context.setViewRoot(viewRoot);
-        try {
-            this.buildView(context, viewRoot);
-        } catch (IOException ioe) {
-            log.log(Level.SEVERE, "Error Building View", ioe);
-        }
-        context.getApplication().getStateManager().restoreView(context, viewId,
-                renderKitId);
         return viewRoot;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see javax.faces.application.ViewHandlerWrapper#getWrapped()
-     */
     protected ViewHandler getWrapped() {
         return this.parent;
     }
@@ -359,6 +347,7 @@ public class FaceletViewHandler extends ViewHandler {
             throws IOException, FacesException {
         ExternalContext extContext = context.getExternalContext();
         RenderKit renderKit = context.getRenderKit();
+	ResponseWriter writer = null;
         // Avoid a cryptic NullPointerException when the renderkit ID
         // is incorrectly set
         if (renderKit == null) {
@@ -380,12 +369,6 @@ public class FaceletViewHandler extends ViewHandler {
         // get the encoding
         String encoding = (String) extContext.getRequestMap().get("facelets.Encoding");
 
-        ResponseWriter writer;
-        //append */* to the contentType so createResponseWriter will succeed no matter
-        //the requested contentType.
-        if(contentType != null && !contentType.equals("*/*")) {
-        	contentType += ",*/*";
-        }
         // Create a dummy ResponseWriter with a bogus writer,
         // so we can figure out what content type the ReponseWriter
         // is really going to ask for
@@ -400,7 +383,6 @@ public class FaceletViewHandler extends ViewHandler {
 	                NullWriter.Instance, "*/*", encoding);
         }
 
-        //Override the JSF provided content type if necessary
         contentType = getResponseContentType(context, writer.getContentType());
         encoding = getResponseEncoding(context, writer.getCharacterEncoding());
 
@@ -505,6 +487,11 @@ public class FaceletViewHandler extends ViewHandler {
         String renderedViewId = this.getRenderedViewId(context, viewToRender
                 .getViewId());
         viewToRender.setViewId(renderedViewId);
+        // lazy initialize so we have a FacesContext to use
+        if (this.faceletFactory == null) {
+            this.initialize(context);
+        }
+        
 
         if (log.isLoggable(Level.FINE)) {
             log.fine("Building View: " + renderedViewId);
@@ -522,11 +509,26 @@ public class FaceletViewHandler extends ViewHandler {
         // populate UIViewRoot
         long time = System.currentTimeMillis();
         f.apply(context, viewToRender);
+        setViewPopulated(context.getExternalContext(), viewToRender);
         time = System.currentTimeMillis() - time;
         if (log.isLoggable(Level.FINE)) {
             log.fine("Took " + time + "ms to build view: "
                     + viewToRender.getViewId());
         }
+    }
+    
+    private boolean isViewPopulated(ExternalContext extContext, 
+            UIViewRoot viewToRender) {
+        boolean result = false;
+        
+        result = extContext.getRequestMap().containsKey(viewToRender.getViewId());
+        
+        return result;
+    }
+    
+    private void setViewPopulated(ExternalContext extContext, UIViewRoot viewToRender) {
+        extContext.getRequestMap().put(viewToRender.getViewId(), Boolean.TRUE);
+        
     }
 
     public void renderView(FacesContext context, UIViewRoot viewToRender)
@@ -555,20 +557,16 @@ public class FaceletViewHandler extends ViewHandler {
 
         StateWriter stateWriter = null;
         try {
-            // build view - but not if we're in "buildBeforeRestore"
-            // land and we've already got a populated view. Note
-            // that this optimizations breaks if there's a "c:if" in
-            // the page that toggles as a result of request processing -
-            // should that be handled? Or
-            // is this optimization simply so minor that it should just
-            // be trimmed altogether?
-            if (!this.buildBeforeRestore
-                    || viewToRender.getChildren().isEmpty()) {
+            // Only build the view if this view has not yet been built.
+            if (!this.isViewPopulated(context.getExternalContext(), viewToRender)) {
                 this.buildView(context, viewToRender);
             }
 
             // setup writer and assign it to the context
-            ResponseWriter origWriter = this.createResponseWriter(context);
+            ResponseWriter origWriter = null;
+            if (null == (origWriter = context.getResponseWriter())) {
+                origWriter = this.createResponseWriter(context);
+            }
             // QUESTION: should we use bufferSize? Or, since the
             // StateWriter usually only needs a small bit at the end,
             // should we always use a much smaller size?
@@ -793,10 +791,26 @@ public class FaceletViewHandler extends ViewHandler {
     }
 
     public UIViewRoot createView(FacesContext context, String viewId) {
+        UIViewRoot result = null;
         if (UIDebug.debugRequest(context)) {
-            return new UIViewRoot();
+            result = new UIViewRoot();
         }
-        return this.parent.createView(context, viewId);
+        result = this.parent.createView(context, viewId);
+        
+        try {
+            context.setViewRoot(result);
+            this.buildView(context, result);
+        }
+        catch (IOException ioe) {
+            if (log.isLoggable(Level.SEVERE)) {
+                log
+                        .log(Level.SEVERE,
+                        "Unable to create View tree", ioe);
+            }
+            
+        }
+        
+        return result;
     }
 
     public String getActionURL(FacesContext context, String viewId) {
