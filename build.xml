@@ -7,13 +7,17 @@
   <property file="user.properties" />
   <property file="build.properties"/>
   <property file="${user.home}/build.properties"/>
-                                                                                
+
+  <!-- Useful for grabbing dependencies from the local maven repo -->
+  <property name="settings.localRepository"       
+            value="${user.home}/.m2/repository"/>
+
   <!-- Establish property definition defaults -->
   <property name="compile.debug"       value="true"/>
   <property name="compile.deprecation" value="false"/>
   <property name="compile.optimize"    value="true"/>
-  <property name="compile.source"      value="1.4"/>
-  <property name="compile.target"      value="1.4"/>
+  <property name="compile.source"      value="1.5"/>
+  <property name="compile.target"      value="1.5"/>
   <property name="build"               value="build"/>
   <property name="dist"                value="dist"/>
   <property name="lib"                 value="lib"/>
@@ -26,19 +30,21 @@
   <property name="http.proxy.port"     value=""/>
   <property name="ibiblio.repo"        value="http://www.ibiblio.org/maven/"/>
   <property name="java.net.repo"       value="http://download.java.net/maven/1/"/>
-  <property name="jsf.api.version"     value="1.2_04-p02"/>
-  <property name="servlet.api.version" value="2.4"/>
-  <property name="el.version"          value="1.0"/>
-  <property name="jsf-api.jar"         value="jsf-api-${jsf.api.version}.jar"/>
-  <property name="el-api.jar"          value="el-api-${el.version}.jar"/>
-  <property name="el-ri.jar"           value="el-impl-${el.version}.jar"/>
-  <property name="servlet-api.jar"     value="servlet-api-${servlet.api.version}.jar"/>
+  <property name="jsf.api.version"     value="2.0.0-SNAPSHOT"/>
+  <property name="javaee.api.version"  value="6-SNAPSHOT"/>
+  <property name="jsf-api.jar"         value="${settings.localRepository}/javax/faces/jsf-api/${jsf.api.version}/jsf-api-${jsf.api.version}.jar"/>
+  <property name="javaee-api.jar"          value="${settings.localRepository}/javaee/javaee-api/${javaee.api.version}/javaee-api-${javaee.api.version}.jar"/>
+
+  <property name="artifact-id"          value="jsf-facelets"/>
+  <property name="release.version"      value="2.0-SNAPSHOT"/>
 
 
   <path id="compile.classpath">
     <pathelement location="${build}/classes"/>
     <fileset dir="lib" includes="*.jar"/>
     <pathelement location="${}"/>
+    <pathelement location="${jsf-api.jar}"/>
+    <pathelement location="${javaee-api.jar}"/>
   </path>
 
 
@@ -109,6 +115,9 @@
 		<classes dir="build/@{root}/build"/>
         <lib file="${dist}/${jar}"/>
       </war>
+      <delete dir="${dist}/@{root}" />
+      <mkdir dir="${dist}/@{root}" />
+      <unjar src="@{destfile}" dest="${dist}/@{root}" />
     </sequential>
   </macrodef>
 
@@ -324,7 +333,7 @@
 <target name="push-to-maven-prepare">
   <taskdef resource="maven-repository-importer.properties">
     <classpath>
-      <pathelement path="${lib}/maven-repository-importer-1.1.jar" />
+      <pathelement path="${settings.localRepository}/com/sun/wts/tools/mri/maven-repository-importer/1.2/maven-repository-importer-1.2.jar" />
     </classpath>
   </taskdef>
   <delete dir="${build}/maven-repo" /><!-- clean it -->
@@ -351,6 +360,34 @@
     </commandline>
   </cvs>
 </target>
+
+<target name="push-local-to-maven" depends="push-to-maven-prepare" description="install this facelets to the local maven repo.">
+
+  <exec executable="mvn" os="SunOS">
+    <arg line="install:install-file -DgroupId=com.sun.facelets -DartifactId=${artifact-id} -Dversion=${release.version} -Dpackaging=jar -Dfile=${build}/maven-repo/com.sun.facelets/jars/${artifact-id}-${release.version}.jar " />
+  </exec>
+  <exec executable="mvn" os="Linux">
+    <arg line="install:install-file -DgroupId=com.sun.facelets -DartifactId=${artifact-id} -Dversion=${release.version} -Dpackaging=jar -Dfile=${build}/maven-repo/com.sun.facelets/jars/${artifact-id}-${release.version}.jar  " />
+  </exec>
+  <exec executable="mvn" os="Mac OS X">
+    <arg line="install:install-file -DgroupId=com.sun.facelets -DartifactId=${artifact-id} -Dversion=${release.version} -Dpackaging=jar -Dfile=${build}/maven-repo/com.sun.facelets/jars/${artifact-id}-${release.version}.jar  " />
+  </exec>
+  <exec executable="mvn" os="Darwin">
+    <arg line="install:install-file -DgroupId=com.sun.facelets -DartifactId=${artifact-id} -Dversion=${release.version} -Dpackaging=jar -Dfile=${build}/maven-repo/com.sun.facelets/jars/${artifact-id}-${release.version}.jar  " />
+  </exec>
+  <exec executable="mvn.bat" os="Windows 2000">
+    <arg line="install:install-file -DgroupId=com.sun.facelets -DartifactId=${artifact-id} -Dversion=${release.version} -Dpackaging=jar -Dfile=${build}/maven-repo/com.sun.facelets/jars/${artifact-id}-${release.version}.jar  " />
+  </exec>
+  <exec executable="mvn.bat" os="Windows 2003">
+    <arg line="install:install-file -DgroupId=com.sun.facelets -DartifactId=${artifact-id} -Dversion=${release.version} -Dpackaging=jar -Dfile=${build}/maven-repo/com.sun.facelets/jars/${artifact-id}-${release.version}.jar  " />
+  </exec>
+  <exec executable="mvn.bat" os="Windows XP">
+    <arg line="install:install-file -DgroupId=com.sun.facelets -DartifactId=${artifact-id} -Dversion=${release.version} -Dpackaging=jar -Dfile=${build}/maven-repo/com.sun.facelets/jars/${artifact-id}-${release.version}.jar  " />
+  </exec>
+
+</target>
+
+
  
 </project>
 

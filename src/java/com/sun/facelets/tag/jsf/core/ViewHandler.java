@@ -38,7 +38,7 @@ import com.sun.facelets.tag.jsf.ComponentSupport;
  * documentation</a>.
  * 
  * @author Jacob Hookom
- * @version $Id: ViewHandler.java,v 1.4 2006/05/09 06:25:41 jhook Exp $
+ * @version $Id: ViewHandler.java,v 1.4.14.1 2008/06/06 16:51:35 edburns Exp $
  */
 public final class ViewHandler extends TagHandler {
 
@@ -52,9 +52,9 @@ public final class ViewHandler extends TagHandler {
     
     private final TagAttribute encoding;
 
-    private final TagAttribute beforePhaseListener;
+    private final TagAttribute beforePhase;
 
-    private final TagAttribute afterPhaseListener;
+    private final TagAttribute afterPhase;
 
     /**
      * @param config
@@ -65,8 +65,12 @@ public final class ViewHandler extends TagHandler {
         this.renderKitId = this.getAttribute("renderKitId");
         this.contentType = this.getAttribute("contentType");
         this.encoding = this.getAttribute("encoding");
-        this.beforePhaseListener = this.getAttribute("beforePhaseListener");
-        this.afterPhaseListener = this.getAttribute("afterPhaseListener");
+        TagAttribute testForNull = this.getAttribute("beforePhase");
+        this.beforePhase = (null == testForNull) ? 
+                         this.getAttribute("beforePhaseListener") : testForNull;
+        testForNull = this.getAttribute("afterPhase");
+        this.afterPhase = (null == testForNull) ?
+                         this.getAttribute("afterPhaseListener") : testForNull;
     }
 
     /**
@@ -95,13 +99,13 @@ public final class ViewHandler extends TagHandler {
                 String v = this.encoding.getValue(ctx);
                 ctx.getFacesContext().getExternalContext().getRequestMap().put("facelets.Encoding", v);
             }
-            if (this.beforePhaseListener != null) {
-                MethodExpression m = this.beforePhaseListener
+            if (this.beforePhase != null) {
+                MethodExpression m = this.beforePhase
                         .getMethodExpression(ctx, null, LISTENER_SIG);
                 root.setBeforePhaseListener(m);
             }
-            if (this.afterPhaseListener != null) {
-                MethodExpression m = this.afterPhaseListener
+            if (this.afterPhase != null) {
+                MethodExpression m = this.afterPhase
                         .getMethodExpression(ctx, null, LISTENER_SIG);
                 root.setAfterPhaseListener(m);
             }
