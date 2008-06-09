@@ -191,6 +191,7 @@
          basedir="${build}/classes">
       <manifest>
         <attribute name="Implementation-Version" value="${release.version}"/>
+        <attribute name="Specification-Version" value="$Id: build.xml,v 1.26.6.2 2008/06/09 19:50:50 edburns Exp $"/>
       </manifest>
     </jar>
   </target>
