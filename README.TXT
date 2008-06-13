@@ -11,6 +11,21 @@ You MUST have the following:
  - OR, Current release of MyFaces
    http://myfaces.apache.org
 
+ - A local Maven repository with the following artifacts
+
+   artifactId: jsf-api
+   groupId: javax.faces
+   version: 2.0.0-SNAPSHOT
+
+   artifactId: javaee-api
+   groupId: javaee
+   version: 6-SNAPSHOT
+
+   The former can be obtained by doing "ant push-local-to-maven" in the
+   jsf-api directory of the trunk of the Mojarra source tree.
+
+   The latter can be obtained by doing "mvn" in the code directory of
+   the trunk of the jsf-extensions source tree.
 
 Legal
 ==========================================
