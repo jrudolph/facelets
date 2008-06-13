@@ -488,9 +488,9 @@ public class FaceletViewHandler extends ViewHandler {
                 .getViewId());
         viewToRender.setViewId(renderedViewId);
         // lazy initialize so we have a FacesContext to use
-        if (this.faceletFactory == null) {
-            this.initialize(context);
-        }
+        //if (this.faceletFactory == null) {
+        //    this.initialize(context);
+        //}
         
 
         if (log.isLoggable(Level.FINE)) {
@@ -795,11 +795,19 @@ public class FaceletViewHandler extends ViewHandler {
         if (UIDebug.debugRequest(context)) {
             result = new UIViewRoot();
         }
+
+        // lazy initialize so we have a FacesContext to use
+        if (this.faceletFactory == null) {
+            this.initialize(context);
+        }
+
         result = this.parent.createView(context, viewId);
         
         try {
             context.setViewRoot(result);
-            this.buildView(context, result);
+            if (handledByFacelets(viewId)) {
+                this.buildView(context, result);
+            }
         }
         catch (IOException ioe) {
             if (log.isLoggable(Level.SEVERE)) {
