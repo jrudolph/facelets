@@ -191,12 +191,12 @@
          basedir="${build}/classes">
       <manifest>
         <attribute name="Implementation-Version" value="${release.version}"/>
-        <attribute name="Specification-Version" value="$Id: build.xml,v 1.26.6.2 2008/06/09 19:50:50 edburns Exp $"/>
+        <attribute name="Specification-Version" value="$Id: build.xml,v 1.26.6.3 2008/06/13 21:37:07 rlubke Exp $"/>
       </manifest>
     </jar>
   </target>
  
-  <target name="dist" depends="prepare,dependencies,compile,javadoc,jar"
+  <target name="dist" depends="prepare,compile,javadoc,jar"
    description="Create binary distribution">
                                                                                 
     <!-- Copy Javadocs -->
