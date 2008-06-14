@@ -22,6 +22,7 @@ import javax.el.ELException;
 import javax.el.MethodExpression;
 import javax.el.ValueExpression;
 import javax.faces.FacesException;
+import javax.faces.render.Renderer;
 import javax.faces.application.Application;
 import javax.faces.component.ActionSource;
 import javax.faces.component.ActionSource2;
@@ -36,6 +37,10 @@ import javax.faces.event.ActionEvent;
 import javax.faces.event.MethodExpressionActionListener;
 import javax.faces.event.MethodExpressionValueChangeListener;
 import javax.faces.event.ValueChangeEvent;
+import javax.faces.event.ComponentSystemEventListener;
+import javax.faces.event.ListenerFor;
+import javax.faces.event.SystemEvent;
+import javax.faces.event.SystemEventListener;
 import javax.faces.validator.MethodExpressionValidator;
 
 import com.sun.facelets.FaceletContext;
@@ -56,7 +61,7 @@ import com.sun.facelets.util.FacesAPI;
  * golden hammer for wiring UIComponents to Facelets.
  * 
  * @author Jacob Hookom
- * @version $Id: ComponentHandler.java,v 1.18 2006/12/06 14:26:12 jhook Exp $
+ * @version $Id: ComponentHandler.java,v 1.18.6.1 2008/06/14 05:04:51 rlubke Exp $
  */
 public class ComponentHandler extends MetaTagHandler {
 
@@ -160,13 +165,26 @@ public class ComponentHandler extends MetaTagHandler {
             if (this.rendererType != null) {
                 c.setRendererType(this.rendererType);
             }
-            
+
             // hook method
             this.onComponentCreated(ctx, c, parent);
         }
 
         // first allow c to get populated
         this.applyNextHandler(ctx, c);
+
+        if (this.rendererType != null) {
+            Renderer r = ctx.getFacesContext().getRenderKit()
+                  .getRenderer(c.getFamily(), this.rendererType);
+            // RELEASE_PENDING (rlubke,driscoll) ANNOTATION PERFORMANCE
+            if (r != null && r instanceof ComponentSystemEventListener &&
+                r.getClass().isAnnotationPresent(ListenerFor.class)) {
+                ListenerFor listener =
+                      r.getClass().getAnnotation(ListenerFor.class);
+                c.subscribeToEvent(listener.systemEventClass(),
+                                   (ComponentSystemEventListener) r);
+            }
+        }
 
         // finish cleaning up orphaned children
         if (componentFound) {
