@@ -39,7 +39,7 @@ import com.sun.facelets.tag.MetaRuleset;
  * that it wasn't restored from an existing tree.
  * 
  * @author Jacob Hookom
- * @version $Id: ValidateHandler.java,v 1.3 2005/08/24 04:38:51 jhook Exp $
+ * @version $Id: ValidateHandler.java,v 1.3.28.1 2008/06/19 21:34:58 rlubke Exp $
  */
 public class ValidateHandler extends MetaTagHandler {
 
@@ -68,7 +68,7 @@ public class ValidateHandler extends MetaTagHandler {
      * @see com.sun.facelets.FaceletHandler#apply(com.sun.facelets.FaceletContext,
      *      javax.faces.component.UIComponent)
      */
-    public final void apply(FaceletContext ctx, UIComponent parent)
+    public void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
 
         if (parent == null || !(parent instanceof EditableValueHolder)) {
