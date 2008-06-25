@@ -39,7 +39,7 @@ import com.sun.facelets.tag.MetaRuleset;
  * that it wasn't restored from an existing tree.
  * 
  * @author Jacob Hookom
- * @version $Id: ValidateHandler.java,v 1.3.28.1 2008/06/19 21:34:58 rlubke Exp $
+ * @version $Id: ValidateHandler.java,v 1.3.30.1 2008/06/25 11:53:41 edburns Exp $
  */
 public class ValidateHandler extends MetaTagHandler {
 

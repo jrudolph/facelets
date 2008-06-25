@@ -62,7 +62,7 @@ import com.sun.facelets.util.FacesAPI;
  * golden hammer for wiring UIComponents to Facelets.
  * 
  * @author Jacob Hookom
- * @version $Id: ComponentHandler.java,v 1.18.6.3 2008/07/08 18:50:13 rlubke Exp $
+ * @version $Id: ComponentHandler.java,v 1.18.8.1 2008/06/25 11:53:41 edburns Exp $
  */
 public class ComponentHandler extends MetaTagHandler {
 
@@ -174,6 +174,32 @@ public class ComponentHandler extends MetaTagHandler {
         // first allow c to get populated
         this.applyNextHandler(ctx, c);
 
+        if (this.rendererType != null) {
+            Renderer r = ctx.getFacesContext().getRenderKit()
+                  .getRenderer(c.getFamily(), this.rendererType);
+            // RELEASE_PENDING (rlubke,driscoll) ANNOTATION PERFORMANCE
+            if (r != null && r instanceof ComponentSystemEventListener) {
+                Class<?> rendererClass = r.getClass();
+                if (rendererClass.isAnnotationPresent(ListenerFor.class)) {
+                ListenerFor listenerFor =
+                      rendererClass.getAnnotation(ListenerFor.class);
+                assert (null != listenerFor);
+                Class<? extends SystemEvent> eventClass =
+                      listenerFor.systemEventClass();
+                c.subscribeToEvent(eventClass, (ComponentSystemEventListener) r);
+            } else if (rendererClass.isAnnotationPresent(ListenersFor.class)) {
+                ListenersFor listenersFor = rendererClass.getAnnotation(ListenersFor.class);
+                ListenerFor[] listeners = listenersFor.value();
+                if (listeners != null) {
+                    for (ListenerFor listener : listeners) {
+                        c.subscribeToEvent(listener.systemEventClass(),
+                                                (ComponentSystemEventListener) r);
+                    }
+                }
+            }
+            }
+        }
+
         // finish cleaning up orphaned children
         if (componentFound) {
             ComponentSupport.finalizeForDeletion(c);
@@ -227,7 +253,7 @@ public class ComponentHandler extends MetaTagHandler {
             ValueExpression ve = this.binding.getValueExpression(ctx,
                     Object.class);
             if (FacesAPI.getVersion() >= 12) {
-                c = app.createComponent(ve, faces, this.componentType, this.rendererType);
+                c = app.createComponent(ve, faces, this.componentType);
                 if (c != null) {
                     // Make sure the component supports 1.2
                     if (FacesAPI.getComponentVersion(c) >= 12) {
@@ -246,7 +272,7 @@ public class ComponentHandler extends MetaTagHandler {
                 }
             }
         } else {
-            c = app.createComponent(faces, this.componentType, this.rendererType);
+            c = app.createComponent(this.componentType);
         }
         return c;
     }

@@ -30,7 +30,7 @@ import com.sun.facelets.util.ParameterCheck;
 /**
  * 
  * @author Jacob Hookom
- * @version $Id: MetaRulesetImpl.java,v 1.2.28.1 2008/06/20 02:53:19 rlubke Exp $
+ * @version $Id: MetaRulesetImpl.java,v 1.2.30.1 2008/06/25 11:53:41 edburns Exp $
  */
 final class MetaRulesetImpl extends MetaRuleset {
 
