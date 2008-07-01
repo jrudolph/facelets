@@ -73,6 +73,8 @@ final class DefaultFaceletContext extends FaceletContext {
         this.faceletHierarchy.addAll(ctx.faceletHierarchy);
         this.faceletHierarchy.add(facelet);
         this.facelet=facelet;
+        this.faces.getAttributes().put(FaceletContext.FACLET_CONTEXT_KEY,
+                this);
     }
 
     public DefaultFaceletContext(FacesContext faces, DefaultFacelet facelet) {
@@ -89,6 +91,8 @@ final class DefaultFaceletContext extends FaceletContext {
             this.varMapper = new DefaultVariableMapper();
         }
         this.fnMapper = this.ctx.getFunctionMapper();
+        this.faces.getAttributes().put(FaceletContext.FACLET_CONTEXT_KEY,
+                this);
     }
 
     /*

@@ -19,50 +19,37 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.el.ELException;
-import javax.el.MethodExpression;
 import javax.el.ValueExpression;
 import javax.faces.FacesException;
-import javax.faces.render.Renderer;
 import javax.faces.application.Application;
 import javax.faces.component.ActionSource;
-import javax.faces.component.ActionSource2;
 import javax.faces.component.EditableValueHolder;
 import javax.faces.component.UIComponent;
 import javax.faces.component.UIViewRoot;
 import javax.faces.component.ValueHolder;
 import javax.faces.context.FacesContext;
-import javax.faces.convert.Converter;
 import javax.faces.el.ValueBinding;
-import javax.faces.event.ActionEvent;
-import javax.faces.event.MethodExpressionActionListener;
-import javax.faces.event.MethodExpressionValueChangeListener;
-import javax.faces.event.ValueChangeEvent;
-import javax.faces.event.ComponentSystemEventListener;
-import javax.faces.event.ListenerFor;
-import javax.faces.event.SystemEvent;
-import javax.faces.event.SystemEventListener;
-import javax.faces.event.ListenersFor;
-import javax.faces.validator.MethodExpressionValidator;
 
 import com.sun.facelets.FaceletContext;
-import com.sun.facelets.el.ELAdaptor;
-import com.sun.facelets.el.LegacyMethodBinding;
 import com.sun.facelets.el.LegacyValueBinding;
 import com.sun.facelets.tag.MetaTagHandler;
 import com.sun.facelets.tag.TagAttribute;
-import com.sun.facelets.tag.Metadata;
 import com.sun.facelets.tag.TagException;
-import com.sun.facelets.tag.TagHandler;
 import com.sun.facelets.tag.MetaRuleset;
 import com.sun.facelets.tag.jsf.core.FacetHandler;
 import com.sun.facelets.util.FacesAPI;
+import javax.faces.event.ComponentSystemEventListener;
+import javax.faces.event.ListenerFor;
+import javax.faces.event.ListenersFor;
+import javax.faces.event.SystemEvent;
+import javax.faces.render.Renderer;
 
 /**
  * Implementation of the tag logic used in the JSF specification. This is your
  * golden hammer for wiring UIComponents to Facelets.
  * 
  * @author Jacob Hookom
- * @version $Id: ComponentHandler.java,v 1.18.8.1 2008/06/25 11:53:41 edburns Exp $
+ * @version $Id: ComponentHandler.java,v 1.18.8.2 2008/07/01 16:51:09 edburns Exp $
  */
 public class ComponentHandler extends MetaTagHandler {
 
@@ -71,9 +58,9 @@ public class ComponentHandler extends MetaTagHandler {
     
     private final TagAttribute binding;
 
-    private final String componentType;
+    protected String componentType;
 
-    private final TagAttribute id;
+    protected final TagAttribute id;
 
     private final String rendererType;
 
@@ -166,39 +153,14 @@ public class ComponentHandler extends MetaTagHandler {
             if (this.rendererType != null) {
                 c.setRendererType(this.rendererType);
             }
-
+            processListenerForAnnotationOnRenderer(ctx, c);
+            
             // hook method
             this.onComponentCreated(ctx, c, parent);
         }
 
         // first allow c to get populated
         this.applyNextHandler(ctx, c);
-
-        if (this.rendererType != null) {
-            Renderer r = ctx.getFacesContext().getRenderKit()
-                  .getRenderer(c.getFamily(), this.rendererType);
-            // RELEASE_PENDING (rlubke,driscoll) ANNOTATION PERFORMANCE
-            if (r != null && r instanceof ComponentSystemEventListener) {
-                Class<?> rendererClass = r.getClass();
-                if (rendererClass.isAnnotationPresent(ListenerFor.class)) {
-                ListenerFor listenerFor =
-                      rendererClass.getAnnotation(ListenerFor.class);
-                assert (null != listenerFor);
-                Class<? extends SystemEvent> eventClass =
-                      listenerFor.systemEventClass();
-                c.subscribeToEvent(eventClass, (ComponentSystemEventListener) r);
-            } else if (rendererClass.isAnnotationPresent(ListenersFor.class)) {
-                ListenersFor listenersFor = rendererClass.getAnnotation(ListenersFor.class);
-                ListenerFor[] listeners = listenersFor.value();
-                if (listeners != null) {
-                    for (ListenerFor listener : listeners) {
-                        c.subscribeToEvent(listener.systemEventClass(),
-                                                (ComponentSystemEventListener) r);
-                    }
-                }
-            }
-            }
-        }
 
         // finish cleaning up orphaned children
         if (componentFound) {
@@ -345,4 +307,54 @@ public class ComponentHandler extends MetaTagHandler {
         // first allow c to get populated
         this.nextHandler.apply(ctx, c);
     }
+
+    private Renderer getRenderer(FacesContext context, UIComponent component) {
+
+        String rendererType = component.getRendererType();
+        Renderer result = null;
+        if (rendererType != null) {
+            result = context.getRenderKit().getRenderer(component.getFamily(),
+                                                        rendererType);
+            if (null == result) {
+                if (log.isLoggable(Level.FINE)) {
+                    // PENDING(edburns): I18N
+                    log.fine("Can't get Renderer for type " + rendererType);
+                }
+            }
+        } else {
+            if (log.isLoggable(Level.FINE)) {
+                String id = component.getId();
+                id = (null != id) ? id : component.getClass().getName();
+                // PENDING(edburns): I18N
+                log.fine("No renderer-type for component " + id);
+            }
+        }
+        return result;
+    }
+
+    private void processListenerForAnnotationOnRenderer(FaceletContext ctx, UIComponent c) {
+	Renderer r = getRenderer(ctx.getFacesContext(), c);
+	// RELEASE_PENDING (rlubke,driscoll) ANNOTATION PERFORMANCE
+	if (r != null && r instanceof ComponentSystemEventListener) {
+	    Class<?> rendererClass = r.getClass();
+	    if (rendererClass.isAnnotationPresent(ListenerFor.class)) {
+                ListenerFor listenerFor =
+		    rendererClass.getAnnotation(ListenerFor.class);
+                assert (null != listenerFor);
+                Class<? extends SystemEvent> eventClass =
+		    listenerFor.systemEventClass();
+                c.subscribeToEvent(eventClass, (ComponentSystemEventListener) r);
+            } else if (rendererClass.isAnnotationPresent(ListenersFor.class)) {
+                ListenersFor listenersFor = rendererClass.getAnnotation(ListenersFor.class);
+                ListenerFor[] listeners = listenersFor.value();
+                if (listeners != null) {
+                    for (ListenerFor listener : listeners) {
+                        c.subscribeToEvent(listener.systemEventClass(),
+					   (ComponentSystemEventListener) r);
+                    }
+                }
+            }
+	}
+    }
+    
 }

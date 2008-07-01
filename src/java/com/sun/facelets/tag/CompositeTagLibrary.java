@@ -14,6 +14,7 @@
 
 package com.sun.facelets.tag;
 
+import com.sun.facelets.tag.jsf.CompositeComponentTagLibrary;
 import java.lang.reflect.Method;
 
 import javax.faces.FacesException;
@@ -26,11 +27,11 @@ import com.sun.facelets.util.ParameterCheck;
  * children handles the requested method.
  * 
  * @author Jacob Hookom
- * @version $Id: CompositeTagLibrary.java,v 1.3 2005/08/24 04:38:47 jhook Exp $
+ * @version $Id: CompositeTagLibrary.java,v 1.3.30.1 2008/07/01 16:51:10 edburns Exp $
  */
 public final class CompositeTagLibrary implements TagLibrary {
 
-    private final TagLibrary[] libraries;
+    private TagLibrary[] libraries;
 
     public CompositeTagLibrary(TagLibrary[] libraries) {
         ParameterCheck.notNull("libraries", libraries);
@@ -43,10 +44,23 @@ public final class CompositeTagLibrary implements TagLibrary {
      * @see com.sun.facelets.tag.TagLibrary#containsNamespace(java.lang.String)
      */
     public boolean containsNamespace(String ns) {
+        boolean result = true;
         for (int i = 0; i < this.libraries.length; i++) {
             if (this.libraries[i].containsNamespace(ns)) {
                 return true;
             }
+        }
+        if (CompositeComponentTagLibrary.tagLibraryForNSExists(ns)) {
+            TagLibrary [] librariesPlusOne = new TagLibrary[libraries.length+1];
+            System.arraycopy(this.libraries, 0, librariesPlusOne, 
+                    0, libraries.length);
+            librariesPlusOne[libraries.length] = 
+                    new CompositeComponentTagLibrary(ns);
+            for (int i = 0; i < this.libraries.length; i++) {
+                libraries[i] = null;
+            }
+            libraries = librariesPlusOne;
+            return true;
         }
         return false;
     }

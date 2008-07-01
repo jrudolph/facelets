@@ -30,9 +30,14 @@ import javax.faces.context.FacesContext;
  * Context representative of a single request from a Facelet
  * 
  * @author Jacob Hookom
- * @version $Id: FaceletContext.java,v 1.6 2006/03/29 04:10:11 jhook Exp $
+ * @version $Id: FaceletContext.java,v 1.6.20.1 2008/07/01 16:51:09 edburns Exp $
  */
 public abstract class FaceletContext extends ELContext {
+    
+    // The key in the FacesContext attribute map
+    // for the FaceletContext instance.
+    public static final String FACLET_CONTEXT_KEY = 
+            "com.sun.facelets.FACELET_CONTEXT";
 
     /**
      * The current FacesContext bound to this "request"
