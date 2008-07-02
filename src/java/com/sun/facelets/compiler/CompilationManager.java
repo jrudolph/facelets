@@ -28,6 +28,8 @@ import com.sun.facelets.tag.TagAttributes;
 import com.sun.facelets.tag.TagDecorator;
 import com.sun.facelets.tag.TagException;
 import com.sun.facelets.tag.TagLibrary;
+import com.sun.facelets.tag.composite.CompositeLibrary;
+import com.sun.facelets.tag.composite.ImplementationHandler;
 import com.sun.facelets.tag.ui.ComponentRefHandler;
 import com.sun.facelets.tag.ui.CompositionHandler;
 import com.sun.facelets.tag.ui.UILibrary;
@@ -39,7 +41,7 @@ import com.sun.facelets.tag.ui.UILibrary;
  * @see com.sun.facelets.compiler.Compiler
  * 
  * @author Jacob Hookom
- * @version $Id: CompilationManager.java,v 1.14 2007/09/24 06:33:29 rlubke Exp $
+ * @version $Id: CompilationManager.java,v 1.14.8.1 2008/07/02 11:40:17 edburns Exp $
  */
 final class CompilationManager {
 
@@ -309,9 +311,15 @@ final class CompilationManager {
                 && "remove".equals(name);
     }
 
+    // edburns: This is the magic line that tells the system to trim out the 
+    // extra content above and below the tag.
     protected static boolean isTrimmed(String ns, String name) {
-        return UILibrary.Namespace.equals(ns)
-                && (CompositionHandler.Name.equals(name) || ComponentRefHandler.Name.equals(name));
+        boolean matchInUILibrary = UILibrary.Namespace.equals(ns) && 
+                (CompositionHandler.Name.equals(name) || 
+                ComponentRefHandler.Name.equals(name));
+        boolean matchInCompositeLybrary = CompositeLibrary.Namespace.equals(ns) && 
+                (ImplementationHandler.Name.equals(name));
+        return matchInUILibrary || matchInCompositeLybrary;
     }
 
     private String[] determineQName(Tag tag) {
