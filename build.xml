@@ -191,7 +191,7 @@
          basedir="${build}/classes">
       <manifest>
         <attribute name="Implementation-Version" value="${release.version}"/>
-        <attribute name="Specification-Version" value="$Id: build.xml,v 1.26.6.3 2008/06/13 21:37:07 rlubke Exp $"/>
+        <attribute name="Specification-Version" value="$Id: build.xml,v 1.26.6.3.2.1 2008/07/02 11:16:44 edburns Exp $"/>
       </manifest>
     </jar>
   </target>
@@ -365,26 +365,30 @@
 <target name="push-local-to-maven" depends="push-to-maven-prepare" description="install this facelets to the local maven repo.">
 
   <exec executable="mvn" os="SunOS">
-    <arg line="install:install-file -DgroupId=com.sun.facelets -DartifactId=${artifact-id} -Dversion=${release.version} -Dpackaging=jar -Dfile=${build}/maven-repo/com.sun.facelets/jars/${artifact-id}-${release.version}.jar " />
+    <arg line="install:install-file -DgroupId=com.sun.facelets -DartifactId=${artifact-id} -Dversion=${release.version} -Dpackaging=jar -Dfile=${build}/maven-repo/com.sun.facelets/jars/${artifact-id}-${release.version}.jar" />
   </exec>
   <exec executable="mvn" os="Linux">
-    <arg line="install:install-file -DgroupId=com.sun.facelets -DartifactId=${artifact-id} -Dversion=${release.version} -Dpackaging=jar -Dfile=${build}/maven-repo/com.sun.facelets/jars/${artifact-id}-${release.version}.jar  " />
+    <arg line="install:install-file -DgroupId=com.sun.facelets -DartifactId=${artifact-id} -Dversion=${release.version} -Dpackaging=jar -Dfile=${build}/maven-repo/com.sun.facelets/jars/${artifact-id}-${release.version}.jar" />
   </exec>
   <exec executable="mvn" os="Mac OS X">
-    <arg line="install:install-file -DgroupId=com.sun.facelets -DartifactId=${artifact-id} -Dversion=${release.version} -Dpackaging=jar -Dfile=${build}/maven-repo/com.sun.facelets/jars/${artifact-id}-${release.version}.jar  " />
+    <arg line="install:install-file -DgroupId=com.sun.facelets -DartifactId=${artifact-id} -Dversion=${release.version} -Dpackaging=jar -Dfile=${build}/maven-repo/com.sun.facelets/jars/${artifact-id}-${release.version}.jar" />
   </exec>
   <exec executable="mvn" os="Darwin">
-    <arg line="install:install-file -DgroupId=com.sun.facelets -DartifactId=${artifact-id} -Dversion=${release.version} -Dpackaging=jar -Dfile=${build}/maven-repo/com.sun.facelets/jars/${artifact-id}-${release.version}.jar  " />
+    <arg line="install:install-file -DgroupId=com.sun.facelets -DartifactId=${artifact-id} -Dversion=${release.version} -Dpackaging=jar -Dfile=${build}/maven-repo/com.sun.facelets/jars/${artifact-id}-${release.version}.jar" />
   </exec>
   <exec executable="mvn.bat" os="Windows 2000">
-    <arg line="install:install-file -DgroupId=com.sun.facelets -DartifactId=${artifact-id} -Dversion=${release.version} -Dpackaging=jar -Dfile=${build}/maven-repo/com.sun.facelets/jars/${artifact-id}-${release.version}.jar  " />
+    <arg line="install:install-file -DgroupId=com.sun.facelets -DartifactId=${artifact-id} -Dversion=${release.version} -Dpackaging=jar -Dfile=${build}/maven-repo/com.sun.facelets/jars/${artifact-id}-${release.version}.jar" />
   </exec>
   <exec executable="mvn.bat" os="Windows 2003">
-    <arg line="install:install-file -DgroupId=com.sun.facelets -DartifactId=${artifact-id} -Dversion=${release.version} -Dpackaging=jar -Dfile=${build}/maven-repo/com.sun.facelets/jars/${artifact-id}-${release.version}.jar  " />
+    <arg line="install:install-file -DgroupId=com.sun.facelets -DartifactId=${artifact-id} -Dversion=${release.version} -Dpackaging=jar -Dfile=${build}/maven-repo/com.sun.facelets/jars/${artifact-id}-${release.version}.jar" />
   </exec>
   <exec executable="mvn.bat" os="Windows XP">
-    <arg line="install:install-file -DgroupId=com.sun.facelets -DartifactId=${artifact-id} -Dversion=${release.version} -Dpackaging=jar -Dfile=${build}/maven-repo/com.sun.facelets/jars/${artifact-id}-${release.version}.jar  " />
+    <arg line="install:install-file -DgroupId=com.sun.facelets -DartifactId=${artifact-id} -Dversion=${release.version} -Dpackaging=jar -Dfile=${build}/maven-repo/com.sun.facelets/jars/${artifact-id}-${release.version}.jar" />
   </exec>
+
+  <copy file="${build}/maven-repo/com.sun.facelets/jars/${artifact-id}-${release.version}.jar"
+        todir="${jsf.src}/lib" overwrite="true" />
+  
 
 </target>
 

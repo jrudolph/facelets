@@ -20,6 +20,11 @@ import java.lang.reflect.Method;
 import javax.faces.FacesException;
 
 import com.sun.facelets.util.ParameterCheck;
+import java.util.HashMap;
+import java.util.Map;
+import javax.faces.application.FacesMessage;
+import javax.faces.application.ProjectStage;
+import javax.faces.context.FacesContext;
 
 /**
  * A TagLibrary that is composed of 1 or more TagLibrary children. Uses the
@@ -27,7 +32,7 @@ import com.sun.facelets.util.ParameterCheck;
  * children handles the requested method.
  * 
  * @author Jacob Hookom
- * @version $Id: CompositeTagLibrary.java,v 1.3.30.1 2008/07/01 16:51:10 edburns Exp $
+ * @version $Id: CompositeTagLibrary.java,v 1.3.30.2 2008/07/02 11:16:45 edburns Exp $
  */
 public final class CompositeTagLibrary implements TagLibrary {
 
@@ -62,7 +67,32 @@ public final class CompositeTagLibrary implements TagLibrary {
             libraries = librariesPlusOne;
             return true;
         }
+        else {
+            FacesContext context = FacesContext.getCurrentInstance();
+            if (ProjectStage.Development == context.getApplication().getProjectStage()) {
+                if (!ns.equals("http://www.w3.org/1999/xhtml")) {
+                    if (!getNamespaceMessageMap(context).containsKey(ns)) {
+                        context.addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN,
+                                "Warning: This page calls for XML namespace " + ns +
+                                " but no taglibrary exists for that namespace.", ""));
+                        getNamespaceMessageMap(context).put(ns, Boolean.TRUE);
+                    }
+                }
+            }
+        }
         return false;
+    }
+    
+    private Map<String,Boolean> getNamespaceMessageMap(FacesContext context) {
+        Map<String, Boolean> result = null;
+        
+        if (null == (result = (Map<String,Boolean>)
+            context.getAttributes().get("facelets.namespaceMessageMap"))) {
+            result = new HashMap<String,Boolean>();
+            context.getAttributes().put("facelets.namespaceMessageMap", result);
+        }
+        
+        return result;
     }
 
     /*

@@ -48,7 +48,7 @@ final class NamespaceHandler extends FunctionMapper implements FaceletHandler {
         try {
             next.apply(ctx, parent);
         } finally {
-            ctx.setFunctionMapper(orig);
+             ctx.setFunctionMapper(orig);
         }
     }
 
