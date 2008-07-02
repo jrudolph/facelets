@@ -14,6 +14,7 @@ import java.beans.BeanDescriptor;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 import javax.el.ELException;
 import javax.el.ValueExpression;
 import javax.faces.FacesException;
@@ -26,11 +27,22 @@ import javax.faces.webapp.pdl.AttachedObjectTarget;
  */
 public class InterfaceHandler extends TagHandler {
 
+    private static final Logger log = Logger.getLogger("facelets.tag.composite");
+
+    public final static String Name = "interface";
+
+    
     public InterfaceHandler(TagConfig config) {
         super(config);
     }
     
     public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, FaceletException, ELException {
+
+        imbueComponentWithMetadata(ctx, parent);
+        this.nextHandler.apply(ctx, parent);
+    }
+    
+    private void imbueComponentWithMetadata(FaceletContext ctx, UIComponent parent) {
         // the real implementation will check if there is a cached beaninfo somewhere first
 
         CompositeComponentBeanInfo componentBeanInfo = 
@@ -96,8 +108,6 @@ public class InterfaceHandler extends TagHandler {
             componentDescriptor.setValue(AttachedObjectTarget.ATTACHED_OBJECT_TARGETS_KEY,
                     targetList);
         }
-        
-        
         
     }
 

@@ -30,6 +30,7 @@ import com.sun.facelets.tag.TagException;
 import com.sun.facelets.tag.TagLibrary;
 import com.sun.facelets.tag.composite.CompositeLibrary;
 import com.sun.facelets.tag.composite.ImplementationHandler;
+import com.sun.facelets.tag.composite.InterfaceHandler;
 import com.sun.facelets.tag.ui.ComponentRefHandler;
 import com.sun.facelets.tag.ui.CompositionHandler;
 import com.sun.facelets.tag.ui.UILibrary;
@@ -41,7 +42,7 @@ import com.sun.facelets.tag.ui.UILibrary;
  * @see com.sun.facelets.compiler.Compiler
  * 
  * @author Jacob Hookom
- * @version $Id: CompilationManager.java,v 1.14.8.1 2008/07/02 11:40:17 edburns Exp $
+ * @version $Id: CompilationManager.java,v 1.14.8.2 2008/07/02 17:42:49 edburns Exp $
  */
 final class CompilationManager {
 
@@ -55,7 +56,7 @@ final class CompilationManager {
 
     private final NamespaceManager namespaceManager;
 
-    private final Stack units;
+    private final Stack<CompilationUnit> units;
 
     private int tagId;
 
@@ -83,8 +84,16 @@ final class CompilationManager {
         this.finished = false;
 
         // our compilationunit stack
-        this.units = new Stack();
+        this.units = new Stack<CompilationUnit>();
         this.units.push(new CompilationUnit());
+    }
+    
+    private InterfaceUnit interfaceUnit;
+    private InterfaceUnit getInterfaceUnit() {
+        return interfaceUnit;
+    }
+    private void setInterfaceUnit(InterfaceUnit interfaceUnit) {
+        this.interfaceUnit = interfaceUnit;
     }
     
     public void writeInstruction(String value) {
@@ -187,10 +196,35 @@ final class CompilationManager {
             this.startUnit(new TrimmedTagUnit(this.tagLibrary, qname[0], qname[1], t, this
                     .nextTagId()));
             log.fine("New Namespace and [Trimmed] TagUnit pushed");
+        } else if (isImplementation(qname[0], qname[1])) {
+            log.fine("Composite Component Implementation Found, Popping Parent Tags");
+
+            // save aside the InterfaceUnit
+            InterfaceUnit iface = getInterfaceUnit();
+            if (null == iface) {
+                throw new TagException(orig, "Unable to find interface for implementation.");
+            }
+
+            // Cleare the parent tags
+            this.units.clear();
+            NamespaceUnit nsUnit = this.namespaceManager
+                    .toNamespaceUnit(this.tagLibrary);
+            this.units.push(nsUnit);
+            this.currentUnit().addChild(iface);
+            this.startUnit(new ImplementationUnit(this.tagLibrary, qname[0], qname[1], t, this
+                    .nextTagId()));
+            log.fine("New Namespace and ImplementationUnit pushed");
+            
         } else if (isRemove(qname[0], qname[1])) {
             this.units.push(new RemoveUnit());
         } else if (this.tagLibrary.containsTagHandler(qname[0], qname[1])) {
-            this.startUnit(new TagUnit(this.tagLibrary, qname[0], qname[1], t, this.nextTagId()));
+            if (isInterface(qname[0], qname[1])) {
+                InterfaceUnit iface = new InterfaceUnit(this.tagLibrary, qname[0], qname[1], t, this.nextTagId());
+                setInterfaceUnit(iface);
+                this.startUnit(iface);
+            } else {
+                this.startUnit(new TagUnit(this.tagLibrary, qname[0], qname[1], t, this.nextTagId()));
+            }
         } else if (this.tagLibrary.containsNamespace(qname[0])) {
             throw new TagException(orig, "Tag Library supports namespace: "+qname[0]+", but no tag was defined for name: "+qname[1]);
         } else {
@@ -317,9 +351,19 @@ final class CompilationManager {
         boolean matchInUILibrary = UILibrary.Namespace.equals(ns) && 
                 (CompositionHandler.Name.equals(name) || 
                 ComponentRefHandler.Name.equals(name));
-        boolean matchInCompositeLybrary = CompositeLibrary.Namespace.equals(ns) && 
+        return matchInUILibrary;
+    }
+
+    protected static boolean isImplementation(String ns, String name) {
+        boolean matchInCompositeLibrary = CompositeLibrary.Namespace.equals(ns) && 
                 (ImplementationHandler.Name.equals(name));
-        return matchInUILibrary || matchInCompositeLybrary;
+        return matchInCompositeLibrary;
+    }
+
+    protected static boolean isInterface(String ns, String name) {
+        boolean matchInCompositeLibrary = CompositeLibrary.Namespace.equals(ns) && 
+                (InterfaceHandler.Name.equals(name));
+        return matchInCompositeLibrary;
     }
 
     private String[] determineQName(Tag tag) {

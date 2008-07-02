@@ -18,7 +18,7 @@ import com.sun.facelets.tag.AbstractTagLibrary;
 
 /**
  * @author Jacob Hookom
- * @version $Id: CompositeLibrary.java,v 1.1.2.1 2008/07/02 11:16:44 edburns Exp $
+ * @version $Id: CompositeLibrary.java,v 1.1.2.2 2008/07/02 17:42:50 edburns Exp $
  */
 public final class CompositeLibrary extends AbstractTagLibrary {
 
@@ -30,12 +30,19 @@ public final class CompositeLibrary extends AbstractTagLibrary {
         super(Namespace);
 
         this.addTagHandler("interface", InterfaceHandler.class);
+        
         this.addTagHandler("attribute", AttributeHandler.class);
         this.addTagHandler("deferred-value", DeferredValueHandler.class);
         this.addTagHandler("type", TypeHandler.class);
         this.addTagHandler("deferred-method", DeferredMethodHandler.class);
         this.addTagHandler("method-signature", MethodSignatureHandler.class);
+        
+        this.addTagHandler("editableValueHolder", EditableValueHolderHandler.class);
+        this.addTagHandler("actionSource", ActionSourceHandler.class);
+        this.addTagHandler("valueHolder", ValueHolderHandler.class);
+        
         this.addTagHandler("facet", FacetHandler.class);
+        
         this.addTagHandler("implementation", ImplementationHandler.class);
         this.addTagHandler("children", ChildrenHandler.class);
     }
