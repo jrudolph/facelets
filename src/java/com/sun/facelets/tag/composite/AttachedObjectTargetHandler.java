@@ -26,17 +26,19 @@ import javax.faces.webapp.pdl.AttachedObjectTarget;
  *
  * @author edburns
  */
-public class AttachedObjectHandler extends TagHandler {
+public abstract class AttachedObjectTargetHandler extends TagHandler {
     
     private TagAttribute name = null;
     private TagAttribute targets = null;
 
-    public AttachedObjectHandler(TagConfig config) {
+    public AttachedObjectTargetHandler(TagConfig config) {
         super(config);
         this.name = this.getRequiredAttribute("name");
         this.targets = this.getAttribute("targets");
         
     }
+    
+    abstract AttachedObjectTargetImpl newAttachedObjectTargetImpl();
     
     public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, FaceletException, ELException {
 
@@ -53,7 +55,7 @@ public class AttachedObjectHandler extends TagHandler {
         FacesContext context = ctx.getFacesContext();
         List<AttachedObjectTarget> targetList = (List<AttachedObjectTarget>)
                 componentDescriptor.getValue(AttachedObjectTarget.ATTACHED_OBJECT_TARGETS_KEY);
-        AttachedObjectTargetImpl target = new AttachedObjectTargetImpl();
+        AttachedObjectTargetImpl target = newAttachedObjectTargetImpl();
         targetList.add(target);
         target.setComponent(parent);
         

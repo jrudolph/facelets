@@ -18,7 +18,7 @@ import com.sun.facelets.tag.AbstractTagLibrary;
 
 /**
  * @author Jacob Hookom
- * @version $Id: CompositeLibrary.java,v 1.1.2.3 2008/07/02 20:34:35 edburns Exp $
+ * @version $Id: CompositeLibrary.java,v 1.1.2.4 2008/07/16 17:52:46 edburns Exp $
  */
 public final class CompositeLibrary extends AbstractTagLibrary {
 
@@ -37,9 +37,9 @@ public final class CompositeLibrary extends AbstractTagLibrary {
         this.addTagHandler("deferred-method", DeferredMethodHandler.class);
         this.addTagHandler("method-signature", MethodSignatureHandler.class);
         
-        this.addTagHandler("editableValueHolder", AttachedObjectHandler.class);
-        this.addTagHandler("actionSource", AttachedObjectHandler.class);
-        this.addTagHandler("valueHolder", AttachedObjectHandler.class);
+        this.addTagHandler("editableValueHolder", EditableValueHolderAttachedObjectTargetHandler.class);
+        this.addTagHandler("actionSource", ActionSource2AttachedObjectTargetHandler.class);
+        this.addTagHandler("valueHolder", ValueHolderAttachedObjectTargetHandler.class);
         
         this.addTagHandler("facet", FacetHandler.class);
         
