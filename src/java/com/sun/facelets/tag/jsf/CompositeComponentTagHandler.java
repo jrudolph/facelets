@@ -4,20 +4,16 @@
  */
 package com.sun.facelets.tag.jsf;
 
-import com.sun.facelets.tag.composite.*;
 import com.sun.facelets.Facelet;
 import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
 import com.sun.facelets.FaceletFactory;
 import com.sun.facelets.FaceletViewHandler;
+import com.sun.facelets.el.VariableMapperWrapper;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagAttributes;
 import com.sun.facelets.tag.jsf.ComponentConfig;
 import com.sun.facelets.tag.jsf.ComponentHandler;
-import com.sun.facelets.tag.jsf.ConvertHandler;
-import com.sun.facelets.tag.jsf.ValidateHandler;
-import com.sun.facelets.tag.jsf.core.ActionListenerHandler;
-import com.sun.facelets.tag.jsf.core.ValueChangeListenerHandler;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,15 +22,13 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.el.ELException;
+import javax.el.Expression;
 import javax.el.ExpressionFactory;
 import javax.el.ValueExpression;
 import javax.el.VariableMapper;
 import javax.faces.FacesException;
 import javax.faces.application.Resource;
-import javax.faces.component.ActionSource2;
-import javax.faces.component.EditableValueHolder;
 import javax.faces.component.UIComponent;
-import javax.faces.component.ValueHolder;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.webapp.pdl.AttachedObjectHandler;
@@ -55,13 +49,13 @@ public class CompositeComponentTagHandler extends ComponentHandler {
         this.componentTypeAttr = this.getAttribute("componentType");
     }
     
-    private void convertAttributesIntoParams(FaceletContext ctx) {
+    private void copyTagAttributesIntoComponentAttributes(FaceletContext ctx,
+            UIComponent compositeComponent) {
         TagAttributes tagAttributes = this.tag.getAttributes();
         TagAttribute attrs[] = tagAttributes.getAll();
         String name, value;
         ExpressionFactory expressionFactory = null;
-        ValueExpression valueExpression = null;
-        VariableMapper variableMapper = null;
+        Expression expression = null;
         for (int i = 0; i < attrs.length; i++) {
             name = attrs[i].getLocalName();
             if (null != name && 0 < name.length() && 
@@ -72,16 +66,16 @@ public class CompositeComponentTagHandler extends ComponentHandler {
                     if (null == expressionFactory) {
                         expressionFactory = ctx.getFacesContext().getApplication().
                                 getExpressionFactory();
-                        variableMapper = ctx.getVariableMapper();
                     }
+                    // PENDING(edburns): deal with methodExpressions
                     if (value.startsWith("#{")) {
-                        valueExpression = expressionFactory.
+                        expression = expressionFactory.
                                 createValueExpression(ctx, value, Object.class);
                     } else {
-                        valueExpression = expressionFactory.
+                        expression = expressionFactory.
                                 createValueExpression(value, Object.class);
                     }
-                    variableMapper.setVariable(name, valueExpression);
+                    compositeComponent.getAttributes().put(name, expression);
                 }
             }
         }
@@ -142,9 +136,7 @@ public class CompositeComponentTagHandler extends ComponentHandler {
         super.applyNextHandler(ctx, c);
         // Apply the facelet for this composite component
         ExternalContext extContext = ctx.getFacesContext().getExternalContext();
-        setCurrentCompositeComponent(extContext, c);
         applyCompositeComponent(ctx, c);
-        setCurrentCompositeComponent(extContext, null);
         // Allow any PDL declared attached objects to be retargeted
         if (ComponentSupport.isNew(c)) {
             PDLUtils.retargetAttachedObjects(ctx.getFacesContext(), c,
@@ -153,27 +145,24 @@ public class CompositeComponentTagHandler extends ComponentHandler {
 
     }
 
-    static UIComponent getCurrentCompositeComponent(ExternalContext extContext) {
-        UIComponent result = null;
-        result = (UIComponent) extContext.getRequestMap().get("com.sun.facelets.CurrentCompositeComponent");
-
-        return result;
-    }
-
-    private static void setCurrentCompositeComponent(ExternalContext extContext,
-            UIComponent cur) {
-        extContext.getRequestMap().put("com.sun.facelets.CurrentCompositeComponent",
-                cur);
-    }
-
     private void applyCompositeComponent(FaceletContext ctx, UIComponent c) {
         Facelet f = null;
         FacesContext facesContext = ctx.getFacesContext();
         FaceletViewHandler faceletViewHandler = (FaceletViewHandler) facesContext.getApplication().getViewHandler();
         FaceletFactory factory = faceletViewHandler.getFaceletFactory();
+        VariableMapper orig = ctx.getVariableMapper();
         try {
             f = factory.getFacelet(compositeComponentResource.getURL());
-            convertAttributesIntoParams(ctx);
+            copyTagAttributesIntoComponentAttributes(ctx, c);
+            VariableMapper wrapper = new VariableMapperWrapper(orig) {
+
+                @Override
+                public ValueExpression resolveVariable(String variable) {
+                    return super.resolveVariable(variable);
+                }
+                
+            };
+            ctx.setVariableMapper(wrapper);
             f.apply(facesContext, c);
         } catch (IOException ex) {
             Logger.getLogger(CompositeComponentTagHandler.class.getName()).log(Level.SEVERE, null, ex);
@@ -183,6 +172,9 @@ public class CompositeComponentTagHandler extends ComponentHandler {
             Logger.getLogger(CompositeComponentTagHandler.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ELException ex) {
             Logger.getLogger(CompositeComponentTagHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        finally {
+            ctx.setVariableMapper(orig);
         }
 
     }

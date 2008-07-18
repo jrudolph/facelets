@@ -46,11 +46,11 @@ import com.sun.facelets.tag.jsf.ComponentSupport;
  * Default Facelet implementation.
  * 
  * @author Jacob Hookom
- * @version $Id: DefaultFacelet.java,v 1.9 2006/04/03 05:10:38 jhook Exp $
+ * @version $Id: DefaultFacelet.java,v 1.10.4.1 2008/07/18 18:40:33 edburns Exp $
  */
 final class DefaultFacelet extends Facelet {
 
-    private final Logger log = Logger.getLogger("facelets.facelet");
+    private static final Logger log = Logger.getLogger("facelets.facelet");
 
     private final static String APPLIED_KEY = "com.sun.facelets.APPLIED";
 
@@ -96,7 +96,7 @@ final class DefaultFacelet extends Facelet {
         ComponentSupport.finalizeForDeletion(parent);
         this.markApplied(parent);
     }
-
+    
     private final void refresh(UIComponent c) {
         if (this.refreshPeriod > 0) {
 
