@@ -14,12 +14,14 @@ import java.beans.BeanDescriptor;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import javax.el.ELException;
 import javax.el.ValueExpression;
 import javax.faces.FacesException;
 import javax.faces.component.UIComponent;
 import javax.faces.webapp.pdl.AttachedObjectTarget;
+import javax.faces.application.Resource;
 
 /**
  *
@@ -44,10 +46,11 @@ public class InterfaceHandler extends TagHandler {
     
     private void imbueComponentWithMetadata(FaceletContext ctx, UIComponent parent) {
         // the real implementation will check if there is a cached beaninfo somewhere first
+	Map<String, Object> attrs = parent.getAttributes();
 
         CompositeComponentBeanInfo componentBeanInfo = 
                 new CompositeComponentBeanInfo();
-        parent.getAttributes().put(UIComponent.BEANINFO_KEY, componentBeanInfo);
+        attrs.put(UIComponent.BEANINFO_KEY, componentBeanInfo);
         BeanDescriptor componentDescriptor = new BeanDescriptor(parent.getClass());
         componentBeanInfo.setBeanDescriptor(componentDescriptor);
         
@@ -67,16 +70,12 @@ public class InterfaceHandler extends TagHandler {
             if (null != (attr = this.getAttribute("expert"))) {
                 ve = attr.getValueExpression(ctx, Boolean.class);
                 booleanValue = ((Boolean)ve.getValue(ctx)).booleanValue();
-                if (null != strValue) {
-                    componentDescriptor.setExpert(booleanValue);
-                }
+                componentDescriptor.setExpert(booleanValue);
             }
             if (null != (attr = this.getAttribute("hidden"))) {
                 ve = attr.getValueExpression(ctx, Boolean.class);
                 booleanValue = ((Boolean)ve.getValue(ctx)).booleanValue();
-                if (null != strValue) {
-                    componentDescriptor.setHidden(booleanValue);
-                }
+                componentDescriptor.setHidden(booleanValue);
             }
             if (null != (attr = this.getAttribute("name"))) {
                 ve = attr.getValueExpression(ctx, String.class);
@@ -88,9 +87,7 @@ public class InterfaceHandler extends TagHandler {
             if (null != (attr = this.getAttribute("preferred"))) {
                 ve = attr.getValueExpression(ctx, Boolean.class);
                 booleanValue = ((Boolean)ve.getValue(ctx)).booleanValue();
-                if (null != strValue) {
-                    componentDescriptor.setPreferred(booleanValue);
-                }
+                componentDescriptor.setPreferred(booleanValue);
             }
             if (null != (attr = this.getAttribute("shortDescription"))) {
                 ve = attr.getValueExpression(ctx, String.class);
@@ -108,6 +105,13 @@ public class InterfaceHandler extends TagHandler {
             componentDescriptor.setValue(AttachedObjectTarget.ATTACHED_OBJECT_TARGETS_KEY,
                     targetList);
         }
+
+	Resource componentResource = 
+	    (Resource) attrs.get(Resource.COMPONENT_RESOURCE_KEY);
+	if (null == componentResource) {
+	    throw new NullPointerException("Unable to find Resource for composite component");
+	}
+	attrs.put(Resource.COMPONENT_RESOURCE_KEY, componentResource);
         
     }
 
