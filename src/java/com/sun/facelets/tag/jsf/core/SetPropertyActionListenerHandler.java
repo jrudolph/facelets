@@ -6,6 +6,7 @@ import java.io.Serializable;
 import javax.el.ELContext;
 import javax.el.ELException;
 import javax.el.ValueExpression;
+import javax.el.ExpressionFactory;
 import javax.faces.FacesException;
 import javax.faces.component.ActionSource;
 import javax.faces.component.ActionSource2;
@@ -110,6 +111,11 @@ public class SetPropertyActionListenerHandler extends TagHandler {
             FacesContext faces = FacesContext.getCurrentInstance();
             ELContext el = faces.getELContext();
             Object valueObj = this.value.getValue(el);
+             if (valueObj != null) {
+                ExpressionFactory factory =
+                      faces.getApplication().getExpressionFactory();
+                valueObj = factory.coerceToType(value, target.getType(el));
+            }
             this.target.setValue(el, valueObj);
         }
 
