@@ -37,7 +37,21 @@ public class CompositeComponentTagLibrary extends AbstractTagLibrary {
         this.ns = ns;
     }
     
+    public CompositeComponentTagLibrary(String ns, String compositeLibraryName) {
+        super(ns);
+        if (null == ns) {
+            throw new NullPointerException();
+        }
+        this.ns = ns;
+        if (null == compositeLibraryName) {
+            throw new NullPointerException();
+        }
+        this.compositeLibraryName = compositeLibraryName;
+        
+    }
+    
     private String ns = null;
+    private String compositeLibraryName;
 
     public boolean containsFunction(String ns, String name) {
         return false;
@@ -100,7 +114,7 @@ public class CompositeComponentTagLibrary extends AbstractTagLibrary {
     private static final String NS_COMPOSITE_COMPONENT_PREFIX = 
             "http://java.sun.com/jsf/composite/";
     
-    public static boolean tagLibraryForNSExists(String toTest) {
+    public boolean tagLibraryForNSExists(String toTest) {
         boolean result = false;
         
         String resourceId = null;
@@ -143,13 +157,18 @@ public class CompositeComponentTagLibrary extends AbstractTagLibrary {
         return result;
     }
     
-    private static String getCompositeComponentLibraryName(String toTest) {
+    private String getCompositeComponentLibraryName(String toTest) {
         String resourceId = null;
-        int resourceIdIndex;
-        if (-1 != (resourceIdIndex = toTest.indexOf(NS_COMPOSITE_COMPONENT_PREFIX))) {
-            resourceIdIndex += NS_COMPOSITE_COMPONENT_PREFIX.length();
-            if (resourceIdIndex < toTest.length()) {
-                resourceId = toTest.substring(resourceIdIndex);
+        if (null != compositeLibraryName) {
+            resourceId = compositeLibraryName;
+        }
+        else {
+            int resourceIdIndex;
+            if (-1 != (resourceIdIndex = toTest.indexOf(NS_COMPOSITE_COMPONENT_PREFIX))) {
+                resourceIdIndex += NS_COMPOSITE_COMPONENT_PREFIX.length();
+                if (resourceIdIndex < toTest.length()) {
+                    resourceId = toTest.substring(resourceIdIndex);
+                }
             }
         }
         

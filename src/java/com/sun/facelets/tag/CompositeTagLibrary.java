@@ -32,7 +32,7 @@ import javax.faces.context.FacesContext;
  * children handles the requested method.
  * 
  * @author Jacob Hookom
- * @version $Id: CompositeTagLibrary.java,v 1.3.30.2 2008/07/02 11:16:45 edburns Exp $
+ * @version $Id: CompositeTagLibrary.java,v 1.3.30.3 2008/07/29 14:45:17 edburns Exp $
  */
 public final class CompositeTagLibrary implements TagLibrary {
 
@@ -55,7 +55,9 @@ public final class CompositeTagLibrary implements TagLibrary {
                 return true;
             }
         }
-        if (CompositeComponentTagLibrary.tagLibraryForNSExists(ns)) {
+        // PENDING: this is a terribly inefficient impl.  Needs refactoring.
+        CompositeComponentTagLibrary toTest = new CompositeComponentTagLibrary(ns);
+        if (toTest.tagLibraryForNSExists(ns)) {
             TagLibrary [] librariesPlusOne = new TagLibrary[libraries.length+1];
             System.arraycopy(this.libraries, 0, librariesPlusOne, 
                     0, libraries.length);
