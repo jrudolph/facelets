@@ -25,7 +25,7 @@ public class ChildrenHandler extends TagHandler {
     }
     
     public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, FaceletException, ELException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        
     }
 
 }

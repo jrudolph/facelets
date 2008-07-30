@@ -40,7 +40,12 @@ public class AttributeHandler extends TagHandler {
     }
     
     public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, FaceletException, ELException {
-	Map<String, Object> componentAttrs = parent.getAttributes();
+        parent = parent.getParent();
+        if (null == parent) {
+	    throw new NullPointerException("Unable to find current composite component");
+	}
+        
+        Map<String, Object> componentAttrs = parent.getAttributes();
         ValueExpression ve = null;
         String strValue = null;
         boolean booleanValue = false;

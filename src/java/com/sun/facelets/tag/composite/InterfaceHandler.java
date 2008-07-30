@@ -45,6 +45,11 @@ public class InterfaceHandler extends TagHandler {
     }
     
     private void imbueComponentWithMetadata(FaceletContext ctx, UIComponent parent) {
+        parent = parent.getParent();
+        if (null == parent) {
+	    throw new NullPointerException("Unable to find current composite component");
+	}
+        
         // the real implementation will check if there is a cached beaninfo somewhere first
 	Map<String, Object> attrs = parent.getAttributes();
 

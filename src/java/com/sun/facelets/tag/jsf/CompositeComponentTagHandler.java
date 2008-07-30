@@ -29,6 +29,7 @@ import javax.el.VariableMapper;
 import javax.faces.FacesException;
 import javax.faces.application.Resource;
 import javax.faces.component.UIComponent;
+import javax.faces.component.UIPanel;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.webapp.pdl.AttachedObjectHandler;
@@ -92,11 +93,6 @@ public class CompositeComponentTagHandler extends ComponentHandler {
         FacesContext context = ctx.getFacesContext();
         Resource componentResource = CompositeComponentTagLibrary.getScriptComponentResource(context, compositeComponentResource);
 
-        // PENDING(edburns): IMPORTANT: Figure out why this is getting
-        // called twice for loginPanel on a single render.  
-        // I think it has something to do with the resource request because
-        // I see that the LoginProductName.png image wasn't rendered initially
-        
         if (null != componentResource) {
             result = context.getApplication().createComponent(componentResource);
         }
@@ -124,7 +120,7 @@ public class CompositeComponentTagHandler extends ComponentHandler {
             throw new NullPointerException("Unable to instantiate component for tag " +
                     this.tag.getLocalName() + " with id " + this.id.getValue(ctx));
         }
-        
+        result.setRendererType("javax.faces.Composite");
 
         return result;
     }
@@ -151,6 +147,12 @@ public class CompositeComponentTagHandler extends ComponentHandler {
         FaceletViewHandler faceletViewHandler = (FaceletViewHandler) facesContext.getApplication().getViewHandler();
         FaceletFactory factory = faceletViewHandler.getFaceletFactory();
         VariableMapper orig = ctx.getVariableMapper();
+        
+        UIPanel facetComponent = (UIPanel)
+                facesContext.getApplication().createComponent("javax.faces.Panel");
+        facetComponent.setRendererType("javax.faces.Group");
+        c.getFacets().put(UIComponent.COMPOSITE_FACET_NAME, facetComponent);
+        
         try {
             f = factory.getFacelet(compositeComponentResource.getURL());
             copyTagAttributesIntoComponentAttributes(ctx, c);
@@ -163,7 +165,7 @@ public class CompositeComponentTagHandler extends ComponentHandler {
                 
             };
             ctx.setVariableMapper(wrapper);
-            f.apply(facesContext, c);
+            f.apply(facesContext, facetComponent);
         } catch (IOException ex) {
             Logger.getLogger(CompositeComponentTagHandler.class.getName()).log(Level.SEVERE, null, ex);
         } catch (FaceletException ex) {

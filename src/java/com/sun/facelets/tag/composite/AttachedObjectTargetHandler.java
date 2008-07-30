@@ -41,6 +41,10 @@ public abstract class AttachedObjectTargetHandler extends TagHandler {
     abstract AttachedObjectTargetImpl newAttachedObjectTargetImpl();
     
     public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, FaceletException, ELException {
+        parent = parent.getParent();
+        if (null == parent) {
+	    throw new NullPointerException("Unable to find current composite component");
+	}
 
         BeanInfo componentBeanInfo = (BeanInfo)
                 parent.getAttributes().get(UIComponent.BEANINFO_KEY);

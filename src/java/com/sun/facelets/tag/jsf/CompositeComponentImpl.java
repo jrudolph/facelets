@@ -15,7 +15,7 @@ import javax.faces.context.FacesContext;
  */
 public class CompositeComponentImpl extends UINamingContainer {
     
-    public static final String TYPE = "javax.faces.Composite";
+    public static final String TYPE = "javax.faces.NamingContainer";
 
     @Override
     public String getFamily() {
