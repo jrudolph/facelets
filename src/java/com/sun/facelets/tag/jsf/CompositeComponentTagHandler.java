@@ -124,7 +124,7 @@ public class CompositeComponentTagHandler extends ComponentHandler {
 
         return result;
     }
-
+    
     @Override
     protected void applyNextHandler(FaceletContext ctx, UIComponent c) throws IOException, FacesException, ELException {
         // Allow any nested elements that reside inside the markup element
