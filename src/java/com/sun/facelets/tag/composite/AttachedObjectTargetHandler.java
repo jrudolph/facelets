@@ -11,6 +11,7 @@ import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.TagException;
 import com.sun.facelets.tag.TagHandler;
+import com.sun.facelets.tag.jsf.ComponentSupport;
 import java.beans.BeanDescriptor;
 import java.beans.BeanInfo;
 import java.io.IOException;
@@ -41,10 +42,12 @@ public abstract class AttachedObjectTargetHandler extends TagHandler {
     abstract AttachedObjectTargetImpl newAttachedObjectTargetImpl();
     
     public void apply(FaceletContext ctx, UIComponent parent) throws IOException, FacesException, FaceletException, ELException {
-        parent = parent.getParent();
-        if (null == parent) {
-	    throw new NullPointerException("Unable to find current composite component");
-	}
+        // only process if it's been created
+        if (null == parent || 
+            (null == (parent = parent.getParent())) ||
+            !(ComponentSupport.isNew(parent))) {
+            return;
+        }
 
         BeanInfo componentBeanInfo = (BeanInfo)
                 parent.getAttributes().get(UIComponent.BEANINFO_KEY);

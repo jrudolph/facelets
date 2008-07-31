@@ -18,7 +18,7 @@ import com.sun.facelets.tag.AbstractTagLibrary;
 
 /**
  * @author Jacob Hookom
- * @version $Id: CompositeLibrary.java,v 1.1.2.4 2008/07/16 17:52:46 edburns Exp $
+ * @version $Id: CompositeLibrary.java,v 1.1.2.5 2008/07/31 15:45:02 edburns Exp $
  */
 public final class CompositeLibrary extends AbstractTagLibrary {
 
@@ -29,8 +29,10 @@ public final class CompositeLibrary extends AbstractTagLibrary {
     public CompositeLibrary() {
         super(Namespace);
 
+        // The interface section
         this.addTagHandler("interface", InterfaceHandler.class);
         
+        // Things that go insead of the interface section
         this.addTagHandler("attribute", AttributeHandler.class);
         this.addTagHandler("deferred-value", DeferredValueHandler.class);
         this.addTagHandler("type", TypeHandler.class);
@@ -40,10 +42,13 @@ public final class CompositeLibrary extends AbstractTagLibrary {
         this.addTagHandler("editableValueHolder", EditableValueHolderAttachedObjectTargetHandler.class);
         this.addTagHandler("actionSource", ActionSource2AttachedObjectTargetHandler.class);
         this.addTagHandler("valueHolder", ValueHolderAttachedObjectTargetHandler.class);
+        this.addTagHandler("facet", DeclareFacetHandler.class);
         
-        this.addTagHandler("facet", FacetHandler.class);
-        
+        // The implementation section
         this.addTagHandler("implementation", ImplementationHandler.class);
-        this.addTagHandler("children", ChildrenHandler.class);
+        
+        // Things that go inside of the implementation section
+        this.addTagHandler("insertChildren", InsertChildrenHandler.class);
+        this.addTagHandler("insertFacet", InsertFacetHandler.class);
     }
 }

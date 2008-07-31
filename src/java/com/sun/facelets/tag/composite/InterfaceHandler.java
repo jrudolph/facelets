@@ -10,6 +10,7 @@ import com.sun.facelets.FaceletException;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.TagHandler;
+import com.sun.facelets.tag.jsf.ComponentSupport;
 import java.beans.BeanDescriptor;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -45,10 +46,12 @@ public class InterfaceHandler extends TagHandler {
     }
     
     private void imbueComponentWithMetadata(FaceletContext ctx, UIComponent parent) {
-        parent = parent.getParent();
-        if (null == parent) {
-	    throw new NullPointerException("Unable to find current composite component");
-	}
+        // only process if it's been created
+        if (null == parent || 
+            (null == (parent = parent.getParent())) ||
+            !(ComponentSupport.isNew(parent))) {
+            return;
+        }
         
         // the real implementation will check if there is a cached beaninfo somewhere first
 	Map<String, Object> attrs = parent.getAttributes();
