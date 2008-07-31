@@ -30,11 +30,13 @@ import javax.faces.component.UIComponent;
 public class DeclareFacetHandler extends TagHandler {
     
     private TagAttribute name = null;
+    private TagAttribute required = null;
 
 
     public DeclareFacetHandler(TagConfig config) {
         super(config);
         this.name = this.getRequiredAttribute("name");
+        this.required = this.getAttribute("required");
         
     }
     
@@ -76,6 +78,11 @@ public class DeclareFacetHandler extends TagHandler {
             throw new  TagException(tag, "Unable to create property descriptor for facet" + strValue, ex);
         }
         facetDescriptors.put(strValue, propertyDescriptor);
+        
+        if (null != required) {
+            ve = required.getValueExpression(ctx, Boolean.class);
+            propertyDescriptor.setValue("required", ve);
+        }
         
         if (null != (attr = this.getAttribute("displayName"))) {
             ve = attr.getValueExpression(ctx, String.class);
