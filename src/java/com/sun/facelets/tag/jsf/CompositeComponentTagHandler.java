@@ -6,14 +6,17 @@ package com.sun.facelets.tag.jsf;
 
 import com.sun.facelets.Facelet;
 import com.sun.facelets.FaceletContext;
+import com.sun.facelets.FaceletContext;
 import com.sun.facelets.FaceletException;
 import com.sun.facelets.FaceletFactory;
 import com.sun.facelets.FaceletViewHandler;
 import com.sun.facelets.el.VariableMapperWrapper;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagAttributes;
+import com.sun.facelets.tag.composite.CompositeComponentBeanInfo;
 import com.sun.facelets.tag.jsf.ComponentConfig;
 import com.sun.facelets.tag.jsf.ComponentHandler;
+import java.beans.BeanDescriptor;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,13 +44,10 @@ import javax.faces.webapp.pdl.PDLUtils;
  */
 public class CompositeComponentTagHandler extends ComponentHandler {
     
-    private final TagAttribute componentTypeAttr;
-
     CompositeComponentTagHandler(Resource compositeComponentResource,
             ComponentConfig config) {
         super(config);
         this.compositeComponentResource = compositeComponentResource;
-        this.componentTypeAttr = this.getAttribute("componentType");
     }
     
     private void copyTagAttributesIntoComponentAttributes(FaceletContext ctx,
@@ -93,14 +93,23 @@ public class CompositeComponentTagHandler extends ComponentHandler {
         FacesContext context = ctx.getFacesContext();
         Resource componentResource = CompositeComponentTagLibrary.getScriptComponentResource(context, compositeComponentResource);
 
+        // PENDING this is wasteful.  I need some way to discover the 
+        // component metadata before creating the component instance.
+        // The easiest way right now is to create a dummy component instance
+        // suck out its metadata, then create the "real" component.
+        CompositeComponentBeanInfo componentMetadata = discoverComponentMetadata(ctx);
+        
+        assert(null != componentMetadata);
+        BeanDescriptor componentBeanDescriptor = componentMetadata.getBeanDescriptor();
+        
         if (null != componentResource) {
             result = context.getApplication().createComponent(componentResource);
         }
 
         if (null == result) {
-            if (this.componentTypeAttr != null) {
-                ValueExpression ve = this.componentTypeAttr.getValueExpression(ctx,
-                        String.class);
+            ValueExpression ve = (ValueExpression)
+                    componentBeanDescriptor.getValue(UIComponent.COMPOSITE_COMPONENT_TYPE_KEY);
+            if (null != ve) {
                 String type = (String) ve.getValue(ctx);
                 if (null != type && 0 < type.length()) {
                     result = context.getApplication().createComponent(type);
@@ -139,6 +148,53 @@ public class CompositeComponentTagHandler extends ComponentHandler {
                     getAttachedObjectHandlers(c, false));
         }
 
+    }
+    
+    private CompositeComponentBeanInfo discoverComponentMetadata(FaceletContext ctx) {
+        CompositeComponentBeanInfo result = null;
+        FacesContext context = ctx.getFacesContext();
+        FaceletViewHandler faceletViewHandler = (FaceletViewHandler) context.getApplication().getViewHandler();
+        FaceletFactory factory = faceletViewHandler.getFaceletFactory();
+        VariableMapper orig = ctx.getVariableMapper();
+        UIComponent tmp = context.getApplication().createComponent("javax.faces.NamingContainer");
+        UIPanel facetComponent = (UIPanel)
+                context.getApplication().createComponent("javax.faces.Panel");
+        facetComponent.setRendererType("javax.faces.Group");
+        tmp.getFacets().put(UIComponent.COMPOSITE_FACET_NAME, facetComponent);
+        tmp.getAttributes().put(Resource.COMPONENT_RESOURCE_KEY, 
+                compositeComponentResource);
+        
+        Facelet f;
+
+        try {
+            f = factory.getFacelet(compositeComponentResource.getURL());
+            copyTagAttributesIntoComponentAttributes(ctx, tmp);
+            VariableMapper wrapper = new VariableMapperWrapper(orig) {
+
+                @Override
+                public ValueExpression resolveVariable(String variable) {
+                    return super.resolveVariable(variable);
+                }
+                
+            };
+            ctx.setVariableMapper(wrapper);
+            f.apply(context, facetComponent);
+        } catch (IOException ex) {
+            Logger.getLogger(CompositeComponentTagHandler.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (FaceletException ex) {
+            Logger.getLogger(CompositeComponentTagHandler.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (FacesException ex) {
+            Logger.getLogger(CompositeComponentTagHandler.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ELException ex) {
+            Logger.getLogger(CompositeComponentTagHandler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        finally {
+            ctx.setVariableMapper(orig);
+        }
+        result = (CompositeComponentBeanInfo) 
+                tmp.getAttributes().get(UIComponent.BEANINFO_KEY);
+        
+        return result;
     }
 
     private void applyCompositeComponent(FaceletContext ctx, UIComponent c) {

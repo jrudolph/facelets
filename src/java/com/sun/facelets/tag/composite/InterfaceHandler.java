@@ -61,12 +61,12 @@ public class InterfaceHandler extends TagHandler {
         attrs.put(UIComponent.BEANINFO_KEY, componentBeanInfo);
         BeanDescriptor componentDescriptor = new BeanDescriptor(parent.getClass());
         componentBeanInfo.setBeanDescriptor(componentDescriptor);
-        
+        TagAttribute attr = null;
+        ValueExpression ve = null;
+        String strValue = null;
+        boolean booleanValue = false;
+
         if (java.beans.Beans.isDesignTime()) {
-            TagAttribute attr = null;
-            ValueExpression ve = null;
-            String strValue = null;
-            boolean booleanValue = false;
 
             if (null != (attr = this.getAttribute("displayName"))) {
                 ve = attr.getValueExpression(ctx, String.class);
@@ -104,6 +104,10 @@ public class InterfaceHandler extends TagHandler {
                     componentDescriptor.setShortDescription(strValue);
                 }
             }
+        }
+        if (null != (attr = this.getAttribute("componentType"))) {
+            ve = attr.getValueExpression(ctx, String.class);
+            componentDescriptor.setValue(UIComponent.COMPOSITE_COMPONENT_TYPE_KEY, ve);
         }
         
         List<AttachedObjectTarget> targetList = (List<AttachedObjectTarget>)
