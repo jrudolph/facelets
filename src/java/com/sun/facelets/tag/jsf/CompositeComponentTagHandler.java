@@ -13,6 +13,7 @@ import com.sun.facelets.FaceletViewHandler;
 import com.sun.facelets.el.VariableMapperWrapper;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagAttributes;
+import com.sun.facelets.tag.TagException;
 import com.sun.facelets.tag.composite.CompositeComponentBeanInfo;
 import com.sun.facelets.tag.jsf.ComponentConfig;
 import com.sun.facelets.tag.jsf.ComponentHandler;
@@ -116,6 +117,32 @@ public class CompositeComponentTagHandler extends ComponentHandler {
                 }
             }
         }
+        
+        if (null == result) {
+            String packageName = compositeComponentResource.getLibraryName();
+            String className = compositeComponentResource.getResourceName();
+            className = className.substring(0, className.lastIndexOf("."));
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            if (null == cl) {
+                cl = this.getClass().getClassLoader();
+            }
+            try {
+                Class clazz = cl.loadClass(packageName + "." + className);
+                result = (UIComponent) clazz.newInstance();
+            } catch (ClassNotFoundException ex) {
+                // take no action, this is not an error.
+            } catch (InstantiationException ie) {
+                throw new TagException(this.tag, ie);
+            } catch (IllegalAccessException iae) {
+                throw new TagException(this.tag, iae);
+            } catch (ClassCastException cce) {
+                throw new TagException(this.tag, cce);
+            } catch (Throwable otherwise) {
+                // take no action, not an error
+            }
+        }
+        
+        
         if (null == result) {
             componentType = CompositeComponentImpl.TYPE;
             result = super.createComponent(ctx);
