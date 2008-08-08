@@ -149,7 +149,7 @@ public final class ValueChangeListenerHandler extends TagHandler implements Edit
     }
         
     public void applyAttachedObject(FacesContext context, UIComponent parent) {
-        FaceletContext ctx = (FaceletContext) context.getAttributes().get(FaceletContext.FACLET_CONTEXT_KEY);
+        FaceletContext ctx = (FaceletContext) context.getAttributes().get(FaceletContext.FACELET_CONTEXT_KEY);
         EditableValueHolder evh = (EditableValueHolder) parent;
         ValueExpression b = null;
         if (this.binding != null) {

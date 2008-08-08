@@ -46,7 +46,7 @@ import javax.faces.webapp.pdl.ValueHolderAttachedObjectHandler;
  * @see javax.faces.convert.Converter
  * @see javax.faces.component.ValueHolder
  * @author Jacob Hookom
- * @version $Id: ConvertHandler.java,v 1.3.30.1 2008/07/01 16:51:09 edburns Exp $
+ * @version $Id: ConvertHandler.java,v 1.3.30.2 2008/08/08 21:12:41 edburns Exp $
  */
 public class ConvertHandler extends MetaTagHandler implements ValueHolderAttachedObjectHandler {
 
@@ -134,7 +134,7 @@ public class ConvertHandler extends MetaTagHandler implements ValueHolderAttache
     }
 
     public void applyAttachedObject(FacesContext context, UIComponent parent) {
-        FaceletContext ctx = (FaceletContext) context.getAttributes().get(FaceletContext.FACLET_CONTEXT_KEY);
+        FaceletContext ctx = (FaceletContext) context.getAttributes().get(FaceletContext.FACELET_CONTEXT_KEY);
         // cast to a ValueHolder
         ValueHolder vh = (ValueHolder) parent;
         ValueExpression ve = null;

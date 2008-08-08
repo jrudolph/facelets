@@ -43,7 +43,7 @@ import javax.faces.webapp.pdl.EditableValueHolderAttachedObjectHandler;
  * that it wasn't restored from an existing tree.
  * 
  * @author Jacob Hookom
- * @version $Id: ValidateHandler.java,v 1.3.30.2 2008/07/01 16:51:09 edburns Exp $
+ * @version $Id: ValidateHandler.java,v 1.3.30.3 2008/08/08 21:12:41 edburns Exp $
  */
 public class ValidateHandler extends MetaTagHandler implements EditableValueHolderAttachedObjectHandler {
 
@@ -119,7 +119,7 @@ public class ValidateHandler extends MetaTagHandler implements EditableValueHold
     }
     
     public void applyAttachedObject(FacesContext context, UIComponent parent) {
-        FaceletContext ctx = (FaceletContext) context.getAttributes().get(FaceletContext.FACLET_CONTEXT_KEY);
+        FaceletContext ctx = (FaceletContext) context.getAttributes().get(FaceletContext.FACELET_CONTEXT_KEY);
         // cast to an EditableValueHolder
         EditableValueHolder evh = (EditableValueHolder) parent;
         ValueExpression ve = null;

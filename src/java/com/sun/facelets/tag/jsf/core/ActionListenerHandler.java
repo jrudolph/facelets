@@ -49,7 +49,7 @@ import javax.faces.webapp.pdl.ActionSource2AttachedObjectHandler;
  * @see javax.faces.event.ActionListener
  * @see javax.faces.component.ActionSource
  * @author Jacob Hookom
- * @version $Id: ActionListenerHandler.java,v 1.6.4.1 2008/07/01 16:51:10 edburns Exp $
+ * @version $Id: ActionListenerHandler.java,v 1.6.4.2 2008/08/08 21:12:41 edburns Exp $
  */
 public final class ActionListenerHandler extends TagHandler implements ActionSource2AttachedObjectHandler {
 	
@@ -156,7 +156,7 @@ public final class ActionListenerHandler extends TagHandler implements ActionSou
     }
     
     public void applyAttachedObject(FacesContext context, UIComponent parent) {
-        FaceletContext ctx = (FaceletContext) context.getAttributes().get(FaceletContext.FACLET_CONTEXT_KEY);
+        FaceletContext ctx = (FaceletContext) context.getAttributes().get(FaceletContext.FACELET_CONTEXT_KEY);
         ActionSource as = (ActionSource) parent;
         ValueExpression b = null;
         if (this.binding != null) {
