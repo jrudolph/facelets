@@ -231,10 +231,18 @@ public class CompositeComponentTagHandler extends ComponentHandler {
         FaceletFactory factory = faceletViewHandler.getFaceletFactory();
         VariableMapper orig = ctx.getVariableMapper();
         
-        UIPanel facetComponent = (UIPanel)
-                facesContext.getApplication().createComponent("javax.faces.Panel");
-        facetComponent.setRendererType("javax.faces.Group");
-        c.getFacets().put(UIComponent.COMPOSITE_FACET_NAME, facetComponent);
+        UIPanel facetComponent = null;
+        if (ComponentSupport.isNew(c)) {
+            facetComponent = (UIPanel)
+             facesContext.getApplication().createComponent("javax.faces.Panel");
+            facetComponent.setRendererType("javax.faces.Group");
+            c.getFacets().put(UIComponent.COMPOSITE_FACET_NAME, facetComponent);
+        }
+        else {
+            facetComponent = (UIPanel) 
+                    c.getFacets().get(UIComponent.COMPOSITE_FACET_NAME);
+        }
+        assert(null != facetComponent);
         
         try {
             f = factory.getFacelet(compositeComponentResource.getURL());

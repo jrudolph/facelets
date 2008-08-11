@@ -18,7 +18,7 @@ import com.sun.facelets.tag.AbstractTagLibrary;
 
 /**
  * @author Jacob Hookom
- * @version $Id: CompositeLibrary.java,v 1.1.4.2 2008/08/11 17:24:29 edburns Exp $
+ * @version $Id: CompositeLibrary.java,v 1.1.4.3 2008/08/11 19:32:29 edburns Exp $
  */
 public final class CompositeLibrary extends AbstractTagLibrary {
 
@@ -48,7 +48,10 @@ public final class CompositeLibrary extends AbstractTagLibrary {
         this.addTagHandler("implementation", ImplementationHandler.class);
         
         // Things that go inside of the implementation section
-        this.addTagHandler("insertChildren", InsertChildrenHandler.class);
-        this.addTagHandler("insertFacet", InsertFacetHandler.class);
+        this.addComponent("insertChildren", "javax.faces.Output",
+                "javax.faces.ConsumingPageCompositeChildren",
+                InsertChildrenHandler.class);
+        this.addComponent("insertFacet", "javax.faces.Output", 
+                "javax.faces.CompositeFacet", InsertFacetHandler.class);
     }
 }
