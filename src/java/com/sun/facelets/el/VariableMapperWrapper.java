@@ -28,9 +28,9 @@ import javax.el.VariableMapper;
  * contain the ValueExpression requested.
  * 
  * @author Jacob Hookom
- * @version $Id: VariableMapperWrapper.java,v 1.6 2007/09/24 16:06:12 youngm Exp $
+ * @version $Id: VariableMapperWrapper.java,v 1.6.6.1 2008/08/11 17:24:27 edburns Exp $
  */
-public final class VariableMapperWrapper extends VariableMapper {
+public class VariableMapperWrapper extends VariableMapper {
 
 	private final VariableMapper target;
 

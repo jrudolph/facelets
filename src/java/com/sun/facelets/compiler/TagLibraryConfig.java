@@ -36,6 +36,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import com.sun.facelets.tag.AbstractTagLibrary;
 import com.sun.facelets.tag.TagHandler;
 import com.sun.facelets.tag.TagLibrary;
+import com.sun.facelets.tag.jsf.CompositeComponentTagLibrary;
 import com.sun.facelets.util.ParameterCheck;
 import com.sun.facelets.util.Classpath;
 import com.sun.facelets.util.ReflectionUtil;
@@ -45,7 +46,7 @@ import com.sun.facelets.util.ReflectionUtil;
  * {@link java.net.URL URL} source.
  * 
  * @author Jacob Hookom
- * @version $Id: TagLibraryConfig.java,v 1.11 2007/06/14 21:59:50 rlubke Exp $
+ * @version $Id: TagLibraryConfig.java,v 1.13.2.1 2008/08/11 17:24:26 edburns Exp $
  */
 public final class TagLibraryConfig {
 
@@ -150,6 +151,10 @@ public final class TagLibraryConfig {
         private Class functionClass;
         
         private String functionSignature;
+        
+        private String compositeLibraryName;
+
+        private String namespace;
 
         public LibraryHandler(URL source) {
             this.file = source.getFile();
@@ -158,6 +163,10 @@ public final class TagLibraryConfig {
         }
 
         public TagLibrary getLibrary() {
+            TagLibrary result = null;
+            if (null != compositeLibraryName) {
+                this.library = new CompositeComponentTagLibrary(namespace, compositeLibraryName);
+            }
             return this.library;
         }
 
@@ -171,7 +180,11 @@ public final class TagLibraryConfig {
                     this.processLibraryClass();
                 }
                 else if ("namespace".equals(qName)) {
-                    this.library = new TagLibraryImpl(this.captureBuffer());
+                    this.namespace = this.captureBuffer();
+                    this.library = new TagLibraryImpl(this.namespace);
+                }
+                else if ("composite-library-name".equals(qName)) {
+                    this.compositeLibraryName = this.captureBuffer();
                 }
                 else if ("component-type".equals(qName)) {
                     this.componentType = this.captureBuffer();
@@ -429,7 +442,9 @@ public final class TagLibraryConfig {
         for (int i = 0; i < urls.length; i++) {
             try {
                 compiler.addTagLibrary(create(urls[i]));
-                log.info("Added Library from: " + urls[i]);
+                if (log.isLoggable(Level.FINE)) {
+                    log.fine("Added Library from: " + urls[i]);
+                }
             } catch (Exception e) {
                 log.log(Level.SEVERE, "Error Loading Library: " + urls[i], e);
             }

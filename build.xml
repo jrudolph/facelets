@@ -30,13 +30,14 @@
   <property name="http.proxy.port"     value=""/>
   <property name="ibiblio.repo"        value="http://www.ibiblio.org/maven/"/>
   <property name="java.net.repo"       value="http://download.java.net/maven/1/"/>
-  <property name="jsf.api.version"     value="2.0.0-SNAPSHOT"/>
+  <property name="jsf.api.version"     value="2.0-SNAPSHOT"/>
   <property name="javaee.api.version"  value="6-SNAPSHOT"/>
   <property name="jsf-api.jar"         value="${settings.localRepository}/javax/faces/jsf-api/${jsf.api.version}/jsf-api-${jsf.api.version}.jar"/>
   <property name="javaee-api.jar"          value="${settings.localRepository}/javaee/javaee-api/${javaee.api.version}/javaee-api-${javaee.api.version}.jar"/>
 
   <property name="artifact-id"          value="jsf-facelets"/>
   <property name="release.version"      value="2.0-SNAPSHOT"/>
+  <property name="jsf.src"              value="../mojarra-HEAD"/>
 
 
   <path id="compile.classpath">
@@ -191,7 +192,7 @@
          basedir="${build}/classes">
       <manifest>
         <attribute name="Implementation-Version" value="${release.version}"/>
-        <attribute name="Specification-Version" value="$Id: build.xml,v 1.26.6.3 2008/06/13 21:37:07 rlubke Exp $"/>
+        <attribute name="Specification-Version" value="$Id: build.xml,v 1.26.6.4 2008/08/11 17:24:24 edburns Exp $"/>
       </manifest>
     </jar>
   </target>
@@ -385,6 +386,10 @@
   <exec executable="mvn.bat" os="Windows XP">
     <arg line="install:install-file -DgroupId=com.sun.facelets -DartifactId=${artifact-id} -Dversion=${release.version} -Dpackaging=jar -Dfile=${build}/maven-repo/com.sun.facelets/jars/${artifact-id}-${release.version}.jar  " />
   </exec>
+
+  <copy file="${build}/maven-repo/com.sun.facelets/jars/${artifact-id}-${release.version}.jar"
+        todir="${jsf.src}/lib" overwrite="true" />
+  
 
 </target>
 

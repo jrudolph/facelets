@@ -34,8 +34,11 @@ import com.sun.facelets.tag.TagAttributeException;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.TagException;
 import com.sun.facelets.tag.TagHandler;
+import com.sun.facelets.tag.jsf.CompositeComponentTagHandler;
 import com.sun.facelets.tag.jsf.ComponentSupport;
 import com.sun.facelets.util.ReflectionUtil;
+import javax.faces.application.Resource;
+import javax.faces.webapp.pdl.ActionSource2AttachedObjectHandler;
 
 /**
  * Register an ActionListener instance on the UIComponent associated with the
@@ -46,9 +49,9 @@ import com.sun.facelets.util.ReflectionUtil;
  * @see javax.faces.event.ActionListener
  * @see javax.faces.component.ActionSource
  * @author Jacob Hookom
- * @version $Id: ActionListenerHandler.java,v 1.6 2008/02/20 05:48:00 rlubke Exp $
+ * @version $Id: ActionListenerHandler.java,v 1.6.2.1 2008/08/11 17:24:34 edburns Exp $
  */
-public final class ActionListenerHandler extends TagHandler {
+public final class ActionListenerHandler extends TagHandler implements ActionSource2AttachedObjectHandler {
 	
 	private final static class LazyActionListener implements ActionListener, Serializable {
 
@@ -131,19 +134,48 @@ public final class ActionListenerHandler extends TagHandler {
      */
     public void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
+        if (null == parent || !(ComponentSupport.isNew(parent))) {
+            return;
+        }
         if (parent instanceof ActionSource) {
-        	if (ComponentSupport.isNew(parent)) {
-				ActionSource as = (ActionSource) parent;
-				ValueExpression b = null;
-				if (this.binding != null) {
-					b = this.binding.getValueExpression(ctx, ActionListener.class);
-				}
-				ActionListener listener = new LazyActionListener(this.listenerType, b);
-				as.addActionListener(listener);
-			}
+            applyAttachedObject(ctx.getFacesContext(), parent);
+        } else if (parent.getAttributes().containsKey(Resource.COMPONENT_RESOURCE_KEY)) {
+            if (null == getFor()) {
+                // PENDING(): I18N
+                throw new TagException(this.tag,
+                        "actionListener tags nested within composite components must have a non-null ID attribute");
+            }
+            // Allow the composite component to know about the target
+            // component.
+            CompositeComponentTagHandler.getAttachedObjectHandlers(parent).add(this);
+
         } else {
             throw new TagException(this.tag,
                     "Parent is not of type ActionSource, type is: " + parent);
         }
     }
+    
+    public void applyAttachedObject(FacesContext context, UIComponent parent) {
+        FaceletContext ctx = (FaceletContext) context.getAttributes().get(FaceletContext.FACELET_CONTEXT_KEY);
+        ActionSource as = (ActionSource) parent;
+        ValueExpression b = null;
+        if (this.binding != null) {
+            b = this.binding.getValueExpression(ctx, ActionListener.class);
+        }
+        ActionListener listener = new LazyActionListener(this.listenerType, b);
+        as.addActionListener(listener);
+    }
+    
+    
+    public String getFor() {
+        String result = null;
+        TagAttribute attr = this.getAttribute("for");
+
+        if (null != attr) {
+            result = attr.getValue();
+        }
+        return result;
+        
+    }
+        
 }

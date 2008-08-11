@@ -12,12 +12,17 @@
  implied. See the License for the specific language governing
  permissions and limitations under the License.
  
- $Id: facelet-taglib_1_0.dtd,v 1.3.22.2 2008/06/06 22:44:27 edburns Exp $
+ $Id: facelet-taglib_1_0.dtd,v 1.3.22.3 2008/08/11 17:24:24 edburns Exp $
 -->
 
-<!ELEMENT facelet-taglib (library-class|(namespace,(tag|function|resource)+))>
+<!-- PENDING this is not correct.  I need to express how you would 
+     say, "facelet-taglib must contain library class or either
+     1. namspace and 1 or more tag|function|resource or
+     2. namspace and composite-library-name -->
+<!ELEMENT facelet-taglib (library-class|(namespace,(composite-library-name|tag|function|resource)+))>
 <!ATTLIST facelet-taglib xmlns CDATA #FIXED "http://java.sun.com/JSF/Facelet">
 <!ELEMENT namespace (#PCDATA)>
+<!ELEMENT composite-library-name (#PCDATA)>
 <!ELEMENT library-class (#PCDATA)>
 <!ELEMENT tag (tag-name,handler-class?,(component|converter|validator|source)?)>
 <!ELEMENT tag-name (#PCDATA)>

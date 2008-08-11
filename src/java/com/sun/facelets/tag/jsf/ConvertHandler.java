@@ -31,6 +31,9 @@ import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.TagException;
 import com.sun.facelets.tag.MetaRuleset;
+import com.sun.facelets.tag.jsf.CompositeComponentTagHandler;
+import javax.faces.application.Resource;
+import javax.faces.webapp.pdl.ValueHolderAttachedObjectHandler;
 
 /**
  * Handles setting a Converter instance on a ValueHolder. Will wire all
@@ -43,9 +46,9 @@ import com.sun.facelets.tag.MetaRuleset;
  * @see javax.faces.convert.Converter
  * @see javax.faces.component.ValueHolder
  * @author Jacob Hookom
- * @version $Id: ConvertHandler.java,v 1.3 2005/08/24 04:38:51 jhook Exp $
+ * @version $Id: ConvertHandler.java,v 1.3.28.1 2008/08/11 17:24:33 edburns Exp $
  */
-public class ConvertHandler extends MetaTagHandler {
+public class ConvertHandler extends MetaTagHandler implements ValueHolderAttachedObjectHandler {
 
     private final TagAttribute binding;
     
@@ -89,37 +92,24 @@ public class ConvertHandler extends MetaTagHandler {
      */
     public final void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
-        if (parent == null || !(parent instanceof ValueHolder)) {
+        // only process if it's been created
+        if (parent == null || !(parent.getParent() == null)) {
+            return;
+        }
+        if (parent instanceof ValueHolder) {
+            applyAttachedObject(ctx.getFacesContext(), parent);
+        } else if (parent.getAttributes().containsKey(Resource.COMPONENT_RESOURCE_KEY)) {
+            if (null == getFor()) {
+                // PENDING(): I18N
+                throw new TagException(this.tag,
+                        "converter tags nested within composite components must have a non-null ID attribute");
+            }
+            // Allow the composite component to know about the target
+            // component.
+            CompositeComponentTagHandler.getAttachedObjectHandlers(parent).add(this);
+        } else {
             throw new TagException(this.tag,
                     "Parent not an instance of ValueHolder: " + parent);
-        }
-
-        // only process if it's been created
-        if (parent.getParent() == null) {
-            // cast to a ValueHolder
-            ValueHolder vh = (ValueHolder) parent;
-            ValueExpression ve = null;
-            Converter c = null;
-            if (this.binding != null) {
-                ve = this.binding.getValueExpression(ctx, Converter.class);
-                c = (Converter) ve.getValue(ctx);
-            }
-            if (c == null) {
-                c = this.createConverter(ctx);
-                if (ve != null) {
-                    ve.setValue(ctx, c);
-                }
-            }
-            if (c == null) {
-                throw new TagException(this.tag, "No Converter was created");
-            }
-            this.setAttributes(ctx, c);
-            vh.setConverter(c);
-            Object lv = vh.getLocalValue();
-            FacesContext faces = ctx.getFacesContext();
-            if (lv instanceof String) {
-                vh.setValue(c.getAsObject(faces, parent, (String) lv));
-            }
         }
     }
 
@@ -142,4 +132,46 @@ public class ConvertHandler extends MetaTagHandler {
     protected MetaRuleset createMetaRuleset(Class type) {
         return super.createMetaRuleset(type).ignore("binding");
     }
+
+    public void applyAttachedObject(FacesContext context, UIComponent parent) {
+        FaceletContext ctx = (FaceletContext) context.getAttributes().get(FaceletContext.FACELET_CONTEXT_KEY);
+        // cast to a ValueHolder
+        ValueHolder vh = (ValueHolder) parent;
+        ValueExpression ve = null;
+        Converter c = null;
+        if (this.binding != null) {
+            ve = this.binding.getValueExpression(ctx, Converter.class);
+            c = (Converter) ve.getValue(ctx);
+        }
+        if (c == null) {
+            c = this.createConverter(ctx);
+            if (ve != null) {
+                ve.setValue(ctx, c);
+            }
+        }
+        if (c == null) {
+            throw new TagException(this.tag, "No Converter was created");
+        }
+        this.setAttributes(ctx, c);
+        vh.setConverter(c);
+        Object lv = vh.getLocalValue();
+        FacesContext faces = ctx.getFacesContext();
+        if (lv instanceof String) {
+            vh.setValue(c.getAsObject(faces, parent, (String) lv));
+        }
+    }
+    
+    public String getFor() {
+        String result = null;
+        TagAttribute attr = this.getAttribute("for");
+
+        if (null != attr) {
+            result = attr.getValue();
+        }
+        return result;
+
+    }
+    
+    
+    
 }

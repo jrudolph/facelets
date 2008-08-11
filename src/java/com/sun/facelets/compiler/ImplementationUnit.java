@@ -17,9 +17,9 @@ package com.sun.facelets.compiler;
 import com.sun.facelets.tag.Tag;
 import com.sun.facelets.tag.TagLibrary;
 
-class TrimmedTagUnit extends TagUnit {
+class ImplementationUnit extends TrimmedTagUnit {
 
-    public TrimmedTagUnit(TagLibrary library, String namespace, String name, Tag tag, String id) {
+    public ImplementationUnit(TagLibrary library, String namespace, String name, Tag tag, String id) {
         super(library, namespace, name, tag, id);
     }
 

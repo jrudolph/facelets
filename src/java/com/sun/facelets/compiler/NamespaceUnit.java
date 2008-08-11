@@ -23,7 +23,7 @@ import com.sun.facelets.tag.TagLibrary;
 /**
  * 
  * @author Jacob Hookom
- * @version $Id: NamespaceUnit.java,v 1.3 2005/08/24 04:38:54 jhook Exp $
+ * @version $Id: NamespaceUnit.java,v 1.3.28.1 2008/08/11 17:24:26 edburns Exp $
  */
 final class NamespaceUnit extends CompilationUnit {
 
@@ -42,5 +42,10 @@ final class NamespaceUnit extends CompilationUnit {
     public void setNamespace(String prefix, String uri) {
         this.ns.put(prefix, uri);
     }
+    
+    public void addChild(CompilationUnit unit) {
+        super.addChild(unit);
+    }
+    
 
 }

@@ -30,6 +30,10 @@ import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.TagException;
 import com.sun.facelets.tag.MetaRuleset;
+import com.sun.facelets.tag.jsf.CompositeComponentTagHandler;
+import javax.faces.application.Resource;
+import javax.faces.context.FacesContext;
+import javax.faces.webapp.pdl.EditableValueHolderAttachedObjectHandler;
 
 /**
  * Handles setting a Validator instance on a EditableValueHolder. Will wire all
@@ -39,9 +43,9 @@ import com.sun.facelets.tag.MetaRuleset;
  * that it wasn't restored from an existing tree.
  * 
  * @author Jacob Hookom
- * @version $Id: ValidateHandler.java,v 1.3.28.1 2008/06/19 21:34:58 rlubke Exp $
+ * @version $Id: ValidateHandler.java,v 1.3.28.2 2008/08/11 17:24:33 edburns Exp $
  */
-public class ValidateHandler extends MetaTagHandler {
+public class ValidateHandler extends MetaTagHandler implements EditableValueHolderAttachedObjectHandler {
 
     private final TagAttribute binding;
     
@@ -71,32 +75,25 @@ public class ValidateHandler extends MetaTagHandler {
     public void apply(FaceletContext ctx, UIComponent parent)
             throws IOException, FacesException, FaceletException, ELException {
 
-        if (parent == null || !(parent instanceof EditableValueHolder)) {
-            throw new TagException(this.tag,
-                    "Parent not an instance of EditableValueHolder: " + parent);
+        // only process if it's been created
+        if (parent == null || !(parent.getParent() == null)) {
+            return;
         }
 
-        // only process if it's been created
-        if (parent.getParent() == null) {
-            // cast to a ValueHolder
-            EditableValueHolder evh = (EditableValueHolder) parent;
-            ValueExpression ve = null;
-            Validator v = null;
-            if (this.binding != null) {
-                ve = this.binding.getValueExpression(ctx, Validator.class);
-                v = (Validator) ve.getValue(ctx);
+        if (parent instanceof EditableValueHolder) {
+            applyAttachedObject(ctx.getFacesContext(), parent);
+        } else if (parent.getAttributes().containsKey(Resource.COMPONENT_RESOURCE_KEY)) {
+            if (null == getFor()) {
+                // PENDING(): I18N
+                throw new TagException(this.tag,
+                        "validator tags nested within composite components must have a non-null ID attribute");
             }
-            if (v == null) {
-                v = this.createValidator(ctx);
-                if (ve != null) {
-                    ve.setValue(ctx, v);
-                }
-            }
-            if (v == null) {
-                throw new TagException(this.tag, "No Validator was created");
-            }
-            this.setAttributes(ctx, v);
-            evh.addValidator(v);
+            // Allow the composite component to know about the target
+            // component.
+            CompositeComponentTagHandler.getAttachedObjectHandlers(parent).add(this);
+        } else {
+            throw new TagException(this.tag,
+                    "Parent not an instance of EditableValueHolder: " + parent);
         }
     }
 
@@ -119,6 +116,41 @@ public class ValidateHandler extends MetaTagHandler {
 
     protected MetaRuleset createMetaRuleset(Class type) {
         return super.createMetaRuleset(type).ignore("binding");
+    }
+    
+    public void applyAttachedObject(FacesContext context, UIComponent parent) {
+        FaceletContext ctx = (FaceletContext) context.getAttributes().get(FaceletContext.FACELET_CONTEXT_KEY);
+        // cast to an EditableValueHolder
+        EditableValueHolder evh = (EditableValueHolder) parent;
+        ValueExpression ve = null;
+        Validator v = null;
+        if (this.binding != null) {
+            ve = this.binding.getValueExpression(ctx, Validator.class);
+            v = (Validator) ve.getValue(ctx);
+        }
+        if (v == null) {
+            v = this.createValidator(ctx);
+            if (ve != null) {
+                ve.setValue(ctx, v);
+            }
+        }
+        if (v == null) {
+            throw new TagException(this.tag, "No Validator was created");
+        }
+        this.setAttributes(ctx, v);
+        evh.addValidator(v);
+    }    
+    
+    
+    public String getFor() {
+        String result = null;
+        TagAttribute attr = this.getAttribute("for");
+        
+        if (null != attr) {
+            result = attr.getValue();
+        }
+        return result;
+        
     }
 
 }

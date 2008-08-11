@@ -62,7 +62,7 @@ import com.sun.facelets.util.FacesAPI;
  * golden hammer for wiring UIComponents to Facelets.
  * 
  * @author Jacob Hookom
- * @version $Id: ComponentHandler.java,v 1.18.6.3 2008/07/08 18:50:13 rlubke Exp $
+ * @version $Id: ComponentHandler.java,v 1.18.6.4 2008/08/11 17:24:33 edburns Exp $
  */
 public class ComponentHandler extends MetaTagHandler {
 
@@ -71,9 +71,9 @@ public class ComponentHandler extends MetaTagHandler {
     
     private final TagAttribute binding;
 
-    private final String componentType;
+    protected String componentType;
 
-    private final TagAttribute id;
+    protected final TagAttribute id;
 
     private final String rendererType;
 

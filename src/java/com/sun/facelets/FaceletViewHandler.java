@@ -149,6 +149,10 @@ public class FaceletViewHandler extends ViewHandler {
     public FaceletViewHandler(ViewHandler parent) {
         this.parent = parent;
     }
+    
+    public FaceletFactory getFaceletFactory() {
+        return this.faceletFactory;
+    }
 
     /**
      * Initialize the ViewHandler during its first request.
@@ -488,9 +492,9 @@ public class FaceletViewHandler extends ViewHandler {
                 .getViewId());
         viewToRender.setViewId(renderedViewId);
         // lazy initialize so we have a FacesContext to use
-        //if (this.faceletFactory == null) {
-        //    this.initialize(context);
-        //}
+        if (this.faceletFactory == null) {
+            this.initialize(context);
+        }
         
 
         if (log.isLoggable(Level.FINE)) {
