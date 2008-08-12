@@ -130,28 +130,12 @@ public class CompositeComponentTagLibrary extends AbstractTagLibrary {
             Resource componentResource) {
         boolean result = false;
 
-        Resource scriptComponentResource = getScriptComponentResource(context, 
+        Resource scriptComponentResource = context.getApplication().getPageDeclarationLanguage().getScriptComponentResource(context, 
                 componentResource);
         try {
             result = (null != scriptComponentResource) && (null != scriptComponentResource.getInputStream());
         } catch (IOException ex) {
             Logger.getLogger(CompositeComponentTagLibrary.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        return result;
-    }
-    
-    static Resource getScriptComponentResource(FacesContext context,
-            Resource componentResource) {
-        Resource result = null;
-
-        String resourceName = componentResource.getResourceName();
-        if (resourceName.endsWith(".xhtml")) {
-            resourceName = resourceName.substring(0, 
-                    resourceName.length() - 6) + ".groovy";
-            ResourceHandler resourceHandler = context.getApplication().getResourceHandler();
-            result = resourceHandler.createResource(resourceName, 
-                    componentResource.getLibraryName());
         }
         
         return result;

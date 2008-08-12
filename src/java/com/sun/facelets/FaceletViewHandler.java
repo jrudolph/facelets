@@ -44,6 +44,7 @@ import com.sun.facelets.compiler.SAXCompiler;
 import com.sun.facelets.compiler.TagLibraryConfig;
 import com.sun.facelets.impl.DefaultFaceletFactory;
 import com.sun.facelets.impl.DefaultResourceResolver;
+import com.sun.facelets.impl.PageDeclarationLanguageImpl;
 import com.sun.facelets.impl.ResourceResolver;
 import com.sun.facelets.tag.TagDecorator;
 import com.sun.facelets.tag.TagLibrary;
@@ -52,6 +53,7 @@ import com.sun.facelets.tag.ui.UIDebug;
 import com.sun.facelets.util.DevTools;
 import com.sun.facelets.util.FacesAPI;
 import com.sun.facelets.util.ReflectionUtil;
+import javax.faces.webapp.pdl.PageDeclarationLanguage;
 
 /**
  * ViewHandler implementation for Facelets
@@ -143,11 +145,14 @@ public class FaceletViewHandler extends ViewHandler {
     // Array of viewId prefixes that should be handled by Facelets
     private String[] prefixesArray;
 
+    private PageDeclarationLanguage pdl = null;
     /**
      *
      */
     public FaceletViewHandler(ViewHandler parent) {
         this.parent = parent;
+        this.pdl = new PageDeclarationLanguageImpl();
+        FacesContext.getCurrentInstance().getApplication().setPageDeclarationLanguage(pdl);
     }
     
     public FaceletFactory getFaceletFactory() {
