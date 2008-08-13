@@ -92,7 +92,7 @@ public class CompositeComponentTagHandler extends ComponentHandler {
     protected UIComponent createComponent(FaceletContext ctx) {
         UIComponent result = null;
         FacesContext context = ctx.getFacesContext();
-        result = context.getApplication().createComponent(compositeComponentResource);
+        result = context.getApplication().createComponent(context, compositeComponentResource);
 
         return result;
     }
