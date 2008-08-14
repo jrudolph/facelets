@@ -43,7 +43,7 @@ import javax.faces.webapp.pdl.EditableValueHolderAttachedObjectHandler;
  * that it wasn't restored from an existing tree.
  * 
  * @author Jacob Hookom
- * @version $Id: ValidateHandler.java,v 1.3.28.2 2008/08/11 17:24:33 edburns Exp $
+ * @version $Id: ValidateHandler.java,v 1.3.28.3 2008/08/14 15:41:30 edburns Exp $
  */
 public class ValidateHandler extends MetaTagHandler implements EditableValueHolderAttachedObjectHandler {
 
@@ -86,7 +86,7 @@ public class ValidateHandler extends MetaTagHandler implements EditableValueHold
             if (null == getFor()) {
                 // PENDING(): I18N
                 throw new TagException(this.tag,
-                        "validator tags nested within composite components must have a non-null ID attribute");
+                        "validator tags nested within composite components must have a non-null \"for\" attribute");
             }
             // Allow the composite component to know about the target
             // component.

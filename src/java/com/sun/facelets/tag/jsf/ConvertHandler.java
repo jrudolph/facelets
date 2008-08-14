@@ -46,7 +46,7 @@ import javax.faces.webapp.pdl.ValueHolderAttachedObjectHandler;
  * @see javax.faces.convert.Converter
  * @see javax.faces.component.ValueHolder
  * @author Jacob Hookom
- * @version $Id: ConvertHandler.java,v 1.3.28.1 2008/08/11 17:24:33 edburns Exp $
+ * @version $Id: ConvertHandler.java,v 1.3.28.2 2008/08/14 15:41:29 edburns Exp $
  */
 public class ConvertHandler extends MetaTagHandler implements ValueHolderAttachedObjectHandler {
 
@@ -102,7 +102,7 @@ public class ConvertHandler extends MetaTagHandler implements ValueHolderAttache
             if (null == getFor()) {
                 // PENDING(): I18N
                 throw new TagException(this.tag,
-                        "converter tags nested within composite components must have a non-null ID attribute");
+                        "converter tags nested within composite components must have a non-null \"for\" attribute");
             }
             // Allow the composite component to know about the target
             // component.

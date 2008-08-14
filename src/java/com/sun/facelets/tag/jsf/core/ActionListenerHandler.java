@@ -49,7 +49,7 @@ import javax.faces.webapp.pdl.ActionSource2AttachedObjectHandler;
  * @see javax.faces.event.ActionListener
  * @see javax.faces.component.ActionSource
  * @author Jacob Hookom
- * @version $Id: ActionListenerHandler.java,v 1.6.2.1 2008/08/11 17:24:34 edburns Exp $
+ * @version $Id: ActionListenerHandler.java,v 1.6.2.2 2008/08/14 15:41:30 edburns Exp $
  */
 public final class ActionListenerHandler extends TagHandler implements ActionSource2AttachedObjectHandler {
 	
@@ -143,7 +143,7 @@ public final class ActionListenerHandler extends TagHandler implements ActionSou
             if (null == getFor()) {
                 // PENDING(): I18N
                 throw new TagException(this.tag,
-                        "actionListener tags nested within composite components must have a non-null ID attribute");
+                        "actionListener tags nested within composite components must have a non-null \"for\" attribute");
             }
             // Allow the composite component to know about the target
             // component.
