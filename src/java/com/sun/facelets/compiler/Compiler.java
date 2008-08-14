@@ -1,16 +1,17 @@
 /**
- * Licensed under the Common Development and Distribution License,
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
- *   http://www.sun.com/cddl/
- *   
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or 
- * implied. See the License for the specific language governing
- * permissions and limitations under the License.
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
+
 
 package com.sun.facelets.compiler;
 
@@ -43,7 +44,7 @@ import com.sun.facelets.util.ReflectionUtil;
  * A Compiler instance may handle compiling multiple sources
  * 
  * @author Jacob Hookom
- * @version $Id: Compiler.java,v 1.15 2006/10/19 03:48:12 jhook Exp $
+ * @version $Id: Compiler.java,v 1.15.14.1 2008/08/14 21:11:50 rlubke Exp $
  */
 public abstract class Compiler {
 
