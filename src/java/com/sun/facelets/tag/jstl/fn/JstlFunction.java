@@ -22,7 +22,7 @@ import java.util.Map;
  * Implementations of JSTL Functions
  * 
  * @author Jacob Hookom
- * @version $Id: JstlFunction.java,v 1.5 2008/07/13 19:01:51 rlubke Exp $
+ * @version $Id: JstlFunction.java,v 1.6 2009/01/16 20:51:11 rlubke Exp $
  */
 public final class JstlFunction {
 
@@ -75,7 +75,10 @@ public final class JstlFunction {
         StringBuffer sb = new StringBuffer(a.length
                 * (a[0].length() + delim.length()));
         for (int i = 0; i < a.length; i++) {
-            sb.append(a[i]).append(delim);
+            sb.append(a[i]);
+            if (i < (a.length - 1)) {
+                sb.append(delim);
+            }
         }
         return sb.toString();
     }
