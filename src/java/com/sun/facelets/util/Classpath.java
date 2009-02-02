@@ -34,7 +34,7 @@ import java.util.zip.ZipInputStream;
  * @author Jacob Hookom
  * @author Roland Huss
  * @author Ales Justin (ales.justin@jboss.org)
- * @version $Id: Classpath.java,v 1.10 2008/07/13 19:01:34 rlubke Exp $
+ * @version $Id: Classpath.java,v 1.11 2009/02/02 23:04:45 rlubke Exp $
  */
 public final class Classpath {
 
@@ -210,6 +210,7 @@ public final class Classpath {
 			// And trim off any "file:" prefix.
 			if (jarFileUrl.startsWith("file:")) {
 				jarFileUrl = jarFileUrl.substring("file:".length());
+                                jarFileUrl = URLDecoder.decode(jarFileUrl, "UTF-8");
 			}
 			return new JarFile(jarFileUrl);
 		}
