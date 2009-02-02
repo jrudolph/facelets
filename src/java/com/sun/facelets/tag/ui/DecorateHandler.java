@@ -36,10 +36,11 @@ import com.sun.facelets.el.VariableMapperWrapper;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.TagHandler;
+import com.sun.facelets.tag.TagAttributeException;
 
 /**
  * @author Jacob Hookom
- * @version $Id: DecorateHandler.java,v 1.16 2008/07/13 19:01:41 rlubke Exp $
+ * @version $Id: DecorateHandler.java,v 1.17 2009/02/02 22:58:29 driscoll Exp $
  */
 public final class DecorateHandler extends TagHandler implements TemplateClient {
 
@@ -100,9 +101,13 @@ public final class DecorateHandler extends TagHandler implements TemplateClient 
             }
         }
 
+        String path = null;
         ctx.pushClient(this);
         try {
-            ctx.includeFacelet(parent, this.template.getValue(ctx));
+            path = this.template.getValue(ctx);
+            ctx.includeFacelet(parent, path);
+        } catch (IOException e) {
+            throw new TagAttributeException(this.tag, this.template, "Invalid path : " + path);
         } finally {
             ctx.setVariableMapper(orig);
             ctx.popClient(this);

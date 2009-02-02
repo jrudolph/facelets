@@ -27,10 +27,11 @@ import com.sun.facelets.el.VariableMapperWrapper;
 import com.sun.facelets.tag.TagAttribute;
 import com.sun.facelets.tag.TagConfig;
 import com.sun.facelets.tag.TagHandler;
+import com.sun.facelets.tag.TagAttributeException;
 
 /**
  * @author Jacob Hookom
- * @version $Id: IncludeHandler.java,v 1.5 2008/07/13 19:01:41 rlubke Exp $
+ * @version $Id: IncludeHandler.java,v 1.6 2009/02/02 22:58:59 driscoll Exp $
  */
 public final class IncludeHandler extends TagHandler {
 
@@ -63,6 +64,8 @@ public final class IncludeHandler extends TagHandler {
         try {
             this.nextHandler.apply(ctx, null);
             ctx.includeFacelet(parent, path);
+        } catch (IOException e) {
+            throw new TagAttributeException(this.tag, this.src, "Invalid path : " + path);            
         } finally {
             ctx.setVariableMapper(orig);
         }
