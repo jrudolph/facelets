@@ -18,7 +18,7 @@ import java.io.Serializable;
 
 /**
  * @author Jacob Hookom
- * @version $Id: IterationStatus.java,v 1.4 2008/07/13 19:01:43 rlubke Exp $
+ * @version $Id: IterationStatus.java,v 1.5 2009/02/03 21:33:01 edburns Exp $
  */
 public final class IterationStatus implements Serializable {
 
@@ -32,6 +32,8 @@ public final class IterationStatus implements Serializable {
     private final boolean first;
     
     private final boolean last;
+
+    private final boolean even;
 
     private final Integer begin;
 
@@ -49,6 +51,7 @@ public final class IterationStatus implements Serializable {
         this.step = step;
         this.first = first;
         this.last = last;
+        this.even = (index - begin.intValue() / step.intValue()) % 2 == 0;
     }
 
     public boolean isFirst() {
@@ -57,6 +60,14 @@ public final class IterationStatus implements Serializable {
 
     public boolean isLast() {
         return this.last;
+    }
+
+    public boolean isEven() {
+        return even;
+    }
+
+    public boolean isOdd() {
+        return !even;
     }
 
     public Integer getBegin() {

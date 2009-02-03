@@ -14,6 +14,7 @@
 
 package com.sun.facelets.component;
 
+import com.sun.facelets.tag.jstl.core.IterationStatus;
 import java.io.IOException;
 import java.io.Serializable;
 import java.sql.ResultSet;
@@ -72,6 +73,8 @@ public class UIRepeat extends UIComponentBase implements NamingContainer {
 
     private int size = -1;
 
+    private int step = -1;
+
     public UIRepeat() {
         this.setRendererType("facelets.ui.Repeat");
     }
@@ -96,6 +99,22 @@ public class UIRepeat extends UIComponentBase implements NamingContainer {
         this.offset = offset;
     }
 
+    public int getStep() {
+        if (this.step != -1) {
+            return this.step;
+        }
+        ValueBinding vb = this.getValueBinding("offset");
+        if (vb != null) {
+            return ((Integer) vb.getValue(FacesContext.getCurrentInstance()))
+                    .intValue();
+        }
+        return 1;
+    }
+
+    public void setStep(int step) {
+        this.step = step;
+    }
+
     public int getSize() {
         if (this.size != -1) {
             return this.size;
@@ -118,6 +137,14 @@ public class UIRepeat extends UIComponentBase implements NamingContainer {
 
     public void setVar(String var) {
         this.var = var;
+    }
+
+    public String getVarStatus() {
+        return varStatus;
+    }
+
+    public void setVarStatus(String varStatus) {
+        this.varStatus = varStatus;
     }
 
     private void resetDataModel() {
@@ -184,24 +211,39 @@ public class UIRepeat extends UIComponentBase implements NamingContainer {
         return id;
     }
 
-    private transient Object origValue;
+    private transient Object origValueOfVar;
+    private transient Object origValueOfVarStatus;
 
     private void captureOrigValue() {
-        if (this.var != null) {
+        if (this.var != null || this.varStatus != null) {
             FacesContext faces = FacesContext.getCurrentInstance();
             Map attrs = faces.getExternalContext().getRequestMap();
-            this.origValue = attrs.get(this.var);
+            if (this.var != null) {
+                this.origValueOfVar = attrs.get(this.var);
+            }
+            if (this.varStatus != null) {
+                this.origValueOfVarStatus = attrs.get(this.varStatus);
+            }
         }
     }
 
     private void restoreOrigValue() {
-        if (this.var != null) {
+        if (this.var != null || this.varStatus != null) {
             FacesContext faces = FacesContext.getCurrentInstance();
             Map attrs = faces.getExternalContext().getRequestMap();
-            if (this.origValue != null) {
-                attrs.put(this.var, this.origValue);
-            } else {
-                attrs.remove(this.var);
+            if (this.var != null) {
+                if (this.origValueOfVar != null) {
+                    attrs.put(this.var, this.origValueOfVar);
+                } else {
+                    attrs.remove(this.var);
+                }
+            }
+            if (this.varStatus != null) {
+                if (this.origValueOfVarStatus != null) {
+                    attrs.put(this.varStatus, this.origValueOfVarStatus);
+                } else {
+                    attrs.remove(this.varStatus);
+                }
             }
         }
     }
@@ -329,6 +371,14 @@ public class UIRepeat extends UIComponentBase implements NamingContainer {
         this.restoreChildState();
     }
 
+    private void updateIterationStatus(IterationStatus status) {
+        if (this.varStatus != null) {
+            FacesContext faces = FacesContext.getCurrentInstance();
+            Map attrs = faces.getExternalContext().getRequestMap();
+            attrs.put(varStatus, status);
+        }
+    }
+
     private boolean isIndexAvailable() {
         return this.getDataModel().isRowAvailable();
     }
@@ -352,9 +402,11 @@ public class UIRepeat extends UIComponentBase implements NamingContainer {
                 Iterator itr;
                 UIComponent c;
 
-                int i = this.getOffset();
-                int end = this.getSize();
-                end = (end >= 0) ? i + end : Integer.MAX_VALUE - 1;
+                int begin = this.getOffset();
+                int num = this.getSize();
+                int step = this.getStep();
+                int rowCount = getDataModel().getRowCount();
+                int end = Math.min(num > 0 ? begin + num - 1 : rowCount, rowCount);
 
                 // grab renderer
                 String rendererType = getRendererType();
@@ -363,7 +415,9 @@ public class UIRepeat extends UIComponentBase implements NamingContainer {
                     renderer = getRenderer(faces);
                 }
 
+                int i = begin;
                 this.setIndex(i);
+                this.updateIterationStatus(new IterationStatus(true, i + step >= end, i, new Integer(begin), new Integer(end), new Integer(step)));
                 while (i <= end && this.isIndexAvailable()) {
 
                     if (PhaseId.RENDER_RESPONSE.equals(phase)
@@ -390,8 +444,9 @@ public class UIRepeat extends UIComponentBase implements NamingContainer {
                             }
                         }
                     }
-                    i++;
+                    i += step;
                     this.setIndex(i);
+                    this.updateIterationStatus(new IterationStatus(false, i + step >= end, i, new Integer(begin), new Integer(end), new Integer(step)));
                 }
             }
         } catch (IOException e) {
