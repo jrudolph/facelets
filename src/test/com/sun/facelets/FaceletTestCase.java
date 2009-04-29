@@ -19,15 +19,11 @@ import java.io.FileNotFoundException;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Set;
 
 import javax.faces.FacesException;
 import javax.faces.FactoryFinder;
-import javax.faces.application.Application;
 import javax.faces.application.ApplicationFactory;
-import javax.faces.component.UIViewRoot;
 import javax.faces.context.FacesContext;
 import javax.faces.context.FacesContextFactory;
 import javax.faces.context.ResponseWriter;
@@ -40,14 +36,11 @@ import com.sun.facelets.compiler.Compiler;
 import com.sun.facelets.compiler.SAXCompiler;
 import com.sun.facelets.impl.DefaultFaceletFactory;
 import com.sun.facelets.impl.ResourceResolver;
+import com.sun.facelets.mock.MockHttpServletRequest;
 import com.sun.facelets.mock.MockHttpServletResponse;
 import com.sun.facelets.mock.MockServletContext;
-import com.sun.facelets.mock.MockHttpServletRequest;
-import com.sun.faces.util.DebugUtil;
 
-import junit.framework.TestCase;
-
-public abstract class FaceletTestCase extends TestCase implements ResourceResolver {
+public abstract class FaceletTestCase implements ResourceResolver {
 
     private final String filePath = this.getDirectory();
 
@@ -98,7 +91,6 @@ public abstract class FaceletTestCase extends TestCase implements ResourceResolv
     }
 
     protected void setUp() throws Exception {
-        super.setUp();
         URI context = this.getContext();
 
         this.servletContext = new MockServletContext(context);
@@ -172,7 +164,6 @@ public abstract class FaceletTestCase extends TestCase implements ResourceResolv
     }
 
     protected void tearDown() throws Exception {
-        super.tearDown();
         this.servletContext = null;
     }
 

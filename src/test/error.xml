@@ -1,9 +1,0 @@
-<h1>This is some Text</h1>
-	<!-- This is a comment -->
-	<h:outputText value="Hello #{person.name}"/>
-	
-	<form f:type="h:form" id="someId">
-		#{vars.firstName}: <input f:binding="#{page.firstName}" id="firstName" />
-	</form>
-	
-	This is some more text in <b>bold</b>.
