@@ -1,9 +1,0 @@
-<project name="test" default="-build-demo" basedir="../../">
-  <import file="../../build.xml"/>
-  <target name="-build-demo">
-  	<makewar destfile="dist/starterkit.war" root="demo/starterkit"/>
-  </target>
-</project>
-
-
- 

@@ -1,9 +1,0 @@
-<project name="test" default="-build-demo" basedir="../../">
-  <import file="../../build.xml"/>
-  <target name="-build-demo">
-  	<makewar destfile="dist/hangman.war" root="demo/hangman"/>
-  </target>
-</project>
-
-
- 
