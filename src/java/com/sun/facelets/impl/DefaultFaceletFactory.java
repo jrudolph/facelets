@@ -117,6 +117,8 @@ public final class DefaultFaceletFactory extends FaceletFactory {
                         + " Not Found in ExternalContext as a Resource");
             }
             return url;
+        } else if (this.resolver instanceof ExtendedResourceResolver) {
+            return ((ExtendedResourceResolver) this.resolver).resolveRelativeUrl(source, path);
         } else {
             return new URL(source, path);
         }
